@@ -17,6 +17,10 @@
 
 #include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 
+//// Scheduler
+//#define PX_SCHED_IMPLEMENTATION 1
+//#include "External/px_sched.h"
+
 double SyncDeviceTimes(int handle);
 void GetDeviceInfo(const char * devType, const char * connType, const char * iden);
 
@@ -25,6 +29,9 @@ int main()
 {
 	// Open first found LabJack
 	GetDeviceInfo("LJM_dtANY", "LJM_ctANY", "LJM_idANY");
+
+	//Scheduler schd;
+	//schd.init();
 
 	WaitForUserIfWindows();
 
