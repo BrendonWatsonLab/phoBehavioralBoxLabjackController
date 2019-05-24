@@ -20,8 +20,7 @@
 
 
 //// Scheduler
-#define PX_SCHED_IMPLEMENTATION 1
-#include "External/px_sched.h"
+//#include "External/px_sched.h"
 
 bool isArtificialDaylightHours();
 double SyncDeviceTimes(BehavioralBoxLabjack* labjack);
@@ -38,8 +37,6 @@ int main()
 
 	updateVisibleLightRelayIfNeeded(&firstLabjack);
 
-	Scheduler schd;
-	schd.init();
 
 	//WaitForUserIfWindows();
 
