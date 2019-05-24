@@ -29,5 +29,8 @@
     <ClInclude Include="src\External\px_sched.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\External\Scheduler\Scheduler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

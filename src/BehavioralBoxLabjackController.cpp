@@ -20,7 +20,14 @@
 
 
 //// Scheduler
-//#include "External/px_sched.h"
+#include "External/Scheduler/Scheduler.h"
+// number of tasks that can run simultaneously
+  // Note: not the number of tasks that can be added,
+  //       but number of tasks that can be run in parallel
+unsigned int max_n_threads = 12;
+// Make a new scheduling object.
+  // Note: s cannot be moved or copied
+Bosma::Scheduler s(max_n_threads);
 
 bool isArtificialDaylightHours();
 double SyncDeviceTimes(BehavioralBoxLabjack* labjack);
@@ -36,6 +43,17 @@ int main()
 	SyncDeviceTimes(&firstLabjack);
 
 	updateVisibleLightRelayIfNeeded(&firstLabjack);
+
+	// Call the light relay updating function every hour
+	//s.every(std::chrono::hours(1), updateVisibleLightRelayIfNeeded, &firstLabjack);
+
+
+
+	// https://en.wikipedia.org/wiki/Cron
+	s.cron("* * * * *", [&firstLabjack](BehavioralBoxLabjack* labjack) { updateVisibleLightRelayIfNeeded(labjack); }); //every minute
+
+	// Every hour
+	s.cron("0 * * * *", [&firstLabjack](BehavioralBoxLabjack* labjack) { updateVisibleLightRelayIfNeeded(labjack); }); //every hour
 
 
 	//WaitForUserIfWindows();

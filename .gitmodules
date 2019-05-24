@@ -1,3 +1,6 @@
 [submodule "src\\External\\Scheduler"]
 	path = src\\External\\Scheduler
 	url = https://github.com/Bosma/Scheduler.git
+[submodule "src\\External\\CTPL"]
+	path = src\\External\\CTPL
+	url = https://github.com/vit-vit/CTPL.git
