@@ -19,15 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OutputWriter.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjackController.cpp" />
+    <ClCompile Include="src\LabjackHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
     <ClInclude Include="src\External\px_sched.h" />
     <ClInclude Include="src\External\Scheduler\Scheduler.h" />
-    <ClInclude Include="src\OutputWriter.h" />
+    <ClInclude Include="src\LabjackHelpers.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CA30395F-5251-40D8-8C39-297793F13B1E}</ProjectGuid>

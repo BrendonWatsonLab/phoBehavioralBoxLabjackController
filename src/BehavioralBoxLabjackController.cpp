@@ -16,15 +16,22 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 #include "BehavioralBoxLabjack.h"
+
+#include "LabjackHelpers.h"
+
+//#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 
 // File Output:
 std::ofstream out_stream("out_fle.csv");
 //out_stream.open("out_file.csv");
 
 BehavioralBoxLabjack firstLabjack = BehavioralBoxLabjack(0, "LJM_dtANY", "LJM_ctANY", "LJM_idANY", out_stream);
+std::vector<BehavioralBoxLabjack> foundLabjacks;
+
 
 //// Scheduler
 #include "External/Scheduler/Scheduler.h"
@@ -35,6 +42,8 @@ unsigned int max_n_threads = 12;
 // Make a new scheduling object.
   // Note: s cannot be moved or copied
 Bosma::Scheduler s(max_n_threads);
+
+// FUNCTION PROTOTYPES:
 
 void runTopOfHourUpdate();
 void runTopOfMinuteUpdate();
@@ -47,15 +56,24 @@ void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack);
 
 int main()
 {
+	// Find the labjacks
+	foundLabjacks = LabjackHelpers::findAllLabjacks();
+
+	// Iterate through all found Labjacks
+	for (int i = 0; i < foundLabjacks.size(); i++) {
+		SyncDeviceTimes(&foundLabjacks[i]);
+		updateVisibleLightRelayIfNeeded(&foundLabjacks[i]);
+	}
+
 	// Open first found LabJack
 	//GetDeviceInfo("LJM_dtANY", "LJM_ctANY", "LJM_idANY");
 
-	SyncDeviceTimes(&firstLabjack);
+	/*SyncDeviceTimes(&firstLabjack);
 
-	updateVisibleLightRelayIfNeeded(&firstLabjack);
+	updateVisibleLightRelayIfNeeded(&firstLabjack);*/
 
 	// Call the light relay updating function every hour
-	s.every(std::chrono::seconds(1), runTopOfSecondUpdate);
+	//s.every(std::chrono::seconds(1), runTopOfSecondUpdate);
 
 	// https://en.wikipedia.org/wiki/Cron
 	//s.cron("* * * * *", [&firstLabjack](BehavioralBoxLabjack* labjack) { updateVisibleLightRelayIfNeeded(labjack); }); //every minute
@@ -116,9 +134,14 @@ void runTopOfMinuteUpdate() {
 // Ran at the top of every second
 void runTopOfSecondUpdate() {
 	time_t computerTime;
-	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-	printf("runTopOfSecondUpdate: running at %s\n", ctime(&computerTime));
-	firstLabjack.readSensorValues();
+	// Iterate through all found Labjacks
+	for (int i = 0; i < foundLabjacks.size(); i++) {
+		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+		printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
+		foundLabjacks[i].readSensorValues();
+	}
+
+	
 }
 
 //// Syncs the Labjack's internal RTC time with the computer's. Returns the number of seconds that were adjusted to set the Labjack's clock.
@@ -171,3 +194,5 @@ void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack) {
 	bool isDay = isArtificialDaylightHours();
 	labjack->setVisibleLightRelayState(isDay);
 }
+
+

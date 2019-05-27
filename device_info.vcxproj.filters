@@ -21,7 +21,7 @@
     <ClCompile Include="src\BehavioralBoxLabjackController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OutputWriter.cpp">
+    <ClCompile Include="src\LabjackHelpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,7 +35,7 @@
     <ClInclude Include="src\External\Scheduler\Scheduler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\OutputWriter.h">
+    <ClInclude Include="src\LabjackHelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

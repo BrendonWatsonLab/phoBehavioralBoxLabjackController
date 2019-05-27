@@ -13,6 +13,7 @@
 class BehavioralBoxLabjack
 {
 public:
+	BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden, std::ofstream& outFile);
 	BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden, std::ofstream& outFile);
 	~BehavioralBoxLabjack();
 

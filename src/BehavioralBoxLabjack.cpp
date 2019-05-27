@@ -20,6 +20,8 @@
 
 #include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 
+BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden, std::ofstream & outFile) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), iden, outFile) {}
+
 // Constructor: Called when an instance of the object is about to be created
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden, std::ofstream& outFile): deviceType(LJM_dtANY), connectionType(LJM_ctANY), outputFile(outFile)
 {
