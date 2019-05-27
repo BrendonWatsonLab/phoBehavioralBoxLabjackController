@@ -29,7 +29,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	// "logfile.csv", std::ofstream::app
 
 	this->uniqueIdentifier = uniqueIdentifier;
-	this->err = LJM_OpenS(devType, connType, iden, &handle);
+	this->err = LJM_OpenS(devType, connType, iden, &this->handle);
 	ErrorCheck(this->err, "LJM_OpenS");
 
 	char string[LJM_STRING_ALLOCATION_SIZE];
@@ -42,7 +42,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 		printf("This device does not have a name\n");
 
 	// Get device info
-	this->err = LJM_GetHandleInfo(handle, &deviceType, &connectionType, &serialNumber, &ipAddress,
+	this->err = LJM_GetHandleInfo(this->handle, &deviceType, &connectionType, &serialNumber, &ipAddress,
 		&portOrPipe, &packetMaxBytes);
 	ErrorCheck(this->err, "LJM_GetHandleInfo");
 
@@ -96,7 +96,7 @@ time_t BehavioralBoxLabjack::getTime()
 {
 	double labjackTime = 0.0;
 	this->err = LJM_eReadAddress(this->handle, 61500, 1, &labjackTime);
-	ErrorCheck(this->err, "LJM_eReadAddress");
+	ErrorCheck(this->err, "getTime - LJM_eReadAddress");
 	return time_t(labjackTime);
 }
 
@@ -132,7 +132,7 @@ void BehavioralBoxLabjack::readSensorValues()
 	time(&this->lastCaptureComputerTime);  /* get current time; same as: timer = time(NULL)  */
 	//Read the sensor values from the labjack DIO Inputs
 	this->err = LJM_eReadNames(this->handle, 9, (const char **)this->inputPortNames, this->lastReadInputPortValues, &this->errorAddress);
-	ErrorCheckWithAddress(this->err, this->errorAddress, "LJM_eReadNames");
+	ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
 	this->persistReadValues();
 }
 
