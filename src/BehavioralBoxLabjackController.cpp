@@ -15,11 +15,16 @@
 #include <LabJackM.h>
 #include <time.h>
 #include <iostream>
+#include <fstream>
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 #include "BehavioralBoxLabjack.h"
 
-BehavioralBoxLabjack firstLabjack = BehavioralBoxLabjack(0, "LJM_dtANY", "LJM_ctANY", "LJM_idANY");
+// File Output:
+std::ofstream out_stream("out_fle.csv");
+//out_stream.open("out_file.csv");
+
+BehavioralBoxLabjack firstLabjack = BehavioralBoxLabjack(0, "LJM_dtANY", "LJM_ctANY", "LJM_idANY", out_stream);
 
 //// Scheduler
 #include "External/Scheduler/Scheduler.h"
@@ -33,6 +38,8 @@ Bosma::Scheduler s(max_n_threads);
 
 void runTopOfHourUpdate();
 void runTopOfMinuteUpdate();
+void runTopOfSecondUpdate();
+
 bool isArtificialDaylightHours();
 double SyncDeviceTimes(BehavioralBoxLabjack* labjack);
 void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack);
@@ -48,7 +55,7 @@ int main()
 	updateVisibleLightRelayIfNeeded(&firstLabjack);
 
 	// Call the light relay updating function every hour
-	//s.every(std::chrono::hours(1), updateVisibleLightRelayIfNeeded, &firstLabjack);
+	s.every(std::chrono::seconds(1), runTopOfSecondUpdate);
 
 	// https://en.wikipedia.org/wiki/Cron
 	//s.cron("* * * * *", [&firstLabjack](BehavioralBoxLabjack* labjack) { updateVisibleLightRelayIfNeeded(labjack); }); //every minute
@@ -84,6 +91,8 @@ int main()
 
 	}
 
+	out_stream.close();
+
 	return LJME_NOERROR;
 }
 
@@ -100,9 +109,17 @@ void runTopOfMinuteUpdate() {
 	time_t computerTime;
 	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
 	printf("runTopOfMinuteUpdate: running at %s\n", ctime(&computerTime));
+	firstLabjack.readSensorValues();
 	
 }
 
+// Ran at the top of every second
+void runTopOfSecondUpdate() {
+	time_t computerTime;
+	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+	printf("runTopOfSecondUpdate: running at %s\n", ctime(&computerTime));
+	firstLabjack.readSensorValues();
+}
 
 //// Syncs the Labjack's internal RTC time with the computer's. Returns the number of seconds that were adjusted to set the Labjack's clock.
 double SyncDeviceTimes(BehavioralBoxLabjack* labjack) {
@@ -149,7 +166,6 @@ bool isArtificialDaylightHours() {
 		return true;
 	}	
 }
-
 
 void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack) {
 	bool isDay = isArtificialDaylightHours();
