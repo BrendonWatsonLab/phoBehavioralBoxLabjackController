@@ -4,7 +4,6 @@
  // Want to read in sensor values in Labjack's "Command-response" mode for minimum latency
 **/
 
-#include <LabJackM.h>
 #include <time.h>
 #include <iostream>
 #include <fstream>
@@ -35,15 +34,13 @@ public:
 private:
 	int uniqueIdentifier;
 	int portOrPipe, ipAddress, serialNumber, packetMaxBytes;
-	int deviceType = LJM_dtANY;
-	int connectionType = LJM_ctANY;
+	int deviceType;
+	int connectionType;
 	int err;
 	int handle;
 
 	// File Output:
 	std::ofstream& outputFile;
-
-	char string[LJM_STRING_ALLOCATION_SIZE];
 
 	// Variables for holding the last read values
 	char * inputPortNames[9] = {"DIO0","DIO1","DIO2","DIO3","DIO4","DIO5","DIO6","DIO7","MIO0"};

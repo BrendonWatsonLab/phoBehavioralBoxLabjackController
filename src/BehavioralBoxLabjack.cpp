@@ -21,7 +21,7 @@
 #include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 
 // Constructor: Called when an instance of the object is about to be created
-BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden, std::ofstream& outFile): outputFile(outFile)
+BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden, std::ofstream& outFile): deviceType(LJM_dtANY), connectionType(LJM_ctANY), outputFile(outFile)
 {
 
 	// "logfile.csv", std::ofstream::app
@@ -30,10 +30,12 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	this->err = LJM_OpenS(devType, connType, iden, &handle);
 	ErrorCheck(this->err, "LJM_OpenS");
 
+	char string[LJM_STRING_ALLOCATION_SIZE];
+
 	// Get device name
-	this->err = LJM_eReadNameString(this->handle, "DEVICE_NAME_DEFAULT", this->string);
+	this->err = LJM_eReadNameString(this->handle, "DEVICE_NAME_DEFAULT", string);
 	if (this->err == LJME_NOERROR)
-		printf("DEVICE_NAME_DEFAULT: %s\n", this->string);
+		printf("DEVICE_NAME_DEFAULT: %s\n", string);
 	else
 		printf("This device does not have a name\n");
 
