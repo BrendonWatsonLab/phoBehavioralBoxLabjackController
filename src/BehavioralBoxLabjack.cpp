@@ -63,7 +63,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
 
 	std::ostringstream os;
-	os << "out_file_" << uniqueIdentifier << "_" << milliseconds_since_epoch << ".csv";
+	os << "out_file_" << ipAddress << "_" << milliseconds_since_epoch << ".csv";
 	this->filename = os.str();
 	// Build the full file path
 	if (this->outputDirectory.empty()) {
@@ -72,6 +72,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	else {
 		this->fileFullPath = this->outputDirectory + this->filename;
 	}
+	std::cout << "New file path: " << this->fileFullPath << std::endl;
 	
 	// Write the header to the .csv file:
 	//this->outputFile << "computerTime";
@@ -82,7 +83,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	}
 	//this->outputFile << std::endl;
 	//this->csv << '\n';
-	this->csv.writeToFile(fileFullPath, true);
+	this->csv.writeToFile(fileFullPath, false);
 
 	// Get the current times
 	//time(&this->lastCaptureComputerTime);  /* get current time; same as: timer = time(NULL)  */
@@ -184,9 +185,9 @@ void BehavioralBoxLabjack::persistReadValues()
 
 	//localTime
 	//std::ctime(&t)
+	CSVWriter newCSVLine(",");
 
-
-	this->csv.newRow() << milliseconds_since_epoch;
+	newCSVLine.newRow() << milliseconds_since_epoch;
 	for (int i = 0; i < 9; i++) {
 		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues[i]);
 		if (inputPortValuesChanged[i] == true) {
@@ -195,7 +196,7 @@ void BehavioralBoxLabjack::persistReadValues()
 		}
 		//printf(" %s = %.4f  ", this->inputPortNames[i], this->lastReadInputPortValues[i]);
 		//this->outputFile << "," << int(this->lastReadInputPortValues[i]);
-		this->csv << int(this->lastReadInputPortValues[i]);
+		newCSVLine << int(this->lastReadInputPortValues[i]);
 
 		// After capturing the change, replace the old value
 		this->previousReadInputPortValues[i] = this->lastReadInputPortValues[i];
@@ -203,6 +204,6 @@ void BehavioralBoxLabjack::persistReadValues()
 	}
 	//printf("\n");
 	//this->csv << "\n";
-	this->csv.writeToFile(fileFullPath, true);
+	newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
 }
 
