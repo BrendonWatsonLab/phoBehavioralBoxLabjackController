@@ -156,12 +156,11 @@ std::vector<BehavioralBoxLabjack*> LabjackHelpers::findAllLabjacks()
 		char buf[256];
 		sprintf(buf, "%d", aSerialNumbers[i]);
 
-		std::ostringstream os;
-		os << "out_file_" << aSerialNumbers[i] << ".csv";
-		std::string s = os.str();
+		//std::ostringstream os;
+		//os << "out_file_" << aSerialNumbers[i] << ".csv";
+		//std::string s = os.str();
 
-		std::ofstream curr_out_stream(s);
-		BehavioralBoxLabjack* currLabjack = new BehavioralBoxLabjack(i, aDeviceTypes[i], aConnectionTypes[i], buf, curr_out_stream);
+		BehavioralBoxLabjack* currLabjack = new BehavioralBoxLabjack(i, aDeviceTypes[i], aConnectionTypes[i], buf);
 		outputVector.push_back(currLabjack);
 	}
 

@@ -15,15 +15,19 @@
 #include <math.h>
 #include <LabJackM.h>
 #include <time.h>
+#include <chrono>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 
-BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden, std::ofstream& outFile) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), iden, outFile) {}
+
+
+BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), iden) {}
 
 // Constructor: Called when an instance of the object is about to be created
-BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden, std::ofstream& outFile): deviceType(LJM_dtANY), connectionType(LJM_ctANY), outputFile(outFile), csv(CSVWriter(","))
+BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), lastCaptureComputerTime(Clock::now())
 {
 
 	// "logfile.csv", std::ofstream::app
@@ -50,6 +54,26 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	this->diagnosticPrint();
 
 	// File Management
+	// Build the file name
+	this->lastCaptureComputerTime = Clock::now();
+	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(this->lastCaptureComputerTime);
+	auto fraction = this->lastCaptureComputerTime - seconds;
+	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
+	//time_t cnow = Clock::to_time_t(this->lastCaptureComputerTime);
+	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
+
+	std::ostringstream os;
+	os << "out_file_" << uniqueIdentifier << "_" << milliseconds_since_epoch << ".csv";
+	this->filename = os.str();
+	// Build the full file path
+	if (this->outputDirectory.empty()) {
+		this->fileFullPath = this->filename;
+	}
+	else {
+		this->fileFullPath = this->outputDirectory + this->filename;
+	}
+	
+	// Write the header to the .csv file:
 	//this->outputFile << "computerTime";
 	this->csv.newRow() << "computerTime";
 	for (int i = 0; i < 9; i++) {
@@ -58,10 +82,14 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	}
 	//this->outputFile << std::endl;
 	//this->csv << '\n';
-	this->csv.writeToFile("foobar.csv", true);
+	this->csv.writeToFile(fileFullPath, true);
 
-	time(&this->lastCaptureComputerTime);  /* get current time; same as: timer = time(NULL)  */
+	// Get the current times
+	//time(&this->lastCaptureComputerTime);  /* get current time; same as: timer = time(NULL)  */
 	
+
+	//ctime
+
 	//this->outputFile.flush();
 	//this->outputFile.close();
 
@@ -78,7 +106,8 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	//TODO
 
 	// Close the open output file:
-	this->outputFile.close();
+	//this->outputFile.close();
+	this->csv.writeToFile(fileFullPath, true);
 
 	// Close the connection to the labjack
 	CloseOrDie(this->handle);
@@ -134,7 +163,9 @@ void BehavioralBoxLabjack::setVisibleLightRelayState(bool isOn)
 
 void BehavioralBoxLabjack::readSensorValues()
 {
-	time(&this->lastCaptureComputerTime);  /* get current time; same as: timer = time(NULL)  */
+	//time(&this->lastCaptureComputerTime);  /* get current time; same as: timer = time(NULL)  */
+	this->lastCaptureComputerTime = Clock::now();
+
 	//Read the sensor values from the labjack DIO Inputs
 	this->err = LJM_eReadNames(this->handle, 9, (const char **)this->inputPortNames, this->lastReadInputPortValues, &this->errorAddress);
 	ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
@@ -146,7 +177,16 @@ void BehavioralBoxLabjack::persistReadValues()
 {
 	//printf("readValues: running at %s: ", ctime(&this->lastCaptureComputerTime));
 	//this->outputFile << ctime(&this->lastCaptureComputerTime);
-	this->csv.newRow() << this->lastCaptureComputerTime;
+	//this->lastCaptureComputerTime.time_since_epoch;
+	//time_t cnow = Clock::to_time_t(this->lastCaptureComputerTime);
+	//tm* localTime = localtime(cnow&);
+	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
+
+	//localTime
+	//std::ctime(&t)
+
+
+	this->csv.newRow() << milliseconds_since_epoch;
 	for (int i = 0; i < 9; i++) {
 		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues[i]);
 		if (inputPortValuesChanged[i] == true) {
@@ -163,6 +203,6 @@ void BehavioralBoxLabjack::persistReadValues()
 	}
 	//printf("\n");
 	//this->csv << "\n";
-	this->csv.writeToFile("foobar.csv", true);
+	this->csv.writeToFile(fileFullPath, true);
 }
 
