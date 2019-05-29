@@ -29,8 +29,8 @@
 std::ofstream out_stream("out_fle.csv");
 //out_stream.open("out_file.csv");
 
-BehavioralBoxLabjack firstLabjack = BehavioralBoxLabjack(0, "LJM_dtANY", "LJM_ctANY", "LJM_idANY", out_stream);
-std::vector<BehavioralBoxLabjack> foundLabjacks;
+//BehavioralBoxLabjack firstLabjack = BehavioralBoxLabjack(0, "LJM_dtANY", "LJM_ctANY", "LJM_idANY", out_stream);
+std::vector<BehavioralBoxLabjack*> foundLabjacks;
 
 
 //// Scheduler
@@ -61,8 +61,8 @@ int main()
 
 	// Iterate through all found Labjacks
 	for (int i = 0; i < foundLabjacks.size(); i++) {
-		SyncDeviceTimes(&foundLabjacks[i]);
-		updateVisibleLightRelayIfNeeded(&foundLabjacks[i]);
+		//SyncDeviceTimes(&foundLabjacks[i]);
+		//updateVisibleLightRelayIfNeeded(&foundLabjacks[i]);
 	}
 
 	// Open first found LabJack
@@ -119,7 +119,7 @@ void runTopOfHourUpdate() {
 	time_t computerTime;
 	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
 	printf("runHourlyLightsUpdate: running at %s\n", ctime(&computerTime));
-	updateVisibleLightRelayIfNeeded(&firstLabjack);
+	//updateVisibleLightRelayIfNeeded(&firstLabjack);
 }
 
 // Ran at the top of every minute
@@ -127,7 +127,12 @@ void runTopOfMinuteUpdate() {
 	time_t computerTime;
 	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
 	printf("runTopOfMinuteUpdate: running at %s\n", ctime(&computerTime));
-	firstLabjack.readSensorValues();
+	// Iterate through all found Labjacks
+	for (int i = 0; i < foundLabjacks.size(); i++) {
+		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+		printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
+		foundLabjacks[i]->readSensorValues();
+	}
 	
 }
 
@@ -138,7 +143,7 @@ void runTopOfSecondUpdate() {
 	for (int i = 0; i < foundLabjacks.size(); i++) {
 		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
 		printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-		foundLabjacks[i].readSensorValues();
+		foundLabjacks[i]->readSensorValues();
 	}
 
 	

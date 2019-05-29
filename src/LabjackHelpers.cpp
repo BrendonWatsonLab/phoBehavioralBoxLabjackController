@@ -105,10 +105,10 @@ void LabjackHelpers::PrintQueryResults(int NumAddresses, const char ** aNames, c
 	}
 }
 
-std::vector<BehavioralBoxLabjack> LabjackHelpers::findAllLabjacks()
+std::vector<BehavioralBoxLabjack*> LabjackHelpers::findAllLabjacks()
 {
 	// Create a vector containing integers
-	std::vector<BehavioralBoxLabjack> outputVector = {};
+	std::vector<BehavioralBoxLabjack*> outputVector = {};
 
 	const int DeviceType = LJM_dtANY;
 	const int ConnectionType = LJM_ctANY;
@@ -161,7 +161,7 @@ std::vector<BehavioralBoxLabjack> LabjackHelpers::findAllLabjacks()
 		std::string s = os.str();
 
 		std::ofstream curr_out_stream(s);
-		BehavioralBoxLabjack currLabjack = BehavioralBoxLabjack(i, aDeviceTypes[i], aConnectionTypes[i], buf, curr_out_stream);
+		BehavioralBoxLabjack* currLabjack = new BehavioralBoxLabjack(i, aDeviceTypes[i], aConnectionTypes[i], buf, curr_out_stream);
 		outputVector.push_back(currLabjack);
 	}
 
