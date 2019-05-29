@@ -20,13 +20,14 @@
 
 #include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 
-BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden, std::ofstream & outFile) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), iden, outFile) {}
+BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden, std::ofstream& outFile) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), iden, outFile) {}
 
 // Constructor: Called when an instance of the object is about to be created
-BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden, std::ofstream& outFile): deviceType(LJM_dtANY), connectionType(LJM_ctANY), outputFile(outFile)
+BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden, std::ofstream& outFile): deviceType(LJM_dtANY), connectionType(LJM_ctANY), outputFile(outFile), csv(CSVWriter(","))
 {
 
 	// "logfile.csv", std::ofstream::app
+	//this->csv = CSVWriter(",");
 
 	this->uniqueIdentifier = uniqueIdentifier;
 	this->err = LJM_OpenS(devType, connType, iden, &this->handle);
@@ -49,15 +50,19 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	this->diagnosticPrint();
 
 	// File Management
-	this->outputFile << "computerTime";
+	//this->outputFile << "computerTime";
+	this->csv.newRow() << "computerTime";
 	for (int i = 0; i < 9; i++) {
-		this->outputFile << "," << this->inputPortNames[i];
+		//this->outputFile << "," << this->inputPortNames[i];
+		this->csv << this->inputPortNames[i];
 	}
-	this->outputFile << "\n";
+	//this->outputFile << std::endl;
+	//this->csv << '\n';
+	this->csv.writeToFile("foobar.csv", true);
 
 	time(&this->lastCaptureComputerTime);  /* get current time; same as: timer = time(NULL)  */
 	
-	this->outputFile.flush();
+	//this->outputFile.flush();
 	//this->outputFile.close();
 
 	//this->outputFile.open("out_fle.csv");
@@ -141,7 +146,7 @@ void BehavioralBoxLabjack::persistReadValues()
 {
 	//printf("readValues: running at %s: ", ctime(&this->lastCaptureComputerTime));
 	//this->outputFile << ctime(&this->lastCaptureComputerTime);
-	this->outputFile << this->lastCaptureComputerTime;
+	this->csv.newRow() << this->lastCaptureComputerTime;
 	for (int i = 0; i < 9; i++) {
 		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues[i]);
 		if (inputPortValuesChanged[i] == true) {
@@ -149,14 +154,15 @@ void BehavioralBoxLabjack::persistReadValues()
 
 		}
 		//printf(" %s = %.4f  ", this->inputPortNames[i], this->lastReadInputPortValues[i]);
-		this->outputFile << "," << int(this->lastReadInputPortValues[i]);
+		//this->outputFile << "," << int(this->lastReadInputPortValues[i]);
+		this->csv << int(this->lastReadInputPortValues[i]);
 
 		// After capturing the change, replace the old value
 		this->previousReadInputPortValues[i] = this->lastReadInputPortValues[i];
 		
 	}
 	//printf("\n");
-	this->outputFile << "\n";
-	this->outputFile.flush();
+	//this->csv << "\n";
+	this->csv.writeToFile("foobar.csv", true);
 }
 

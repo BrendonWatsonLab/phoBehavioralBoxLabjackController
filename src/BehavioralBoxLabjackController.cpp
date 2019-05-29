@@ -73,7 +73,7 @@ int main()
 	updateVisibleLightRelayIfNeeded(&firstLabjack);*/
 
 	// Call the light relay updating function every hour
-	//s.every(std::chrono::seconds(1), runTopOfSecondUpdate);
+	s.every(std::chrono::seconds(1), runTopOfSecondUpdate);
 
 	// https://en.wikipedia.org/wiki/Cron
 	//s.cron("* * * * *", [&firstLabjack](BehavioralBoxLabjack* labjack) { updateVisibleLightRelayIfNeeded(labjack); }); //every minute
@@ -137,7 +137,7 @@ void runTopOfMinuteUpdate() {
 	for (int i = 0; i < foundLabjacks.size(); i++) {
 		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
 		printf("runTopOfMinuteUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-		foundLabjacks[i]->readSensorValues();
+		//foundLabjacks[i]->readSensorValues();
 	}
 	
 }

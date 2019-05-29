@@ -262,3 +262,4 @@ __pycache__/
 src/External/desktop.ini
 enc_temp_folder
 src/External/Scheduler/desktop.ini
+output_data

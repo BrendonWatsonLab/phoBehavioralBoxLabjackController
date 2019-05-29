@@ -7,6 +7,7 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
+#include "External/CSVWriter.h"
 
 
 #pragma once
@@ -39,6 +40,7 @@ private:
 	int connectionType;
 	int err;
 	int handle;
+	CSVWriter csv;
 
 	// File Output:
 	std::ofstream& outputFile;
