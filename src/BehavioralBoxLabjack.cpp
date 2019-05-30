@@ -62,8 +62,9 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	//time_t cnow = Clock::to_time_t(this->lastCaptureComputerTime);
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
 
+	// Builds the filename in the form "out_file_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}"
 	std::ostringstream os;
-	os << "out_file_" << ipAddress << "_" << milliseconds_since_epoch << ".csv";
+	os << "out_file_s" << serialNumber << "_" << milliseconds_since_epoch << ".csv";
 	this->filename = os.str();
 	// Build the full file path
 	if (this->outputDirectory.empty()) {
