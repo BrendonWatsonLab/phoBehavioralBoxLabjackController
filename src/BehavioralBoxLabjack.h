@@ -74,5 +74,14 @@ private:
 	// Time Keeping
 	std::chrono::time_point<Clock> lastCaptureComputerTime;
 	Bosma::Scheduler* scheduler;
+
+	// Scheduled tasks
+	void runTopOfHourUpdate(); // Runs at the top of every hour (exactly on the hour, according to system time).
+	//void runTopOfMinuteUpdate();
+
+	// Light Control
+	bool isArtificialDaylightHours();
+	void updateVisibleLightRelayIfNeeded();
+
 };
 

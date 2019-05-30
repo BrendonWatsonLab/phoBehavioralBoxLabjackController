@@ -107,11 +107,10 @@ void runTopOfHourUpdate() {
 	time_t computerTime;
 	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
 	printf("runHourlyLightsUpdate: running at %s\n", ctime(&computerTime));
-	//updateVisibleLightRelayIfNeeded(&firstLabjack);
 		// Iterate through all found Labjacks
 	for (int i = 0; i < foundLabjacks.size(); i++) {
 		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-		printf("runTopOfMinuteUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
+		printf("runTopOfHourUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
 		updateVisibleLightRelayIfNeeded(foundLabjacks[i]);
 	}
 }

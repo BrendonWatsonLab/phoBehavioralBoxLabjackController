@@ -30,8 +30,8 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, in
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), lastCaptureComputerTime(Clock::now())
 {
 
-	this->scheduler = new Bosma::Scheduler(max_n_threads);
-
+	
+	// Open the LabjackConnection and load some information
 	this->uniqueIdentifier = uniqueIdentifier;
 	this->err = LJM_OpenS(devType, connType, iden, &this->handle);
 	ErrorCheck(this->err, "LJM_OpenS");
@@ -58,7 +58,6 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(this->lastCaptureComputerTime);
 	auto fraction = this->lastCaptureComputerTime - seconds;
 	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
-	//time_t cnow = Clock::to_time_t(this->lastCaptureComputerTime);
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
 
 	// Builds the filename in the form "out_file_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}"
@@ -75,26 +74,21 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	std::cout << "New file path: " << this->fileFullPath << std::endl;
 	
 	// Write the header to the .csv file:
-	//this->outputFile << "computerTime";
 	this->csv.newRow() << "computerTime";
 	for (int i = 0; i < 9; i++) {
-		//this->outputFile << "," << this->inputPortNames[i];
 		this->csv << this->inputPortNames[i];
 	}
-	//this->outputFile << std::endl;
-	//this->csv << '\n';
 	this->csv.writeToFile(fileFullPath, false);
 
-	// Get the current times
-	//time(&this->lastCaptureComputerTime);  /* get current time; same as: timer = time(NULL)  */
-	
+	// wallTime-based event scheduling:
+	this->scheduler = new Bosma::Scheduler(max_n_threads);
 
-	//ctime
+	// Ran at the top of every hour
+	this->scheduler->cron("0 * * * *", [this]() { this->runTopOfHourUpdate(); });
+	//scheduler.cron("0 * * * *", []() { runTopOfHourUpdate(); });
 
-	//this->outputFile.flush();
-	//this->outputFile.close();
-
-	//this->outputFile.open("out_fle.csv");
+	// Ran at the top of every minute
+	//this->scheduler.cron("* * * * *", []() { this->runTopOfMinuteUpdate(); });
 										  
 	// Create the object's thread at the very end of its constructor
 	//TODO
@@ -207,15 +201,7 @@ void BehavioralBoxLabjack::readSensorValues()
 // Reads the most recently read values and persists them to the available output modalities (file, TCP, etc) if they've changed or it's needed.
 void BehavioralBoxLabjack::persistReadValues()
 {
-	//printf("readValues: running at %s: ", ctime(&this->lastCaptureComputerTime));
-	//this->outputFile << ctime(&this->lastCaptureComputerTime);
-	//this->lastCaptureComputerTime.time_since_epoch;
-	//time_t cnow = Clock::to_time_t(this->lastCaptureComputerTime);
-	//tm* localTime = localtime(cnow&);
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
-
-	//localTime
-	//std::ctime(&t)
 	CSVWriter newCSVLine(",");
 
 	newCSVLine.newRow() << milliseconds_since_epoch;
@@ -225,16 +211,42 @@ void BehavioralBoxLabjack::persistReadValues()
 			// The input port changed from the previous value
 
 		}
-		//printf(" %s = %.4f  ", this->inputPortNames[i], this->lastReadInputPortValues[i]);
-		//this->outputFile << "," << int(this->lastReadInputPortValues[i]);
 		newCSVLine << int(this->lastReadInputPortValues[i]);
 
 		// After capturing the change, replace the old value
 		this->previousReadInputPortValues[i] = this->lastReadInputPortValues[i];
 		
 	}
-	//printf("\n");
-	//this->csv << "\n";
 	newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
 }
 
+// Executed every hour, on the hour
+void BehavioralBoxLabjack::runTopOfHourUpdate()
+{
+	time_t computerTime;
+	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+	printf("runTopOfHourUpdate: running at %s for labjack %i\n", ctime(&computerTime), this->serialNumber);
+	this->updateVisibleLightRelayIfNeeded();
+}
+
+bool BehavioralBoxLabjack::isArtificialDaylightHours()
+{
+	time_t currTime = time(NULL);
+	struct tm *currLocalTime = localtime(&currTime);
+
+	int hour = currLocalTime->tm_hour;
+	if ((hour < 6) || (hour > 18)) {
+		// It's night-time
+		return false;
+	}
+	else {
+		// It's day-time
+		return true;
+	}
+}
+
+void BehavioralBoxLabjack::updateVisibleLightRelayIfNeeded()
+{
+	bool isDay = isArtificialDaylightHours();
+	this->setVisibleLightRelayState(isDay);
+}
