@@ -62,7 +62,7 @@ int main()
 	updateVisibleLightRelayIfNeeded(&firstLabjack);*/
 
 	// Call the light relay updating function every hour
-	s.every(std::chrono::seconds(1), runTopOfSecondUpdate);
+	//s.every(std::chrono::seconds(1), runTopOfSecondUpdate);
 
 	// https://en.wikipedia.org/wiki/Cron
 	//s.cron("* * * * *", [&firstLabjack](BehavioralBoxLabjack* labjack) { updateVisibleLightRelayIfNeeded(labjack); }); //every minute
@@ -71,9 +71,9 @@ int main()
 	//s.cron("0 * * * *", [&firstLabjack](BehavioralBoxLabjack* labjack) { updateVisibleLightRelayIfNeeded(labjack); }); //every hour
 
 	// Ran at the top of every hour
-	s.cron("0 * * * *", []() { runTopOfHourUpdate(); });
+	//s.cron("0 * * * *", []() { runTopOfHourUpdate(); });
 	// Ran at the top of every minute
-	s.cron("* * * * *", []() { runTopOfMinuteUpdate(); });
+	//s.cron("* * * * *", []() { runTopOfMinuteUpdate(); });
 
 
 
@@ -138,8 +138,6 @@ void runTopOfSecondUpdate() {
 		printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
 		foundLabjacks[i]->readSensorValues();
 	}
-
-	
 }
 
 //bool isArtificialDaylightHours() {

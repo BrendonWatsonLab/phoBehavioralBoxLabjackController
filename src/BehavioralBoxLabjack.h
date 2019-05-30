@@ -3,7 +3,7 @@
  * Desc: An object representing a single labjack used inside a behavioral box
  // Want to read in sensor values in Labjack's "Command-response" mode for minimum latency
 **/
-
+#pragma once
 #include <time.h>
 #include <chrono>
 #include <iostream>
@@ -19,7 +19,21 @@ typedef std::chrono::system_clock Clock;
 //unsigned int max_n_threads = 3;
 
 
-#pragma once
+// STREAM:
+#define SCAN_RATE 1000
+const int SCANS_PER_READ = SCAN_RATE / 2;
+enum { NUM_CHANNELS = 11 };
+// Because SYSTEM_TIMER_20HZ is a 32-bit value and stream can only collect
+// 16-bit values per channel, STREAM_DATA_CAPTURE_16 is used to capture the
+// final 16 bits of SYSTEM_TIMER_20HZ. See HardcodedPrintScans().
+//const char * POS_NAMES[] = {
+//	"AIN0",  "FIO_STATE",  "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16"
+//};
+//const char * labjackStreamPortNames[] = {
+//"AIN0",  "FIO_STATE",  "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16"
+//};
+const int NUM_LOOP_ITERATIONS = 10;
+
 class BehavioralBoxLabjack
 {
 public:
@@ -66,6 +80,8 @@ private:
 
 	// Variables for holding the last read values
 	char * inputPortNames[9] = {"DIO0","DIO1","DIO2","DIO3","DIO4","DIO5","DIO6","DIO7","MIO0"};
+
+
 	double previousReadInputPortValues[9] = {0,0,0,0,0,0,0,0,0};
 	double lastReadInputPortValues[9] = { 0,0,0,0,0,0,0,0,0};
 	bool inputPortValuesChanged[9] = {false, false, false, false, false, false, false, false, false};
@@ -81,6 +97,11 @@ private:
 
 	// Visible Light Relay Control
 	void setVisibleLightRelayState(bool isOn);
+
+	// Stream:
+	void hardcodedConfigureStream();
+	void streamTriggered();
+	void hardcodedPrintScans(const char ** chanNames, const double * aData, int numScansReceived, int numChannelsPerScan, int deviceScanBacklog, int LJMScanBacklog);
 
 };
 
