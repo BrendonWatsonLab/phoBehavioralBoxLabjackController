@@ -144,6 +144,37 @@ void BehavioralBoxLabjack::setTime(time_t newTime)
 	ErrorCheck(this->err, "LJM_eWriteAddress");
 }
 
+double BehavioralBoxLabjack::syncDeviceTimes()
+{
+	int LJMError;
+	time_t originalLabjackTime = this->getTime();
+	LJMError = this->getError();
+	printf("LABJACK TIME: %s\n", ctime(&originalLabjackTime));
+
+	// Get the computer time:
+	time_t computerTime;
+	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+	printf("COMPUTER TIME: %s\n", ctime(&computerTime));
+
+	double updateChangeSeconds = difftime(computerTime, originalLabjackTime);
+
+	if (updateChangeSeconds == 0) {
+		printf("Computer time is already synced with Labjack time!\n");
+	}
+	else {
+		printf("Computer time is %.f seconds from Labjack time...\n", updateChangeSeconds);
+		// Write the computer time to the Labjack
+		this->setTime(computerTime);
+		LJMError = this->getError();
+
+		// Re-read the time to confirm the update
+		time_t updatedLabjackTime = this->getTime();
+		LJMError = this->getError();
+		printf("Updated Labjack TIME: %s\n", ctime(&updatedLabjackTime));
+	}
+	return updateChangeSeconds;
+}
+
 void BehavioralBoxLabjack::setVisibleLightRelayState(bool isOn)
 {
 	// Set up for setting DIO state

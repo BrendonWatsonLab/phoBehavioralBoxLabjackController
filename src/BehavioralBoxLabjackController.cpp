@@ -50,7 +50,6 @@ void runTopOfMinuteUpdate();
 void runTopOfSecondUpdate();
 
 bool isArtificialDaylightHours();
-double SyncDeviceTimes(BehavioralBoxLabjack* labjack);
 void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack);
 
 
@@ -61,8 +60,8 @@ int main()
 
 	// Iterate through all found Labjacks
 	for (int i = 0; i < foundLabjacks.size(); i++) {
-		//SyncDeviceTimes(&foundLabjacks[i]);
-		//updateVisibleLightRelayIfNeeded(&foundLabjacks[i]);
+		foundLabjacks[i]->syncDeviceTimes();
+		updateVisibleLightRelayIfNeeded(foundLabjacks[i]);
 	}
 
 	// Open first found LabJack
@@ -153,37 +152,6 @@ void runTopOfSecondUpdate() {
 	}
 
 	
-}
-
-//// Syncs the Labjack's internal RTC time with the computer's. Returns the number of seconds that were adjusted to set the Labjack's clock.
-double SyncDeviceTimes(BehavioralBoxLabjack* labjack) {
-	int LJMError;
-	time_t originalLabjackTime = labjack->getTime();
-	LJMError = labjack->getError();
-	printf("LABJACK TIME: %s\n", ctime(&originalLabjackTime));
-	
-	// Get the computer time:
-	time_t computerTime;
-	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-	printf("COMPUTER TIME: %s\n", ctime(&computerTime));
-
-	double updateChangeSeconds = difftime(computerTime, originalLabjackTime);
-
-	if (updateChangeSeconds == 0) {
-		printf("Computer time is already synced with Labjack time!\n");
-	}
-	else {
-		printf("Computer time is %.f seconds from Labjack time...\n", updateChangeSeconds);
-		// Write the computer time to the Labjack
-		labjack->setTime(computerTime);
-		LJMError = labjack->getError();
-
-		// Re-read the time to confirm the update
-		time_t updatedLabjackTime = labjack->getTime();
-		LJMError = labjack->getError();
-		printf("Updated Labjack TIME: %s\n", ctime(&updatedLabjackTime));
-	}
-	return updateChangeSeconds;
 }
 
 bool isArtificialDaylightHours() {
