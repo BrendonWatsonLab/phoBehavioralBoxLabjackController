@@ -12,12 +12,21 @@
 
 typedef std::chrono::system_clock Clock;
 
+//// Scheduler
+#include "External/Scheduler/Scheduler.h"
+// number of tasks that can run simultaneously
+#define max_n_threads 3
+//unsigned int max_n_threads = 3;
+
+
 #pragma once
 class BehavioralBoxLabjack
 {
 public:
 	BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden);
 	BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden);
+	BehavioralBoxLabjack(const BehavioralBoxLabjack&) = delete; // non construction-copyable
+	BehavioralBoxLabjack& operator=(const BehavioralBoxLabjack&) = delete; // non copyable
 	~BehavioralBoxLabjack();
 
 	void diagnosticPrint();
@@ -61,9 +70,9 @@ private:
 	double lastReadInputPortValues[9] = { 0,0,0,0,0,0,0,0,0};
 	bool inputPortValuesChanged[9] = {false, false, false, false, false, false, false, false, false};
 	int errorAddress;
-	//time_t lastCaptureComputerTime;
-	std::chrono::time_point<Clock> lastCaptureComputerTime;
 
-	
+	// Time Keeping
+	std::chrono::time_point<Clock> lastCaptureComputerTime;
+	Bosma::Scheduler* scheduler;
 };
 

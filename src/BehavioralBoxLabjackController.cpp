@@ -29,10 +29,6 @@ std::vector<BehavioralBoxLabjack*> foundLabjacks;
 
 //// Scheduler
 #include "External/Scheduler/Scheduler.h"
-// number of tasks that can run simultaneously
-  // Note: not the number of tasks that can be added,
-  //       but number of tasks that can be run in parallel
-unsigned int max_n_threads = 12;
 // Make a new scheduling object.
   // Note: s cannot be moved or copied
 Bosma::Scheduler s(max_n_threads);
@@ -102,7 +98,6 @@ int main()
 
 	}
 
-	out_stream.close();
 
 	return LJME_NOERROR;
 }

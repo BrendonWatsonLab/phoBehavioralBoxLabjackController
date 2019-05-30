@@ -30,8 +30,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, in
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), lastCaptureComputerTime(Clock::now())
 {
 
-	// "logfile.csv", std::ofstream::app
-	//this->csv = CSVWriter(",");
+	this->scheduler = new Bosma::Scheduler(max_n_threads);
 
 	this->uniqueIdentifier = uniqueIdentifier;
 	this->err = LJM_OpenS(devType, connType, iden, &this->handle);
