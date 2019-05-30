@@ -23,13 +23,7 @@
 
 #include "LabjackHelpers.h"
 
-//#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
-
-// File Output:
-std::ofstream out_stream("out_fle.csv");
-//out_stream.open("out_file.csv");
-
-//BehavioralBoxLabjack firstLabjack = BehavioralBoxLabjack(0, "LJM_dtANY", "LJM_ctANY", "LJM_idANY", out_stream);
+// Vector of Labjack Objects
 std::vector<BehavioralBoxLabjack*> foundLabjacks;
 
 
