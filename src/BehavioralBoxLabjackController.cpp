@@ -39,8 +39,8 @@ void runTopOfHourUpdate();
 void runTopOfMinuteUpdate();
 void runTopOfSecondUpdate();
 
-bool isArtificialDaylightHours();
-void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack);
+//bool isArtificialDaylightHours();
+//void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack);
 
 
 int main()
@@ -51,7 +51,7 @@ int main()
 	// Iterate through all found Labjacks
 	for (int i = 0; i < foundLabjacks.size(); i++) {
 		foundLabjacks[i]->syncDeviceTimes();
-		updateVisibleLightRelayIfNeeded(foundLabjacks[i]);
+		foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
 	}
 
 	// Open first found LabJack
@@ -111,7 +111,7 @@ void runTopOfHourUpdate() {
 	for (int i = 0; i < foundLabjacks.size(); i++) {
 		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
 		printf("runTopOfHourUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-		updateVisibleLightRelayIfNeeded(foundLabjacks[i]);
+		foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
 	}
 }
 
@@ -142,24 +142,24 @@ void runTopOfSecondUpdate() {
 	
 }
 
-bool isArtificialDaylightHours() {
-	time_t currTime = time(NULL);
-	struct tm *currLocalTime = localtime(&currTime);
-
-	int hour = currLocalTime->tm_hour;
-	if ((hour < 6) || (hour > 18)) {
-		// It's night-time
-		return false;
-	}
-	else {
-		// It's day-time
-		return true;
-	}	
-}
-
-void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack) {
-	bool isDay = isArtificialDaylightHours();
-	labjack->setVisibleLightRelayState(isDay);
-}
+//bool isArtificialDaylightHours() {
+//	time_t currTime = time(NULL);
+//	struct tm *currLocalTime = localtime(&currTime);
+//
+//	int hour = currLocalTime->tm_hour;
+//	if ((hour < 6) || (hour > 18)) {
+//		// It's night-time
+//		return false;
+//	}
+//	else {
+//		// It's day-time
+//		return true;
+//	}	
+//}
+//
+//void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack) {
+//	bool isDay = isArtificialDaylightHours();
+//	labjack->setVisibleLightRelayState(isDay);
+//}
 
 

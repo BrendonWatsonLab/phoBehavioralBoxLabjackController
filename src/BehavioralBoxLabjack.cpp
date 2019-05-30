@@ -102,10 +102,13 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 
 	// Close the open output file:
 	//this->outputFile.close();
-	this->csv.writeToFile(fileFullPath, true);
+	this->csv.writeToFile(this->fileFullPath, true);
 
 	// Close the connection to the labjack
-	CloseOrDie(this->handle);
+	this->err = LJM_Close(this->handle);
+	ErrorCheck(this->err, "LJM_Close");
+
+	//CloseOrDie(this->handle);
 }
 
 void BehavioralBoxLabjack::diagnosticPrint()
