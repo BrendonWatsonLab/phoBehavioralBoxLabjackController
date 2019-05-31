@@ -65,7 +65,7 @@ int main()
 	// Call the light relay updating function every hour
 	//s.every(std::chrono::seconds(1), runTopOfSecondUpdate);
 
-
+	// Start a 20Hz (50[ms]) loop to read data.
 	s.every(std::chrono::milliseconds(50), runPollingLoopUpdate);
 
 	// https://en.wikipedia.org/wiki/Cron
@@ -75,7 +75,7 @@ int main()
 	//s.cron("0 * * * *", [&firstLabjack](BehavioralBoxLabjack* labjack) { updateVisibleLightRelayIfNeeded(labjack); }); //every hour
 
 	// Ran at the top of every hour
-	s.cron("0 * * * *", []() { runTopOfHourUpdate(); });
+	//s.cron("0 * * * *", []() { runTopOfHourUpdate(); });
 	// Ran at the top of every minute
 	//s.cron("* * * * *", []() { runTopOfMinuteUpdate(); });
 
