@@ -38,6 +38,7 @@ Bosma::Scheduler s(max_n_threads);
 void runTopOfHourUpdate();
 void runTopOfMinuteUpdate();
 void runTopOfSecondUpdate();
+void runPollingLoopUpdate();
 
 //bool isArtificialDaylightHours();
 //void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack);
@@ -62,7 +63,10 @@ int main()
 	updateVisibleLightRelayIfNeeded(&firstLabjack);*/
 
 	// Call the light relay updating function every hour
-	s.every(std::chrono::seconds(1), runTopOfSecondUpdate);
+	//s.every(std::chrono::seconds(1), runTopOfSecondUpdate);
+
+
+	s.every(std::chrono::milliseconds(50), runPollingLoopUpdate);
 
 	// https://en.wikipedia.org/wiki/Cron
 	//s.cron("* * * * *", [&firstLabjack](BehavioralBoxLabjack* labjack) { updateVisibleLightRelayIfNeeded(labjack); }); //every minute
@@ -73,7 +77,7 @@ int main()
 	// Ran at the top of every hour
 	s.cron("0 * * * *", []() { runTopOfHourUpdate(); });
 	// Ran at the top of every minute
-	s.cron("* * * * *", []() { runTopOfMinuteUpdate(); });
+	//s.cron("* * * * *", []() { runTopOfMinuteUpdate(); });
 
 
 
@@ -138,8 +142,17 @@ void runTopOfSecondUpdate() {
 		printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
 		foundLabjacks[i]->readSensorValues();
 	}
+}
 
-	
+// Ran at the top of every second
+void runPollingLoopUpdate() {
+	//time_t computerTime;
+	// Iterate through all found Labjacks
+	for (int i = 0; i < foundLabjacks.size(); i++) {
+		//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+		//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
+		foundLabjacks[i]->readSensorValues();
+	}
 }
 
 //bool isArtificialDaylightHours() {
