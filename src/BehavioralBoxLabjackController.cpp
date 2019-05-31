@@ -90,6 +90,7 @@ int main()
 		// Perhaps turning the lights on and off should belong to the individual boxes as well.
 		// Main should have perhaps an array of things?
 
+	printf("Collecting data at 20Hz....");
 	//WaitForUserIfWindows();
 	// Main run loop:
 	int terminateExecution = 0;
@@ -101,7 +102,7 @@ int main()
 
 
 	}
-
+	printf("Done.");
 
 	return LJME_NOERROR;
 }

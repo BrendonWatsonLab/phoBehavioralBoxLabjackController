@@ -214,7 +214,7 @@ void BehavioralBoxLabjack::persistReadValues()
 			// The input port changed from the previous value
 
 		}
-		newCSVLine << int(this->lastReadInputPortValues[i]);
+		newCSVLine << this->lastReadInputPortValues[i];
 
 		// After capturing the change, replace the old value
 		this->previousReadInputPortValues[i] = this->lastReadInputPortValues[i];
