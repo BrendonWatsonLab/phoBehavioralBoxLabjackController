@@ -25,12 +25,15 @@
 //const char * labjackStreamPortNames[] = {
 //"DIO0", "DIO1", "DIO2", "DIO3", "DIO4", "DIO5", "DIO6", "DIO7", "MIO0", "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16", "CORE_TIMER"
 //};
+const char * labjackStreamPortNames[] = {
+"DIO0", "DIO1", "DIO2", "DIO3", "DIO4", "DIO5", "DIO6", "DIO7", "MIO0"
+};
 //const char * labjackStreamPortNames[] = {
 //"DIO0", "DIO1", "DIO2", "DIO3", "AIN0", "AIN1", "AIN2", "AIN3", "MIO0", "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16", "CORE_TIMER"
 //};
-const char * labjackStreamPortNames[] = {
-"DIO0", "DIO1", "DIO2", "DIO3", "AIN0", "AIN1", "AIN2", "AIN3", "MIO0"
-};
+//const char * labjackStreamPortNames[] = {
+//"DIO0", "DIO1", "DIO2", "DIO3", "AIN0", "AIN1", "AIN2", "AIN3", "MIO0"
+//};
 // 9 ports
 
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), iden) {}
