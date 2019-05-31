@@ -22,10 +22,16 @@
 
 #include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 #include "../../C_C++_LJM_2019-05-20/LJM_StreamUtilities.h"
+//const char * labjackStreamPortNames[] = {
+//"DIO0", "DIO1", "DIO2", "DIO3", "DIO4", "DIO5", "DIO6", "DIO7", "MIO0", "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16", "CORE_TIMER"
+//};
+//const char * labjackStreamPortNames[] = {
+//"DIO0", "DIO1", "DIO2", "DIO3", "AIN0", "AIN1", "AIN2", "AIN3", "MIO0", "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16", "CORE_TIMER"
+//};
 const char * labjackStreamPortNames[] = {
-"DIO0", "DIO1", "DIO2", "DIO3", "DIO4", "DIO5", "DIO6", "DIO7", "MIO0", "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16", "CORE_TIMER"
+"DIO0", "DIO1", "DIO2", "DIO3", "AIN0", "AIN1", "AIN2", "AIN3", "MIO0"
 };
-// 12 ports
+// 9 ports
 
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), iden) {}
 
@@ -426,23 +432,25 @@ void BehavioralBoxLabjack::hardcodedPrintScans(const char ** chanNames, const do
 		newCSVLine = CSVWriter(",");
 
 		// Compute the timestamp for the scan
-		if (strcmp(chanNames[11], "CORE_TIMER") != 0)
+		/*if (strcmp(chanNames[11], "CORE_TIMER") != 0)
 		{
 			printf("%s:%d - HardcodedPrintScans() - expected CORE_TIMER register but instead found: %s\n", __FILE__, __LINE__, chanNames[11]);
 			return;
 		}
-		coreTimerValue = (unsigned long long)aData[scanI * 4 + 11];
+		coreTimerValue = (unsigned long long)aData[scanI * 4 + 11];*/
 
 
-		//int currentScanAbsoluteIndex = currentReadStartScanAbsoluteIndex + scanI;
+		int currentScanAbsoluteIndex = currentReadStartScanAbsoluteIndex + scanI;
 		//double scanCoreTimerValue = this->getCoreTimerValueFromScanIndex(currentScanAbsoluteIndex);
 		//std::chrono::high_resolution_clock::time_point systemScanTime = this->getSystemTimeFromCoreTimer(scanCoreTimerValue);
 		//unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(systemScanTime.time_since_epoch()).count();
 
 		//newCSVLine.newRow() << milliseconds_since_epoch;
+		//newCSVLine.newRow() << coreTimerValue;
+		//printf("%d, ", coreTimerValue);
 
-		newCSVLine.newRow() << coreTimerValue;
-		printf("%d, ", coreTimerValue);
+		newCSVLine.newRow() << currentScanAbsoluteIndex;
+		printf("%d, ", currentScanAbsoluteIndex);
 
 		// Iterate through all 9 channels
 		for (dataI = 0; dataI < 9; dataI++) {
@@ -461,22 +469,22 @@ void BehavioralBoxLabjack::hardcodedPrintScans(const char ** chanNames, const do
 
 		printf("\n");
 
-		if (strcmp(chanNames[9], "SYSTEM_TIMER_20HZ") != 0
-			|| strcmp(chanNames[10], "STREAM_DATA_CAPTURE_16") != 0)
-		{
-			printf("%s:%d - HardcodedPrintScans() - unexpected register: %s and/or %s\n",
-				__FILE__, __LINE__, chanNames[9], chanNames[10]);
-			return;
-		}
+		//if (strcmp(chanNames[9], "SYSTEM_TIMER_20HZ") != 0
+		//	|| strcmp(chanNames[10], "STREAM_DATA_CAPTURE_16") != 0)
+		//{
+		//	printf("%s:%d - HardcodedPrintScans() - unexpected register: %s and/or %s\n",
+		//		__FILE__, __LINE__, chanNames[9], chanNames[10]);
+		//	return;
+		//}
 
-		// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which
-		// contains SYSTEM_TIMER_20HZ's upper 16 bits
-		timerValue = ((unsigned short)aData[scanI * 4 + 10] << 16) + (unsigned short)aData[scanI * 4 + 9];
+		//// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which
+		//// contains SYSTEM_TIMER_20HZ's upper 16 bits
+		//timerValue = ((unsigned short)aData[scanI * 4 + 10] << 16) + (unsigned short)aData[scanI * 4 + 9];
 
 		//printf("  0x%8X (%s)", timerValue, chanNames[9]);
 		//printf("\n");
 
-		newCSVLine.writeToFile(fileFullPath, false); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
 
 	} // end scan loop
 

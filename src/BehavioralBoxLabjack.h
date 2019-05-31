@@ -20,9 +20,11 @@ typedef std::chrono::system_clock Clock;
 
 
 // STREAM:
-#define SCAN_RATE 1000 //In Hz
+#define SCAN_RATE 20 //In Hz
 const int SCANS_PER_READ = SCAN_RATE / 2;
-enum { NUM_CHANNELS = 12 };
+//enum { NUM_CHANNELS = 12 };
+enum { NUM_CHANNELS = 9 };
+
 // Because SYSTEM_TIMER_20HZ is a 32-bit value and stream can only collect
 // 16-bit values per channel, STREAM_DATA_CAPTURE_16 is used to capture the
 // final 16 bits of SYSTEM_TIMER_20HZ. See HardcodedPrintScans().
