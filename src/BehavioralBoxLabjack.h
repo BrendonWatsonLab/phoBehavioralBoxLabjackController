@@ -81,12 +81,12 @@ private:
 	string fileFullPath = "output_data/outputFile.csv";
 
 	// Variables for holding the last read values
-	char * inputPortNames[9] = {"DIO0","DIO1","DIO2","DIO3","DIO4","DIO5","DIO6","DIO7","MIO0"};
+	char * inputPortNames[NUM_CHANNELS] = {"DIO0","DIO1","DIO2","DIO3","DIO4","DIO5","DIO6","DIO7","MIO0"};
 
 
-	double previousReadInputPortValues[9] = {0,0,0,0,0,0,0,0,0};
-	double lastReadInputPortValues[9] = { 0,0,0,0,0,0,0,0,0};
-	bool inputPortValuesChanged[9] = {false, false, false, false, false, false, false, false, false};
+	double previousReadInputPortValues[NUM_CHANNELS] = {0,0,0,0,0,0,0,0,0};
+	double lastReadInputPortValues[NUM_CHANNELS] = { 0,0,0,0,0,0,0,0,0};
+	bool inputPortValuesChanged[NUM_CHANNELS] = {false, false, false, false, false, false, false, false, false};
 	int errorAddress;
 
 	// Time Keeping
