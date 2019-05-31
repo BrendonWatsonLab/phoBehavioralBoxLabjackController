@@ -15,14 +15,14 @@ typedef std::chrono::system_clock Clock;
 //// Scheduler
 #include "External/Scheduler/Scheduler.h"
 // number of tasks that can run simultaneously
-#define max_n_threads 3
+#define max_n_threads 1
 //unsigned int max_n_threads = 3;
 
 
 // STREAM:
-#define SCAN_RATE 1000
+#define SCAN_RATE 1000 //In Hz
 const int SCANS_PER_READ = SCAN_RATE / 2;
-enum { NUM_CHANNELS = 11 };
+enum { NUM_CHANNELS = 12 };
 // Because SYSTEM_TIMER_20HZ is a 32-bit value and stream can only collect
 // 16-bit values per channel, STREAM_DATA_CAPTURE_16 is used to capture the
 // final 16 bits of SYSTEM_TIMER_20HZ. See HardcodedPrintScans().
@@ -32,7 +32,7 @@ enum { NUM_CHANNELS = 11 };
 //const char * labjackStreamPortNames[] = {
 //"AIN0",  "FIO_STATE",  "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16"
 //};
-const int NUM_LOOP_ITERATIONS = 10;
+const int NUM_LOOP_ITERATIONS = 1;
 
 class BehavioralBoxLabjack
 {
@@ -99,9 +99,15 @@ private:
 	void setVisibleLightRelayState(bool isOn);
 
 	// Stream:
+	double streamStartTimestamp = 0;
+	std::chrono::high_resolution_clock::time_point streamStartSystemTime;
+	double actualStreamScanRate = SCAN_RATE;
 	void hardcodedConfigureStream();
 	void streamTriggered();
-	void hardcodedPrintScans(const char ** chanNames, const double * aData, int numScansReceived, int numChannelsPerScan, int deviceScanBacklog, int LJMScanBacklog);
+	void hardcodedPrintScans(const char ** chanNames, const double * aData, int currentReadStartScanAbsoluteIndex, int numScansReceived, int numChannelsPerScan, int deviceScanBacklog, int LJMScanBacklog);
+
+	double getCoreTimerValueFromScanIndex(int scanIndex);
+	std::chrono::high_resolution_clock::time_point getSystemTimeFromCoreTimer(double coreTimerValue);
 
 };
 
