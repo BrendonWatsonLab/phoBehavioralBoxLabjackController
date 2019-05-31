@@ -461,8 +461,8 @@ void BehavioralBoxLabjack::hardcodedPrintScans(const char ** chanNames, const do
 
 			}
 			//printf(" % 4.01f (%s),", this->lastReadInputPortValues[dataI], chanNames[dataI]);
-			newCSVLine << int(this->lastReadInputPortValues[dataI]); // write out to CSV
-			printf("%s:%i, ", chanNames[dataI], int(this->lastReadInputPortValues[dataI]));
+			newCSVLine << this->lastReadInputPortValues[dataI]; // write out to CSV
+			printf("%s:%i, ", chanNames[dataI], this->lastReadInputPortValues[dataI]);
 			// After capturing the change, replace the old value
 			this->previousReadInputPortValues[dataI] = this->lastReadInputPortValues[dataI];
 		} // end channels loop

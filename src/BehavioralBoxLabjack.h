@@ -34,7 +34,7 @@ enum { NUM_CHANNELS = 9 };
 //const char * labjackStreamPortNames[] = {
 //"AIN0",  "FIO_STATE",  "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16"
 //};
-const int NUM_LOOP_ITERATIONS = 1;
+const int NUM_LOOP_ITERATIONS = 100;
 
 class BehavioralBoxLabjack
 {
