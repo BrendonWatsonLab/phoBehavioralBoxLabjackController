@@ -4,6 +4,7 @@
  // Want to read in sensor values in Labjack's "Command-response" mode for minimum latency
 **/
 #pragma once
+#include "config.h"
 #include <time.h>
 #include <chrono>
 #include <iostream>
@@ -14,11 +15,6 @@ typedef std::chrono::system_clock Clock;
 
 //// Scheduler
 #include "External/Scheduler/Scheduler.h"
-// number of tasks that can run simultaneously
-#define max_n_threads 3
-//unsigned int max_n_threads = 3;
-enum { NUM_CHANNELS = 11 };
-
 
 class BehavioralBoxLabjack
 {
@@ -47,6 +43,9 @@ public:
 	void readSensorValues();
 	void persistReadValues();
 
+	// Main run loop
+	void runPollingLoop();
+
 
 
 
@@ -57,6 +56,7 @@ private:
 	int connectionType;
 	int err;
 	int handle;
+	bool shouldStop = false;
 
 	// File Output:
 	CSVWriter csv;
@@ -65,10 +65,10 @@ private:
 	string fileFullPath = "output_data/outputFile.csv";
 
 	// Variables for holding the last read values
-	char * inputPortNames[NUM_CHANNELS] = {"DIO0","DIO1","DIO2","DIO3","DIO4","DIO5","DIO6","DIO7","MIO0"};
-	double previousReadInputPortValues[NUM_CHANNELS] = {0,0,0,0,0,0,0,0,0};
-	double lastReadInputPortValues[NUM_CHANNELS] = { 0,0,0,0,0,0,0,0,0};
-	bool inputPortValuesChanged[NUM_CHANNELS] = {false, false, false, false, false, false, false, false, false};
+	char * inputPortNames[NUM_CHANNELS] = globalLabjackInputPortNames;
+	double previousReadInputPortValues[NUM_CHANNELS] = {0.0};
+	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
+	bool inputPortValuesChanged[NUM_CHANNELS] = {false};
 	int errorAddress;
 
 	// Time Keeping

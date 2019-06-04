@@ -17,6 +17,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <conio.h>
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 #include "BehavioralBoxLabjack.h"
@@ -40,45 +41,21 @@ void runTopOfMinuteUpdate();
 void runTopOfSecondUpdate();
 void runPollingLoopUpdate();
 
-//bool isArtificialDaylightHours();
-//void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack);
-
 
 int main()
 {
 	// Find the labjacks
 	foundLabjacks = LabjackHelpers::findAllLabjacks();
 
+	if (foundLabjacks.size() == 0) {
+		printf("No labjacks found!!\n");
+		return LJME_NO_DEVICES_FOUND;
+	}
 	// Iterate through all found Labjacks
 	for (int i = 0; i < foundLabjacks.size(); i++) {
 		foundLabjacks[i]->syncDeviceTimes();
 		foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
 	}
-
-	// Open first found LabJack
-	//GetDeviceInfo("LJM_dtANY", "LJM_ctANY", "LJM_idANY");
-
-	/*SyncDeviceTimes(&firstLabjack);
-
-	updateVisibleLightRelayIfNeeded(&firstLabjack);*/
-
-	// Call the light relay updating function every hour
-	//s.every(std::chrono::seconds(1), runTopOfSecondUpdate);
-
-	// Start a 20Hz (50[ms]) loop to read data.
-	s.every(std::chrono::milliseconds(50), runPollingLoopUpdate);
-
-	// https://en.wikipedia.org/wiki/Cron
-	//s.cron("* * * * *", [&firstLabjack](BehavioralBoxLabjack* labjack) { updateVisibleLightRelayIfNeeded(labjack); }); //every minute
-
-	// Every hour
-	//s.cron("0 * * * *", [&firstLabjack](BehavioralBoxLabjack* labjack) { updateVisibleLightRelayIfNeeded(labjack); }); //every hour
-
-	// Ran at the top of every hour
-	//s.cron("0 * * * *", []() { runTopOfHourUpdate(); });
-	// Ran at the top of every minute
-	//s.cron("* * * * *", []() { runTopOfMinuteUpdate(); });
-
 
 
 	// TODO - READ ME: main run loop
@@ -94,14 +71,20 @@ int main()
 	//WaitForUserIfWindows();
 	// Main run loop:
 	int terminateExecution = 0;
-	
-	while (terminateExecution != 1) {
+	int character;
+	do {
 		/*
 			Here we will perform the reading of the LabJack inputs (sensor values, etc).
 		*/
+		// Read a character from the keyboard
+		character = _getch();
+		character = toupper(character);
+		if (character == 'Q') {
+			terminateExecution = 1;
+		}
 
+	} while (terminateExecution != 1);
 
-	}
 	printf("Done.");
 
 	return LJME_NOERROR;
@@ -145,7 +128,7 @@ void runTopOfSecondUpdate() {
 	}
 }
 
-// Ran at the top of every second
+// Ran at a custom interval
 void runPollingLoopUpdate() {
 	//time_t computerTime;
 	// Iterate through all found Labjacks
@@ -155,25 +138,5 @@ void runPollingLoopUpdate() {
 		foundLabjacks[i]->readSensorValues();
 	}
 }
-
-//bool isArtificialDaylightHours() {
-//	time_t currTime = time(NULL);
-//	struct tm *currLocalTime = localtime(&currTime);
-//
-//	int hour = currLocalTime->tm_hour;
-//	if ((hour < 6) || (hour > 18)) {
-//		// It's night-time
-//		return false;
-//	}
-//	else {
-//		// It's day-time
-//		return true;
-//	}	
-//}
-//
-//void updateVisibleLightRelayIfNeeded(BehavioralBoxLabjack* labjack) {
-//	bool isDay = isArtificialDaylightHours();
-//	labjack->setVisibleLightRelayState(isDay);
-//}
 
 

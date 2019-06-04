@@ -75,30 +75,28 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	
 	// Write the header to the .csv file:
 	this->csv.newRow() << "computerTime";
-	for (int i = 0; i < 9; i++) {
+	for (int i = 0; i < NUM_CHANNELS; i++) {
 		this->csv << this->inputPortNames[i];
 	}
 	this->csv.writeToFile(fileFullPath, false);
 
+	// Create the object's thread at the very end of its constructor
 	// wallTime-based event scheduling:
 	this->scheduler = new Bosma::Scheduler(max_n_threads);
 
 	// Ran at the top of every hour
 	this->scheduler->cron("0 * * * *", [this]() { this->runTopOfHourUpdate(); });
-	//scheduler.cron("0 * * * *", []() { runTopOfHourUpdate(); });
 
-	// Ran at the top of every minute
-	//this->scheduler.cron("* * * * *", []() { this->runTopOfMinuteUpdate(); });
-										  
-	// Create the object's thread at the very end of its constructor
-	//TODO
+	// Start a 20Hz (50[ms]) loop to read data.
+	this->scheduler->every(std::chrono::milliseconds(50), [this]() { this->runPollingLoop(); });
 }
 
 // Destructor (Called when object is about to be destroyed
 BehavioralBoxLabjack::~BehavioralBoxLabjack()
 {
+	this->shouldStop = true;
 	// Destroy the object's thread at the very start of its destructor
-	//TODO
+	this->scheduler = NULL;
 
 	// Close the open output file:
 	//this->outputFile.close();
@@ -196,7 +194,7 @@ void BehavioralBoxLabjack::readSensorValues()
 	this->lastCaptureComputerTime = Clock::now();
 
 	//Read the sensor values from the labjack DIO Inputs
-	this->err = LJM_eReadNames(this->handle, 9, (const char **)this->inputPortNames, this->lastReadInputPortValues, &this->errorAddress);
+	this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char **)this->inputPortNames, this->lastReadInputPortValues, &this->errorAddress);
 	ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
 	this->persistReadValues();
 }
@@ -208,7 +206,7 @@ void BehavioralBoxLabjack::persistReadValues()
 	CSVWriter newCSVLine(",");
 
 	newCSVLine.newRow() << milliseconds_since_epoch;
-	for (int i = 0; i < 9; i++) {
+	for (int i = 0; i < NUM_CHANNELS; i++) {
 		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues[i]);
 		if (inputPortValuesChanged[i] == true) {
 			// The input port changed from the previous value
@@ -221,6 +219,19 @@ void BehavioralBoxLabjack::persistReadValues()
 		
 	}
 	newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+}
+
+
+// The main run loop
+void BehavioralBoxLabjack::runPollingLoop()
+{
+	if (this->shouldStop) {
+		// Stop running the main loop!
+		printf("Stopping Labjack %d", this->uniqueIdentifier);
+	}
+	else {
+		this->readSensorValues();
+	}
 }
 
 // Executed every hour, on the hour
