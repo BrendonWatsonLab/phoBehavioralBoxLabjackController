@@ -120,15 +120,15 @@ void BehavioralBoxLabjack::diagnosticPrint()
 void BehavioralBoxLabjack::diagnosticPrintLastValues()
 {
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
-	std:cout << milliseconds_since_epoch;
+	std::cout << milliseconds_since_epoch;
 	for (int i = 0; i < NUM_CHANNELS; i++) {
 		//if (inputPortValuesChanged[i] == true) {
 		//	// The input port changed from the previous value
 
 		//}
-		std:cout << this->lastReadInputPortValues[i];
+		std::cout << "\t" << this->lastReadInputPortValues[i];
 	}
-	std:cout << endl;
+	std::cout << std::endl;
 }
 
 int BehavioralBoxLabjack::getError()

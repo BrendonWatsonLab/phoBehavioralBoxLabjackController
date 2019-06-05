@@ -67,8 +67,9 @@ int main()
 		// Perhaps turning the lights on and off should belong to the individual boxes as well.
 		// Main should have perhaps an array of things?
 
+	printf("Press [p] at any time to print the most recently read values.\n");
 	printf("Press [q] at any time to quit.\n");
-	printf("Collecting data at 20Hz....");
+	printf("Collecting data at 20Hz....\n");
 	//WaitForUserIfWindows();
 	// Main run loop:
 	int terminateExecution = 0;
