@@ -26,6 +26,7 @@ public:
 	~BehavioralBoxLabjack();
 
 	void diagnosticPrint();
+	void diagnosticPrintLastValues();
 	int getError();
 
 	// Time

@@ -67,6 +67,7 @@ int main()
 		// Perhaps turning the lights on and off should belong to the individual boxes as well.
 		// Main should have perhaps an array of things?
 
+	printf("Press [q] at any time to quit.\n");
 	printf("Collecting data at 20Hz....");
 	//WaitForUserIfWindows();
 	// Main run loop:
@@ -81,6 +82,19 @@ int main()
 		character = toupper(character);
 		if (character == 'Q') {
 			terminateExecution = 1;
+		}
+		else if (character == 'S') {
+			// Preview the current data
+
+		}
+		else if (character == 'P') {
+			// Prints the current data
+				// Iterate through all found Labjacks
+			for (int i = 0; i < foundLabjacks.size(); i++) {
+				//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+				//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
+				foundLabjacks[i]->diagnosticPrintLastValues();
+			}
 		}
 
 	} while (terminateExecution != 1);
