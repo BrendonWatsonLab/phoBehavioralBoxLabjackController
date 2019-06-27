@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include "External/CSVWriter.h"
+#include "../StateMonitor.h"
 
 typedef std::chrono::system_clock Clock;
 
@@ -42,6 +43,7 @@ public:
 
 	// Read Sensor values
 	void readSensorValues();
+	void persistReadValues(bool enableConsoleLogging);
 	void persistReadValues();
 
 	// Main run loop
@@ -66,6 +68,7 @@ private:
 	string fileFullPath = "output_data/outputFile.csv";
 
 	// Variables for holding the last read values
+	StateMonitor* monitor = &StateMonitor();
 	char * inputPortNames[NUM_CHANNELS] = globalLabjackInputPortNames;
 	double previousReadInputPortValues[NUM_CHANNELS] = {0.0};
 	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
@@ -84,4 +87,5 @@ private:
 	void setVisibleLightRelayState(bool isOn);
 
 };
+
 

@@ -19,17 +19,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="InputState.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjackController.cpp" />
     <ClCompile Include="src\LabjackHelpers.cpp" />
+    <ClCompile Include="StateMonitor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="InputState.h" />
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\External\CSVWriter.h" />
     <ClInclude Include="src\External\px_sched.h" />
     <ClInclude Include="src\External\Scheduler\Scheduler.h" />
     <ClInclude Include="src\LabjackHelpers.h" />
+    <ClInclude Include="StateMonitor.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CA30395F-5251-40D8-8C39-297793F13B1E}</ProjectGuid>

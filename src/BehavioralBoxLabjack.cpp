@@ -210,15 +210,21 @@ void BehavioralBoxLabjack::readSensorValues()
 	//Read the sensor values from the labjack DIO Inputs
 	this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char **)this->inputPortNames, this->lastReadInputPortValues, &this->errorAddress);
 	ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
-	this->persistReadValues();
+	// Only persist the values if the state has changed.
+	if (this->monitor->refreshState(this->lastCaptureComputerTime, this->lastReadInputPortValues)) {
+		this->persistReadValues(true);
+	}
 }
 
 // Reads the most recently read values and persists them to the available output modalities (file, TCP, etc) if they've changed or it's needed.
-void BehavioralBoxLabjack::persistReadValues()
+void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 {
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
 	CSVWriter newCSVLine(",");
 
+	if (enableConsoleLogging) {
+		cout << milliseconds_since_epoch << ": ";
+	}
 	newCSVLine.newRow() << milliseconds_since_epoch;
 	for (int i = 0; i < NUM_CHANNELS; i++) {
 		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues[i]);
@@ -227,10 +233,15 @@ void BehavioralBoxLabjack::persistReadValues()
 
 		}
 		newCSVLine << this->lastReadInputPortValues[i];
-
+		if (enableConsoleLogging) {
+			cout << this->lastReadInputPortValues[i] << ", ";
+		}
 		// After capturing the change, replace the old value
 		this->previousReadInputPortValues[i] = this->lastReadInputPortValues[i];
 		
+	}
+	if (enableConsoleLogging) {
+		cout << std::endl;
 	}
 	newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
 }
