@@ -80,6 +80,8 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	}
 	this->csv.writeToFile(fileFullPath, false);
 
+	this->monitor = new StateMonitor();
+
 	// Create the object's thread at the very end of its constructor
 	// wallTime-based event scheduling:
 	this->scheduler = new Bosma::Scheduler(max_n_threads);
@@ -96,7 +98,8 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 {
 	this->shouldStop = true;
 	// Destroy the object's thread at the very start of its destructor
-	this->scheduler = NULL;
+	delete this->scheduler;
+	//this->scheduler = NULL;
 
 	// Close the open output file:
 	//this->outputFile.close();
@@ -106,6 +109,7 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	this->err = LJM_Close(this->handle);
 	ErrorCheck(this->err, "LJM_Close");
 
+	delete this->monitor;
 	//CloseOrDie(this->handle);
 }
 

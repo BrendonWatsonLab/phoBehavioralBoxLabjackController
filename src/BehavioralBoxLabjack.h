@@ -68,7 +68,7 @@ private:
 	string fileFullPath = "output_data/outputFile.csv";
 
 	// Variables for holding the last read values
-	StateMonitor* monitor = &StateMonitor();
+	StateMonitor* monitor;
 	char * inputPortNames[NUM_CHANNELS] = globalLabjackInputPortNames;
 	double previousReadInputPortValues[NUM_CHANNELS] = {0.0};
 	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
