@@ -96,7 +96,11 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 // Destructor (Called when object is about to be destroyed
 BehavioralBoxLabjack::~BehavioralBoxLabjack()
 {
+	// Stop the main run loop
 	this->shouldStop = true;
+	//Read the values and save them one more time, so we know when the end of data collection occured.
+	this->readSensorValues();
+
 	// Destroy the object's thread at the very start of its destructor
 	delete this->scheduler;
 	//this->scheduler = NULL;

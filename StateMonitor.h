@@ -7,11 +7,8 @@
 
 // Keep track of the presumed current state of each port. 
 // Upon each read, check if the read values differ from the previous values. When a change occurs:
-	// Capture the current timestamp
-
-	//
-
-	// Write the previous values out to the file
+	// Capture the current timestamp and the new value
+	// return true to indicate that the values have changed.
 typedef std::chrono::system_clock Clock;
 
 class StateMonitor
