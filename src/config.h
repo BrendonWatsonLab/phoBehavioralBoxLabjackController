@@ -15,6 +15,8 @@ Specifies what ports to open
 #define globalLabjackInputPortNames { "EIO0","EIO1","EIO2","EIO3","EIO4","EIO5","EIO6","EIO7","MIO0" }
 enum { NUM_CHANNELS = 9 };
 
+#define globalLabjackLightRelayPortName "CIO0" // Defines the output port that is used to control the relay that switches the lighting on/off. 
+
 
 
 //#define globalLabjackInputPortNames { "AIN0" }

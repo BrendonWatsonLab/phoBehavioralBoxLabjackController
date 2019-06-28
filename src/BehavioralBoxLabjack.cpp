@@ -195,7 +195,7 @@ void BehavioralBoxLabjack::setVisibleLightRelayState(bool isOn)
 {
 	// Set up for setting DIO state
 	double value = 0; // Output state = low (0 = low, 1 = high)
-	char * portName = "MIO2";
+	char * portName = globalLabjackLightRelayPortName;
 	if (isOn) {
 		// It's day-time
 		value = 0;
