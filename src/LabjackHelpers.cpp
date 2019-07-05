@@ -107,7 +107,7 @@ void LabjackHelpers::PrintQueryResults(int NumAddresses, const char ** aNames, c
 
 std::vector<BehavioralBoxLabjack*> LabjackHelpers::findAllLabjacks()
 {
-	// Create a vector containing integers
+	// Create a vector containing pointers (references) to Labjack Objects
 	std::vector<BehavioralBoxLabjack*> outputVector = {};
 
 	const int DeviceType = LJM_dtANY;
