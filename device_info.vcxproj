@@ -39,7 +39,7 @@
     <ProjectGuid>{CA30395F-5251-40D8-8C39-297793F13B1E}</ProjectGuid>
     <RootNamespace>pho_behavioral_box_labjack</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <ProjectName>phoBehavioralBoxLabjackController</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
