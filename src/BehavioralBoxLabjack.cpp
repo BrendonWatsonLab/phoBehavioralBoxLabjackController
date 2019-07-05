@@ -282,6 +282,7 @@ bool BehavioralBoxLabjack::isArtificialDaylightHours()
 	struct tm *currLocalTime = localtime(&currTime);
 
 	int hour = currLocalTime->tm_hour;
+	// Note this is strictly less than 6 and strictly greater than 18, so it turns on at 6am off at 7pm
 	if ((hour < 6) || (hour > 18)) {
 		// It's night-time
 		return false;
