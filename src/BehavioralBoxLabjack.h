@@ -35,11 +35,8 @@ public:
 	void setTime(time_t newTime);
 
 	// Syncs the Labjack's internal RTC time with the computer's. Returns the number of seconds that were adjusted to set the Labjack's clock.
-	double syncDeviceTimes();
-
-	// Light Control
-	bool isArtificialDaylightHours();
-	void updateVisibleLightRelayIfNeeded();
+	//double syncDeviceTimes();
+	double printDeviceTimes();
 
 	// Read Sensor values
 	void readSensorValues();
@@ -80,11 +77,12 @@ private:
 	Bosma::Scheduler* scheduler; // For wallTime based scheduling
 
 	// Scheduled tasks
+	void runTopOfMinuteUpdate();
 	void runTopOfHourUpdate(); // Runs at the top of every hour (exactly on the hour, according to system time).
 	//void runTopOfMinuteUpdate();
 
 	// Visible Light Relay Control
-	void setVisibleLightRelayState(bool isOn);
+	void setOutputSignalState(bool isOn);
 
 };
 

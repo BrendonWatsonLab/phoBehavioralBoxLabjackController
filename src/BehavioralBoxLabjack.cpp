@@ -29,8 +29,6 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, in
 // Constructor: Called when an instance of the object is about to be created
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), lastCaptureComputerTime(Clock::now())
 {
-
-	
 	// Open the LabjackConnection and load some information
 	this->uniqueIdentifier = uniqueIdentifier;
 	this->err = LJM_OpenS(devType, connType, iden, &this->handle);
@@ -81,16 +79,17 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	this->csv.writeToFile(fileFullPath, false);
 
 	this->monitor = new StateMonitor();
+	this->setOutputSignalState(false);
 
 	// Create the object's thread at the very end of its constructor
 	// wallTime-based event scheduling:
 	this->scheduler = new Bosma::Scheduler(max_n_threads);
 
 	// Ran at the top of every hour
-	this->scheduler->cron("0 * * * *", [this]() { this->runTopOfHourUpdate(); });
-
+	//this->scheduler->cron("0 * * * *", [this]() { this->runTopOfHourUpdate(); });
+	this->scheduler->cron("* * * * *", [this]() { this->runTopOfMinuteUpdate(); });
 	// Start a 20Hz (50[ms]) loop to read data.
-	this->scheduler->every(std::chrono::milliseconds(50), [this]() { this->runPollingLoop(); });
+	//this->scheduler->every(std::chrono::milliseconds(50), [this]() { this->runPollingLoop(); });
 }
 
 // Destructor (Called when object is about to be destroyed
@@ -160,16 +159,46 @@ void BehavioralBoxLabjack::setTime(time_t newTime)
 	ErrorCheck(this->err, "LJM_eWriteAddress");
 }
 
-double BehavioralBoxLabjack::syncDeviceTimes()
-{
+//double BehavioralBoxLabjack::syncDeviceTimes()
+//{
+//	int LJMError;
+//	time_t originalLabjackTime = this->getTime();
+//	LJMError = this->getError();
+//	printf("LABJACK TIME: %s\n", ctime(&originalLabjackTime));
+//
+//	// Get the computer time:
+//	time_t computerTime;
+//	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+//	printf("COMPUTER TIME: %s\n", ctime(&computerTime));
+//
+//	double updateChangeSeconds = difftime(computerTime, originalLabjackTime);
+//
+//	if (updateChangeSeconds == 0) {
+//		printf("Computer time is already synced with Labjack time!\n");
+//	}
+//	else {
+//		printf("Computer time is %.f seconds from Labjack time...\n", updateChangeSeconds);
+//		// Write the computer time to the Labjack
+//		this->setTime(computerTime);
+//		LJMError = this->getError();
+//
+//		// Re-read the time to confirm the update
+//		time_t updatedLabjackTime = this->getTime();
+//		LJMError = this->getError();
+//		printf("Updated Labjack TIME: %s\n", ctime(&updatedLabjackTime));
+//	}
+//	return updateChangeSeconds;
+//}
+
+double BehavioralBoxLabjack::printDeviceTimes() {
 	int LJMError;
+	time_t computerTime;
 	time_t originalLabjackTime = this->getTime();
+	// Get the computer time:
+	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+
 	LJMError = this->getError();
 	printf("LABJACK TIME: %s\n", ctime(&originalLabjackTime));
-
-	// Get the computer time:
-	time_t computerTime;
-	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
 	printf("COMPUTER TIME: %s\n", ctime(&computerTime));
 
 	double updateChangeSeconds = difftime(computerTime, originalLabjackTime);
@@ -180,29 +209,22 @@ double BehavioralBoxLabjack::syncDeviceTimes()
 	else {
 		printf("Computer time is %.f seconds from Labjack time...\n", updateChangeSeconds);
 		// Write the computer time to the Labjack
-		this->setTime(computerTime);
-		LJMError = this->getError();
-
-		// Re-read the time to confirm the update
-		time_t updatedLabjackTime = this->getTime();
-		LJMError = this->getError();
-		printf("Updated Labjack TIME: %s\n", ctime(&updatedLabjackTime));
 	}
 	return updateChangeSeconds;
 }
 
-void BehavioralBoxLabjack::setVisibleLightRelayState(bool isOn)
+void BehavioralBoxLabjack::setOutputSignalState(bool isHigh)
 {
 	// Set up for setting DIO state
 	double value = 0; // Output state = low (0 = low, 1 = high)
 	char * portName = globalLabjackLightRelayPortName;
-	if (isOn) {
+	if (isHigh) {
 		// It's day-time
-		value = 0;
+		value = 1;
 	}
 	else {
 		// It's night-time
-		value = 1;
+		value = 0;
 	}
 	// Set DIO state on the LabJack
 	this->err = LJM_eWriteName(this->handle, portName, value);
@@ -263,38 +285,31 @@ void BehavioralBoxLabjack::runPollingLoop()
 		printf("Stopping Labjack %d", this->uniqueIdentifier);
 	}
 	else {
-		this->readSensorValues();
+		//this->readSensorValues();
 	}
 }
 
-// Executed every hour, on the hour
-void BehavioralBoxLabjack::runTopOfHourUpdate()
+// Executed every minute, on the minute
+void BehavioralBoxLabjack::runTopOfMinuteUpdate()
 {
-	time_t computerTime;
-	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-	printf("runTopOfHourUpdate: running at %s for labjack %i\n", ctime(&computerTime), this->serialNumber);
-	this->updateVisibleLightRelayIfNeeded();
+	//time_t computerTime;
+	//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+	//printf("runTopOfMinuteUpdate: running at %s for labjack %i\n", ctime(&computerTime), this->serialNumber);
+	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
+	this->setOutputSignalState(true);
+	// Log out to console
+	cout << milliseconds_since_epoch << endl;
+	// Persist to file
+	CSVWriter newCSVLine(",");
+	newCSVLine.newRow() << milliseconds_since_epoch;
 }
 
-bool BehavioralBoxLabjack::isArtificialDaylightHours()
-{
-	time_t currTime = time(NULL);
-	struct tm *currLocalTime = localtime(&currTime);
-
-	int hour = currLocalTime->tm_hour;
-	// Note this is strictly less than 6 and strictly greater than 18, so it turns on at 6am off at 7pm
-	if ((hour < 6) || (hour > 18)) {
-		// It's night-time
-		return false;
-	}
-	else {
-		// It's day-time
-		return true;
-	}
-}
-
-void BehavioralBoxLabjack::updateVisibleLightRelayIfNeeded()
-{
-	bool isDay = isArtificialDaylightHours();
-	this->setVisibleLightRelayState(isDay);
-}
+//// Executed every hour, on the hour
+//void BehavioralBoxLabjack::runTopOfHourUpdate()
+//{
+//	time_t computerTime;
+//	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+//	printf("runTopOfHourUpdate: running at %s for labjack %i\n", ctime(&computerTime), this->serialNumber);
+//	this->setOutputSignalState(true);
+//	this->persistReadValues(true);
+//}
