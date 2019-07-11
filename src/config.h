@@ -17,7 +17,8 @@ Specifies what ports to open
 enum { NUM_CHANNELS = 9 };
 //enum { NUM_CHANNELS = 0 };
 
-#define globalLabjackLightRelayPortName "MIO2" // Defines the output port that is used to control the relay that switches the lighting on/off. 
+//#define globalLabjackLightRelayPortName "MIO2" // Defines the output port that is used to control the relay that switches the lighting on/off.
+#define globalLabjackLightRelayPortName "FIO2" // Defines the output port that is used to control the relay that switches the lighting on/off. 
 
 
 
