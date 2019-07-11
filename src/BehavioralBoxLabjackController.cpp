@@ -14,6 +14,7 @@
 #include <math.h>
 #include <LabJackM.h>
 #include <time.h>
+#include <chrono>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -44,6 +45,14 @@ void runPollingLoopUpdate();
 
 int main()
 {
+	auto currTime = Clock::now();
+	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(currTime);
+	auto fraction = currTime - seconds;
+	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
+	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(currTime.time_since_epoch()).count();
+	cout << "programStartTime: " << milliseconds_since_epoch << endl;
+
+
 	// Find the labjacks
 	foundLabjacks = LabjackHelpers::findAllLabjacks();
 

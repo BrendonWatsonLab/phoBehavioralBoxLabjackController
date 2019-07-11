@@ -295,10 +295,11 @@ void BehavioralBoxLabjack::runTopOfMinuteUpdate()
 	//time_t computerTime;
 	//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
 	//printf("runTopOfMinuteUpdate: running at %s for labjack %i\n", ctime(&computerTime), this->serialNumber);
-	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
+	auto currTime = Clock::now();
+	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(currTime.time_since_epoch()).count();
 	this->setOutputSignalState(true);
 	// Log out to console
-	cout << milliseconds_since_epoch << endl;
+	cout << "localLabjackPulseTime: " << milliseconds_since_epoch << endl;
 	// Persist to file
 	CSVWriter newCSVLine(",");
 	newCSVLine.newRow() << milliseconds_since_epoch;
