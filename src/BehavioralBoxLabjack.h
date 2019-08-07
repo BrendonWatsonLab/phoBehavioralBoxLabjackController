@@ -20,8 +20,8 @@ typedef std::chrono::system_clock Clock;
 class BehavioralBoxLabjack
 {
 public:
-	BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden);
-	BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden);
+	BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, int serialNumber);
+	BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, int serialNumber);
 	BehavioralBoxLabjack(const BehavioralBoxLabjack&) = delete; // non construction-copyable
 	BehavioralBoxLabjack& operator=(const BehavioralBoxLabjack&) = delete; // non copyable
 	~BehavioralBoxLabjack();
@@ -53,8 +53,9 @@ public:
 
 
 private:
+	int serialNumber;
 	int uniqueIdentifier;
-	int portOrPipe, ipAddress, serialNumber, packetMaxBytes;
+	int portOrPipe, ipAddress, packetMaxBytes;
 	int deviceType;
 	int connectionType;
 	int err;

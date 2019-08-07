@@ -24,12 +24,14 @@
 
 
 
-BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), iden) {}
+BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, int serialNumber) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), serialNumber) {}
 
 // Constructor: Called when an instance of the object is about to be created
-BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), lastCaptureComputerTime(Clock::now())
+BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, int serialNumber): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), lastCaptureComputerTime(Clock::now())
 {
-
+	this->serialNumber = serialNumber;
+	char iden[256];
+	sprintf(iden, "%d", this->serialNumber);
 	
 	// Open the LabjackConnection and load some information
 	this->uniqueIdentifier = uniqueIdentifier;
@@ -46,7 +48,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 		printf("This device does not have a name\n");
 
 	// Get device info
-	this->err = LJM_GetHandleInfo(this->handle, &deviceType, &connectionType, &serialNumber, &ipAddress,
+	this->err = LJM_GetHandleInfo(this->handle, &deviceType, &connectionType, &this->serialNumber, &ipAddress,
 		&portOrPipe, &packetMaxBytes);
 	ErrorCheck(this->err, "LJM_GetHandleInfo");
 
@@ -62,7 +64,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 
 	// Builds the filename in the form "out_file_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}"
 	std::ostringstream os;
-	os << "out_file_s" << serialNumber << "_" << milliseconds_since_epoch << ".csv";
+	os << "out_file_s" << this->serialNumber << "_" << milliseconds_since_epoch << ".csv";
 	this->filename = os.str();
 	// Build the full file path
 	if (this->outputDirectory.empty()) {
