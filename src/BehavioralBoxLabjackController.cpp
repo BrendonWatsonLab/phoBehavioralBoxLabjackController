@@ -83,15 +83,18 @@ int main()
 		character = _getch();
 		character = toupper(character);
 		if (character == 'Q') {
+			cout << "Quitting..." << endl;
 			terminateExecution = 1;
 		}
 		else if (character == 'S') {
 			// Preview the current data
+			cout << "Previewing current data..." << endl;
 
 		}
 		else if (character == 'P') {
 			// Prints the current data
-				// Iterate through all found Labjacks
+			cout << "Printing current data..." << endl;
+			// Iterate through all found Labjacks
 			for (int i = 0; i < foundLabjacks.size(); i++) {
 				//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
 				//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
@@ -99,6 +102,7 @@ int main()
 			}
 		}
 		else if (character == 'R') {
+			cout << "Refreshing Labjacks..." << endl;
 			int previouslyFoundLabjackSerialNumbers[max_number_labjacks] = {};
 			int numberPreviouslyFoundLabjacks = foundLabjacks.size();
 			for (int i = 0; i < numberPreviouslyFoundLabjacks; i++) {
