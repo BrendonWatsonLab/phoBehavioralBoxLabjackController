@@ -68,6 +68,7 @@ int main()
 		// Main should have perhaps an array of things?
 
 	printf("Press [p] at any time to print the most recently read values.\n");
+	printf("Press [r] at any refresh and scan for more labjacks.\n");
 	printf("Press [q] at any time to quit.\n");
 	printf("Collecting data at 20Hz....\n");
 	//WaitForUserIfWindows();
@@ -89,6 +90,18 @@ int main()
 
 		}
 		else if (character == 'P') {
+			// Prints the current data
+				// Iterate through all found Labjacks
+			for (int i = 0; i < foundLabjacks.size(); i++) {
+				//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+				//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
+				foundLabjacks[i]->diagnosticPrintLastValues();
+			}
+		}
+		else if (character == 'R') {
+			// Find the labjacks
+			foundLabjacks = LabjackHelpers::findAllLabjacks();
+
 			// Prints the current data
 				// Iterate through all found Labjacks
 			for (int i = 0; i < foundLabjacks.size(); i++) {
