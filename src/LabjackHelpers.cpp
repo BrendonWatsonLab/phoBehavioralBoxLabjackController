@@ -105,7 +105,14 @@ void LabjackHelpers::PrintQueryResults(int NumAddresses, const char ** aNames, c
 	}
 }
 
+
 std::vector<BehavioralBoxLabjack*> LabjackHelpers::findAllLabjacks()
+{
+	int emptyArray[LJM_LIST_ALL_SIZE] = {};
+	return findAllLabjacks(emptyArray, 0);
+}
+
+std::vector<BehavioralBoxLabjack*> LabjackHelpers::findAllLabjacks(int previouslyFoundLabjackSerialNumbers[], int numPreviouslyFoundLabjacks)
 {
 	// Create a vector containing pointers (references) to Labjack Objects
 	std::vector<BehavioralBoxLabjack*> outputVector = {};
@@ -153,14 +160,27 @@ std::vector<BehavioralBoxLabjack*> LabjackHelpers::findAllLabjacks()
 		//printf("            aSerialNumbers: %d, aIPAddresses: %s (%u)\n", aSerialNumbers[i], IPv4String, aIPAddresses[i]);
 		//LabjackHelpers::PrintQueryResults(NumAddresses, aNames, aAddresses, aTypes, totalNumBytes, aBytes, i);
 
-		char buf[256];
-		sprintf(buf, "%d", aSerialNumbers[i]);
+		//char buf[256];
+		//sprintf(buf, "%d", aSerialNumbers[i]);
+
+		//if (numPreviouslyFoundLabjacks > 0) {
+		//	// Check if the labjack was one that was previously found
+		//	char existingBuf[256];
+		//	for (int j = 0; j < numPreviouslyFoundLabjacks; j++) {
+		//		// Iterate through the existing arrays
+		//		// Check if the serial numbers match
+		//		if (aSerialNumbers[i] == previouslyFoundLabjackSerialNumbers[j]) {
+
+		//		}
+		//	}
+
+		//}
 
 		//std::ostringstream os;
 		//os << "out_file_" << aSerialNumbers[i] << ".csv";
 		//std::string s = os.str();
 
-		BehavioralBoxLabjack* currLabjack = new BehavioralBoxLabjack(i, aDeviceTypes[i], aConnectionTypes[i], buf);
+		BehavioralBoxLabjack* currLabjack = new BehavioralBoxLabjack(i, aDeviceTypes[i], aConnectionTypes[i], aSerialNumbers[i]);
 		outputVector.push_back(currLabjack);
 	}
 

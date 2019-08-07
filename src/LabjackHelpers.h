@@ -19,6 +19,8 @@ public:
 	static void PrintQueryResults(int NumAddresses, const char ** aNames, const int * aAddresses, const int * aTypes, int totalNumBytes, unsigned char * aBytes, int deviceI);
 
 	static std::vector<BehavioralBoxLabjack*> findAllLabjacks();
+	static std::vector<BehavioralBoxLabjack*> findAllLabjacks(int previouslyFoundLabjackSerialNumbers[], int numPreviouslyFoundLabjacks);
+
 
 };
 
