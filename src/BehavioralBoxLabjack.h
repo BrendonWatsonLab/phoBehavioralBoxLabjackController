@@ -34,6 +34,9 @@ public:
 	time_t getTime();
 	void setTime(time_t newTime);
 
+	// Get Identifiers
+	int getSerialNumber() { return this->serialNumber; }
+
 	// Syncs the Labjack's internal RTC time with the computer's. Returns the number of seconds that were adjusted to set the Labjack's clock.
 	double syncDeviceTimes();
 
