@@ -7,6 +7,9 @@ Specifies what ports to open
 // number of tasks that can run simultaneously
 #define max_n_threads 3
 
+// The maximum number of simultaneous labjacks that can be connected to this computer
+#define max_number_labjacks 8
+
 // Number of Labjack Channels
 //enum { NUM_CHANNELS = 11 };
 //#define globalLabjackInputPortNames { "DIO0","DIO1","DIO2","DIO3","DIO4","DIO5","DIO6","DIO7","MIO0" }

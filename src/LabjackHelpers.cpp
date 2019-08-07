@@ -159,29 +159,26 @@ std::vector<BehavioralBoxLabjack*> LabjackHelpers::findAllLabjacks(int previousl
 		//printf("    [%3d] - aDeviceTypes: %s, aConnectionTypes: %s\n",i, NumberToDeviceType(aDeviceTypes[i]), NumberToConnectionType(aConnectionTypes[i]));
 		//printf("            aSerialNumbers: %d, aIPAddresses: %s (%u)\n", aSerialNumbers[i], IPv4String, aIPAddresses[i]);
 		//LabjackHelpers::PrintQueryResults(NumAddresses, aNames, aAddresses, aTypes, totalNumBytes, aBytes, i);
+		bool wasLabjackAlreadyFound = false;
+		if (numPreviouslyFoundLabjacks > 0) {
+			// Check if the labjack was one that was previously found
+			for (int j = 0; j < numPreviouslyFoundLabjacks; j++) {
+				// Iterate through the existing arrays
+				// Check if the serial numbers match
+				if (aSerialNumbers[i] == previouslyFoundLabjackSerialNumbers[j]) {
+					wasLabjackAlreadyFound = true;
+					break;
+				}
+			}
+			//TODO: detect if previously found labjacks have been removed.
 
-		//char buf[256];
-		//sprintf(buf, "%d", aSerialNumbers[i]);
+		}
 
-		//if (numPreviouslyFoundLabjacks > 0) {
-		//	// Check if the labjack was one that was previously found
-		//	char existingBuf[256];
-		//	for (int j = 0; j < numPreviouslyFoundLabjacks; j++) {
-		//		// Iterate through the existing arrays
-		//		// Check if the serial numbers match
-		//		if (aSerialNumbers[i] == previouslyFoundLabjackSerialNumbers[j]) {
-
-		//		}
-		//	}
-
-		//}
-
-		//std::ostringstream os;
-		//os << "out_file_" << aSerialNumbers[i] << ".csv";
-		//std::string s = os.str();
-
-		BehavioralBoxLabjack* currLabjack = new BehavioralBoxLabjack(i, aDeviceTypes[i], aConnectionTypes[i], aSerialNumbers[i]);
-		outputVector.push_back(currLabjack);
+		if (!wasLabjackAlreadyFound) {
+			// If the labjack found wasn't previously found (meaning that it's new), create a labjack object and add it to the output vector.
+			BehavioralBoxLabjack* currLabjack = new BehavioralBoxLabjack(i, aDeviceTypes[i], aConnectionTypes[i], aSerialNumbers[i]);
+			outputVector.push_back(currLabjack);
+		}
 	}
 
 	free(aBytes);

@@ -99,15 +99,24 @@ int main()
 			}
 		}
 		else if (character == 'R') {
-			// Find the labjacks
-			foundLabjacks = LabjackHelpers::findAllLabjacks();
+			int previouslyFoundLabjackSerialNumbers[max_number_labjacks] = {};
+			int numberPreviouslyFoundLabjacks = foundLabjacks.size();
+			for (int i = 0; i < numberPreviouslyFoundLabjacks; i++) {
+				previouslyFoundLabjackSerialNumbers[i] = foundLabjacks[i]->getSerialNumber();
+			}
 
-			// Prints the current data
-				// Iterate through all found Labjacks
-			for (int i = 0; i < foundLabjacks.size(); i++) {
-				//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-				//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-				foundLabjacks[i]->diagnosticPrintLastValues();
+			// Find the labjacks
+			std::vector<BehavioralBoxLabjack*> newlyFoundAdditionalLabjacks = LabjackHelpers::findAllLabjacks(previouslyFoundLabjackSerialNumbers, numberPreviouslyFoundLabjacks);
+
+			if (newlyFoundAdditionalLabjacks.size() > 0) {
+				cout << "Found " << newlyFoundAdditionalLabjacks.size() << " new labjacks!" << endl;
+				// Iterate through all newly found labjacks and append them to the list of found labjacks
+				for (int i = 0; i < newlyFoundAdditionalLabjacks.size(); i++) {
+					foundLabjacks.push_back(newlyFoundAdditionalLabjacks[i]);
+				}
+			}
+			else {
+				cout << "Found no new labjacks." << endl;
 			}
 		}
 
