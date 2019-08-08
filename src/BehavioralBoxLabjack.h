@@ -20,19 +20,23 @@ typedef std::chrono::system_clock Clock;
 class BehavioralBoxLabjack
 {
 public:
-	BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden);
-	BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden);
+	BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, int serialNumber);
+	BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, int serialNumber);
 	BehavioralBoxLabjack(const BehavioralBoxLabjack&) = delete; // non construction-copyable
 	BehavioralBoxLabjack& operator=(const BehavioralBoxLabjack&) = delete; // non copyable
 	~BehavioralBoxLabjack();
 
 	void diagnosticPrint();
+	void printIdentifierLine();
 	void diagnosticPrintLastValues();
 	int getError();
 
 	// Time
 	time_t getTime();
 	void setTime(time_t newTime);
+
+	// Get Identifiers
+	int getSerialNumber() { return this->serialNumber; }
 
 	// Syncs the Labjack's internal RTC time with the computer's. Returns the number of seconds that were adjusted to set the Labjack's clock.
 	double syncDeviceTimes();
@@ -53,8 +57,9 @@ public:
 
 
 private:
+	int serialNumber;
 	int uniqueIdentifier;
-	int portOrPipe, ipAddress, serialNumber, packetMaxBytes;
+	int portOrPipe, ipAddress, packetMaxBytes;
 	int deviceType;
 	int connectionType;
 	int err;

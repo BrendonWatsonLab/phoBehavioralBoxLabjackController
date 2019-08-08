@@ -41,6 +41,8 @@ void runTopOfMinuteUpdate();
 void runTopOfSecondUpdate();
 void runPollingLoopUpdate();
 
+void printCommandsMenu();
+
 
 int main()
 {
@@ -67,8 +69,7 @@ int main()
 		// Perhaps turning the lights on and off should belong to the individual boxes as well.
 		// Main should have perhaps an array of things?
 
-	printf("Press [p] at any time to print the most recently read values.\n");
-	printf("Press [q] at any time to quit.\n");
+	printCommandsMenu();
 	printf("Collecting data at 20Hz....\n");
 	//WaitForUserIfWindows();
 	// Main run loop:
@@ -82,20 +83,48 @@ int main()
 		character = _getch();
 		character = toupper(character);
 		if (character == 'Q') {
+			cout << "Quitting..." << endl;
 			terminateExecution = 1;
 		}
 		else if (character == 'S') {
 			// Preview the current data
+			cout << "Previewing current data..." << endl;
 
 		}
 		else if (character == 'P') {
 			// Prints the current data
-				// Iterate through all found Labjacks
+			cout << "Printing current data..." << endl;
+			// Iterate through all found Labjacks
 			for (int i = 0; i < foundLabjacks.size(); i++) {
 				//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
 				//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
 				foundLabjacks[i]->diagnosticPrintLastValues();
 			}
+		}
+		else if (character == 'R') {
+			cout << "Refreshing Labjacks..." << endl;
+			int previouslyFoundLabjackSerialNumbers[max_number_labjacks] = {};
+			int numberPreviouslyFoundLabjacks = foundLabjacks.size();
+			for (int i = 0; i < numberPreviouslyFoundLabjacks; i++) {
+				previouslyFoundLabjackSerialNumbers[i] = foundLabjacks[i]->getSerialNumber();
+			}
+
+			// Find the labjacks
+			std::vector<BehavioralBoxLabjack*> newlyFoundAdditionalLabjacks = LabjackHelpers::findAllLabjacks(previouslyFoundLabjackSerialNumbers, numberPreviouslyFoundLabjacks);
+
+			if (newlyFoundAdditionalLabjacks.size() > 0) {
+				cout << "Found " << newlyFoundAdditionalLabjacks.size() << " new labjacks!" << endl;
+				// Iterate through all newly found labjacks and append them to the list of found labjacks
+				for (int i = 0; i < newlyFoundAdditionalLabjacks.size(); i++) {
+					foundLabjacks.push_back(newlyFoundAdditionalLabjacks[i]);
+				}
+			}
+			else {
+				cout << "Found no new labjacks." << endl;
+			}
+		}
+		else {
+			printCommandsMenu();
 		}
 
 	} while (terminateExecution != 1);
@@ -103,6 +132,16 @@ int main()
 	printf("Done.");
 
 	return LJME_NOERROR;
+}
+
+
+// Print the list of options to execute
+void printCommandsMenu() {
+	cout << "Commands: " << endl;
+	cout << "\t Press [p] at any time to print the most recently read values." << endl;
+	cout << "\t Press [r] at any refresh and scan for more labjacks." << endl;
+	cout << "\t Press [q] at any time to quit." << endl;
+	cout << "\t Press any other key at any time to show this list of commands." << endl;
 }
 
 // Ran at the top of every hour

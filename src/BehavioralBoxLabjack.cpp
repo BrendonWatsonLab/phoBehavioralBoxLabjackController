@@ -24,16 +24,19 @@
 
 
 
-BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, const char * iden) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), iden) {}
+BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, int serialNumber) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), serialNumber) {}
 
 // Constructor: Called when an instance of the object is about to be created
-BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, const char * iden): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), lastCaptureComputerTime(Clock::now())
+BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, int serialNumber): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), lastCaptureComputerTime(Clock::now())
 {
-
+	this->serialNumber = serialNumber;
+	char iden[256];
+	sprintf(iden, "%d", this->serialNumber);
 	
 	// Open the LabjackConnection and load some information
 	this->uniqueIdentifier = uniqueIdentifier;
 	this->err = LJM_OpenS(devType, connType, iden, &this->handle);
+	this->printIdentifierLine();
 	ErrorCheck(this->err, "LJM_OpenS");
 
 	char string[LJM_STRING_ALLOCATION_SIZE];
@@ -41,16 +44,16 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	// Get device name
 	this->err = LJM_eReadNameString(this->handle, "DEVICE_NAME_DEFAULT", string);
 	if (this->err == LJME_NOERROR)
-		printf("DEVICE_NAME_DEFAULT: %s\n", string);
+		printf("\t DEVICE_NAME_DEFAULT: %s\n", string);
 	else
-		printf("This device does not have a name\n");
+		printf("\t This device does not have a name\n");
 
 	// Get device info
-	this->err = LJM_GetHandleInfo(this->handle, &deviceType, &connectionType, &serialNumber, &ipAddress,
+	this->err = LJM_GetHandleInfo(this->handle, &deviceType, &connectionType, &this->serialNumber, &ipAddress,
 		&portOrPipe, &packetMaxBytes);
 	ErrorCheck(this->err, "LJM_GetHandleInfo");
 
-	this->diagnosticPrint();
+	//this->diagnosticPrint();
 
 	// File Management
 	// Build the file name
@@ -62,7 +65,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 
 	// Builds the filename in the form "out_file_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}"
 	std::ostringstream os;
-	os << "out_file_s" << serialNumber << "_" << milliseconds_since_epoch << ".csv";
+	os << "out_file_s" << this->serialNumber << "_" << milliseconds_since_epoch << ".csv";
 	this->filename = os.str();
 	// Build the full file path
 	if (this->outputDirectory.empty()) {
@@ -71,7 +74,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	else {
 		this->fileFullPath = this->outputDirectory + this->filename;
 	}
-	std::cout << "New file path: " << this->fileFullPath << std::endl;
+	std::cout << "\t New file path: " << this->fileFullPath << std::endl;
 	
 	// Write the header to the .csv file:
 	this->csv.newRow() << "computerTime";
@@ -119,16 +122,24 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 
 void BehavioralBoxLabjack::diagnosticPrint()
 {
+	this->printIdentifierLine();
 	PrintDeviceInfo(deviceType, connectionType, serialNumber, ipAddress, portOrPipe, packetMaxBytes);
 	printf("\n");
 	GetAndPrint(handle, "HARDWARE_VERSION");
 	GetAndPrint(handle, "FIRMWARE_VERSION");
 }
 
+// Prints the line that uniquely identifies this labjack
+void BehavioralBoxLabjack::printIdentifierLine()
+{
+	cout << ">> Labjack [" << this->serialNumber << "] :" << endl;
+}
+
 void BehavioralBoxLabjack::diagnosticPrintLastValues()
 {
+	this->printIdentifierLine();
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
-	std::cout << milliseconds_since_epoch;
+	std::cout << "\t " << milliseconds_since_epoch;
 	for (int i = 0; i < NUM_CHANNELS; i++) {
 		//if (inputPortValuesChanged[i] == true) {
 		//	// The input port changed from the previous value
@@ -165,20 +176,21 @@ double BehavioralBoxLabjack::syncDeviceTimes()
 	int LJMError;
 	time_t originalLabjackTime = this->getTime();
 	LJMError = this->getError();
-	printf("LABJACK TIME: %s\n", ctime(&originalLabjackTime));
 
+	this->printIdentifierLine();
+	printf("\t LABJACK TIME: %s", ctime(&originalLabjackTime));
 	// Get the computer time:
 	time_t computerTime;
 	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-	printf("COMPUTER TIME: %s\n", ctime(&computerTime));
+	printf("\t COMPUTER TIME: %s", ctime(&computerTime));
 
 	double updateChangeSeconds = difftime(computerTime, originalLabjackTime);
 
 	if (updateChangeSeconds == 0) {
-		printf("Computer time is already synced with Labjack time!\n");
+		printf("\t Computer time is already synced with Labjack time!\n");
 	}
 	else {
-		printf("Computer time is %.f seconds from Labjack time...\n", updateChangeSeconds);
+		printf("\t Computer time is %.f seconds from Labjack time...", updateChangeSeconds);
 		// Write the computer time to the Labjack
 		this->setTime(computerTime);
 		LJMError = this->getError();
@@ -186,7 +198,7 @@ double BehavioralBoxLabjack::syncDeviceTimes()
 		// Re-read the time to confirm the update
 		time_t updatedLabjackTime = this->getTime();
 		LJMError = this->getError();
-		printf("Updated Labjack TIME: %s\n", ctime(&updatedLabjackTime));
+		printf("\t Updated Labjack TIME: %s\n", ctime(&updatedLabjackTime));
 	}
 	return updateChangeSeconds;
 }
@@ -194,6 +206,7 @@ double BehavioralBoxLabjack::syncDeviceTimes()
 void BehavioralBoxLabjack::setVisibleLightRelayState(bool isOn)
 {
 	// Set up for setting DIO state
+	this->printIdentifierLine();
 	double value = 0; // Output state = low (0 = low, 1 = high)
 	char * portName = globalLabjackLightRelayPortName;
 	if (isOn) {
@@ -207,7 +220,7 @@ void BehavioralBoxLabjack::setVisibleLightRelayState(bool isOn)
 	// Set DIO state on the LabJack
 	this->err = LJM_eWriteName(this->handle, portName, value);
 	ErrorCheck(this->err, "LJM_eWriteName");
-	printf("\nSet %s state : %f\n", portName, value);
+	printf("\t Set %s state : %f\n", portName, value);
 }
 
 void BehavioralBoxLabjack::readSensorValues()
