@@ -244,7 +244,8 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 	CSVWriter newCSVLine(",");
 
 	if (enableConsoleLogging) {
-		cout << milliseconds_since_epoch << ": ";
+		this->printIdentifierLine();
+		cout << "\t " << milliseconds_since_epoch << ": ";
 	}
 	newCSVLine.newRow() << milliseconds_since_epoch;
 	for (int i = 0; i < NUM_CHANNELS; i++) {
