@@ -27,6 +27,7 @@ public:
 	~BehavioralBoxLabjack();
 
 	void diagnosticPrint();
+	void printIdentifierLine();
 	void diagnosticPrintLastValues();
 	int getError();
 
