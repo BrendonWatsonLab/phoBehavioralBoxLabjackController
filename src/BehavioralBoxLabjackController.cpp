@@ -41,6 +41,8 @@ void runTopOfMinuteUpdate();
 void runTopOfSecondUpdate();
 void runPollingLoopUpdate();
 
+void printCommandsMenu();
+
 
 int main()
 {
@@ -67,9 +69,7 @@ int main()
 		// Perhaps turning the lights on and off should belong to the individual boxes as well.
 		// Main should have perhaps an array of things?
 
-	printf("Press [p] at any time to print the most recently read values.\n");
-	printf("Press [r] at any refresh and scan for more labjacks.\n");
-	printf("Press [q] at any time to quit.\n");
+	printCommandsMenu();
 	printf("Collecting data at 20Hz....\n");
 	//WaitForUserIfWindows();
 	// Main run loop:
@@ -123,12 +123,25 @@ int main()
 				cout << "Found no new labjacks." << endl;
 			}
 		}
+		else {
+			printCommandsMenu();
+		}
 
 	} while (terminateExecution != 1);
 
 	printf("Done.");
 
 	return LJME_NOERROR;
+}
+
+
+// Print the list of options to execute
+void printCommandsMenu() {
+	cout << "Commands: " << endl;
+	cout << "\t Press [p] at any time to print the most recently read values." << endl;
+	cout << "\t Press [r] at any refresh and scan for more labjacks." << endl;
+	cout << "\t Press [q] at any time to quit." << endl;
+	cout << "\t Press any other key at any time to show this list of commands." << endl;
 }
 
 // Ran at the top of every hour
