@@ -3,6 +3,10 @@
 #include <chrono>
 #include <string>
 
+//TODO: Enable analog mode "tolerances" for determining if value changed.
+//TODO: Enable analog mode "thresholds/ranges" for determining if value changed.
+//TODO: Enable custom port names
+
 // Manages the input state for a single pin. Responsible for detecting changes.
 typedef std::chrono::system_clock Clock;
 
