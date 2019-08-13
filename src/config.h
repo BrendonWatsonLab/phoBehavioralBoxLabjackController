@@ -14,15 +14,15 @@ Specifies what ports to open
 //enum { NUM_CHANNELS = 11 };
 //#define globalLabjackInputPortNames { "DIO0","DIO1","DIO2","DIO3","DIO4","DIO5","DIO6","DIO7","MIO0" }
 
-//#define globalLabjackInputPortNames { "DIO0","DIO1","DIO2","DIO3","DIO4","DIO5","DIO6","DIO7","MIO0" }
-#define globalLabjackInputPortNames { "EIO0","EIO1","EIO2","EIO3","EIO4","EIO5","EIO6","EIO7","MIO0"}
+#define globalLabjackInputPortNames { "DIO0","DIO1","DIO2","DIO3","DIO4","DIO5","DIO6","DIO7","MIO0" }
+//#define globalLabjackInputPortNames { "EIO0","EIO1","EIO2","EIO3","EIO4","EIO5","EIO6","EIO7","MIO0"}
 
 //#define globalLabjackInputPortNames { "FIO0","FIO1","FIO2","FIO3","AIN0","AIN1","AIN2","AIN3","MIO0" }
 
 enum { NUM_CHANNELS = 9 };
 #define globalLabjackInputPortPurpose { "Water1_BeamBreak","Water2_BeamBreak","Food1_BeamBreak","Food2_BeamBreak","Water1_Dispense","Water2_Dispense","Food1_Dispense","Food2_Dispense","MIO0"}
 
-#define globalLabjackOutputPortNames { "MIO2","FIO0","FIO1" }
+#define globalLabjackOutputPortNames { "MIO2","MIO1","MIO1" }
 //#define globalLabjackOutputPortNames { "FIO2" }
 enum { NUM_OUTPUT_CHANNELS = 3 };
 
