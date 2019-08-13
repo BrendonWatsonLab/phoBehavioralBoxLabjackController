@@ -88,7 +88,7 @@ private:
 
 	// Vector of Output Port Objects
 	char* outputPortNames[NUM_OUTPUT_CHANNELS] = globalLabjackOutputPortNames;
-	std::vector<OutputState*> outputPorts;
+	std::vector<OutputState*> outputPorts = {};
 
 	// Time Keeping
 	std::chrono::time_point<Clock> lastCaptureComputerTime;

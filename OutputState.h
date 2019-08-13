@@ -8,14 +8,17 @@ typedef std::chrono::system_clock Clock;
 class OutputState
 {
 public:
-	OutputState();
+	//OutputState();
 	OutputState(std::string pinName);
 	~OutputState();
 
 	// returns true if the output state has been changed
 	bool set(std::chrono::time_point<Clock> refreshTime, double readValue);
 
-	std::string pinName = "";
+	std::string getPinName() { return this->pinName;  }
+
+private:
+	std::string pinName = "ERR";
 	bool presumedPinState = false; //Either high (true) or false (low)
 
 	std::chrono::time_point<Clock> last_change_time = Clock::now(); // The most recent time that the pin's value was changed.

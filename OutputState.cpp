@@ -1,11 +1,13 @@
 #include "OutputState.h"
 
-OutputState::OutputState()
-{
-}
+//OutputState::OutputState()
+//{
+//	this->pinName = "ERR";
+//}
 
-OutputState::OutputState(std::string pinName) : pinName{ pinName }
+OutputState::OutputState(std::string aPinName): pinName(std::move(aPinName))
 {
+	
 }
 
 

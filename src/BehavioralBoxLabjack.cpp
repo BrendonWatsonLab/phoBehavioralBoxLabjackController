@@ -84,11 +84,12 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	this->csv.writeToFile(fileFullPath, false);
 
 	// Setup output ports states:
-	this->outputPorts = {};
+	//this->outputPorts = {};
 	// Create output ports for all output ports (TODO: make dynamic)
 	for (int i = 0; i < NUM_OUTPUT_CHANNELS; i++) {
 		std::string portName = std::string(outputPortNames[i]);
-		this->outputPorts.push_back(&OutputState(portName));
+		OutputState* currOutputPort = new OutputState(portName);
+		this->outputPorts.push_back(currOutputPort);
 	}
 
 	// Setup input state 
@@ -112,6 +113,11 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	this->shouldStop = true;
 	//Read the values and save them one more time, so we know when the end of data collection occured.
 	this->readSensorValues();
+
+	// Cleanup output ports vector
+	for (int i = 0; i < NUM_OUTPUT_CHANNELS; i++) {
+		delete this->outputPorts[i];
+	}
 
 	// Destroy the object's thread at the very start of its destructor
 	delete this->scheduler;
@@ -245,14 +251,15 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 	for (int i = 0; i < outputPorts.size(); i++)
 	{
 		// Get the appropriate value for the current port (TODO: calculate it).
-		int outputValue = 1;
+		double outputValue = 1.0;
 
 		// Check to see if the value changed, and if it did, write it.
 		bool didChange = outputPorts[i]->set(writeTime, outputValue);
 
 		if (didChange || shouldForceWrite) {
 			// Get the c_string name to pass to the labjack write function
-			const char* portName = outputPorts[i]->pinName.c_str();
+			std::string portNameString = outputPorts[i]->getPinName();
+			const char* portName = portNameString.c_str();
 
 			// Set DIO state on the LabJack
 			this->err = LJM_eWriteName(this->handle, portName, outputValue);
