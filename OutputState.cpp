@@ -5,7 +5,7 @@
 //	this->pinName = "ERR";
 //}
 
-OutputState::OutputState(std::string aPinName): pinName(std::move(aPinName))
+OutputState::OutputState(std::string aPinName, std::function<bool()> function): pinName(std::move(aPinName)), value_function(function)
 {
 	
 }

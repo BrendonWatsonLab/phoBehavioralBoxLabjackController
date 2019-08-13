@@ -45,6 +45,7 @@ public:
 
 	// Light Control
 	bool isArtificialDaylightHours();
+	bool isAttractModeLEDLit(int portNumber);
 	void updateVisibleLightRelayIfNeeded();
 
 	// Write Output Pin values

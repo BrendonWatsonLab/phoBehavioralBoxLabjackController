@@ -84,13 +84,33 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	this->csv.writeToFile(fileFullPath, false);
 
 	// Setup output ports states:
-	//this->outputPorts = {};
+	std::function<double()> visibleLEDRelayFunction = [=]() -> double {
+		if (!this->isArtificialDaylightHours()) { return 0.0; }
+		else { return 1.0; }
+	};
+	//std::function<double(int)> drinkingPortAttractorModeFunction = [=](int portNumber) -> double {
+	//	if (!this->isAttractModeLEDLit(portNumber)) { return 0.0; }
+	//	else { return 1.0; }
+	//};
+
 	// Create output ports for all output ports (TODO: make dynamic)
 	for (int i = 0; i < NUM_OUTPUT_CHANNELS; i++) {
 		std::string portName = std::string(outputPortNames[i]);
-		OutputState* currOutputPort = new OutputState(portName);
+		OutputState* currOutputPort;
+		if (i == 0) {
+			currOutputPort = new OutputState(portName, visibleLEDRelayFunction);
+		}
+		else {
+			std::function<double()> drinkingPortAttractorModeFunction = [=]() -> double {
+				if (!this->isAttractModeLEDLit(i)) { return 0.0; }
+				else { return 1.0; }
+			};
+			currOutputPort = new OutputState(portName, drinkingPortAttractorModeFunction);
+		}
+		
 		this->outputPorts.push_back(currOutputPort);
 	}
+	//TODO: force initializiation
 
 	// Setup input state 
 	this->monitor = new StateMonitor();
@@ -218,25 +238,25 @@ double BehavioralBoxLabjack::syncDeviceTimes()
 	return updateChangeSeconds;
 }
 
-void BehavioralBoxLabjack::setVisibleLightRelayState(bool isOn)
-{
-	// Set up for setting DIO state
-	this->printIdentifierLine();
-	double value = 0; // Output state = low (0 = low, 1 = high)
-	char * portName = globalLabjackLightRelayPortName;
-	if (isOn) {
-		// It's day-time
-		value = 0;
-	}
-	else {
-		// It's night-time
-		value = 1;
-	}
-	// Set DIO state on the LabJack
-	this->err = LJM_eWriteName(this->handle, portName, value);
-	ErrorCheck(this->err, "LJM_eWriteName");
-	printf("\t Set %s state : %f\n", portName, value);
-}
+//void BehavioralBoxLabjack::setVisibleLightRelayState(bool isOn)
+//{
+//	// Set up for setting DIO state
+//	this->printIdentifierLine();
+//	double value = 0; // Output state = low (0 = low, 1 = high)
+//	char * portName = globalLabjackLightRelayPortName;
+//	if (isOn) {
+//		// It's day-time
+//		value = 0;
+//	}
+//	else {
+//		// It's night-time
+//		value = 1;
+//	}
+//	// Set DIO state on the LabJack
+//	this->err = LJM_eWriteName(this->handle, portName, value);
+//	ErrorCheck(this->err, "LJM_eWriteName");
+//	printf("\t Set %s state : %f\n", portName, value);
+//}
 
 void BehavioralBoxLabjack::writeOutputPinValues()
 {
@@ -251,7 +271,7 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 	for (int i = 0; i < outputPorts.size(); i++)
 	{
 		// Get the appropriate value for the current port (TODO: calculate it).
-		double outputValue = 1.0;
+		double outputValue = outputPorts[i]->getValue();
 
 		// Check to see if the value changed, and if it did, write it.
 		bool didChange = outputPorts[i]->set(writeTime, outputValue);
@@ -355,8 +375,18 @@ bool BehavioralBoxLabjack::isArtificialDaylightHours()
 	}
 }
 
+bool BehavioralBoxLabjack::isAttractModeLEDLit(int portNumber)
+{
+	time_t currTime = time(NULL);
+	struct tm* currLocalTime = localtime(&currTime);
+	int second = currLocalTime->tm_sec;
+	// Return true if it's even. Changes every second
+	return (second % 2);
+}
+
 void BehavioralBoxLabjack::updateVisibleLightRelayIfNeeded()
 {
-	bool isDay = isArtificialDaylightHours();
-	this->setVisibleLightRelayState(isDay);
+	this->writeOutputPinValues(true);
+	//bool isDay = isArtificialDaylightHours();
+	//this->setVisibleLightRelayState(isDay);
 }
