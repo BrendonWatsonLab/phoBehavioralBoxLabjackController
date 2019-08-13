@@ -9,8 +9,10 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "External/CSVWriter.h"
 #include "../StateMonitor.h"
+#include "../OutputState.h"
 
 typedef std::chrono::system_clock Clock;
 
@@ -44,6 +46,10 @@ public:
 	// Light Control
 	bool isArtificialDaylightHours();
 	void updateVisibleLightRelayIfNeeded();
+
+	// Write Output Pin values
+	void writeOutputPinValues();
+	void writeOutputPinValues(bool shouldForceWrite);
 
 	// Read Sensor values
 	void readSensorValues();
@@ -79,6 +85,10 @@ private:
 	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
 	bool inputPortValuesChanged[NUM_CHANNELS] = {false};
 	int errorAddress;
+
+	// Vector of Output Port Objects
+	char* outputPortNames[NUM_OUTPUT_CHANNELS] = globalLabjackOutputPortNames;
+	std::vector<OutputState*> outputPorts;
 
 	// Time Keeping
 	std::chrono::time_point<Clock> lastCaptureComputerTime;

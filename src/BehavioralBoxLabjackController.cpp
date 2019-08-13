@@ -51,6 +51,7 @@ int main()
 
 	if (foundLabjacks.size() == 0) {
 		printf("No labjacks found!!\n");
+		printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.");
 		return LJME_NO_DEVICES_FOUND;
 	}
 	// Iterate through all found Labjacks
