@@ -83,6 +83,16 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	}
 	this->csv.writeToFile(fileFullPath, false);
 
+	// Setup output ports states:
+	//this->outputPorts = {};
+	// Create output ports for all output ports (TODO: make dynamic)
+	for (int i = 0; i < NUM_OUTPUT_CHANNELS; i++) {
+		std::string portName = std::string(outputPortNames[i]);
+		OutputState* currOutputPort = new OutputState(portName);
+		this->outputPorts.push_back(currOutputPort);
+	}
+
+	// Setup input state 
 	this->monitor = new StateMonitor();
 
 	// Create the object's thread at the very end of its constructor
@@ -103,6 +113,11 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	this->shouldStop = true;
 	//Read the values and save them one more time, so we know when the end of data collection occured.
 	this->readSensorValues();
+
+	// Cleanup output ports vector
+	for (int i = 0; i < NUM_OUTPUT_CHANNELS; i++) {
+		delete this->outputPorts[i];
+	}
 
 	// Destroy the object's thread at the very start of its destructor
 	delete this->scheduler;
@@ -223,6 +238,38 @@ void BehavioralBoxLabjack::setVisibleLightRelayState(bool isOn)
 	printf("\t Set %s state : %f\n", portName, value);
 }
 
+void BehavioralBoxLabjack::writeOutputPinValues()
+{
+	this->writeOutputPinValues(false);
+}
+void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
+{
+	auto writeTime = Clock::now();
+
+	//Loop through and write the values that have changed
+	// Iterate through the output ports
+	for (int i = 0; i < outputPorts.size(); i++)
+	{
+		// Get the appropriate value for the current port (TODO: calculate it).
+		double outputValue = 1.0;
+
+		// Check to see if the value changed, and if it did, write it.
+		bool didChange = outputPorts[i]->set(writeTime, outputValue);
+
+		if (didChange || shouldForceWrite) {
+			// Get the c_string name to pass to the labjack write function
+			std::string portNameString = outputPorts[i]->getPinName();
+			const char* portName = portNameString.c_str();
+
+			// Set DIO state on the LabJack
+			this->err = LJM_eWriteName(this->handle, portName, outputValue);
+			ErrorCheck(this->err, "LJM_eWriteName");
+			printf("\t Set %s state : %f\n", portName, outputValue);
+		}
+	}
+
+}
+
 void BehavioralBoxLabjack::readSensorValues()
 {
 	//time(&this->lastCaptureComputerTime);  /* get current time; same as: timer = time(NULL)  */
@@ -244,7 +291,8 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 	CSVWriter newCSVLine(",");
 
 	if (enableConsoleLogging) {
-		cout << milliseconds_since_epoch << ": ";
+		this->printIdentifierLine();
+		cout << "\t " << milliseconds_since_epoch << ": ";
 	}
 	newCSVLine.newRow() << milliseconds_since_epoch;
 	for (int i = 0; i < NUM_CHANNELS; i++) {
@@ -277,6 +325,7 @@ void BehavioralBoxLabjack::runPollingLoop()
 	}
 	else {
 		this->readSensorValues();
+		this->writeOutputPinValues();
 	}
 }
 
