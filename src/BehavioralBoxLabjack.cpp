@@ -84,6 +84,9 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	this->csv.writeToFile(fileFullPath, false);
 
 	// Setup output ports states:
+	this->water1PortEndIlluminationTime = Clock::now();
+	this->water2PortEndIlluminationTime = Clock::now();
+
 	std::function<double()> visibleLEDRelayFunction = [=]() -> double {
 		if (this->isArtificialDaylightHours()) { return 0.0; }
 		else { return 1.0; }
@@ -238,26 +241,6 @@ double BehavioralBoxLabjack::syncDeviceTimes()
 	return updateChangeSeconds;
 }
 
-//void BehavioralBoxLabjack::setVisibleLightRelayState(bool isOn)
-//{
-//	// Set up for setting DIO state
-//	this->printIdentifierLine();
-//	double value = 0; // Output state = low (0 = low, 1 = high)
-//	char * portName = globalLabjackLightRelayPortName;
-//	if (isOn) {
-//		// It's day-time
-//		value = 0;
-//	}
-//	else {
-//		// It's night-time
-//		value = 1;
-//	}
-//	// Set DIO state on the LabJack
-//	this->err = LJM_eWriteName(this->handle, portName, value);
-//	ErrorCheck(this->err, "LJM_eWriteName");
-//	printf("\t Set %s state : %f\n", portName, value);
-//}
-
 void BehavioralBoxLabjack::writeOutputPinValues()
 {
 	this->writeOutputPinValues(false);
@@ -319,6 +302,17 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues[i]);
 		if (inputPortValuesChanged[i] == true) {
 			// The input port changed from the previous value
+			// Special handling for the water ports. If the port is a water port that has transitioned from off to on, set the appropriate "this->water*PortEndIlluminationTime" variable so the port is illuminated for a second after dispense.
+			if (this->lastReadInputPortValues[i] > 0.0) {
+				// If the port transitioned from off to on:
+				if (strcmp(this->inputPortPurpose[i], "Water1_BeamBreak") == 0) {
+					auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(this->lastCaptureComputerTime);
+					this->water1PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
+				}
+				else if (strcmp(this->inputPortPurpose[i], "Water2_BeamBreak") == 0) {
+					this->water2PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
+				}
+			}
 
 		}
 		newCSVLine << this->lastReadInputPortValues[i];
@@ -377,11 +371,26 @@ bool BehavioralBoxLabjack::isArtificialDaylightHours()
 
 bool BehavioralBoxLabjack::isAttractModeLEDLit(int portNumber)
 {
-	time_t currTime = time(NULL);
-	struct tm* currLocalTime = localtime(&currTime);
-	int second = currLocalTime->tm_sec;
-	// Return true if it's even. Changes every second
-	return (second % 2);
+	auto currentTime = Clock::now();
+	if (portNumber == 1) {
+		if (currentTime <= this->water1PortEndIlluminationTime) {
+			return true;
+		}
+		else { 
+			return false;
+		}
+	}
+	else if (portNumber == 2) {
+		if (currentTime <= this->water2PortEndIlluminationTime) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
 }
 
 void BehavioralBoxLabjack::updateVisibleLightRelayIfNeeded()

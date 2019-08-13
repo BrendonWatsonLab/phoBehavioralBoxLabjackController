@@ -82,6 +82,7 @@ private:
 	// Variables for holding the last read values
 	StateMonitor* monitor;
 	char * inputPortNames[NUM_CHANNELS] = globalLabjackInputPortNames;
+	char * inputPortPurpose[NUM_CHANNELS] = globalLabjackInputPortPurpose;
 	double previousReadInputPortValues[NUM_CHANNELS] = {0.0};
 	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
 	bool inputPortValuesChanged[NUM_CHANNELS] = {false};
@@ -95,12 +96,17 @@ private:
 	std::chrono::time_point<Clock> lastCaptureComputerTime;
 	Bosma::Scheduler* scheduler; // For wallTime based scheduling
 
+	// The time each water port LED should remain lit after a dispense event
+	std::chrono::time_point<Clock> water1PortEndIlluminationTime;
+	std::chrono::time_point<Clock> water2PortEndIlluminationTime;
+
+
 	// Scheduled tasks
 	void runTopOfHourUpdate(); // Runs at the top of every hour (exactly on the hour, according to system time).
 	//void runTopOfMinuteUpdate();
 
 	// Visible Light Relay Control
-	void setVisibleLightRelayState(bool isOn);
+	//void setVisibleLightRelayState(bool isOn);
 
 };
 
