@@ -51,6 +51,7 @@ public:
 	// Write Output Pin values
 	void writeOutputPinValues();
 	void writeOutputPinValues(bool shouldForceWrite);
+	bool isManualAttractModeEnabled = false;
 
 	// Read Sensor values
 	void readSensorValues();

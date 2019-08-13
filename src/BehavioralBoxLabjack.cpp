@@ -373,7 +373,7 @@ bool BehavioralBoxLabjack::isAttractModeLEDLit(int portNumber)
 {
 	auto currentTime = Clock::now();
 	if (portNumber == 1) {
-		if (currentTime <= this->water1PortEndIlluminationTime) {
+		if (this->isManualAttractModeEnabled || (currentTime <= this->water1PortEndIlluminationTime)) {
 			return true;
 		}
 		else { 
@@ -381,7 +381,7 @@ bool BehavioralBoxLabjack::isAttractModeLEDLit(int portNumber)
 		}
 	}
 	else if (portNumber == 2) {
-		if (currentTime <= this->water2PortEndIlluminationTime) {
+		if (this->isManualAttractModeEnabled || (currentTime <= this->water2PortEndIlluminationTime)) {
 			return true;
 		}
 		else {
