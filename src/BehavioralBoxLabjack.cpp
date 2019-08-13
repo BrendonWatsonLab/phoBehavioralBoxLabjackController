@@ -85,7 +85,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 
 	// Setup output ports states:
 	std::function<double()> visibleLEDRelayFunction = [=]() -> double {
-		if (!this->isArtificialDaylightHours()) { return 0.0; }
+		if (this->isArtificialDaylightHours()) { return 0.0; }
 		else { return 1.0; }
 	};
 	//std::function<double(int)> drinkingPortAttractorModeFunction = [=](int portNumber) -> double {
