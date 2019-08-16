@@ -33,5 +33,11 @@ enum { NUM_OUTPUT_CHANNELS = 3 };
 //#define globalLabjackInputPortNames { "AIN0" }
 //enum { NUM_CHANNELS = 1 };
 
+// globalDaylightStartHour: defines the hour of the day (in a 24-hour format) at which the Visible LEDS are turned on (illuminated) (simulating daylight for the mouse).
+#define globalDaylightStartHour 6
+////Ex: 6: The lights turn on at 6am and remain on until the subsequent globalDaylightOffHour
+// globalDaylightOffHour: defines the hour of the day (in a 24-hour format) at which the Visible LEDS are turned off (simulating nighttime for the mouse).
+#define globalDaylightOffHour 18
+////Ex: 18: The lights turn off at 6pm and remain off until the subsequent globalDaylightStartHour
 
 # define waterPort1_Index 

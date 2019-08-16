@@ -441,8 +441,10 @@ bool BehavioralBoxLabjack::isArtificialDaylightHours()
 	struct tm *currLocalTime = localtime(&currTime);
 
 	int hour = currLocalTime->tm_hour;
-	// Note this is strictly less than 6 and strictly greater than 18, so it turns on at 6am off at 7pm
-	if ((hour < 6) || (hour > 18)) {
+	// Note this has been changed as of 8/16/2019.
+	// globalDaylightStartHour: defines the hour of the day at which the Visible LEDS are turned on (illuminated) (simulating daylight for the mouse).
+	// globalDaylightOffHour: defines the hour of the day at which the Visible LEDS are turned off (simulating nighttime for the mouse).
+	if ((hour < globalDaylightStartHour) || (hour >= globalDaylightOffHour)) {
 		// It's night-time
 		return false;
 	}
