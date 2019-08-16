@@ -61,6 +61,7 @@ public:
 	// Getters:
 	int getSerialNumber() { return this->serialNumber; }
 	bool isVisibleLEDLit();
+	string getFullFilePath() { return this->fileFullPath; }
 
 	// Override Functions
 	void toggleOverrideMode_VisibleLED();

@@ -23,5 +23,16 @@ public:
 
 	static bool blinkIsIlluminated();
 
+	// Utility std::string and std::wstring conversion functions:
+	static std::wstring s2ws(const std::string& str);
+	static std::string ws2s(const std::wstring& wstr);
+
+	// Windows Path manipulation functions:
+	//static std::string getCurrentWorkingDirectory();
+	static std::string getFullPath(std::string relativePath);
+
+	static bool showInExplorer(const std::string path);
+
+
 };
 

@@ -88,9 +88,21 @@ int main()
 			terminateExecution = 1;
 		}
 		else if (character == 'S') {
-			// Preview the current data
-			cout << "Previewing current data..." << endl;
+			// Show the data files:
+			cout << "Showing current log files..." << endl;
+			// Iterate through all found Labjacks
+			for (int i = 0; i < foundLabjacks.size(); i++) {
+				//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
+				//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
+				std::string foundRelativeFilePathString = foundLabjacks[i]->getFullFilePath();
+				std::string fullFilePathString = LabjackHelpers::getFullPath(foundRelativeFilePathString);
 
+				//const char* portName = foundFilePathString.c_str();
+
+				cout << "\t Showing log file at " << fullFilePathString << endl;
+				LabjackHelpers::showInExplorer(fullFilePathString);
+			}
+			cout << "done.";
 		}
 		else if (character == 'P') {
 			// Prints the current data
@@ -153,7 +165,8 @@ int main()
 // Print the list of options to execute
 void printCommandsMenu() {
 	cout << "Commands: " << endl;
-	cout << "\t Press [p] at any time to print the most recently read values." << endl;
+	cout << "\t Press [p] at any time to print the most recently read values for all labjacks." << endl;
+	cout << "\t Press [s] at any time to show the current log files for all labjacks." << endl;
 	cout << "\t Press [r] at any time to refresh and scan for more labjacks." << endl;
 	cout << "\t Press [l] at any time to toggle visible LED Light mode for all labjacks." << endl;
 	cout << "\t Press [a] at any time to toggle Attract mode for all labjacks." << endl;

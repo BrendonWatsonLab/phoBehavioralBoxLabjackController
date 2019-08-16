@@ -7,6 +7,15 @@
 #include <LabJackM.h>
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 
+// For displaying the log file in Windows Explorer
+#include <windows.h>
+#include <tchar.h>
+#include <shellapi.h>
+#pragma comment(lib, "shell32")
+
+#include <locale>
+#include <codecvt>
+#define BUFSIZE 4096
 
 LabjackHelpers::LabjackHelpers()
 {
@@ -193,4 +202,144 @@ bool LabjackHelpers::blinkIsIlluminated()
 	int second = currLocalTime->tm_sec;
 	// Return true if it's even. Changes every second
 	return (second % 2);
+}
+
+std::wstring LabjackHelpers::s2ws(const std::string& str)
+{
+	using convert_typeX = std::codecvt_utf8<wchar_t>;
+	std::wstring_convert<convert_typeX, wchar_t> converterX;
+
+	return converterX.from_bytes(str);
+}
+
+std::string LabjackHelpers::ws2s(const std::wstring& wstr)
+{
+	using convert_typeX = std::codecvt_utf8<wchar_t>;
+	std::wstring_convert<convert_typeX, wchar_t> converterX;
+
+	return converterX.to_bytes(wstr);
+}
+
+//std::wstring LabjackHelpers::s2ws(const std::string& s)
+//{
+//	int len;
+//	int slength = (int)s.length() + 1;
+//	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+//	wchar_t* buf = new wchar_t[len];
+//	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+//	std::wstring r(buf);
+//	delete[] buf;
+//	return r;
+//}
+
+
+
+//
+//std::string LabjackHelpers::getCurrentWorkingDirectory()
+//{
+//	DWORD retval = 0;
+//	TCHAR buffer[BUFSIZE] = TEXT("");
+//	TCHAR** lppPart = { NULL };
+//	// Retrieve the full path name for a file. 
+//	// The file does not need to exist.
+//	retval = GetCurrentDirectory(BUFSIZE, buffer);
+//
+//	retval = GetFullPathName(argv[1],
+//		BUFSIZE,
+//		buffer,
+//		lppPart);
+//
+//	if (retval == 0)
+//	{
+//		// Handle an error condition.
+//		printf("GetFullPathName failed (%d)\n", GetLastError());
+//		return;
+//	}
+//	else
+//	{
+//		_tprintf(TEXT("The full path name is:  %s\n"), buffer);
+//		if (lppPart != NULL && *lppPart != 0)
+//		{
+//			_tprintf(TEXT("The final component in the path name is:  %s\n"), *lppPart);
+//		}
+//	}
+//
+//
+//	GetFullPathNameA()
+//	return std::string();
+//}
+
+std::string LabjackHelpers::getFullPath(std::string relativePath)
+{
+	std::string outputString;
+	DWORD retval = 0;
+	TCHAR buffer[BUFSIZE] = TEXT("");
+	TCHAR** lppPart = { NULL };
+
+	// From https://stackoverflow.com/questions/27220/how-to-convert-stdstring-to-lpcwstr-in-c-unicode
+	std::wstring stemp = s2ws(relativePath);
+	LPCWSTR resultRelativePathString = stemp.c_str();
+	// Retrieve the full path name for a file. 
+	// The file does not need to exist.
+	retval = GetFullPathName(resultRelativePathString,
+		BUFSIZE,
+		buffer,
+		lppPart);
+
+	if (retval == 0)
+	{
+		// Handle an error condition.
+		printf("GetFullPathName failed (%d)\n", GetLastError());
+		return std::string();
+	}
+	else
+	{
+		_tprintf(TEXT("The full path name is:  %s\n"), buffer);
+		if (lppPart != NULL && *lppPart != 0)
+		{
+			_tprintf(TEXT("The final component in the path name is:  %s\n"), *lppPart);
+		}
+
+		// From https://stackoverflow.com/questions/6291458/how-to-convert-a-tchar-array-to-stdstring (Aemmel)
+#ifndef UNICODE
+		outputString = buffer;
+#else
+		std::wstring wStr = buffer;
+		outputString = std::string(wStr.begin(), wStr.end());
+#endif
+		return outputString;
+	}
+//// From https://stackoverflow.com/questions/6291458/how-to-convert-a-tchar-array-to-stdstring (Naszta)
+//#ifdef UNICODE
+//	/*/
+//	// Simple C
+//	const size_t size = ( wcslen(text) + 1 ) * sizeof(wchar_t);
+//	wcstombs(&buffer[0], text, size);
+//	std::vector<char> buffer(size);
+//	/*/
+//	// Windows API (I would use this)
+//	std::vector<char> output_buffer;
+//	int size = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, NULL, 0, NULL, NULL);
+//	if (size > 0) {
+//		output_buffer.resize(size);
+//		WideCharToMultiByte(CP_UTF8, 0, buffer, -1, static_cast<BYTE*>(&output_buffer[0]), output_buffer.size(), NULL, NULL);
+//	}
+//	else {
+//		// Error handling
+//	}
+//	//*/
+//	std::string string(&output_buffer[0]);
+//#else
+//	std::string string(text);
+//#endif
+
+	//return std::string(output_buffer);
+	return outputString;
+}
+
+bool LabjackHelpers::showInExplorer(const std::string path)
+{
+	//Displays the file at the path in its default application.
+	ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWDEFAULT);
+	return true;
 }
