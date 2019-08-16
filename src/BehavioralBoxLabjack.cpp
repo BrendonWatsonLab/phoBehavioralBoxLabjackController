@@ -378,22 +378,22 @@ void BehavioralBoxLabjack::toggleOverrideMode_VisibleLED()
 		// Override mode is already active (modes 1 or mode 2)
 		if (this->overrideValue_isVisibleLEDLit) {
 			// If the LED is already lit (mode 2), transition to (mode 0)
-			this->overrideValue_isVisibleLEDLit = false;
 			this->isOverrideActive_VisibleLED = false;
-			cout << "\tOverride<" << "Visible LED" << ">" << "Mode 0: Light Default Behavior";
+			this->overrideValue_isVisibleLEDLit = false;
+			cout << "\tOverride<" << "Visible LED" << ">" << "Mode 0: Light Default Behavior" << endl;
 		}
 		else {
 			// Otherwise if the LED is in (mode 1), transition to (mode 2)
 			this->overrideValue_isVisibleLEDLit = true;
 			this->isOverrideActive_VisibleLED = true;
-			cout << "\tOverride<" << "Visible LED" << ">" << "Mode 2: Light Forced ON";
+			cout << "\tOverride<" << "Visible LED" << ">" << "Mode 2: Light Forced ON" << endl;
 		}
 	}
 	else {
 		// Override mode isn't active (mode 0), transition to (mode 1)
 		this->overrideValue_isVisibleLEDLit = false;
 		this->isOverrideActive_VisibleLED = true;
-		cout << "\tOverride<" << "Visible LED" << ">" << "Mode 1: Light Forced OFF";
+		cout << "\tOverride<" << "Visible LED" << ">" << "Mode 1: Light Forced OFF" << endl;
 	}
 }
 
