@@ -271,6 +271,7 @@ std::string LabjackHelpers::ws2s(const std::wstring& wstr)
 
 std::string LabjackHelpers::getFullPath(std::string relativePath)
 {
+	// Gets the full file path from the relative path
 	std::string outputString;
 	DWORD retval = 0;
 	TCHAR buffer[BUFSIZE] = TEXT("");
@@ -309,31 +310,7 @@ std::string LabjackHelpers::getFullPath(std::string relativePath)
 #endif
 		return outputString;
 	}
-//// From https://stackoverflow.com/questions/6291458/how-to-convert-a-tchar-array-to-stdstring (Naszta)
-//#ifdef UNICODE
-//	/*/
-//	// Simple C
-//	const size_t size = ( wcslen(text) + 1 ) * sizeof(wchar_t);
-//	wcstombs(&buffer[0], text, size);
-//	std::vector<char> buffer(size);
-//	/*/
-//	// Windows API (I would use this)
-//	std::vector<char> output_buffer;
-//	int size = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, NULL, 0, NULL, NULL);
-//	if (size > 0) {
-//		output_buffer.resize(size);
-//		WideCharToMultiByte(CP_UTF8, 0, buffer, -1, static_cast<BYTE*>(&output_buffer[0]), output_buffer.size(), NULL, NULL);
-//	}
-//	else {
-//		// Error handling
-//	}
-//	//*/
-//	std::string string(&output_buffer[0]);
-//#else
-//	std::string string(text);
-//#endif
 
-	//return std::string(output_buffer);
 	return outputString;
 }
 
