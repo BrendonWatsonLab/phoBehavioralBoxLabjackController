@@ -86,7 +86,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	this->water2PortEndIlluminationTime = Clock::now();
 
 	std::function<double()> visibleLEDRelayFunction = [=]() -> double {
-		if (this->isArtificialDaylightHours()) { return 0.0; }
+		if (this->isVisibleLEDLit()) { return 0.0; }
 		else { return 1.0; }
 	};
 	//std::function<double(int)> drinkingPortAttractorModeFunction = [=](int portNumber) -> double {
@@ -356,6 +356,44 @@ void BehavioralBoxLabjack::runPollingLoop()
 	else {
 		this->readSensorValues();
 		this->writeOutputPinValues();
+	}
+}
+
+bool BehavioralBoxLabjack::isVisibleLEDLit()
+{
+	if (this->isOverrideActive_VisibleLED) {
+		return this->overrideValue_isVisibleLEDLit;
+	}
+	else {
+		return this->isArtificialDaylightHours();
+	}
+}
+
+void BehavioralBoxLabjack::toggleOverrideMode_VisibleLED()
+{
+	// Mode 0: 0 0
+	// Mode 1: 1 0
+	// Mode 2: 1 1
+	if (this->isOverrideActive_VisibleLED) {
+		// Override mode is already active (modes 1 or mode 2)
+		if (this->overrideValue_isVisibleLEDLit) {
+			// If the LED is already lit (mode 2), transition to (mode 0)
+			this->overrideValue_isVisibleLEDLit = false;
+			this->isOverrideActive_VisibleLED = false;
+			cout << "\tOverride<" << "Visible LED" << ">" << "Mode 0: Light Default Behavior";
+		}
+		else {
+			// Otherwise if the LED is in (mode 1), transition to (mode 2)
+			this->overrideValue_isVisibleLEDLit = true;
+			this->isOverrideActive_VisibleLED = true;
+			cout << "\tOverride<" << "Visible LED" << ">" << "Mode 2: Light Forced ON";
+		}
+	}
+	else {
+		// Override mode isn't active (mode 0), transition to (mode 1)
+		this->overrideValue_isVisibleLEDLit = false;
+		this->isOverrideActive_VisibleLED = true;
+		cout << "\tOverride<" << "Visible LED" << ">" << "Mode 1: Light Forced OFF";
 	}
 }
 

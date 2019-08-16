@@ -124,6 +124,13 @@ int main()
 				cout << "Found no new labjacks." << endl;
 			}
 		}
+		else if (character == 'L') {
+			cout << "Toggling visible LED Light mode on all labjacks..." << endl;
+			// Iterate through all found Labjacks
+			for (int i = 0; i < foundLabjacks.size(); i++) {
+				foundLabjacks[i]->toggleOverrideMode_VisibleLED();
+			}
+		}
 		else if (character == 'A') {
 			cout << "Toggling attract mode on all Labjacks..." << endl;
 			// Iterate through all found Labjacks
@@ -148,6 +155,7 @@ void printCommandsMenu() {
 	cout << "Commands: " << endl;
 	cout << "\t Press [p] at any time to print the most recently read values." << endl;
 	cout << "\t Press [r] at any time to refresh and scan for more labjacks." << endl;
+	cout << "\t Press [l] at any time to toggle visible LED Light mode for all labjacks." << endl;
 	cout << "\t Press [a] at any time to toggle Attract mode for all labjacks." << endl;
 	cout << "\t Press [q] at any time to quit." << endl;
 	cout << "\t Press any other key at any time to show this list of commands." << endl;
