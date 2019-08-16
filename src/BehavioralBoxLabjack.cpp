@@ -253,7 +253,7 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 	// Iterate through the output ports
 	for (int i = 0; i < outputPorts.size(); i++)
 	{
-		// Get the appropriate value for the current port (TODO: calculate it).
+		// Get the appropriate value for the current port (calculateing from the saved lambda function).
 		double outputValue = outputPorts[i]->getValue();
 
 		// Check to see if the value changed, and if it did, write it.
@@ -265,8 +265,26 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 			const char* portName = portNameString.c_str();
 
 			// Set DIO state on the LabJack
-			this->err = LJM_eWriteName(this->handle, portName, outputValue);
-			ErrorCheck(this->err, "LJM_eWriteName");
+			//TODO: the most general way to handle this would be to have each pin have a lambda function stored that sets the value in an appropriate way. This is currently a workaround. 
+			bool isVisibleLightRelayPort = (i == 0);
+			if (isVisibleLightRelayPort) {
+				if (outputValue == 0.0) {
+					// a value of 0.0 means that the light should be on, so it should be in output mode.
+					this->err = LJM_eWriteName(this->handle, portName, outputValue);
+					ErrorCheck(this->err, "LJM_eWriteName");
+				}
+				else {
+					// a value greater than 0.0 means that the light should be off, so it should be set to input mode. This is accomplished by reading from the port (instead of writing).
+					double tempReadValue = 0.0;
+					this->err = LJM_eReadName(this->handle, portName, &tempReadValue);
+					ErrorCheck(this->err, "LJM_eReadName");
+				}
+			}
+			else {
+				// Not the visible light relay and can be handled in the usual way.
+				this->err = LJM_eWriteName(this->handle, portName, outputValue);
+				ErrorCheck(this->err, "LJM_eWriteName");
+			}
 			printf("\t Set %s state : %f\n", portName, outputValue);
 		}
 	}
