@@ -22,8 +22,6 @@
 
 #include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 
-
-
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, int serialNumber) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), serialNumber) {}
 
 // Constructor: Called when an instance of the object is about to be created
@@ -84,13 +82,36 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	this->csv.writeToFile(fileFullPath, false);
 
 	// Setup output ports states:
-	//this->outputPorts = {};
+	this->water1PortEndIlluminationTime = Clock::now();
+	this->water2PortEndIlluminationTime = Clock::now();
+
+	std::function<double()> visibleLEDRelayFunction = [=]() -> double {
+		if (this->isVisibleLEDLit()) { return 0.0; }
+		else { return 1.0; }
+	};
+	//std::function<double(int)> drinkingPortAttractorModeFunction = [=](int portNumber) -> double {
+	//	if (!this->isAttractModeLEDLit(portNumber)) { return 0.0; }
+	//	else { return 1.0; }
+	//};
+
 	// Create output ports for all output ports (TODO: make dynamic)
 	for (int i = 0; i < NUM_OUTPUT_CHANNELS; i++) {
 		std::string portName = std::string(outputPortNames[i]);
-		OutputState* currOutputPort = new OutputState(portName);
+		OutputState* currOutputPort;
+		if (i == 0) {
+			currOutputPort = new OutputState(portName, visibleLEDRelayFunction);
+		}
+		else {
+			std::function<double()> drinkingPortAttractorModeFunction = [=]() -> double {
+				if (!this->isAttractModeLEDLit(i)) { return 0.0; }
+				else { return 1.0; }
+			};
+			currOutputPort = new OutputState(portName, drinkingPortAttractorModeFunction);
+		}
+		
 		this->outputPorts.push_back(currOutputPort);
 	}
+	//TODO: force initializiation
 
 	// Setup input state 
 	this->monitor = new StateMonitor();
@@ -218,26 +239,6 @@ double BehavioralBoxLabjack::syncDeviceTimes()
 	return updateChangeSeconds;
 }
 
-void BehavioralBoxLabjack::setVisibleLightRelayState(bool isOn)
-{
-	// Set up for setting DIO state
-	this->printIdentifierLine();
-	double value = 0; // Output state = low (0 = low, 1 = high)
-	char * portName = globalLabjackLightRelayPortName;
-	if (isOn) {
-		// It's day-time
-		value = 0;
-	}
-	else {
-		// It's night-time
-		value = 1;
-	}
-	// Set DIO state on the LabJack
-	this->err = LJM_eWriteName(this->handle, portName, value);
-	ErrorCheck(this->err, "LJM_eWriteName");
-	printf("\t Set %s state : %f\n", portName, value);
-}
-
 void BehavioralBoxLabjack::writeOutputPinValues()
 {
 	this->writeOutputPinValues(false);
@@ -250,8 +251,8 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 	// Iterate through the output ports
 	for (int i = 0; i < outputPorts.size(); i++)
 	{
-		// Get the appropriate value for the current port (TODO: calculate it).
-		double outputValue = 1.0;
+		// Get the appropriate value for the current port (calculateing from the saved lambda function).
+		double outputValue = outputPorts[i]->getValue();
 
 		// Check to see if the value changed, and if it did, write it.
 		bool didChange = outputPorts[i]->set(writeTime, outputValue);
@@ -262,8 +263,26 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 			const char* portName = portNameString.c_str();
 
 			// Set DIO state on the LabJack
-			this->err = LJM_eWriteName(this->handle, portName, outputValue);
-			ErrorCheck(this->err, "LJM_eWriteName");
+			//TODO: the most general way to handle this would be to have each pin have a lambda function stored that sets the value in an appropriate way. This is currently a workaround. 
+			bool isVisibleLightRelayPort = (i == 0);
+			if (isVisibleLightRelayPort) {
+				if (outputValue == 0.0) {
+					// a value of 0.0 means that the light should be on, so it should be in output mode.
+					this->err = LJM_eWriteName(this->handle, portName, outputValue);
+					ErrorCheck(this->err, "LJM_eWriteName");
+				}
+				else {
+					// a value greater than 0.0 means that the light should be off, so it should be set to input mode. This is accomplished by reading from the port (instead of writing).
+					double tempReadValue = 0.0;
+					this->err = LJM_eReadName(this->handle, portName, &tempReadValue);
+					ErrorCheck(this->err, "LJM_eReadName");
+				}
+			}
+			else {
+				// Not the visible light relay and can be handled in the usual way.
+				this->err = LJM_eWriteName(this->handle, portName, outputValue);
+				ErrorCheck(this->err, "LJM_eWriteName");
+			}
 			printf("\t Set %s state : %f\n", portName, outputValue);
 		}
 	}
@@ -299,6 +318,17 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues[i]);
 		if (inputPortValuesChanged[i] == true) {
 			// The input port changed from the previous value
+			// Special handling for the water ports. If the port is a water port that has transitioned from off to on, set the appropriate "this->water*PortEndIlluminationTime" variable so the port is illuminated for a second after dispense.
+			if (this->lastReadInputPortValues[i] > 0.0) {
+				// If the port transitioned from off to on:
+				if (strcmp(this->inputPortPurpose[i], "Water1_BeamBreak") == 0) {
+					auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(this->lastCaptureComputerTime);
+					this->water1PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
+				}
+				else if (strcmp(this->inputPortPurpose[i], "Water2_BeamBreak") == 0) {
+					this->water2PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
+				}
+			}
 
 		}
 		newCSVLine << this->lastReadInputPortValues[i];
@@ -329,6 +359,44 @@ void BehavioralBoxLabjack::runPollingLoop()
 	}
 }
 
+bool BehavioralBoxLabjack::isVisibleLEDLit()
+{
+	if (this->isOverrideActive_VisibleLED) {
+		return this->overrideValue_isVisibleLEDLit;
+	}
+	else {
+		return this->isArtificialDaylightHours();
+	}
+}
+
+void BehavioralBoxLabjack::toggleOverrideMode_VisibleLED()
+{
+	// Mode 0: 0 0
+	// Mode 1: 1 0
+	// Mode 2: 1 1
+	if (this->isOverrideActive_VisibleLED) {
+		// Override mode is already active (modes 1 or mode 2)
+		if (this->overrideValue_isVisibleLEDLit) {
+			// If the LED is already lit (mode 2), transition to (mode 0)
+			this->overrideValue_isVisibleLEDLit = false;
+			this->isOverrideActive_VisibleLED = false;
+			cout << "\tOverride<" << "Visible LED" << ">" << "Mode 0: Light Default Behavior";
+		}
+		else {
+			// Otherwise if the LED is in (mode 1), transition to (mode 2)
+			this->overrideValue_isVisibleLEDLit = true;
+			this->isOverrideActive_VisibleLED = true;
+			cout << "\tOverride<" << "Visible LED" << ">" << "Mode 2: Light Forced ON";
+		}
+	}
+	else {
+		// Override mode isn't active (mode 0), transition to (mode 1)
+		this->overrideValue_isVisibleLEDLit = false;
+		this->isOverrideActive_VisibleLED = true;
+		cout << "\tOverride<" << "Visible LED" << ">" << "Mode 1: Light Forced OFF";
+	}
+}
+
 // Executed every hour, on the hour
 void BehavioralBoxLabjack::runTopOfHourUpdate()
 {
@@ -355,8 +423,33 @@ bool BehavioralBoxLabjack::isArtificialDaylightHours()
 	}
 }
 
+bool BehavioralBoxLabjack::isAttractModeLEDLit(int portNumber)
+{
+	auto currentTime = Clock::now();
+	if (portNumber == 1) {
+		if (this->isManualAttractModeEnabled || (currentTime <= this->water1PortEndIlluminationTime)) {
+			return true;
+		}
+		else { 
+			return false;
+		}
+	}
+	else if (portNumber == 2) {
+		if (this->isManualAttractModeEnabled || (currentTime <= this->water2PortEndIlluminationTime)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
+}
+
 void BehavioralBoxLabjack::updateVisibleLightRelayIfNeeded()
 {
-	bool isDay = isArtificialDaylightHours();
-	this->setVisibleLightRelayState(isDay);
+	this->writeOutputPinValues(true);
+	//bool isDay = isArtificialDaylightHours();
+	//this->setVisibleLightRelayState(isDay);
 }

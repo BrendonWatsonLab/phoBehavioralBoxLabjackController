@@ -37,19 +37,18 @@ public:
 	time_t getTime();
 	void setTime(time_t newTime);
 
-	// Get Identifiers
-	int getSerialNumber() { return this->serialNumber; }
-
 	// Syncs the Labjack's internal RTC time with the computer's. Returns the number of seconds that were adjusted to set the Labjack's clock.
 	double syncDeviceTimes();
 
 	// Light Control
 	bool isArtificialDaylightHours();
+	bool isAttractModeLEDLit(int portNumber);
 	void updateVisibleLightRelayIfNeeded();
 
 	// Write Output Pin values
 	void writeOutputPinValues();
 	void writeOutputPinValues(bool shouldForceWrite);
+	bool isManualAttractModeEnabled = false;
 
 	// Read Sensor values
 	void readSensorValues();
@@ -59,8 +58,11 @@ public:
 	// Main run loop
 	void runPollingLoop();
 
-
-
+	// Getters:
+	int getSerialNumber() { return this->serialNumber; }
+	bool isVisibleLEDLit();
+	// Override Functions
+	void toggleOverrideMode_VisibleLED();
 
 private:
 	int serialNumber;
@@ -72,6 +74,10 @@ private:
 	int handle;
 	bool shouldStop = false;
 
+	// Override Values:
+	bool isOverrideActive_VisibleLED = false;
+	bool overrideValue_isVisibleLEDLit = false;
+
 	// File Output:
 	CSVWriter csv;
 	string filename = "outputFile.csv";
@@ -81,6 +87,7 @@ private:
 	// Variables for holding the last read values
 	StateMonitor* monitor;
 	char * inputPortNames[NUM_CHANNELS] = globalLabjackInputPortNames;
+	char * inputPortPurpose[NUM_CHANNELS] = globalLabjackInputPortPurpose;
 	double previousReadInputPortValues[NUM_CHANNELS] = {0.0};
 	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
 	bool inputPortValuesChanged[NUM_CHANNELS] = {false};
@@ -94,12 +101,17 @@ private:
 	std::chrono::time_point<Clock> lastCaptureComputerTime;
 	Bosma::Scheduler* scheduler; // For wallTime based scheduling
 
+	// The time each water port LED should remain lit after a dispense event
+	std::chrono::time_point<Clock> water1PortEndIlluminationTime;
+	std::chrono::time_point<Clock> water2PortEndIlluminationTime;
+
+
 	// Scheduled tasks
 	void runTopOfHourUpdate(); // Runs at the top of every hour (exactly on the hour, according to system time).
 	//void runTopOfMinuteUpdate();
 
 	// Visible Light Relay Control
-	void setVisibleLightRelayState(bool isOn);
+	//void setVisibleLightRelayState(bool isOn);
 
 };
 
