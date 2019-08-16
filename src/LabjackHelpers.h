@@ -21,6 +21,7 @@ public:
 	static std::vector<BehavioralBoxLabjack*> findAllLabjacks();
 	static std::vector<BehavioralBoxLabjack*> findAllLabjacks(int previouslyFoundLabjackSerialNumbers[], int numPreviouslyFoundLabjacks);
 
+	static bool blinkIsIlluminated();
 
 };
 

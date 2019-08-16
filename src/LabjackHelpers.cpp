@@ -185,3 +185,12 @@ std::vector<BehavioralBoxLabjack*> LabjackHelpers::findAllLabjacks(int previousl
 
 	return outputVector;
 }
+
+bool LabjackHelpers::blinkIsIlluminated()
+{
+	time_t currTime = time(NULL);
+	struct tm* currLocalTime = localtime(&currTime);
+	int second = currLocalTime->tm_sec;
+	// Return true if it's even. Changes every second
+	return (second % 2);
+}

@@ -276,6 +276,7 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 					double tempReadValue = 0.0;
 					this->err = LJM_eReadName(this->handle, portName, &tempReadValue);
 					ErrorCheck(this->err, "LJM_eReadName");
+					//cout << "\t Visible LED Override: read from port. " << tempReadValue << endl;
 				}
 			}
 			else {
@@ -380,20 +381,48 @@ void BehavioralBoxLabjack::toggleOverrideMode_VisibleLED()
 			// If the LED is already lit (mode 2), transition to (mode 0)
 			this->isOverrideActive_VisibleLED = false;
 			this->overrideValue_isVisibleLEDLit = false;
-			cout << "\tOverride<" << "Visible LED" << ">" << "Mode 0: Light Default Behavior" << endl;
+			cout << "\t Override<" << "Visible LED" << ">" << "Mode 0: Light Default Behavior" << endl;
 		}
 		else {
 			// Otherwise if the LED is in (mode 1), transition to (mode 2)
 			this->overrideValue_isVisibleLEDLit = true;
 			this->isOverrideActive_VisibleLED = true;
-			cout << "\tOverride<" << "Visible LED" << ">" << "Mode 2: Light Forced ON" << endl;
+			cout << "\t Override<" << "Visible LED" << ">" << "Mode 2: Light Forced ON" << endl;
 		}
 	}
 	else {
 		// Override mode isn't active (mode 0), transition to (mode 1)
 		this->overrideValue_isVisibleLEDLit = false;
 		this->isOverrideActive_VisibleLED = true;
-		cout << "\tOverride<" << "Visible LED" << ">" << "Mode 1: Light Forced OFF" << endl;
+		cout << "\t Override<" << "Visible LED" << ">" << "Mode 1: Light Forced OFF" << endl;
+	}
+}
+
+void BehavioralBoxLabjack::toggleOverrideMode_AttractModeLEDs()
+{
+	// Mode 0: 0 0
+	// Mode 1: 1 0
+	// Mode 2: 1 1
+	if (this->isOverrideActive_AttractModeLEDs) {
+		// Override mode is already active (modes 1 or mode 2)
+		if (this->overrideValue_areAttractModeLEDsLit) {
+			// If the LED is already lit (mode 2), transition to (mode 0)
+			this->isOverrideActive_AttractModeLEDs = false;
+			this->overrideValue_areAttractModeLEDsLit = false;
+			cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 0: LEDs Default Behavior" << endl;
+		}
+		else {
+			// Otherwise if the LED is in (mode 1), transition to (mode 2)
+			this->overrideValue_areAttractModeLEDsLit = true;
+			this->isOverrideActive_AttractModeLEDs = true;
+			cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 2: LEDs Forced ON" << endl;
+		}
+	}
+	else {
+		// Override mode isn't active (mode 0), transition to (mode 1)
+		this->overrideValue_areAttractModeLEDsLit = false;
+		this->isOverrideActive_AttractModeLEDs = true;
+		cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 1: LEDs Forced OFF" << endl;
 	}
 }
 
@@ -425,25 +454,31 @@ bool BehavioralBoxLabjack::isArtificialDaylightHours()
 
 bool BehavioralBoxLabjack::isAttractModeLEDLit(int portNumber)
 {
-	auto currentTime = Clock::now();
-	if (portNumber == 1) {
-		if (this->isManualAttractModeEnabled || (currentTime <= this->water1PortEndIlluminationTime)) {
-			return true;
-		}
-		else { 
-			return false;
-		}
+	if (this->isOverrideActive_AttractModeLEDs) {
+		return this->overrideValue_areAttractModeLEDsLit;
 	}
-	else if (portNumber == 2) {
-		if (this->isManualAttractModeEnabled || (currentTime <= this->water2PortEndIlluminationTime)) {
-			return true;
+	else {
+		// No overrides active (in default behavior mode (mode 0))
+		auto currentTime = Clock::now();
+		if (portNumber == 1) {
+			if ((currentTime <= this->water1PortEndIlluminationTime)) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		else if (portNumber == 2) {
+			if ((currentTime <= this->water2PortEndIlluminationTime)) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 		else {
 			return false;
 		}
-	}
-	else {
-		return false;
 	}
 }
 

@@ -48,12 +48,12 @@ public:
 	// Write Output Pin values
 	void writeOutputPinValues();
 	void writeOutputPinValues(bool shouldForceWrite);
-	bool isManualAttractModeEnabled = false;
+	
 
 	// Read Sensor values
 	void readSensorValues();
 	void persistReadValues(bool enableConsoleLogging);
-	void persistReadValues();
+	//void persistReadValues();
 
 	// Main run loop
 	void runPollingLoop();
@@ -61,8 +61,10 @@ public:
 	// Getters:
 	int getSerialNumber() { return this->serialNumber; }
 	bool isVisibleLEDLit();
+
 	// Override Functions
 	void toggleOverrideMode_VisibleLED();
+	void toggleOverrideMode_AttractModeLEDs();
 
 private:
 	int serialNumber;
@@ -74,9 +76,12 @@ private:
 	int handle;
 	bool shouldStop = false;
 
-	// Override Values:
+	// Override Values: 
 	bool isOverrideActive_VisibleLED = false;
 	bool overrideValue_isVisibleLEDLit = false;
+
+	bool isOverrideActive_AttractModeLEDs = false;
+	bool overrideValue_areAttractModeLEDsLit = false;
 
 	// File Output:
 	CSVWriter csv;

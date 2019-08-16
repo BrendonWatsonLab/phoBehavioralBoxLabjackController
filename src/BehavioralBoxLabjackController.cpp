@@ -135,7 +135,7 @@ int main()
 			cout << "Toggling attract mode on all Labjacks..." << endl;
 			// Iterate through all found Labjacks
 			for (int i = 0; i < foundLabjacks.size(); i++) {
-				foundLabjacks[i]->isManualAttractModeEnabled = !foundLabjacks[i]->isManualAttractModeEnabled;
+				foundLabjacks[i]->toggleOverrideMode_AttractModeLEDs();
 			}
 		}
 		else {
