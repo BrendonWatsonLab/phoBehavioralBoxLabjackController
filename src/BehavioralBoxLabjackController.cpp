@@ -28,7 +28,7 @@
 
 // Webserver functionality:
 #include "WebServer.h"
-#include "G:\Google Drive\Modern Behavior Box\Code\Labjack\phoBehavioralBoxLabjackController\ChartsApplication.h"
+#include "ChartsApplication.h"
 
 // Vector of Labjack Objects
 std::vector<BehavioralBoxLabjack*> foundLabjacks;

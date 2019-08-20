@@ -39,19 +39,19 @@
     <ClCompile Include="src\WebServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\ChartsExample.cpp">
+    <ClCompile Include="src\ChartsApplication.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\ChartsApplication.cpp">
+    <ClCompile Include="src\ChartsExample.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\CsvUtil.cpp">
+    <ClCompile Include="src\ChartConfig.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\PanelList.cpp">
+    <ClCompile Include="src\CsvUtil.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\ChartConfig.cpp">
+    <ClCompile Include="src\PanelList.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,19 +86,19 @@
     <ClInclude Include="src\WebServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\ChartConfig.h">
+    <ClInclude Include="src\ChartsExample.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\ChartsExample.h">
+    <ClInclude Include="src\ChartConfig.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\CsvUtil.h">
+    <ClInclude Include="src\ChartsApplication.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\PanelList.h">
+    <ClInclude Include="src\CsvUtil.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
-    <ClInclude Include="ChartsApplication.h">
+    <ClInclude Include="src\PanelList.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
   </ItemGroup>
