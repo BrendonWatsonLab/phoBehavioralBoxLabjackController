@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputState.cpp" />
+    <ClCompile Include="LabjackExample.cpp" />
     <ClCompile Include="OutputState.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjackController.cpp" />
@@ -34,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputState.h" />
+    <ClInclude Include="LabjackExample.h" />
     <ClInclude Include="OutputState.h" />
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
     <ClInclude Include="src\ChartConfig.h" />

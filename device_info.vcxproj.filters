@@ -54,6 +54,9 @@
     <ClCompile Include="src\PanelList.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
+    <ClCompile Include="LabjackExample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BehavioralBoxLabjack.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="src\PanelList.h">
       <Filter>WtWebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="LabjackExample.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

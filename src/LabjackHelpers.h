@@ -8,6 +8,8 @@ public:
 	LabjackHelpers();
 	~LabjackHelpers();
 
+	//static std::vector<BehavioralBoxLabjack*> activeLabjacks;
+
 	static int TypeToNumRegs(int type);
 	static int GetArrayTotal(const int * array, int arraySize);
 	/**

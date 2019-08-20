@@ -8,6 +8,7 @@
 #include <fstream>
 
 #include "ChartsExample.h"
+
 #include "ChartConfig.h"
 #include "CsvUtil.h"
 
@@ -104,11 +105,17 @@ ChartsExample::ChartsExample()
   : WContainerWidget()
 {
   this->addWidget(cpp14::make_unique<WText>(WString::tr("introduction")));
+  this->labjackExampleWidget = this->addWidget(cpp14::make_unique<LabjackExample>());
 
-  this->addWidget(cpp14::make_unique<CategoryExample>());
-  this->addWidget(cpp14::make_unique<TimeSeriesExample>());
-  this->addWidget(cpp14::make_unique<ScatterPlotExample>());
-  this->addWidget(cpp14::make_unique<PieExample>());
+  //this->addWidget(cpp14::make_unique<CategoryExample>());
+  //this->addWidget(cpp14::make_unique<TimeSeriesExample>());
+  //this->addWidget(cpp14::make_unique<ScatterPlotExample>());
+  //this->addWidget(cpp14::make_unique<PieExample>());
+}
+
+void ChartsExample::setActiveLabjacks(std::vector<BehavioralBoxLabjack*> activeLabjacks)
+{
+	this->labjackExampleWidget->updateLabjacks(activeLabjacks);
 }
 
 CategoryExample::CategoryExample():

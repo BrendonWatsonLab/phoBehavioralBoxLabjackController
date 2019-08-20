@@ -8,8 +8,8 @@
 #define CHARTS_EXAMPLE_H_
 
 #include <Wt/WContainerWidget.h>
-
 #include <iostream>
+#include "../LabjackExample.h"
 
 namespace Wt {
   class WAbstractItemModel;
@@ -72,6 +72,10 @@ public:
   /*! \brief Constructor.
    */
   ChartsExample();
+
+  void setActiveLabjacks(std::vector<BehavioralBoxLabjack*> activeLabjacks);
+  LabjackExample* labjackExampleWidget;
+
 };
 
 /*@}*/

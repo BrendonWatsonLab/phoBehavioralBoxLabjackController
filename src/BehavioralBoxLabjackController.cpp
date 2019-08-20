@@ -29,6 +29,7 @@
 // Webserver functionality:
 #include "WebServer.h"
 #include "ChartsApplication.h"
+#include <Wt/WServer.h>
 
 // Vector of Labjack Objects
 std::vector<BehavioralBoxLabjack*> foundLabjacks;
@@ -67,6 +68,8 @@ int main(int argc, char** argv)
 		cout << "User chose to quit. Done." << endl;
 		return LJME_NO_DEVICES_FOUND;
 	}
+
+	WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
 
 	// TODO - READ ME: main run loop
 		// The LJM_StartInterval, LJM_WaitForNextInterval, and LJM_CleanInterval functions are used to efficiently execute the loop every so many milliseconds
