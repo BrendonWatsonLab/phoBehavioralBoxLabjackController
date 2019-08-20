@@ -18,11 +18,20 @@
 #include <fstream>
 #include <vector>
 #include <conio.h>
+#include <chrono>
+#include <thread>
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 #include "BehavioralBoxLabjack.h"
 
 #include "LabjackHelpers.h"
+
+// Webserver functionality:
+#include "WebServer.h"
+#include "ChartsApplication.h"
+#include <Wt/WServer.h>
+// 1 Make the member a real variable not a pointer.
+std::thread web_server_thread;
 
 // Vector of Labjack Objects
 std::vector<BehavioralBoxLabjack*> foundLabjacks;
@@ -35,6 +44,9 @@ std::vector<BehavioralBoxLabjack*> foundLabjacks;
 Bosma::Scheduler s(max_n_threads);
 
 // FUNCTION PROTOTYPES:
+bool waitForFoundLabjacks();
+bool startWebserver(int argc, char** argv);
+int shutdownApplication(int shutdownCode);
 
 void runTopOfHourUpdate();
 void runTopOfMinuteUpdate();
@@ -44,21 +56,22 @@ void runPollingLoopUpdate();
 void printCommandsMenu();
 
 
-int main()
+int main(int argc, char** argv)
 {
-	// Find the labjacks
-	foundLabjacks = LabjackHelpers::findAllLabjacks();
+	cout << "BehavioralBoxLabjackController:" << endl;
+	cout << "\t Pho Hale 2019" << endl << endl;
 
-	if (foundLabjacks.size() == 0) {
-		printf("No labjacks found!!\n");
-		printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.");
-		return LJME_NO_DEVICES_FOUND;
+	// Run the webserver:
+	startWebserver(argc, argv);
+
+	cout << endl << "Scanning for attached Labjacks..." << endl;
+	if (!waitForFoundLabjacks()) {
+		// User wants to quit.
+		cout << "User chose to quit. Done." << endl;
+		return shutdownApplication(LJME_NO_DEVICES_FOUND);
 	}
-	// Iterate through all found Labjacks
-	for (int i = 0; i < foundLabjacks.size(); i++) {
-		foundLabjacks[i]->syncDeviceTimes();
-		foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
-	}
+
+	WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
 
 	// TODO - READ ME: main run loop
 		// The LJM_StartInterval, LJM_WaitForNextInterval, and LJM_CleanInterval functions are used to efficiently execute the loop every so many milliseconds
@@ -96,8 +109,6 @@ int main()
 				std::string foundRelativeFilePathString = foundLabjacks[i]->getFullFilePath();
 				std::string fullFilePathString = LabjackHelpers::getFullPath(foundRelativeFilePathString);
 
-				//const char* portName = foundFilePathString.c_str();
-
 				cout << "\t Showing log file at " << fullFilePathString << endl;
 				LabjackHelpers::showInExplorer(fullFilePathString);
 			}
@@ -131,6 +142,7 @@ int main()
 				for (int i = 0; i < newlyFoundAdditionalLabjacks.size(); i++) {
 					foundLabjacks.push_back(newlyFoundAdditionalLabjacks[i]);
 				}
+				WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
 			}
 			else {
 				cout << "Found no new labjacks." << endl;
@@ -159,9 +171,75 @@ int main()
 
 	} while (terminateExecution != 1);
 
-	printf("Done.");
+	return shutdownApplication(LJME_NOERROR);
+}
 
-	return LJME_NOERROR;
+// Idles and waits for a labjack to be found.
+bool waitForFoundLabjacks()
+{
+	bool stillWaitingToFindLabjacks = true;
+	int character;
+	do {
+		// Find the labjacks
+		foundLabjacks = LabjackHelpers::findAllLabjacks();
+
+		if (foundLabjacks.size() == 0) {
+			printf("No labjacks found!!\n");
+			printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.\n");
+			cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
+			// Read a character from the keyboard
+			character = _getch();
+			character = toupper(character);
+			if (character == 'Q') {
+				// Returns false to indicate that the user gave up.
+				cout << "\t Quitting..." << endl;
+				return false;
+			}
+			else {
+				//std::this_thread::sleep_for(std::chrono::seconds(1));
+				cout << "\t Refreshing Labjacks..." << endl;
+				continue;
+			}
+		}
+		else {
+			// Otherwise labjacks have found, move forward with the program.
+			// Iterate through all found Labjacks
+			for (int i = 0; i < foundLabjacks.size(); i++) {
+				foundLabjacks[i]->syncDeviceTimes();
+				foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
+			}
+			stillWaitingToFindLabjacks = false;
+		}
+
+	} while (stillWaitingToFindLabjacks == true);
+	// Returns true to indicate that labjacks have been found and we should move forward with the program.
+	return true;
+}
+
+bool startWebserver(int argc, char** argv)
+{
+	cout << "Starting the web server." << endl;
+	web_server_thread = std::move(std::thread([=]() {
+		chartsApplicationWebServer(argc, argv);
+		return true;
+	}));
+	//runServer(argc, argv);
+	return true;
+}
+
+// Called when the application is being quit
+int shutdownApplication(int shutdownCode)
+{
+	cout << "Shutting down the application..." << endl;
+	cout << "Waiting on web server thread to quit..." << endl;
+	// As the thread is using members from this object
+	  // We can not let this obect be destroyed until
+	  // the thread finishes executing.
+	web_server_thread.join();
+	printf("Done.");
+	// At this point the thread has finished.
+	// Destructor can now complete.
+	return shutdownCode;
 }
 
 
