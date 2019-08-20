@@ -28,6 +28,7 @@
 
 // Webserver functionality:
 #include "WebServer.h"
+#include "G:\Google Drive\Modern Behavior Box\Code\Labjack\phoBehavioralBoxLabjackController\ChartsApplication.h"
 
 // Vector of Labjack Objects
 std::vector<BehavioralBoxLabjack*> foundLabjacks;
@@ -57,7 +58,8 @@ int main(int argc, char** argv)
 
 	// Run the webserver:
 	cout << "Starting the web server." << endl;
-	runServer(argc, argv);
+	//runServer(argc, argv);
+	chartsApplicationWebServer(argc, argv);
 
 	cout << endl << "Scanning for attached Labjacks..." << endl;
 	if (!waitForFoundLabjacks()) {

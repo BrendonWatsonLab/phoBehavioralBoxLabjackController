@@ -13,8 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
-    <Filter Include="Civetweb">
-      <UniqueIdentifier>{a0d94263-5b37-4106-8397-2fe8a12a9c17}</UniqueIdentifier>
+    <Filter Include="WtWebServer">
+      <UniqueIdentifier>{1aa7379a-99a7-4489-9e3e-7ab9c5e9ac69}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,11 +39,20 @@
     <ClCompile Include="src\WebServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\External\civetweb\src\CivetServer.cpp">
-      <Filter>Civetweb</Filter>
+    <ClCompile Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\ChartsExample.cpp">
+      <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\External\civetweb\src\civetweb.c">
-      <Filter>Civetweb</Filter>
+    <ClCompile Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\ChartsApplication.cpp">
+      <Filter>WtWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\CsvUtil.cpp">
+      <Filter>WtWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\PanelList.cpp">
+      <Filter>WtWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\ChartConfig.cpp">
+      <Filter>WtWebServer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,11 +86,36 @@
     <ClInclude Include="src\WebServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\External\civetweb\include\CivetServer.h">
-      <Filter>Civetweb</Filter>
+    <ClInclude Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\ChartConfig.h">
+      <Filter>WtWebServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\External\civetweb\include\civetweb.h">
-      <Filter>Civetweb</Filter>
+    <ClInclude Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\ChartsExample.h">
+      <Filter>WtWebServer</Filter>
     </ClInclude>
+    <ClInclude Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\CsvUtil.h">
+      <Filter>WtWebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\halechr\Downloads\wt-master\wt-master\examples\charts\PanelList.h">
+      <Filter>WtWebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="ChartsApplication.h">
+      <Filter>WtWebServer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="resources\charts.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\timeseries.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\category.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\charts.css">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
