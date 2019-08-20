@@ -18,6 +18,8 @@
 #include <fstream>
 #include <vector>
 #include <conio.h>
+#include <chrono>
+#include <thread>
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 #include "BehavioralBoxLabjack.h"
@@ -38,6 +40,7 @@ std::vector<BehavioralBoxLabjack*> foundLabjacks;
 Bosma::Scheduler s(max_n_threads);
 
 // FUNCTION PROTOTYPES:
+bool waitForFoundLabjacks();
 
 void runTopOfHourUpdate();
 void runTopOfMinuteUpdate();
@@ -49,21 +52,18 @@ void printCommandsMenu();
 
 int main()
 {
+	cout << "BehavioralBoxLabjackController:" << endl;
+	cout << "\t Pho Hale 2019" << endl << endl;
+
 	// Run the webserver:
+	cout << "Starting the web server." << endl;
 	runServer();
 
-	// Find the labjacks
-	foundLabjacks = LabjackHelpers::findAllLabjacks();
-
-	if (foundLabjacks.size() == 0) {
-		printf("No labjacks found!!\n");
-		printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.");
+	cout << endl << "Scanning for attached Labjacks..." << endl;
+	if (!waitForFoundLabjacks()) {
+		// User wants to quit.
+		cout << "User chose to quit. Done." << endl;
 		return LJME_NO_DEVICES_FOUND;
-	}
-	// Iterate through all found Labjacks
-	for (int i = 0; i < foundLabjacks.size(); i++) {
-		foundLabjacks[i]->syncDeviceTimes();
-		foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
 	}
 
 	// TODO - READ ME: main run loop
@@ -168,6 +168,48 @@ int main()
 	printf("Done.");
 
 	return LJME_NOERROR;
+}
+
+// Idles and waits for a labjack to be found.
+bool waitForFoundLabjacks()
+{
+	bool stillWaitingToFindLabjacks = true;
+	int character;
+	do {
+		// Find the labjacks
+		foundLabjacks = LabjackHelpers::findAllLabjacks();
+
+		if (foundLabjacks.size() == 0) {
+			printf("No labjacks found!!\n");
+			printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.\n");
+			cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
+			// Read a character from the keyboard
+			character = _getch();
+			character = toupper(character);
+			if (character == 'Q') {
+				// Returns false to indicate that the user gave up.
+				cout << "\t Quitting..." << endl;
+				return false;
+			}
+			else {
+				//std::this_thread::sleep_for(std::chrono::seconds(1));
+				cout << "\t Refreshing Labjacks..." << endl;
+				continue;
+			}
+		}
+		else {
+			// Otherwise labjacks have found, move forward with the program.
+			// Iterate through all found Labjacks
+			for (int i = 0; i < foundLabjacks.size(); i++) {
+				foundLabjacks[i]->syncDeviceTimes();
+				foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
+			}
+			stillWaitingToFindLabjacks = false;
+		}
+
+	} while (stillWaitingToFindLabjacks == true);
+	// Returns true to indicate that labjacks have been found and we should move forward with the program.
+	return true;
 }
 
 
