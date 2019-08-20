@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Civetweb">
+      <UniqueIdentifier>{a0d94263-5b37-4106-8397-2fe8a12a9c17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BehavioralBoxLabjack.cpp">
@@ -32,6 +35,15 @@
     </ClCompile>
     <ClCompile Include="OutputState.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WebServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\External\civetweb\src\CivetServer.cpp">
+      <Filter>Civetweb</Filter>
+    </ClCompile>
+    <ClCompile Include="src\External\civetweb\src\civetweb.c">
+      <Filter>Civetweb</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +73,15 @@
     </ClInclude>
     <ClInclude Include="OutputState.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WebServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\civetweb\include\CivetServer.h">
+      <Filter>Civetweb</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\civetweb\include\civetweb.h">
+      <Filter>Civetweb</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -23,7 +23,10 @@
     <ClCompile Include="OutputState.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjackController.cpp" />
+    <ClCompile Include="src\External\civetweb\src\CivetServer.cpp" />
+    <ClCompile Include="src\External\civetweb\src\civetweb.c" />
     <ClCompile Include="src\LabjackHelpers.cpp" />
+    <ClCompile Include="src\WebServer.cpp" />
     <ClCompile Include="StateMonitor.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -31,10 +34,13 @@
     <ClInclude Include="OutputState.h" />
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
     <ClInclude Include="src\config.h" />
+    <ClInclude Include="src\External\civetweb\include\CivetServer.h" />
+    <ClInclude Include="src\External\civetweb\include\civetweb.h" />
     <ClInclude Include="src\External\CSVWriter.h" />
     <ClInclude Include="src\External\px_sched.h" />
     <ClInclude Include="src\External\Scheduler\Scheduler.h" />
     <ClInclude Include="src\LabjackHelpers.h" />
+    <ClInclude Include="src\WebServer.h" />
     <ClInclude Include="StateMonitor.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

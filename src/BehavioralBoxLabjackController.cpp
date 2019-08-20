@@ -24,6 +24,9 @@
 
 #include "LabjackHelpers.h"
 
+// Webserver functionality:
+#include "WebServer.h"
+
 // Vector of Labjack Objects
 std::vector<BehavioralBoxLabjack*> foundLabjacks;
 
@@ -46,6 +49,9 @@ void printCommandsMenu();
 
 int main()
 {
+	// Run the webserver:
+	runServer();
+
 	// Find the labjacks
 	foundLabjacks = LabjackHelpers::findAllLabjacks();
 
