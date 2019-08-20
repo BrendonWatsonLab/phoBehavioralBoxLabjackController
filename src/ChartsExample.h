@@ -76,6 +76,16 @@ public:
   void setActiveLabjacks(std::vector<BehavioralBoxLabjack*> activeLabjacks);
   LabjackExample* labjackExampleWidget;
 
+
+
+
+private:
+	std::string appName = "";
+
+	void header();
+	void home();
+	void sidebar();
+	void footer();
 };
 
 /*@}*/

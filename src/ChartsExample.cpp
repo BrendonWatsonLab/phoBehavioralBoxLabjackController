@@ -12,11 +12,13 @@
 #include "ChartConfig.h"
 #include "CsvUtil.h"
 
+#include <Wt/WAnchor.h>
 #include <Wt/WApplication.h>
 #include <Wt/WDate.h>
 #include <Wt/WEnvironment.h>
 #include <Wt/WItemDelegate.h>
 #include <Wt/WStandardItemModel.h>
+#include <Wt/WLink.h>
 #include <Wt/WText.h>
 
 #include <Wt/WBorderLayout.h>
@@ -104,18 +106,51 @@ namespace {
 ChartsExample::ChartsExample()
   : WContainerWidget()
 {
-  this->addWidget(cpp14::make_unique<WText>(WString::tr("introduction")));
+	this->appName = "Labjack Manager Overview:";
+  this->addWidget(cpp14::make_unique<WText>(this->appName));
+
   this->labjackExampleWidget = this->addWidget(cpp14::make_unique<LabjackExample>());
 
   //this->addWidget(cpp14::make_unique<CategoryExample>());
   //this->addWidget(cpp14::make_unique<TimeSeriesExample>());
   //this->addWidget(cpp14::make_unique<ScatterPlotExample>());
   //this->addWidget(cpp14::make_unique<PieExample>());
+
+  this->header();
+  this->sidebar();
+  this->footer();
 }
 
 void ChartsExample::setActiveLabjacks(std::vector<BehavioralBoxLabjack*> activeLabjacks)
 {
 	this->labjackExampleWidget->updateLabjacks(activeLabjacks);
+}
+
+void ChartsExample::header()
+{
+	WContainerWidget* header = this->addWidget(cpp14::make_unique<WContainerWidget>());
+	header->setId("header");
+	header->addWidget(cpp14::make_unique<WText>("<h1>" + appName + "</h1>"));
+}
+
+void ChartsExample::home()
+{
+	WString t(WString::tr("<strong>Home</strong> content and a link to <a href='#/page1'>page1</a>"));
+	this->labjackExampleWidget->addWidget(cpp14::make_unique<WText>(t));
+}
+
+void ChartsExample::sidebar()
+{
+	WContainerWidget* sidebar = this->addWidget(cpp14::make_unique<WContainerWidget>());
+	sidebar->setId("sidebar");
+	sidebar->addWidget(cpp14::make_unique<WText>("Sidebar Information"));
+}
+
+void ChartsExample::footer()
+{
+	WContainerWidget* footer = this->addWidget(cpp14::make_unique<WContainerWidget>());
+	footer->setId("footer");
+	footer->addWidget(cpp14::make_unique<WText>("Developed using C++/Wt"));
 }
 
 CategoryExample::CategoryExample():
