@@ -45,7 +45,16 @@ LabjackExample::LabjackExample(): WContainerWidget()
 		//text_cp_cp->setText(Wt::WString::fromUTF8("Some Text"));
 	//}
 	this->text_labjack_label = this->addWidget(cpp14::make_unique<WText>(WString::tr("Labjack Example")));
-	this->text_number_of_labjacks = this->addWidget(cpp14::make_unique<WText>(WString::tr("No Labjacks")));
+	this->text_number_of_labjacks = this->addWidget(cpp14::make_unique<WText>(WString::tr("Finding Labjacks...")));
+
+	//btnRefresh = new Wt::WPushButton(this->groupbox);
+	btnRefresh = this->addWidget(cpp14::make_unique<Wt::WPushButton>(tr("save")));
+	btnRefresh->setId("btnRefresh");
+	btnRefresh->setStyleClass(Wt::WString::fromUTF8("btn with-label btn-default btn btn-default with-label undefined"));
+	btnRefresh->setInline(1);
+	btnRefresh->setText(Wt::WString::fromUTF8("Refresh"));
+	//btnRefresh->bindSafe()
+	btnRefresh->clicked().connect(this, &LabjackExample::tryFetchNewLabjacks);
 
 	this->setupInterface();
 }
@@ -62,6 +71,13 @@ void LabjackExample::updateLabjacks(std::vector<BehavioralBoxLabjack*> updatedLa
 	this->refreshInterface();
 }
 
+void LabjackExample::tryFetchNewLabjacks()
+{
+	//this->text_number_of_labjacks->setText("CHANGING IT!");
+	this->text_number_of_labjacks->setText(WString::tr("CHANGING IT!"));
+	this->text_number_of_labjacks->refresh();
+}
+
 void LabjackExample::setupInterface()
 {
 	this->text_labjack_label->setId("text_number_of_labjacks");
@@ -76,11 +92,14 @@ void LabjackExample::setupInterface()
 void LabjackExample::refreshInterface()
 {
 	if (this->activeLabjacks.size() > 0) {
-		this->text_number_of_labjacks->setText(to_wstring(this->activeLabjacks.size()));
+		WString newString = to_wstring(this->activeLabjacks.size()) + WString::tr(" Labjacks");
+		this->text_number_of_labjacks->setText(newString);
 		//this->addWidget(cpp14::make_unique<WText>(to_wstring(this->activeLabjacks.size())));
 	}
 	else {
-		this->text_number_of_labjacks->setText(WString::tr("No Labjacks"));
+		this->text_number_of_labjacks->setText(WString::tr("0 Labjacks"));
 		//this->addWidget(cpp14::make_unique<WText>(WString::tr("No Labjacks")));
 	}
+	this->text_number_of_labjacks->show();
+	this->text_number_of_labjacks->refresh();
 }

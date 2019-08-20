@@ -2,6 +2,7 @@
 
 #include <Wt/WContainerWidget.h>
 #include <Wt/WGroupBox.h>
+#include <Wt/WPushButton.h>
 #include <Wt/WText.h>
 #include "src/BehavioralBoxLabjack.h"
 /**
@@ -26,8 +27,11 @@ public:
 	Wt::WText* text_labjack_label;
 	Wt::WText* text_number_of_labjacks;
 
+	Wt::WPushButton* btnRefresh;
+
 private:
 	std::vector<BehavioralBoxLabjack*> activeLabjacks;
+	void tryFetchNewLabjacks();
 	void setupInterface();
 	void refreshInterface();
 };

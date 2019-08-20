@@ -30,6 +30,8 @@
 #include "WebServer.h"
 #include "ChartsApplication.h"
 #include <Wt/WServer.h>
+// 1 Make the member a real variable not a pointer.
+std::thread web_server_thread;
 
 // Vector of Labjack Objects
 std::vector<BehavioralBoxLabjack*> foundLabjacks;
@@ -43,6 +45,8 @@ Bosma::Scheduler s(max_n_threads);
 
 // FUNCTION PROTOTYPES:
 bool waitForFoundLabjacks();
+bool startWebserver(int argc, char** argv);
+int shutdownApplication(int shutdownCode);
 
 void runTopOfHourUpdate();
 void runTopOfMinuteUpdate();
@@ -58,15 +62,13 @@ int main(int argc, char** argv)
 	cout << "\t Pho Hale 2019" << endl << endl;
 
 	// Run the webserver:
-	cout << "Starting the web server." << endl;
-	//runServer(argc, argv);
-	chartsApplicationWebServer(argc, argv);
+	startWebserver(argc, argv);
 
 	cout << endl << "Scanning for attached Labjacks..." << endl;
 	if (!waitForFoundLabjacks()) {
 		// User wants to quit.
 		cout << "User chose to quit. Done." << endl;
-		return LJME_NO_DEVICES_FOUND;
+		return shutdownApplication(LJME_NO_DEVICES_FOUND);
 	}
 
 	WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
@@ -107,8 +109,6 @@ int main(int argc, char** argv)
 				std::string foundRelativeFilePathString = foundLabjacks[i]->getFullFilePath();
 				std::string fullFilePathString = LabjackHelpers::getFullPath(foundRelativeFilePathString);
 
-				//const char* portName = foundFilePathString.c_str();
-
 				cout << "\t Showing log file at " << fullFilePathString << endl;
 				LabjackHelpers::showInExplorer(fullFilePathString);
 			}
@@ -142,6 +142,7 @@ int main(int argc, char** argv)
 				for (int i = 0; i < newlyFoundAdditionalLabjacks.size(); i++) {
 					foundLabjacks.push_back(newlyFoundAdditionalLabjacks[i]);
 				}
+				WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
 			}
 			else {
 				cout << "Found no new labjacks." << endl;
@@ -170,9 +171,7 @@ int main(int argc, char** argv)
 
 	} while (terminateExecution != 1);
 
-	printf("Done.");
-
-	return LJME_NOERROR;
+	return shutdownApplication(LJME_NOERROR);
 }
 
 // Idles and waits for a labjack to be found.
@@ -215,6 +214,32 @@ bool waitForFoundLabjacks()
 	} while (stillWaitingToFindLabjacks == true);
 	// Returns true to indicate that labjacks have been found and we should move forward with the program.
 	return true;
+}
+
+bool startWebserver(int argc, char** argv)
+{
+	cout << "Starting the web server." << endl;
+	web_server_thread = std::move(std::thread([=]() {
+		chartsApplicationWebServer(argc, argv);
+		return true;
+	}));
+	//runServer(argc, argv);
+	return true;
+}
+
+// Called when the application is being quit
+int shutdownApplication(int shutdownCode)
+{
+	cout << "Shutting down the application..." << endl;
+	cout << "Waiting on web server thread to quit..." << endl;
+	// As the thread is using members from this object
+	  // We can not let this obect be destroyed until
+	  // the thread finishes executing.
+	web_server_thread.join();
+	printf("Done.");
+	// At this point the thread has finished.
+	// Destructor can now complete.
+	return shutdownCode;
 }
 
 

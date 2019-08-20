@@ -13,6 +13,8 @@ using namespace Wt;
 
 ChartsApplication::ChartsApplication(const WEnvironment& env): WApplication(env)
 {
+	this->enableUpdates(true);
+	WApplication::instance()->enableUpdates(true);
     setTitle("Charts example");
 
     setCssTheme("polished");
@@ -27,8 +29,6 @@ ChartsApplication::ChartsApplication(const WEnvironment& env): WApplication(env)
      * Set our style sheet last, so that it loaded after the ext stylesheets.
      */
     useStyleSheet("resources/charts.css");
-
-	WApplication::instance()->enableUpdates(true);
  }
 
 void ChartsApplication::staticUpdateActiveLabjacks()
@@ -56,7 +56,17 @@ void ChartsApplication::staticUpdateActiveLabjacks()
 
   void ChartsApplication::updateActiveLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks)
   {
-	  this->chartsExampleWidget->setActiveLabjacks(updatedLabjacks);
+	  if (this->chartsExampleWidget != NULL) {
+		  this->chartsExampleWidget->setActiveLabjacks(updatedLabjacks);
+		  WApplication::instance()->triggerUpdate();
+		  this->triggerUpdate();
+		  return;
+	  }
+	  else {
+		  printf("Error getting chartsExampleWidget!!\n");
+		  return;
+	  }
+
   }
 
 std::unique_ptr<WApplication> createApplication(const WEnvironment& env)
