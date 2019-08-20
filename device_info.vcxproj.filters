@@ -57,6 +57,9 @@
     <ClCompile Include="src\WebServer.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
+    <ClCompile Include="ConfigurationFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BehavioralBoxLabjack.h">
@@ -107,6 +110,9 @@
     <ClInclude Include="src\WebServer.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
+    <ClInclude Include="ConfigurationFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml">
@@ -123,5 +129,6 @@
     <None Include="resources\charts.css">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
