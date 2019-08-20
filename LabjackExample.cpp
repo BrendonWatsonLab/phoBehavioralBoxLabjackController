@@ -92,13 +92,14 @@ void LabjackExample::setupInterface()
 void LabjackExample::refreshInterface()
 {
 	if (this->activeLabjacks.size() > 0) {
-		WString newString = to_wstring(this->activeLabjacks.size()) + WString::tr(" Labjacks");
+		/*WString newString = to_wstring(this->activeLabjacks.size()) + WString::tr(" Labjacks");*/
+		std::string newString = std::to_string(this->activeLabjacks.size()) + " Labjacks";
 		this->text_number_of_labjacks->setText(newString);
 		//this->addWidget(cpp14::make_unique<WText>(to_wstring(this->activeLabjacks.size())));
 	}
 	else {
-		this->text_number_of_labjacks->setText(WString::tr("0 Labjacks"));
-		//this->addWidget(cpp14::make_unique<WText>(WString::tr("No Labjacks")));
+		//this->text_number_of_labjacks->setText(WString::tr("0 Labjacks"));
+		this->addWidget(cpp14::make_unique<WText>("No Labjacks"));
 	}
 	this->text_number_of_labjacks->show();
 	this->text_number_of_labjacks->refresh();
