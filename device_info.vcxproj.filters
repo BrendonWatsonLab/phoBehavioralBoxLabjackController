@@ -36,9 +36,6 @@
     <ClCompile Include="OutputState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\WebServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChartsApplication.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
@@ -56,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="LabjackExample.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WebServer.cpp">
+      <Filter>WtWebServer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,9 +86,6 @@
     <ClInclude Include="OutputState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\WebServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ChartsExample.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
@@ -106,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="LabjackExample.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WebServer.h">
+      <Filter>WtWebServer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
