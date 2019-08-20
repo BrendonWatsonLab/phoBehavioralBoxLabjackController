@@ -60,7 +60,6 @@ int main()
 		foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
 	}
 
-
 	// TODO - READ ME: main run loop
 		// The LJM_StartInterval, LJM_WaitForNextInterval, and LJM_CleanInterval functions are used to efficiently execute the loop every so many milliseconds
 		// To permit multiple labjacks operating in a general way, we probably want this loop to be contained within a thread that is owned by the BehavioralBoxLabjack object.
@@ -102,7 +101,7 @@ int main()
 				cout << "\t Showing log file at " << fullFilePathString << endl;
 				LabjackHelpers::showInExplorer(fullFilePathString);
 			}
-			cout << "done.";
+			cout << "\t done." << endl;
 		}
 		else if (character == 'P') {
 			// Prints the current data
@@ -113,6 +112,7 @@ int main()
 				//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
 				foundLabjacks[i]->diagnosticPrintLastValues();
 			}
+			cout << "\t done." << endl;
 		}
 		else if (character == 'R') {
 			cout << "Refreshing Labjacks..." << endl;
@@ -135,6 +135,7 @@ int main()
 			else {
 				cout << "Found no new labjacks." << endl;
 			}
+			cout << "\t done." << endl;
 		}
 		else if (character == 'L') {
 			cout << "Toggling visible LED Light mode on all labjacks..." << endl;
@@ -142,6 +143,7 @@ int main()
 			for (int i = 0; i < foundLabjacks.size(); i++) {
 				foundLabjacks[i]->toggleOverrideMode_VisibleLED();
 			}
+			cout << "\t done." << endl;
 		}
 		else if (character == 'A') {
 			cout << "Toggling attract mode on all Labjacks..." << endl;
@@ -149,6 +151,7 @@ int main()
 			for (int i = 0; i < foundLabjacks.size(); i++) {
 				foundLabjacks[i]->toggleOverrideMode_AttractModeLEDs();
 			}
+			cout << "\t done." << endl;
 		}
 		else {
 			printCommandsMenu();
