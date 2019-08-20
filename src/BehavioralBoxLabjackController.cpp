@@ -50,14 +50,14 @@ void runPollingLoopUpdate();
 void printCommandsMenu();
 
 
-int main()
+int main(int argc, char** argv)
 {
 	cout << "BehavioralBoxLabjackController:" << endl;
 	cout << "\t Pho Hale 2019" << endl << endl;
 
 	// Run the webserver:
 	cout << "Starting the web server." << endl;
-	runServer();
+	runServer(argc, argv);
 
 	cout << endl << "Scanning for attached Labjacks..." << endl;
 	if (!waitForFoundLabjacks()) {
