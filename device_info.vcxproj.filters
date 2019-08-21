@@ -16,6 +16,9 @@
     <Filter Include="WtWebServer">
       <UniqueIdentifier>{1aa7379a-99a7-4489-9e3e-7ab9c5e9ac69}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WtWebServer\Model">
+      <UniqueIdentifier>{4b1dcc99-7b8f-44a8-845d-25e4fd6035a7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\Configuration Files">
       <UniqueIdentifier>{c0a0558d-1ca4-4ce1-9019-c9ea37cf53a8}</UniqueIdentifier>
     </Filter>
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="src\WebServer.h">
       <Filter>WtWebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NumericItem.h">
+      <Filter>WtWebServer\Model</Filter>
     </ClInclude>
     <ClInclude Include="ConfigurationFile.h">
       <Filter>Header Files\Configuration Files</Filter>

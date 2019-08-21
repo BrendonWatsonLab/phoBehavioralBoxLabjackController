@@ -14,6 +14,8 @@
 #include <Wt/WStandardItem.h>
 #include <Wt/WTableView.h>
 
+#include "src/NumericItem.h"
+
 using namespace Wt;
 
 LabjackExample::LabjackExample(): WContainerWidget()
@@ -44,11 +46,11 @@ LabjackExample::LabjackExample(): WContainerWidget()
 		//text_cp_cp->setTextFormat((Wt::TextFormat)0);
 		//text_cp_cp->setText(Wt::WString::fromUTF8("Some Text"));
 	//}
-	this->text_labjack_label = this->addWidget(cpp14::make_unique<WText>(WString::tr("Labjack Example")));
-	this->text_number_of_labjacks = this->addWidget(cpp14::make_unique<WText>(WString::tr("Finding Labjacks...")));
+	this->text_labjack_label = this->groupbox->addWidget(cpp14::make_unique<WText>(WString::tr("Labjack Example")));
+	this->text_number_of_labjacks = this->groupbox->addWidget(cpp14::make_unique<WText>(WString::tr("Finding Labjacks...")));
 
 	//btnRefresh = new Wt::WPushButton(this->groupbox);
-	btnRefresh = this->addWidget(cpp14::make_unique<Wt::WPushButton>(tr("save")));
+	btnRefresh = this->groupbox->addWidget(cpp14::make_unique<Wt::WPushButton>(tr("save")));
 	btnRefresh->setId("btnRefresh");
 	btnRefresh->setStyleClass(Wt::WString::fromUTF8("btn with-label btn-default btn btn-default with-label undefined"));
 	btnRefresh->setInline(1);

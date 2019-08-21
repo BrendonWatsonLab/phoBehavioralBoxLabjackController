@@ -51,6 +51,7 @@
     <ClInclude Include="src\External\px_sched.h" />
     <ClInclude Include="src\External\Scheduler\Scheduler.h" />
     <ClInclude Include="src\LabjackHelpers.h" />
+    <ClInclude Include="src\NumericItem.h" />
     <ClInclude Include="src\PanelList.h" />
     <ClInclude Include="src\WebServer.h" />
     <ClInclude Include="StateMonitor.h" />
