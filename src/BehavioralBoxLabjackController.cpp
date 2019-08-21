@@ -142,11 +142,12 @@ int main(int argc, char** argv)
 				for (int i = 0; i < newlyFoundAdditionalLabjacks.size(); i++) {
 					foundLabjacks.push_back(newlyFoundAdditionalLabjacks[i]);
 				}
-				WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
 			}
 			else {
 				cout << "Found no new labjacks." << endl;
 			}
+			// Refresh the webserver
+			WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
 			cout << "\t done." << endl;
 		}
 		else if (character == 'L') {

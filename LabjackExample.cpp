@@ -46,8 +46,8 @@ LabjackExample::LabjackExample(): WContainerWidget()
 		//text_cp_cp->setTextFormat((Wt::TextFormat)0);
 		//text_cp_cp->setText(Wt::WString::fromUTF8("Some Text"));
 	//}
-	this->text_labjack_label = this->groupbox->addWidget(cpp14::make_unique<WText>(WString::tr("Labjack Example")));
-	this->text_number_of_labjacks = this->groupbox->addWidget(cpp14::make_unique<WText>(WString::tr("Finding Labjacks...")));
+	this->text_labjack_label = this->groupbox->addWidget(cpp14::make_unique<WText>(WString("Found Labjacks:")));
+	this->text_number_of_labjacks = this->groupbox->addWidget(cpp14::make_unique<WText>(WString("Finding Labjacks...")));
 
 	//btnRefresh = new Wt::WPushButton(this->groupbox);
 	btnRefresh = this->groupbox->addWidget(cpp14::make_unique<Wt::WPushButton>(tr("save")));
@@ -80,14 +80,15 @@ void LabjackExample::updateLabjacks(std::vector<BehavioralBoxLabjack*> updatedLa
 
 void LabjackExample::tryFetchNewLabjacks()
 {
+	this->refreshInterface();
 	//this->text_number_of_labjacks->setText("CHANGING IT!");
-	this->text_number_of_labjacks->setText(WString::tr("CHANGING IT!"));
-	this->text_number_of_labjacks->refresh();
+	//this->text_number_of_labjacks->setText(WString::tr("CHANGING IT!"));
+	//this->text_number_of_labjacks->refresh();
 }
 
 void LabjackExample::setupInterface()
 {
-	this->text_labjack_label->setId("text_number_of_labjacks");
+	this->text_labjack_label->setId("text_labjack_label");
 	this->text_labjack_label->setInline(false);
 	this->text_labjack_label->setTextFormat((Wt::TextFormat)0);
 
@@ -112,7 +113,7 @@ void LabjackExample::setupInterface()
   this->tblLiveLabjackData->setEditTriggers(EditTrigger::None);
 
   this->tblLiveLabjackData->setColumnWidth(0, 80);
-  this->updateTableModel();
+  //this->updateTableModel();
 }
 
 void LabjackExample::refreshInterface()
@@ -124,14 +125,20 @@ void LabjackExample::refreshInterface()
 		//this->addWidget(cpp14::make_unique<WText>(to_wstring(this->activeLabjacks.size())));
 	}
 	else {
-		//this->text_number_of_labjacks->setText(WString::tr("0 Labjacks"));
-		this->addWidget(cpp14::make_unique<WText>("No Labjacks"));
+		this->text_number_of_labjacks->setText("No Labjacks");
+		this->text_number_of_labjacks->refresh();
+		//this->addWidget(cpp14::make_unique<WText>("No Labjacks"));
 	}
 	this->text_number_of_labjacks->show();
 	this->text_number_of_labjacks->refresh();
 
 	// Update table:
 	this->updateTableModel();
+	this->tblLiveLabjackData->resize(1200, WLength::Auto);
+	this->tblLiveLabjackData->setColumnWidth(0, 80);
+	for (int i = 1; i < this->liveLabjackTableModel->columnCount(); ++i) {
+		this->tblLiveLabjackData->setColumnWidth(i, 90);
+	}
 }
 
 void LabjackExample::updateTableModel()
@@ -139,10 +146,6 @@ void LabjackExample::updateTableModel()
 	// Read the CSV file
 	this->liveLabjackTableModel = this->buildLiveLabjacksModel();
 	this->tblLiveLabjackData->setModel(this->liveLabjackTableModel);
-	this->tblLiveLabjackData->setColumnWidth(0, 80);
-	for (int i = 1; i < this->liveLabjackTableModel->columnCount(); ++i) {
-		this->tblLiveLabjackData->setColumnWidth(i, 120);
-	}
 }
 
 std::shared_ptr<WAbstractItemModel> LabjackExample::buildLiveLabjacksModel()
@@ -213,21 +216,21 @@ std::shared_ptr<WAbstractItemModel> LabjackExample::buildLiveLabjacksModel()
 
 	} // end row (Labjack) loop
 
-	for (int row = 0; row < model->rowCount(); ++row) {
-		for (int col = 0; col < model->columnCount(); ++col) {
-			model->item(row, col)->setFlags(ItemFlag::Selectable);
+	//for (int row = 0; row < model->rowCount(); ++row) {
+	//	for (int col = 0; col < model->columnCount(); ++col) {
+	//		model->item(row, col)->setFlags(ItemFlag::Selectable);
 
-			/*
-			  Example of tool tips (disabled here because they are not updated
-			  when editing data)
-			 */
+	//		/*
+	//		  Example of tool tips (disabled here because they are not updated
+	//		  when editing data)
+	//		 */
 
-			 /*
-			 WString toolTip = asString(model->headerData(col)) + ": "
-			   + asString(model->item(row, col)->data(DisplayRole), "%.f");
-			 model->item(row, col)->setToolTip(toolTip);
-			  */
-		}
-	}
+	//		 /*
+	//		 WString toolTip = asString(model->headerData(col)) + ": "
+	//		   + asString(model->item(row, col)->data(DisplayRole), "%.f");
+	//		 model->item(row, col)->setToolTip(toolTip);
+	//		  */
+	//	}
+	//}
 	return model;
 }
