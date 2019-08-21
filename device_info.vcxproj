@@ -35,6 +35,8 @@
     <ClCompile Include="StateMonitor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConfigFiles\config-DownstairsBox.h" />
+    <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h" />
     <ClInclude Include="ConfigurationFile.h" />
     <ClInclude Include="InputState.h" />
     <ClInclude Include="LabjackExample.h" />

@@ -14,4 +14,4 @@ enum { NUM_CHANNELS = 9 };
 //// Outputs:
 enum { NUM_OUTPUT_CHANNELS = 3 };
 #define globalLabjackOutputPortNames { "MIO2","MIO1","MIO1" }
-#define globalLabjackInputPortPurpose { "VisibleLedRelay","WaterPortAttractModeLED","WaterPortAttractModeLED"}
+#define globalLabjackOutputPortPurpose { "VisibleLedRelay","WaterPortAttractModeLED","WaterPortAttractModeLED"}
