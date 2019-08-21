@@ -58,6 +58,11 @@ LabjackExample::LabjackExample(): WContainerWidget()
 	//btnRefresh->bindSafe()
 	btnRefresh->clicked().connect(this, &LabjackExample::tryFetchNewLabjacks);
 
+	// Add the Table
+	// Show a view that allows editing of the model.
+	this->liveContainer = this->addWidget(cpp14::make_unique<WContainerWidget>());
+	this->tblLiveLabjackData = this->liveContainer->addWidget(cpp14::make_unique<WTableView>());
+
 	this->setupInterface();
 }
 
@@ -89,6 +94,25 @@ void LabjackExample::setupInterface()
 	this->text_number_of_labjacks->setId("text_number_of_labjacks");
 	this->text_number_of_labjacks->setInline(false);
 	this->text_number_of_labjacks->setTextFormat((Wt::TextFormat)0);
+
+	// Live Labjack State Table:
+	this->tblLiveLabjackData->setMargin(10, Side::Top | Side::Bottom);
+  this->tblLiveLabjackData->setMargin(WLength::Auto, Side::Left | Side::Right);
+  
+  this->tblLiveLabjackData->setSortingEnabled(true);
+  this->tblLiveLabjackData->setColumnResizeEnabled(true);
+  // this->tblLiveLabjackData->setSelectionMode(SelectionMode::Extended);
+  this->tblLiveLabjackData->setAlternatingRowColors(true);
+  this->tblLiveLabjackData->setColumnAlignment(0, AlignmentFlag::Center);
+  this->tblLiveLabjackData->setHeaderAlignment(0, AlignmentFlag::Center);
+  this->tblLiveLabjackData->setRowHeight(22);
+
+  // Disable Editing of the table:
+  this->tblLiveLabjackData->resize(600, WLength::Auto);
+  this->tblLiveLabjackData->setEditTriggers(EditTrigger::None);
+
+  this->tblLiveLabjackData->setColumnWidth(0, 80);
+  this->updateTableModel();
 }
 
 void LabjackExample::refreshInterface()
@@ -105,4 +129,105 @@ void LabjackExample::refreshInterface()
 	}
 	this->text_number_of_labjacks->show();
 	this->text_number_of_labjacks->refresh();
+
+	// Update table:
+	this->updateTableModel();
+}
+
+void LabjackExample::updateTableModel()
+{
+	// Read the CSV file
+	this->liveLabjackTableModel = this->buildLiveLabjacksModel();
+	this->tblLiveLabjackData->setModel(this->liveLabjackTableModel);
+	this->tblLiveLabjackData->setColumnWidth(0, 80);
+	for (int i = 1; i < this->liveLabjackTableModel->columnCount(); ++i) {
+		this->tblLiveLabjackData->setColumnWidth(i, 120);
+	}
+}
+
+std::shared_ptr<WAbstractItemModel> LabjackExample::buildLiveLabjacksModel()
+{
+	std::shared_ptr<WStandardItemModel> model = std::make_shared<WStandardItemModel>(0, 0);
+	std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
+	model->setItemPrototype(std::move(prototype));
+
+	// Iterate through labjacks (rows)
+	for (int rowIndex = 0; rowIndex < this->activeLabjacks.size(); rowIndex++) {
+		// Loop through columns:
+		int currColumnNumber = 0;
+
+		BehavioralBoxLabjack* currLabjack = this->activeLabjacks[rowIndex];
+		vector<std::string> portPurposeStrings = currLabjack->getInputPortPurpose();
+		vector<double> mostRecentValues = currLabjack->getLastReadValues();
+
+		// Want a column for the serial number
+		int currSerialNumber = currLabjack->getSerialNumber();
+		int currNumInputChannels = currLabjack->getNumberInputChannels();
+
+		int currTotalTableColumns = currNumInputChannels + 1;
+
+		for (int columnIndex = 0; columnIndex < currTotalTableColumns; columnIndex++) {
+			//currColumnNumber: the 1-indexed column identifier
+			currColumnNumber = columnIndex + 1;
+			// Add extra columns to model if needed
+			if (currColumnNumber >= model->columnCount())
+				model->insertColumns(model->columnCount(),
+					currColumnNumber + 1 - model->columnCount());
+
+			// If it's the first row (we only set the header data once)
+			if (rowIndex == 0) {
+				if (columnIndex == 0) {
+					// It's the serial number column
+					std::string serialNumberString = std::to_string(currSerialNumber);
+					model->setHeaderData(currColumnNumber, Wt::cpp17::any(Wt::WString("SerialNum")));
+				}
+				else {
+					int dataColumnIndex = columnIndex - 1; // Subtract off the first (serialNumber) index
+					// It's a data column
+					model->setHeaderData(currColumnNumber, Wt::cpp17::any(Wt::WString(portPurposeStrings[dataColumnIndex])));
+				}
+				
+			}
+			// Add the row if needed:
+			if (rowIndex >= model->rowCount()) {
+				model->insertRows(model->rowCount(), rowIndex + 1 - model->rowCount());
+			}
+			// Finally, add the data
+			Wt::cpp17::any data;
+
+			if (columnIndex == 0) {
+				// It's the serial number column
+				std::string serialNumberString = std::to_string(currSerialNumber);
+				data = Wt::cpp17::any(Wt::WString(serialNumberString));
+			}
+			else {
+				// It's a data column
+				int dataColumnIndex = columnIndex - 1; // Subtract off the first (serialNumber) index
+				double currValue = mostRecentValues[dataColumnIndex];
+				data = Wt::cpp17::any(currValue);
+			}
+
+			//TODO: do I used 0 or 1-indexed column
+			model->setData(rowIndex, columnIndex, data);
+		} // end column loop
+
+	} // end row (Labjack) loop
+
+	for (int row = 0; row < model->rowCount(); ++row) {
+		for (int col = 0; col < model->columnCount(); ++col) {
+			model->item(row, col)->setFlags(ItemFlag::Selectable);
+
+			/*
+			  Example of tool tips (disabled here because they are not updated
+			  when editing data)
+			 */
+
+			 /*
+			 WString toolTip = asString(model->headerData(col)) + ": "
+			   + asString(model->item(row, col)->data(DisplayRole), "%.f");
+			 model->item(row, col)->setToolTip(toolTip);
+			  */
+		}
+	}
+	return model;
 }

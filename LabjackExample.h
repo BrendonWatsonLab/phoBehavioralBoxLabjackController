@@ -29,10 +29,20 @@ public:
 
 	Wt::WPushButton* btnRefresh;
 
+	Wt::WContainerWidget* liveContainer;
+	Wt::WTableView* tblLiveLabjackData;
+
 private:
 	std::vector<BehavioralBoxLabjack*> activeLabjacks;
 	void tryFetchNewLabjacks();
 	void setupInterface();
 	void refreshInterface();
+
+	// Table
+	std::shared_ptr<Wt::WAbstractItemModel> liveLabjackTableModel;
+	void updateTableModel();
+
+	std::shared_ptr<Wt::WAbstractItemModel> buildLiveLabjacksModel();
+
 };
 
