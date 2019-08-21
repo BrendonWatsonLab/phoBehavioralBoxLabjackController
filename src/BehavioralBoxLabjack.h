@@ -62,6 +62,12 @@ public:
 	int getSerialNumber() { return this->serialNumber; }
 	bool isVisibleLEDLit();
 	string getFullFilePath() { return this->fileFullPath; }
+	int getNumberInputChannels() { return NUM_CHANNELS; }
+	int getNumberOutputChannels() { return NUM_OUTPUT_CHANNELS; }
+
+	vector<std::string> getInputPortNames();
+	vector<std::string> getInputPortPurpose();
+	vector<double> getLastReadValues();
 
 	// Override Functions
 	void toggleOverrideMode_VisibleLED();

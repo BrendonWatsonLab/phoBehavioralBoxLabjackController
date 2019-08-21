@@ -370,6 +370,38 @@ bool BehavioralBoxLabjack::isVisibleLEDLit()
 	}
 }
 
+
+vector<std::string> BehavioralBoxLabjack::getInputPortNames()
+{
+	vector<std::string> outputStrings = vector<std::string>();
+	std::string currString = "";
+	for (int i = 0; i < this->getNumberInputChannels(); i++) {
+		currString = std::string(this->inputPortNames[i]);
+		outputStrings.push_back(currString);
+	}
+	return outputStrings;
+}
+
+vector<std::string> BehavioralBoxLabjack::getInputPortPurpose()
+{
+	vector<std::string> outputStrings = vector<std::string>();
+	std::string currString = "";
+	for (int i = 0; i < this->getNumberInputChannels(); i++) {
+		currString = std::string(this->inputPortPurpose[i]);
+		outputStrings.push_back(currString);
+	}
+	return outputStrings;
+}
+
+vector<double> BehavioralBoxLabjack::getLastReadValues()
+{
+	vector<double> outputValues = vector<double>();
+	for (int i = 0; i < this->getNumberInputChannels(); i++) {
+		outputValues.push_back(this->lastReadInputPortValues[i]);
+	}
+	return outputValues;
+}
+
 void BehavioralBoxLabjack::toggleOverrideMode_VisibleLED()
 {
 	// Mode 0: 0 0
