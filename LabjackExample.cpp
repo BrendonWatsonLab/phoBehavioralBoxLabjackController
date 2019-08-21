@@ -109,10 +109,10 @@ void LabjackExample::setupInterface()
   this->tblLiveLabjackData->setRowHeight(22);
 
   // Disable Editing of the table:
-  this->tblLiveLabjackData->resize(600, WLength::Auto);
+  this->tblLiveLabjackData->resize(1400, WLength::Auto);
   this->tblLiveLabjackData->setEditTriggers(EditTrigger::None);
 
-  this->tblLiveLabjackData->setColumnWidth(0, 80);
+  this->tblLiveLabjackData->setColumnWidth(0, 140);
   //this->updateTableModel();
 }
 
@@ -134,10 +134,10 @@ void LabjackExample::refreshInterface()
 
 	// Update table:
 	this->updateTableModel();
-	this->tblLiveLabjackData->resize(1200, WLength::Auto);
-	this->tblLiveLabjackData->setColumnWidth(0, 80);
+	this->tblLiveLabjackData->resize(1400, WLength::Auto);
+	this->tblLiveLabjackData->setColumnWidth(0, 140);
 	for (int i = 1; i < this->liveLabjackTableModel->columnCount(); ++i) {
-		this->tblLiveLabjackData->setColumnWidth(i, 90);
+		this->tblLiveLabjackData->setColumnWidth(i, 140);
 	}
 }
 
