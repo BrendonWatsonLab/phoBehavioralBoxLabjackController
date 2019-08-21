@@ -329,9 +329,12 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 				else if (strcmp(this->inputPortPurpose[i], "Water2_BeamBreak") == 0) {
 					this->water2PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
 				}
-			}
+			} // end if greater than zero
 
-		}
+			// Emit the "valueChanged" signal for the web server
+			this->valueChanged_.emit(this->serialNumber, i, this->lastReadInputPortValues[i]);
+
+		} // end if input port values changed
 		newCSVLine << this->lastReadInputPortValues[i];
 		if (enableConsoleLogging) {
 			cout << this->lastReadInputPortValues[i] << ", ";

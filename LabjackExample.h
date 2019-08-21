@@ -34,7 +34,10 @@ public:
 
 private:
 	std::vector<BehavioralBoxLabjack*> activeLabjacks;
+	std::map<int, int> mapLabjackSerialNumberToRow;
+
 	void tryFetchNewLabjacks();
+	void onActiveLabjacksChanged();
 	void setupInterface();
 	void refreshInterface();
 
@@ -43,6 +46,8 @@ private:
 	void updateTableModel();
 
 	std::shared_ptr<Wt::WAbstractItemModel> buildLiveLabjacksModel();
+	// Signal/Event Handling:
+	void onLabjackValueChanged(int labjackSerialNumber, int portIndex, double newValue);
 
 };
 

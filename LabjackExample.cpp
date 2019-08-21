@@ -63,27 +63,39 @@ LabjackExample::LabjackExample(): WContainerWidget()
 	this->liveContainer = this->addWidget(cpp14::make_unique<WContainerWidget>());
 	this->tblLiveLabjackData = this->liveContainer->addWidget(cpp14::make_unique<WTableView>());
 
+	this->onActiveLabjacksChanged();
 	this->setupInterface();
 }
 
 LabjackExample::LabjackExample(std::vector<BehavioralBoxLabjack*> updatedLabjacks): LabjackExample()
 {
 	this->activeLabjacks = updatedLabjacks;
+	this->onActiveLabjacksChanged();
 	this->refreshInterface();
 }
 
 void LabjackExample::updateLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks)
 {
 	this->activeLabjacks = updatedLabjacks;
+	this->onActiveLabjacksChanged();
 	this->refreshInterface();
 }
 
 void LabjackExample::tryFetchNewLabjacks()
 {
 	this->refreshInterface();
-	//this->text_number_of_labjacks->setText("CHANGING IT!");
-	//this->text_number_of_labjacks->setText(WString::tr("CHANGING IT!"));
-	//this->text_number_of_labjacks->refresh();
+}
+
+// Loop through the new labjacks to set them up
+void LabjackExample::onActiveLabjacksChanged()
+{
+	this->mapLabjackSerialNumberToRow.clear();
+	for (int i = 0; i < this->activeLabjacks.size(); i++) {
+		// Add the labjack's serialNumber to the map
+		this->mapLabjackSerialNumberToRow.insert(std::make_pair(i, this->activeLabjacks[i]->getSerialNumber()));
+		// Bind the "onLabjackValueChanged" function to the labjack's "valueChanged()" signal
+		this->activeLabjacks[i]->valueChanged().connect(this, &LabjackExample::onLabjackValueChanged);
+	}
 }
 
 void LabjackExample::setupInterface()
@@ -100,8 +112,8 @@ void LabjackExample::setupInterface()
 	this->tblLiveLabjackData->setMargin(10, Side::Top | Side::Bottom);
   this->tblLiveLabjackData->setMargin(WLength::Auto, Side::Left | Side::Right);
   
-  this->tblLiveLabjackData->setSortingEnabled(true);
-  this->tblLiveLabjackData->setColumnResizeEnabled(true);
+  this->tblLiveLabjackData->setSortingEnabled(false);
+  this->tblLiveLabjackData->setColumnResizeEnabled(false);
   // this->tblLiveLabjackData->setSelectionMode(SelectionMode::Extended);
   this->tblLiveLabjackData->setAlternatingRowColors(true);
   this->tblLiveLabjackData->setColumnAlignment(0, AlignmentFlag::Center);
@@ -111,6 +123,12 @@ void LabjackExample::setupInterface()
   // Disable Editing of the table:
   this->tblLiveLabjackData->resize(1400, WLength::Auto);
   this->tblLiveLabjackData->setEditTriggers(EditTrigger::None);
+
+  // We use a single delegate for all items which rounds values to
+// the closest integer value.
+  std::shared_ptr<WItemDelegate> tableEditDelegate = std::make_shared<WItemDelegate>();
+  tableEditDelegate->setTextFormat("%.f");
+  this->tblLiveLabjackData->setItemDelegate(tableEditDelegate);
 
   this->tblLiveLabjackData->setColumnWidth(0, 140);
   //this->updateTableModel();
@@ -233,4 +251,26 @@ std::shared_ptr<WAbstractItemModel> LabjackExample::buildLiveLabjacksModel()
 	//	}
 	//}
 	return model;
+}
+
+// Called when a value for one of the child labjacks changes
+void LabjackExample::onLabjackValueChanged(int labjackSerialNumber, int portIndex, double newValue)
+{
+	if (labjackSerialNumber <= 0) {
+		//Ignore erronious labjacks
+		return;
+	}
+
+	// Get row index
+	int tableRowIndex = this->mapLabjackSerialNumberToRow[labjackSerialNumber];
+	int tableColumnIndex = portIndex + 1; // Add one to account for the serialNumber column
+	// Finally, add the data
+	std::string newValueString = std::to_string(newValue);
+	Wt::cpp17::any updatedData;
+	
+	updatedData = Wt::cpp17::any(newValue);
+	//updatedData = Wt::cpp17::any(Wt::WString(newValueString));
+	//updatedData = Wt::cpp17::any(newValueString);
+	// Update the table:
+	//this->liveLabjackTableModel->setData(tableRowIndex, tableColumnIndex, updatedData);
 }
