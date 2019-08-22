@@ -12,8 +12,8 @@
 #include <vector>
 #include <Wt/WSignal.h> // Signals support for the web server
 #include "External/CSVWriter.h"
-#include "../StateMonitor.h"
-#include "../OutputState.h"
+#include "StateMonitor.h"
+#include "OutputState.h"
 
 typedef std::chrono::system_clock Clock;
 

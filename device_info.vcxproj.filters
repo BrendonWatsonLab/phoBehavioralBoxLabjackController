@@ -22,21 +22,18 @@
     <Filter Include="Header Files\Configuration Files">
       <UniqueIdentifier>{c0a0558d-1ca4-4ce1-9019-c9ea37cf53a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Model">
+      <UniqueIdentifier>{e7a265e5-6cc4-41c7-93bb-66da482c4d9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model">
+      <UniqueIdentifier>{23d95ed8-c489-475b-92b2-8af44bab6311}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BehavioralBoxLabjack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\LabjackHelpers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StateMonitor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InputState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OutputState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ChartsApplication.cpp">
@@ -57,17 +54,26 @@
     <ClCompile Include="src\WebServer.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="ConfigurationFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChartConfig.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="BehavioralBoxLajbackController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BehavioralBoxLajbackController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ConfigurationFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputState.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StateMonitor.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OutputState.cpp">
+      <Filter>Source Files\Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -84,15 +90,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\External\CSVWriter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StateMonitor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OutputState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ChartsExample.h">
@@ -116,9 +113,6 @@
     <ClInclude Include="src\NumericItem.h">
       <Filter>WtWebServer\Model</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigurationFile.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\config.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
@@ -131,8 +125,20 @@
     <ClInclude Include="src\ChartConfig.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
-    <ClInclude Include="BehavioralBoxLajbackController.h">
+    <ClInclude Include="src\BehavioralBoxLajbackController.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StateMonitor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OutputState.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InputState.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConfigurationFile.h">
+      <Filter>Header Files\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

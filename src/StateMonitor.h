@@ -2,7 +2,7 @@
 #include <time.h>
 #include <chrono>
 
-#include "src/config.h"
+#include "config.h"
 #include "InputState.h"
 
 // Keep track of the presumed current state of each port. 
