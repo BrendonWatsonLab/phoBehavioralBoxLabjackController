@@ -81,8 +81,7 @@ namespace {
   }
 }
 
-ChartsExample::ChartsExample()
-  : WContainerWidget()
+ChartsExample::ChartsExample(): WContainerWidget()
 {
   this->appName = "Labjack Manager Overview:";
   this->addWidget(cpp14::make_unique<WText>(this->appName));

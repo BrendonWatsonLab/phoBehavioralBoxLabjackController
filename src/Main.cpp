@@ -28,8 +28,8 @@
 
 // Webserver functionality:
 #if LAUNCH_WEB_SERVER
-#include "WebServer.h"
-#include "ChartsApplication.h"
+#include "LabjackControllerWebApplication.h"
+
 #include <Wt/WServer.h>
 // 1 Make the member a real variable not a pointer.
 std::thread web_server_thread;
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 	}
 
 #if LAUNCH_WEB_SERVER
-	WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
+	WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
 #endif // LAUNCH_WEB_SERVER
 
 	// TODO - READ ME: main run loop
@@ -150,7 +150,7 @@ int main(int argc, char** argv)
 			}
 #if LAUNCH_WEB_SERVER
 			// Refresh the webserver
-			WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
+			WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
 #endif // LAUNCH_WEB_SERVER
 
 			cout << "\t done." << endl;
@@ -228,7 +228,7 @@ bool startWebserver(int argc, char** argv)
 {
 	cout << "Starting the web server." << endl;
 	web_server_thread = std::move(std::thread([=]() {
-		chartsApplicationWebServer(argc, argv);
+		labjackControllerApplicationWebServer(argc, argv);
 		return true;
 	}));
 	//runServer(argc, argv);

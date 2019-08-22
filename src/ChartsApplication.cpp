@@ -8,6 +8,7 @@
 //#include "ChartsExample.h"
 #include "ChartsApplication.h"
 #include "LabjackHelpers.h"
+#include "LabjackControllerWebApplication.h"
 
 using namespace Wt;
 
@@ -34,13 +35,14 @@ ChartsApplication::ChartsApplication(const WEnvironment& env): WApplication(env)
 void ChartsApplication::staticUpdateActiveLabjacks()
 {
 	ChartsApplication* app = dynamic_cast<ChartsApplication*>(WApplication::instance());
-	if (app) {
-		std::vector<BehavioralBoxLabjack*> activeLabjacks = LabjackHelpers::findAllLabjacks();
-		app->updateActiveLabjacks(activeLabjacks);
-	}
-	else {
-		// this cannot really happen
-	}
+	assert(app != nullptr);
+	// Find the labjacks again.
+	std::vector<BehavioralBoxLabjack*> activeLabjacks = LabjackHelpers::findAllLabjacks();
+	app->updateActiveLabjacks(activeLabjacks);
+}
+
+void ChartsApplication::staticRefreshLabjacksData()
+{
 }
 
   //void ChartsApplication::staticUpdateActiveLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks)
@@ -69,15 +71,17 @@ void ChartsApplication::staticUpdateActiveLabjacks()
 
   }
 
-std::unique_ptr<WApplication> createApplication(const WEnvironment& env)
-{
-  return cpp14::make_unique<ChartsApplication>(env);
-}
-
-int chartsApplicationWebServer(int argc, char** argv)
-{
-  return WRun(argc, argv, &createApplication);
-}
+//std::unique_ptr<WApplication> createApplication(const WEnvironment& env)
+//{
+//  return cpp14::make_unique<ChartsApplication>(env);
+//}
+//
+//
+//
+//int chartsApplicationWebServer(int argc, char** argv)
+//{
+//  return WRun(argc, argv, &createApplication);
+//}
 
 
 

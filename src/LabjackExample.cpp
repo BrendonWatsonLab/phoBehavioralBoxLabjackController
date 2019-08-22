@@ -279,4 +279,6 @@ void LabjackExample::onLabjackValueChanged(int labjackSerialNumber, int portInde
 	//updatedData = Wt::cpp17::any(newValueString);
 	// Update the table:
 	//this->liveLabjackTableModel->setData(tableRowIndex, tableColumnIndex, updatedData);
+
+	WApplication::instance()->triggerUpdate();
 }

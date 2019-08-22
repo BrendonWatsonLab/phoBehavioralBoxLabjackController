@@ -28,6 +28,12 @@
     <Filter Include="Source Files\Model">
       <UniqueIdentifier>{23d95ed8-c489-475b-92b2-8af44bab6311}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WtWebServer\OuterWidget">
+      <UniqueIdentifier>{b4a2b5af-fa94-4bcc-8326-ca26959f0ed6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WtWebServer\Obsolite">
+      <UniqueIdentifier>{197677d6-67bf-473c-9e18-7126cf24e7b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BehavioralBoxLabjack.cpp">
@@ -35,12 +41,6 @@
     </ClCompile>
     <ClCompile Include="src\LabjackHelpers.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChartsApplication.cpp">
-      <Filter>WtWebServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChartsExample.cpp">
-      <Filter>WtWebServer</Filter>
     </ClCompile>
     <ClCompile Include="src\CsvUtil.cpp">
       <Filter>WtWebServer</Filter>
@@ -75,6 +75,18 @@
     <ClCompile Include="src\LabjackExample.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
+    <ClCompile Include="src\LabjackControllerOuterWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChartsExample.cpp">
+      <Filter>WtWebServer\Obsolite</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackControllerWebApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChartsApplication.cpp">
+      <Filter>WtWebServer\Obsolite</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BehavioralBoxLabjack.h">
@@ -91,12 +103,6 @@
     </ClInclude>
     <ClInclude Include="src\External\CSVWriter.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChartsExample.h">
-      <Filter>WtWebServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChartsApplication.h">
-      <Filter>WtWebServer</Filter>
     </ClInclude>
     <ClInclude Include="src\CsvUtil.h">
       <Filter>WtWebServer</Filter>
@@ -139,6 +145,18 @@
     </ClInclude>
     <ClInclude Include="src\StateMonitor.h">
       <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackControllerOuterWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChartsExample.h">
+      <Filter>WtWebServer\Obsolite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackControllerWebApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChartsApplication.h">
+      <Filter>WtWebServer\Obsolite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

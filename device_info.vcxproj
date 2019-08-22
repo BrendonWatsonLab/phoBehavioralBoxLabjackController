@@ -23,6 +23,8 @@
     <ClCompile Include="src\BehavioralBoxLajbackController.cpp" />
     <ClCompile Include="src\ConfigurationFile.cpp" />
     <ClCompile Include="src\InputState.cpp" />
+    <ClCompile Include="src\LabjackControllerOuterWidget.cpp" />
+    <ClCompile Include="src\LabjackControllerWebApplication.cpp" />
     <ClCompile Include="src\LabjackExample.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\ChartConfig.cpp" />
@@ -50,6 +52,8 @@
     <ClInclude Include="src\External\px_sched.h" />
     <ClInclude Include="src\External\Scheduler\Scheduler.h" />
     <ClInclude Include="src\InputState.h" />
+    <ClInclude Include="src\LabjackControllerOuterWidget.h" />
+    <ClInclude Include="src\LabjackControllerWebApplication.h" />
     <ClInclude Include="src\LabjackExample.h" />
     <ClInclude Include="src\LabjackHelpers.h" />
     <ClInclude Include="src\NumericItem.h" />

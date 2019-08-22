@@ -2,27 +2,28 @@
 #include <Wt/WApplication.h>
 #include <Wt/WContainerWidget.h>
 #include <iostream>
-#include "ChartsExample.h"
+#include "LabjackControllerOuterWidget.h"
 
 using namespace Wt;
 
-class ChartsApplication : public WApplication
+class LabjackControllerWebApplication : public WApplication
 {
 public:
-	ChartsApplication(const WEnvironment& env);
+	LabjackControllerWebApplication(const WEnvironment& env);
 	//static void staticUpdateActiveLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks);
 	// Called to change the number of active labjacks
 	static void staticUpdateActiveLabjacks();
 	// Called to refresh the data for existing labjacks
 	static void staticRefreshLabjacksData();
 
-	
+
 private:
-	ChartsExample* chartsExampleWidget = nullptr;
+	LabjackControllerOuterWidget* labjackControllerOuterWidget = nullptr;
 	void updateActiveLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks);
 };
 
-//std::unique_ptr<WApplication> createApplication(const WEnvironment& env);
-//
-//int chartsApplicationWebServer(int argc, char** argv);
 
+// GLOBAL:
+std::unique_ptr<WApplication> createApplication(const WEnvironment& env);
+
+int labjackControllerApplicationWebServer(int argc, char** argv);
