@@ -45,15 +45,6 @@
     <ClCompile Include="src\CsvUtil.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\PanelList.cpp">
-      <Filter>WtWebServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WebServer.cpp">
-      <Filter>WtWebServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChartConfig.cpp">
-      <Filter>WtWebServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,6 +72,12 @@
     <ClCompile Include="src\LabjackControllerWebApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\PanelList.cpp">
+      <Filter>WtWebServer\Obsolite</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChartConfig.cpp">
+      <Filter>WtWebServer\Obsolite</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BehavioralBoxLabjack.h">
@@ -101,12 +98,6 @@
     <ClInclude Include="src\CsvUtil.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\PanelList.h">
-      <Filter>WtWebServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WebServer.h">
-      <Filter>WtWebServer</Filter>
-    </ClInclude>
     <ClInclude Include="src\NumericItem.h">
       <Filter>WtWebServer\Model</Filter>
     </ClInclude>
@@ -118,9 +109,6 @@
     </ClInclude>
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h">
       <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChartConfig.h">
-      <Filter>WtWebServer</Filter>
     </ClInclude>
     <ClInclude Include="src\BehavioralBoxLajbackController.h">
       <Filter>Header Files</Filter>
@@ -145,6 +133,12 @@
     </ClInclude>
     <ClInclude Include="src\LabjackControllerWebApplication.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PanelList.h">
+      <Filter>WtWebServer\Obsolite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChartConfig.h">
+      <Filter>WtWebServer\Obsolite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

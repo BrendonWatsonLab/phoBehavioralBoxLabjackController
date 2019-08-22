@@ -33,7 +33,6 @@
     <ClCompile Include="src\OutputState.cpp" />
     <ClCompile Include="src\PanelList.cpp" />
     <ClCompile Include="src\StateMonitor.cpp" />
-    <ClCompile Include="src\WebServer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConfigFiles\config-DownstairsBox.h" />
@@ -56,7 +55,6 @@
     <ClInclude Include="src\OutputState.h" />
     <ClInclude Include="src\PanelList.h" />
     <ClInclude Include="src\StateMonitor.h" />
-    <ClInclude Include="src\WebServer.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml" />
