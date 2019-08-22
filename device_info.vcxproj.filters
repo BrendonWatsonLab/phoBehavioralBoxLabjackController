@@ -27,9 +27,6 @@
     <ClCompile Include="src\BehavioralBoxLabjack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\BehavioralBoxLabjackController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\LabjackHelpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,9 +45,6 @@
     <ClCompile Include="src\ChartsExample.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChartConfig.cpp">
-      <Filter>WtWebServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\CsvUtil.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
@@ -64,6 +58,15 @@
       <Filter>WtWebServer</Filter>
     </ClCompile>
     <ClCompile Include="ConfigurationFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChartConfig.cpp">
+      <Filter>WtWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="BehavioralBoxLajbackController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -95,9 +98,6 @@
     <ClInclude Include="src\ChartsExample.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChartConfig.h">
-      <Filter>WtWebServer</Filter>
-    </ClInclude>
     <ClInclude Include="src\ChartsApplication.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
@@ -127,6 +127,12 @@
     </ClInclude>
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h">
       <Filter>Header Files\Configuration Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChartConfig.h">
+      <Filter>WtWebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="BehavioralBoxLajbackController.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

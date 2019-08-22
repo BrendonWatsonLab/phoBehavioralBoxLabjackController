@@ -19,12 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BehavioralBoxLajbackController.cpp" />
     <ClCompile Include="ConfigurationFile.cpp" />
     <ClCompile Include="InputState.cpp" />
     <ClCompile Include="LabjackExample.cpp" />
     <ClCompile Include="OutputState.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
-    <ClCompile Include="src\BehavioralBoxLabjackController.cpp" />
+    <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\ChartConfig.cpp" />
     <ClCompile Include="src\ChartsApplication.cpp" />
     <ClCompile Include="src\ChartsExample.cpp" />
@@ -35,6 +36,7 @@
     <ClCompile Include="StateMonitor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BehavioralBoxLajbackController.h" />
     <ClInclude Include="ConfigFiles\config-DownstairsBox.h" />
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h" />
     <ClInclude Include="ConfigurationFile.h" />
