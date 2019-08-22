@@ -207,7 +207,7 @@
 	   (e.g. for apache + fastcgi module), or on stderr (e.g. for
 	   the built-in httpd).
          -->
-	<log-file>../logs/webServerAccessLog.log</log-file>
+	<log-file>G:\Google Drive\Modern Behavior Box\Code\Labjack\phoBehavioralBoxLabjackController\logs\webServerAccessLog.log</log-file>
 
 	<!-- Logger configuration
 
@@ -240,7 +240,7 @@
 	   Note debugging messages are only emitted when debugging
 	   has been enabled while building Wt.
 	  -->
-	<log-config>*-info -debug</log-config>
+	<log-config>* -info -debug</log-config>
 
 	<!-- Maximum HTTP request size (KiB)
 
