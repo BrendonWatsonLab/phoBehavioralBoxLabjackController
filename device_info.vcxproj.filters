@@ -63,9 +63,6 @@
     <ClCompile Include="src\OutputState.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
-    <ClCompile Include="src\LabjackExample.cpp">
-      <Filter>WtWebServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,6 +74,9 @@
     </ClCompile>
     <ClCompile Include="src\ChartConfig.cpp">
       <Filter>WtWebServer\Obsolite</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackLiveStateWidget.cpp">
+      <Filter>WtWebServer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,9 +122,6 @@
     <ClInclude Include="src\ConfigurationFile.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\LabjackExample.h">
-      <Filter>WtWebServer</Filter>
-    </ClInclude>
     <ClInclude Include="src\StateMonitor.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
@@ -139,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="src\ChartConfig.h">
       <Filter>WtWebServer\Obsolite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackLiveStateWidget.h">
+      <Filter>WtWebServer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

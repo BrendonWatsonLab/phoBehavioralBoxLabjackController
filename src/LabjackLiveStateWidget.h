@@ -6,19 +6,19 @@
 #include <Wt/WText.h>
 #include "BehavioralBoxLabjack.h"
 /**
- * \defgroup LabjackExample Labjack Web example
+ * \defgroup LabjackLiveStateWidget Labjack Web example
  */
  /*@{*/
 
  /*! \brief A widget that demonstrates a labjack status
   */
-class LabjackExample: public Wt::WContainerWidget
+class LabjackLiveStateWidget: public Wt::WContainerWidget
 {
 public:
 	/*! \brief Creates the labjack web example
 	 */
-	LabjackExample();
-	LabjackExample(std::vector<BehavioralBoxLabjack*> updatedLabjacks);
+	LabjackLiveStateWidget();
+	LabjackLiveStateWidget(std::vector<BehavioralBoxLabjack*> updatedLabjacks);
 
 	void updateLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks);
 

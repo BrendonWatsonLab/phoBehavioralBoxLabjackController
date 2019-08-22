@@ -1,5 +1,5 @@
 
-#include "LabjackExample.h"
+#include "LabjackLiveStateWidget.h"
 
 #include <Wt/WApplication.h>
 #include <Wt/WDate.h>
@@ -18,7 +18,7 @@
 
 using namespace Wt;
 
-LabjackExample::LabjackExample(): WContainerWidget()
+LabjackLiveStateWidget::LabjackLiveStateWidget(): WContainerWidget()
 {
 	this->activeLabjacks = std::vector<BehavioralBoxLabjack*>();
 	//wt_root = (PageRoot);
@@ -56,7 +56,7 @@ LabjackExample::LabjackExample(): WContainerWidget()
 	btnRefresh->setInline(1);
 	btnRefresh->setText(Wt::WString::fromUTF8("Refresh"));
 	//btnRefresh->bindSafe()
-	btnRefresh->clicked().connect(this, &LabjackExample::tryFetchNewLabjacks);
+	btnRefresh->clicked().connect(this, &LabjackLiveStateWidget::tryFetchNewLabjacks);
 
 	// Add the Table
 	// Show a view that allows editing of the model.
@@ -67,38 +67,38 @@ LabjackExample::LabjackExample(): WContainerWidget()
 	this->setupInterface();
 }
 
-LabjackExample::LabjackExample(std::vector<BehavioralBoxLabjack*> updatedLabjacks): LabjackExample()
+LabjackLiveStateWidget::LabjackLiveStateWidget(std::vector<BehavioralBoxLabjack*> updatedLabjacks): LabjackLiveStateWidget()
 {
 	this->activeLabjacks = updatedLabjacks;
 	this->onActiveLabjacksChanged();
 	this->refreshInterface();
 }
 
-void LabjackExample::updateLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks)
+void LabjackLiveStateWidget::updateLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks)
 {
 	this->activeLabjacks = updatedLabjacks;
 	this->onActiveLabjacksChanged();
 	this->refreshInterface();
 }
 
-void LabjackExample::tryFetchNewLabjacks()
+void LabjackLiveStateWidget::tryFetchNewLabjacks()
 {
 	this->refreshInterface();
 }
 
 // Loop through the new labjacks to set them up
-void LabjackExample::onActiveLabjacksChanged()
+void LabjackLiveStateWidget::onActiveLabjacksChanged()
 {
 	this->mapLabjackSerialNumberToRow.clear();
 	for (int i = 0; i < this->activeLabjacks.size(); i++) {
 		// Add the labjack's serialNumber to the map
 		this->mapLabjackSerialNumberToRow.insert(std::make_pair(i, this->activeLabjacks[i]->getSerialNumber()));
 		// Bind the "onLabjackValueChanged" function to the labjack's "valueChanged()" signal
-		//this->activeLabjacks[i]->valueChanged().connect(this, &LabjackExample::onLabjackValueChanged);
+		//this->activeLabjacks[i]->valueChanged().connect(this, &LabjackLiveStateWidget::onLabjackValueChanged);
 	}
 }
 
-void LabjackExample::setupInterface()
+void LabjackLiveStateWidget::setupInterface()
 {
 	this->text_labjack_label->setId("text_labjack_label");
 	this->text_labjack_label->setInline(false);
@@ -135,7 +135,7 @@ void LabjackExample::setupInterface()
   //this->updateTableModel();
 }
 
-void LabjackExample::refreshInterface()
+void LabjackLiveStateWidget::refreshInterface()
 {
 	if (this->activeLabjacks.size() > 0) {
 		/*WString newString = to_wstring(this->activeLabjacks.size()) + WString::tr(" Labjacks");*/
@@ -160,14 +160,14 @@ void LabjackExample::refreshInterface()
 	}
 }
 
-void LabjackExample::updateTableModel()
+void LabjackLiveStateWidget::updateTableModel()
 {
 	// Read the CSV file
 	this->liveLabjackTableModel = this->buildLiveLabjacksModel();
 	this->tblLiveLabjackData->setModel(this->liveLabjackTableModel);
 }
 
-std::shared_ptr<WAbstractItemModel> LabjackExample::buildLiveLabjacksModel()
+std::shared_ptr<WAbstractItemModel> LabjackLiveStateWidget::buildLiveLabjacksModel()
 {
 	std::shared_ptr<WStandardItemModel> model = std::make_shared<WStandardItemModel>(0, 0);
 	std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
@@ -258,7 +258,7 @@ std::shared_ptr<WAbstractItemModel> LabjackExample::buildLiveLabjacksModel()
 }
 
 // Called when a value for one of the child labjacks changes
-void LabjackExample::onLabjackValueChanged(int labjackSerialNumber, int portIndex, double newValue)
+void LabjackLiveStateWidget::onLabjackValueChanged(int labjackSerialNumber, int portIndex, double newValue)
 {
 	if (labjackSerialNumber <= 0) {
 		//Ignore erronious labjacks

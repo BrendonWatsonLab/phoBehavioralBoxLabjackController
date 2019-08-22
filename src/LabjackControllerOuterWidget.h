@@ -1,7 +1,7 @@
 #pragma once
 #include <Wt/WContainerWidget.h>
 #include <iostream>
-#include "LabjackExample.h"
+#include "LabjackLiveStateWidget.h"
 
 /*! \brief A widget that demonstrates various aspects of the charting lib.
  */
@@ -13,7 +13,7 @@ public:
 	LabjackControllerOuterWidget();
 
 	void setActiveLabjacks(std::vector<BehavioralBoxLabjack*> activeLabjacks);
-	LabjackExample* labjackExampleWidget;
+	LabjackLiveStateWidget* labjackExampleWidget;
 
 private:
 	std::string appName = "";

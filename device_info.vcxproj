@@ -25,7 +25,7 @@
     <ClCompile Include="src\InputState.cpp" />
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp" />
     <ClCompile Include="src\LabjackControllerWebApplication.cpp" />
-    <ClCompile Include="src\LabjackExample.cpp" />
+    <ClCompile Include="src\LabjackLiveStateWidget.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\ChartConfig.cpp" />
     <ClCompile Include="src\CsvUtil.cpp" />
@@ -49,7 +49,7 @@
     <ClInclude Include="src\InputState.h" />
     <ClInclude Include="src\LabjackControllerOuterWidget.h" />
     <ClInclude Include="src\LabjackControllerWebApplication.h" />
-    <ClInclude Include="src\LabjackExample.h" />
+    <ClInclude Include="src\LabjackLiveStateWidget.h" />
     <ClInclude Include="src\LabjackHelpers.h" />
     <ClInclude Include="src\NumericItem.h" />
     <ClInclude Include="src\OutputState.h" />

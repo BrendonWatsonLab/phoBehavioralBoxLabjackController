@@ -8,7 +8,7 @@ LabjackControllerOuterWidget::LabjackControllerOuterWidget() : WContainerWidget(
 	this->appName = "Labjack Manager Overview:";
 	this->addWidget(cpp14::make_unique<WText>(this->appName));
 
-	this->labjackExampleWidget = this->addWidget(cpp14::make_unique<LabjackExample>());
+	this->labjackExampleWidget = this->addWidget(cpp14::make_unique<LabjackLiveStateWidget>());
 
 }
 
