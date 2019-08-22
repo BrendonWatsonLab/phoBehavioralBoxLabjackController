@@ -125,9 +125,6 @@
     <ClInclude Include="src\BehavioralBoxLajbackController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\StateMonitor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\OutputState.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
@@ -139,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="src\LabjackExample.h">
       <Filter>WtWebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StateMonitor.h">
+      <Filter>Header Files\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
