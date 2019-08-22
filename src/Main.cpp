@@ -23,7 +23,6 @@
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 #include "BehavioralBoxLabjack.h"
-
 #include "LabjackHelpers.h"
 
 // Webserver functionality:
@@ -48,11 +47,7 @@ bool waitForFoundLabjacks();
 bool startWebserver(int argc, char** argv);
 int shutdownApplication(int shutdownCode);
 
-void runTopOfHourUpdate();
-void runTopOfMinuteUpdate();
-void runTopOfSecondUpdate();
-void runPollingLoopUpdate();
-
+// Interface:
 void printCommandsMenu();
 
 
@@ -254,55 +249,6 @@ void printCommandsMenu() {
 	cout << "\t Press [a] at any time to toggle Attract mode for all labjacks." << endl;
 	cout << "\t Press [q] at any time to quit." << endl;
 	cout << "\t Press any other key at any time to show this list of commands." << endl;
-}
-
-// Ran at the top of every hour
-void runTopOfHourUpdate() {
-	time_t computerTime;
-	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-	printf("runHourlyLightsUpdate: running at %s\n", ctime(&computerTime));
-		// Iterate through all found Labjacks
-	for (int i = 0; i < foundLabjacks.size(); i++) {
-		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-		printf("runTopOfHourUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-		foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
-	}
-}
-
-// Ran at the top of every minute
-void runTopOfMinuteUpdate() {
-	time_t computerTime;
-	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-	printf("runTopOfMinuteUpdate: running at %s\n", ctime(&computerTime));
-	// Iterate through all found Labjacks
-	for (int i = 0; i < foundLabjacks.size(); i++) {
-		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-		printf("runTopOfMinuteUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-		//foundLabjacks[i]->readSensorValues();
-	}
-	
-}
-
-// Ran at the top of every second
-void runTopOfSecondUpdate() {
-	time_t computerTime;
-	// Iterate through all found Labjacks
-	for (int i = 0; i < foundLabjacks.size(); i++) {
-		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-		printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-		foundLabjacks[i]->readSensorValues();
-	}
-}
-
-// Ran at a custom interval
-void runPollingLoopUpdate() {
-	//time_t computerTime;
-	// Iterate through all found Labjacks
-	for (int i = 0; i < foundLabjacks.size(); i++) {
-		//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-		//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-		foundLabjacks[i]->readSensorValues();
-	}
 }
 
 
