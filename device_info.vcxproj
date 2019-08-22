@@ -28,8 +28,6 @@
     <ClCompile Include="src\LabjackExample.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\ChartConfig.cpp" />
-    <ClCompile Include="src\ChartsApplication.cpp" />
-    <ClCompile Include="src\ChartsExample.cpp" />
     <ClCompile Include="src\CsvUtil.cpp" />
     <ClCompile Include="src\LabjackHelpers.cpp" />
     <ClCompile Include="src\OutputState.cpp" />
@@ -43,8 +41,6 @@
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
     <ClInclude Include="src\BehavioralBoxLajbackController.h" />
     <ClInclude Include="src\ChartConfig.h" />
-    <ClInclude Include="src\ChartsApplication.h" />
-    <ClInclude Include="src\ChartsExample.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\ConfigurationFile.h" />
     <ClInclude Include="src\CsvUtil.h" />

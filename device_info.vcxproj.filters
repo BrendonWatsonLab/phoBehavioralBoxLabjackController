@@ -78,14 +78,8 @@
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChartsExample.cpp">
-      <Filter>WtWebServer\Obsolite</Filter>
-    </ClCompile>
     <ClCompile Include="src\LabjackControllerWebApplication.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChartsApplication.cpp">
-      <Filter>WtWebServer\Obsolite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -149,14 +143,8 @@
     <ClInclude Include="src\LabjackControllerOuterWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChartsExample.h">
-      <Filter>WtWebServer\Obsolite</Filter>
-    </ClInclude>
     <ClInclude Include="src\LabjackControllerWebApplication.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChartsApplication.h">
-      <Filter>WtWebServer\Obsolite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
