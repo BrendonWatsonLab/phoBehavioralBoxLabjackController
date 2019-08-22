@@ -22,7 +22,7 @@ Specifies what ports to open
 ////// GUI Config:
 #define PRINT_OUTPUT_VALUES_TO_CONSOLE false
 
-#define LAUNCH_WEB_SERVER false
+#define LAUNCH_WEB_SERVER true
 
 ////// Labjack Port Configurations:
 // Only one of these should be un-commented at a time.
