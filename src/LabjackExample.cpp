@@ -14,7 +14,7 @@
 #include <Wt/WStandardItem.h>
 #include <Wt/WTableView.h>
 
-#include "src/NumericItem.h"
+#include "NumericItem.h"
 
 using namespace Wt;
 
@@ -94,7 +94,7 @@ void LabjackExample::onActiveLabjacksChanged()
 		// Add the labjack's serialNumber to the map
 		this->mapLabjackSerialNumberToRow.insert(std::make_pair(i, this->activeLabjacks[i]->getSerialNumber()));
 		// Bind the "onLabjackValueChanged" function to the labjack's "valueChanged()" signal
-		this->activeLabjacks[i]->valueChanged().connect(this, &LabjackExample::onLabjackValueChanged);
+		//this->activeLabjacks[i]->valueChanged().connect(this, &LabjackExample::onLabjackValueChanged);
 	}
 }
 
@@ -122,7 +122,8 @@ void LabjackExample::setupInterface()
 
   // Disable Editing of the table:
   this->tblLiveLabjackData->resize(1400, WLength::Auto);
-  this->tblLiveLabjackData->setEditTriggers(EditTrigger::None);
+  //this->tblLiveLabjackData->setEditTriggers(EditTrigger::None);
+  this->tblLiveLabjackData->setEditTriggers(EditTrigger::SingleClicked);
 
   // We use a single delegate for all items which rounds values to
 // the closest integer value.
@@ -200,12 +201,12 @@ std::shared_ptr<WAbstractItemModel> LabjackExample::buildLiveLabjacksModel()
 				if (columnIndex == 0) {
 					// It's the serial number column
 					std::string serialNumberString = std::to_string(currSerialNumber);
-					model->setHeaderData(currColumnNumber, Wt::cpp17::any(Wt::WString("SerialNum")));
+					model->setHeaderData(columnIndex, Wt::cpp17::any(Wt::WString("SerialNum")));
 				}
 				else {
 					int dataColumnIndex = columnIndex - 1; // Subtract off the first (serialNumber) index
 					// It's a data column
-					model->setHeaderData(currColumnNumber, Wt::cpp17::any(Wt::WString(portPurposeStrings[dataColumnIndex])));
+					model->setHeaderData(columnIndex, Wt::cpp17::any(Wt::WString(portPurposeStrings[dataColumnIndex])));
 				}
 				
 			}
@@ -230,13 +231,16 @@ std::shared_ptr<WAbstractItemModel> LabjackExample::buildLiveLabjacksModel()
 
 			//TODO: do I used 0 or 1-indexed column
 			model->setData(rowIndex, columnIndex, data);
+			model->item(rowIndex, columnIndex)->setFlags(ItemFlag::Selectable | ItemFlag::Editable);
 		} // end column loop
 
 	} // end row (Labjack) loop
 
 	//for (int row = 0; row < model->rowCount(); ++row) {
 	//	for (int col = 0; col < model->columnCount(); ++col) {
-	//		model->item(row, col)->setFlags(ItemFlag::Selectable);
+	//		//model->item(row, col)->setFlags(ItemFlag::Selectable);
+	//		model->item(row, col)->setFlags(ItemFlag::Selectable | ItemFlag::Editable);
+	//		
 
 	//		/*
 	//		  Example of tool tips (disabled here because they are not updated
@@ -261,14 +265,16 @@ void LabjackExample::onLabjackValueChanged(int labjackSerialNumber, int portInde
 		return;
 	}
 
-	// Get row index
-	int tableRowIndex = this->mapLabjackSerialNumberToRow[labjackSerialNumber];
-	int tableColumnIndex = portIndex + 1; // Add one to account for the serialNumber column
-	// Finally, add the data
-	std::string newValueString = std::to_string(newValue);
-	Wt::cpp17::any updatedData;
-	
-	updatedData = Wt::cpp17::any(newValue);
+	//// Get row index
+	//int tableRowIndex = this->mapLabjackSerialNumberToRow[labjackSerialNumber];
+	//int tableColumnIndex = portIndex + 1; // Add one to account for the serialNumber column
+	//// Finally, add the data
+	//std::string newValueString = std::to_string(newValue);
+	//Wt::cpp17::any updatedData;
+	//
+	//updatedData = Wt::cpp17::any(newValue);
+
+	this->updateTableModel();
 	//updatedData = Wt::cpp17::any(Wt::WString(newValueString));
 	//updatedData = Wt::cpp17::any(newValueString);
 	// Update the table:

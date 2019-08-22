@@ -4,7 +4,7 @@
 #include <Wt/WGroupBox.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WText.h>
-#include "src/BehavioralBoxLabjack.h"
+#include "BehavioralBoxLabjack.h"
 /**
  * \defgroup LabjackExample Labjack Web example
  */

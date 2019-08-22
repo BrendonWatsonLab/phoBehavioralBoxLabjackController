@@ -48,9 +48,6 @@
     <ClCompile Include="src\PanelList.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="LabjackExample.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\WebServer.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
@@ -74,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="src\OutputState.cpp">
       <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackExample.cpp">
+      <Filter>WtWebServer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -103,9 +103,6 @@
     </ClInclude>
     <ClInclude Include="src\PanelList.h">
       <Filter>WtWebServer</Filter>
-    </ClInclude>
-    <ClInclude Include="LabjackExample.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\WebServer.h">
       <Filter>WtWebServer</Filter>
@@ -139,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="src\ConfigurationFile.h">
       <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackExample.h">
+      <Filter>WtWebServer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
