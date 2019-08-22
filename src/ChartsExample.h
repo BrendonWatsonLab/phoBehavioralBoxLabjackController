@@ -9,7 +9,7 @@
 
 #include <Wt/WContainerWidget.h>
 #include <iostream>
-#include "../LabjackExample.h"
+#include "LabjackExample.h"
 
 namespace Wt {
   class WAbstractItemModel;

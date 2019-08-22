@@ -4,7 +4,7 @@
 #include <Wt/WGroupBox.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WText.h>
-#include "src/BehavioralBoxLabjack.h"
+#include "BehavioralBoxLabjack.h"
 /**
  * \defgroup LabjackExample Labjack Web example
  */
@@ -29,10 +29,25 @@ public:
 
 	Wt::WPushButton* btnRefresh;
 
+	Wt::WContainerWidget* liveContainer;
+	Wt::WTableView* tblLiveLabjackData;
+
 private:
 	std::vector<BehavioralBoxLabjack*> activeLabjacks;
+	std::map<int, int> mapLabjackSerialNumberToRow;
+
 	void tryFetchNewLabjacks();
+	void onActiveLabjacksChanged();
 	void setupInterface();
 	void refreshInterface();
+
+	// Table
+	std::shared_ptr<Wt::WAbstractItemModel> liveLabjackTableModel;
+	void updateTableModel();
+
+	std::shared_ptr<Wt::WAbstractItemModel> buildLiveLabjacksModel();
+	// Signal/Event Handling:
+	void onLabjackValueChanged(int labjackSerialNumber, int portIndex, double newValue);
+
 };
 

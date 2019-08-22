@@ -30,36 +30,13 @@
 #include <Wt/Chart/WCartesianChart.h>
 #include <Wt/Chart/WPieChart.h>
 
+#include "NumericItem.h"
+
 using namespace Wt;
 using namespace Wt::Chart;
 
 namespace {
 
-  /*
-   * A standard item which converts text edits to numbers
-   */
-  class NumericItem : public WStandardItem {
-  public:
-    virtual std::unique_ptr<WStandardItem> clone() const override {
-      return cpp14::make_unique<NumericItem>();
-    }
-
-    virtual void setData(const cpp17::any &data, ItemDataRole role = ItemDataRole::User) override {
-      cpp17::any dt;
-
-      if (role == ItemDataRole::Edit) {
-        std::string s = asString(data).toUTF8();
-	char *endptr;
-	double d = strtod(s.c_str(), &endptr);
-	if (*endptr == 0)
-	  dt = cpp17::any(d);
-	else
-	  dt = data;
-      }
-
-      WStandardItem::setData(data, role);
-    }
-  };
 
   /*
    * Reads a CSV file as an (editable) standard item model.
@@ -77,21 +54,22 @@ namespace {
     if (f) {
       readFromCsv(f, model.get());
 
-      for (int row = 0; row < model->rowCount(); ++row)
-          for (int col = 0; col < model->columnCount(); ++col) {
-             model->item(row, col)->setFlags(ItemFlag::Selectable | ItemFlag::Editable);
+	  for (int row = 0; row < model->rowCount(); ++row) {
+		  for (int col = 0; col < model->columnCount(); ++col) {
+			  model->item(row, col)->setFlags(ItemFlag::Selectable | ItemFlag::Editable);
 
-	  /*
-	    Example of tool tips (disabled here because they are not updated
-	    when editing data)
- 	   */
+			  /*
+				Example of tool tips (disabled here because they are not updated
+				when editing data)
+			   */
 
-	  /*
-	  WString toolTip = asString(model->headerData(col)) + ": "
-	    + asString(model->item(row, col)->data(DisplayRole), "%.f");
-	  model->item(row, col)->setToolTip(toolTip);
-	   */
-	}
+			   /*
+			   WString toolTip = asString(model->headerData(col)) + ": "
+				 + asString(model->item(row, col)->data(DisplayRole), "%.f");
+			   model->item(row, col)->setToolTip(toolTip);
+				*/
+		  }
+	  }
 
       return model;
     } else {
@@ -106,7 +84,7 @@ namespace {
 ChartsExample::ChartsExample()
   : WContainerWidget()
 {
-	this->appName = "Labjack Manager Overview:";
+  this->appName = "Labjack Manager Overview:";
   this->addWidget(cpp14::make_unique<WText>(this->appName));
 
   this->labjackExampleWidget = this->addWidget(cpp14::make_unique<LabjackExample>());

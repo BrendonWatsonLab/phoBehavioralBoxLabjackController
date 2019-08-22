@@ -10,9 +10,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <Wt/WSignal.h> // Signals support for the web server
 #include "External/CSVWriter.h"
-#include "../StateMonitor.h"
-#include "../OutputState.h"
+#include "StateMonitor.h"
+#include "OutputState.h"
 
 typedef std::chrono::system_clock Clock;
 
@@ -62,6 +63,13 @@ public:
 	int getSerialNumber() { return this->serialNumber; }
 	bool isVisibleLEDLit();
 	string getFullFilePath() { return this->fileFullPath; }
+	int getNumberInputChannels() { return NUM_CHANNELS; }
+	int getNumberOutputChannels() { return NUM_OUTPUT_CHANNELS; }
+	vector<std::string> getInputPortNames();
+	vector<std::string> getInputPortPurpose();
+	vector<double> getLastReadValues();
+
+	Wt::Signal<int, int, double>& valueChanged() { return this->valueChanged_; }
 
 	// Override Functions
 	void toggleOverrideMode_VisibleLED();
@@ -118,6 +126,10 @@ private:
 
 	// Visible Light Relay Control
 	//void setVisibleLightRelayState(bool isOn);
+
+	// Signals
+	// <int: serialNumber, int: portIndex, double: newValue>
+	Wt::Signal<int, int, double> valueChanged_;
 
 };
 
