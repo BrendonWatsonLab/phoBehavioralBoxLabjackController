@@ -284,7 +284,10 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 				this->err = LJM_eWriteName(this->handle, portName, outputValue);
 				ErrorCheck(this->err, "LJM_eWriteName");
 			}
-			printf("\t Set %s state : %f\n", portName, outputValue);
+			if (PRINT_OUTPUT_VALUES_TO_CONSOLE) {
+				printf("\t Set %s state : %f\n", portName, outputValue);
+			}
+			
 		}
 	}
 

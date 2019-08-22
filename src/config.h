@@ -19,6 +19,8 @@ Specifies what ports to open
 ////Ex: 18: The lights turn off at 6pm and remain off until the subsequent globalDaylightStartHour
 
 
+////// GUI Config:
+#define PRINT_OUTPUT_VALUES_TO_CONSOLE false
 ////// Labjack Port Configurations:
 // Only one of these should be un-commented at a time.
 //#include "../ConfigFiles/config-DownstairsBox.h"
