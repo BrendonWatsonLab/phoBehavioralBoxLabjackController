@@ -10,7 +10,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#if LAUNCH_WEB_SERVER
 #include <Wt/WSignal.h> // Signals support for the web server
+#endif // LAUNCH_WEB_SERVER
 #include "External/CSVWriter.h"
 #include "StateMonitor.h"
 #include "OutputState.h"
@@ -69,7 +71,9 @@ public:
 	vector<std::string> getInputPortPurpose();
 	vector<double> getLastReadValues();
 
+#if LAUNCH_WEB_SERVER
 	Wt::Signal<int, int, double>& valueChanged() { return this->valueChanged_; }
+#endif // LAUNCH_WEB_SERVER
 
 	// Override Functions
 	void toggleOverrideMode_VisibleLED();
@@ -127,9 +131,11 @@ private:
 	// Visible Light Relay Control
 	//void setVisibleLightRelayState(bool isOn);
 
+#if LAUNCH_WEB_SERVER
 	// Signals
 	// <int: serialNumber, int: portIndex, double: newValue>
 	Wt::Signal<int, int, double> valueChanged_;
+#endif // LAUNCH_WEB_SERVER
 
 };
 

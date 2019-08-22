@@ -334,8 +334,10 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 				}
 			} // end if greater than zero
 
+#if LAUNCH_WEB_SERVER
 			// Emit the "valueChanged" signal for the web server
 			this->valueChanged_.emit(this->serialNumber, i, this->lastReadInputPortValues[i]);
+#endif // LAUNCH_WEB_SERVER
 
 		} // end if input port values changed
 		newCSVLine << this->lastReadInputPortValues[i];

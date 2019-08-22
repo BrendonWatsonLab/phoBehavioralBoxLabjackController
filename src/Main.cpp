@@ -22,15 +22,20 @@
 #include <thread>
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
+#include "BehavioralBoxLajbackController.h"
 #include "BehavioralBoxLabjack.h"
 #include "LabjackHelpers.h"
 
 // Webserver functionality:
+#if LAUNCH_WEB_SERVER
 #include "WebServer.h"
 #include "ChartsApplication.h"
 #include <Wt/WServer.h>
 // 1 Make the member a real variable not a pointer.
 std::thread web_server_thread;
+#endif // LAUNCH_WEB_SERVER
+
+//BehavioralBoxLajbackController controller;
 
 // Vector of Labjack Objects
 std::vector<BehavioralBoxLabjack*> foundLabjacks;
@@ -44,7 +49,9 @@ Bosma::Scheduler s(max_n_threads);
 
 // FUNCTION PROTOTYPES:
 bool waitForFoundLabjacks();
+#if LAUNCH_WEB_SERVER
 bool startWebserver(int argc, char** argv);
+#endif // LAUNCH_WEB_SERVER
 int shutdownApplication(int shutdownCode);
 
 // Interface:
@@ -56,8 +63,10 @@ int main(int argc, char** argv)
 	cout << "BehavioralBoxLabjackController:" << endl;
 	cout << "\t Pho Hale 2019" << endl << endl;
 
+#if LAUNCH_WEB_SERVER
 	// Run the webserver:
 	startWebserver(argc, argv);
+#endif // LAUNCH_WEB_SERVER
 
 	cout << endl << "Scanning for attached Labjacks..." << endl;
 	if (!waitForFoundLabjacks()) {
@@ -66,7 +75,9 @@ int main(int argc, char** argv)
 		return shutdownApplication(LJME_NO_DEVICES_FOUND);
 	}
 
+#if LAUNCH_WEB_SERVER
 	WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
+#endif // LAUNCH_WEB_SERVER
 
 	// TODO - READ ME: main run loop
 		// The LJM_StartInterval, LJM_WaitForNextInterval, and LJM_CleanInterval functions are used to efficiently execute the loop every so many milliseconds
@@ -99,8 +110,6 @@ int main(int argc, char** argv)
 			cout << "Showing current log files..." << endl;
 			// Iterate through all found Labjacks
 			for (int i = 0; i < foundLabjacks.size(); i++) {
-				//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-				//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
 				std::string foundRelativeFilePathString = foundLabjacks[i]->getFullFilePath();
 				std::string fullFilePathString = LabjackHelpers::getFullPath(foundRelativeFilePathString);
 
@@ -114,8 +123,6 @@ int main(int argc, char** argv)
 			cout << "Printing current data..." << endl;
 			// Iterate through all found Labjacks
 			for (int i = 0; i < foundLabjacks.size(); i++) {
-				//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-				//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
 				foundLabjacks[i]->diagnosticPrintLastValues();
 			}
 			cout << "\t done." << endl;
@@ -141,8 +148,11 @@ int main(int argc, char** argv)
 			else {
 				cout << "Found no new labjacks." << endl;
 			}
+#if LAUNCH_WEB_SERVER
 			// Refresh the webserver
 			WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
+#endif // LAUNCH_WEB_SERVER
+
 			cout << "\t done." << endl;
 		}
 		else if (character == 'L') {
@@ -212,6 +222,8 @@ bool waitForFoundLabjacks()
 	return true;
 }
 
+#if LAUNCH_WEB_SERVER
+
 bool startWebserver(int argc, char** argv)
 {
 	cout << "Starting the web server." << endl;
@@ -223,15 +235,20 @@ bool startWebserver(int argc, char** argv)
 	return true;
 }
 
+#endif // LAUNCH_WEB_SERVER
+
 // Called when the application is being quit
 int shutdownApplication(int shutdownCode)
 {
 	cout << "Shutting down the application..." << endl;
+	//controller.shutdown();
+#if LAUNCH_WEB_SERVER
 	cout << "Waiting on web server thread to quit..." << endl;
 	// As the thread is using members from this object
 	  // We can not let this obect be destroyed until
 	  // the thread finishes executing.
 	web_server_thread.join();
+#endif // LAUNCH_WEB_SERVER
 	printf("Done.");
 	// At this point the thread has finished.
 	// Destructor can now complete.
