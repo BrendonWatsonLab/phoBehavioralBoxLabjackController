@@ -22,11 +22,11 @@ class Client {
  * A (singleton) server class which would protect and manage a shared
  * resource of a vector of Labjacks. In our example we take a simple counter as data.
  */
-class BehavioralBoxLajbackController
+class BehavioralBoxControllersManager
 {
 public:
-	BehavioralBoxLajbackController();
-	~BehavioralBoxLajbackController();
+	BehavioralBoxControllersManager();
+	~BehavioralBoxControllersManager();
 
 	// Server Stuff:
 	void connect(Client* client, const std::function<void()>& function);

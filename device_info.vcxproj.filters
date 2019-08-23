@@ -48,9 +48,6 @@
     <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\BehavioralBoxLajbackController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ConfigurationFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -79,6 +76,9 @@
       <Filter>WtWebServer</Filter>
     </ClCompile>
     <ClCompile Include="src\BehavioralBoxHistoricalData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BehavioralBoxControllersManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -112,9 +112,6 @@
     </ClInclude>
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h">
       <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\BehavioralBoxLajbackController.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\OutputState.h">
       <Filter>Header Files\Model</Filter>
@@ -150,6 +147,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\LabjackDataFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BehavioralBoxControllersManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

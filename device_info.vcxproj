@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\BehavioralBoxHistoricalData.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
-    <ClCompile Include="src\BehavioralBoxLajbackController.cpp" />
+    <ClCompile Include="src\BehavioralBoxControllersManager.cpp" />
     <ClCompile Include="src\ConfigurationFile.cpp" />
     <ClCompile Include="src\InputState.cpp" />
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp" />
@@ -40,7 +40,7 @@
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h" />
     <ClInclude Include="src\BehavioralBoxHistoricalData.h" />
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
-    <ClInclude Include="src\BehavioralBoxLajbackController.h" />
+    <ClInclude Include="src\BehavioralBoxControllersManager.h" />
     <ClInclude Include="src\ChartConfig.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\ConfigurationFile.h" />

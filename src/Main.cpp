@@ -22,7 +22,7 @@
 #include <thread>
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
-#include "BehavioralBoxLajbackController.h"
+#include "BehavioralBoxControllersManager.h"
 #include "BehavioralBoxLabjack.h"
 #include "LabjackHelpers.h"
 
@@ -35,7 +35,7 @@
 std::thread web_server_thread;
 #endif // LAUNCH_WEB_SERVER
 
-//BehavioralBoxLajbackController controller;
+//BehavioralBoxControllersManager controller;
 
 // Vector of Labjack Objects
 std::vector<BehavioralBoxLabjack*> foundLabjacks;
