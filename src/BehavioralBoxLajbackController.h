@@ -70,7 +70,7 @@ private:
 	void run();
 
 	//Historical Labjack Data loading:
-	
+	std::vector<BehavioralBoxHistoricalData> historicalData_;
 	void loadHistoricalData();
 	
 };

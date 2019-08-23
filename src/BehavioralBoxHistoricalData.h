@@ -7,17 +7,26 @@
 // Most specifically the record of Labjack events that have been loaded/parsed from the the .CSV output files
 class BehavioralBoxHistoricalData
 {
-	std::string boxID = "";
-	int labjackSerialNumber;
-	// A list of data files for that particular box
-	std::vector<LabjackDataFile> dataFiles;
+public:
 
-	BehavioralBoxHistoricalData(int labjackSerialNumber);
+	BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID);
+	BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber);
 
 	// Find the Labjack data files for the labjack with the specified serial number
 	static std::vector<LabjackDataFile> findDataFiles(std::string searchDirectory, int labjackSerialNumber);
 	// NOTE: the start/end milliseconds are non-inclusive
 	static std::vector<LabjackDataFile> findDataFiles(std::string searchDirectory, int labjackSerialNumber, unsigned long long startMillisecondsSinceEpoch, unsigned long long endMillisecondsSinceEpoch);
+
+
+private:
+	std::string boxID_;
+	int labjackSerialNumber_;
+	std::string dataFilesSearchDirectory_;
+
+	// A list of data files for that particular box
+	std::vector<LabjackDataFile> dataFiles_;
+
+	void findDataFiles();
 
 };
 

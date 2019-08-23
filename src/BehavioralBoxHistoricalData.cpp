@@ -5,6 +5,21 @@
 #include "FilesystemHelpers.h"
 #include <sstream>
 
+BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID)
+{
+	this->labjackSerialNumber_ = labjackSerialNumber;
+	this->dataFilesSearchDirectory_ = searchDirectory;
+	this->boxID_ = boxID;
+
+	// TODO: find data files in the background
+	this->findDataFiles();
+}
+
+BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber): BehavioralBoxHistoricalData(searchDirectory, labjackSerialNumber, std::to_string(labjackSerialNumber))
+{
+
+}
+
 std::vector<LabjackDataFile> BehavioralBoxHistoricalData::findDataFiles(std::string searchDirectory, int labjackSerialNumber)
 {
 	return findDataFiles(searchDirectory, labjackSerialNumber, 0, std::numeric_limits<unsigned long long>::max());
@@ -64,4 +79,12 @@ std::vector<LabjackDataFile> BehavioralBoxHistoricalData::findDataFiles(std::str
 		fileNameParts.clear();
 	}
 	return outputVector;
+}
+
+void BehavioralBoxHistoricalData::findDataFiles()
+{
+	//TODO: It may be smarter to do this differntly when the dataFiles objects start containing actually loaded data.
+	// Any given data file can potentially have its contents change without updating its filename. Maybe do some smart caching and looking at modification times, or look for existing monitoring solutions.
+	this->dataFiles_.clear();
+	this->dataFiles_ = BehavioralBoxHistoricalData::findDataFiles(this->dataFilesSearchDirectory_, this->labjackSerialNumber_);
 }
