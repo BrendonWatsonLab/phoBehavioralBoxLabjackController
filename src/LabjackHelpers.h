@@ -2,6 +2,7 @@
 #include "BehavioralBoxLabjack.h"
 #include <vector>
 
+
 class LabjackHelpers
 {
 public:

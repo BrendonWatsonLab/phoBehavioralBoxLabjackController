@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\BehavioralBoxHistoricalData.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
     <ClCompile Include="src\BehavioralBoxLajbackController.cpp" />
     <ClCompile Include="src\ConfigurationFile.cpp" />
@@ -37,6 +38,7 @@
   <ItemGroup>
     <ClInclude Include="ConfigFiles\config-DownstairsBox.h" />
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h" />
+    <ClInclude Include="src\BehavioralBoxHistoricalData.h" />
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
     <ClInclude Include="src\BehavioralBoxLajbackController.h" />
     <ClInclude Include="src\ChartConfig.h" />
@@ -46,9 +48,11 @@
     <ClInclude Include="src\External\CSVWriter.h" />
     <ClInclude Include="src\External\px_sched.h" />
     <ClInclude Include="src\External\Scheduler\Scheduler.h" />
+    <ClInclude Include="src\FilesystemHelpers.h" />
     <ClInclude Include="src\InputState.h" />
     <ClInclude Include="src\LabjackControllerOuterWidget.h" />
     <ClInclude Include="src\LabjackControllerWebApplication.h" />
+    <ClInclude Include="src\LabjackDataFile.h" />
     <ClInclude Include="src\LabjackLiveStateWidget.h" />
     <ClInclude Include="src\LabjackHelpers.h" />
     <ClInclude Include="src\NumericItem.h" />

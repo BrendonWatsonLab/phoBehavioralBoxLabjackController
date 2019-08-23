@@ -6,6 +6,10 @@
 #include <mutex>
 
 #include "BehavioralBoxLabjack.h"
+#include "BehavioralBoxHistoricalData.h"
+
+//TODO: perhaps this should be referred to as a "Manager" of controllers.
+
 
 /*
  * Simple interface to uniquely identify a client
@@ -23,8 +27,6 @@ class BehavioralBoxLajbackController
 public:
 	BehavioralBoxLajbackController();
 	~BehavioralBoxLajbackController();
-
-
 
 	// Server Stuff:
 	void connect(Client* client, const std::function<void()>& function);
@@ -66,5 +68,12 @@ private:
 	std::vector<Connection> connections_;
 
 	void run();
+
+	//Historical Labjack Data loading:
+	
+	void loadHistoricalData();
+	
 };
+
+
 

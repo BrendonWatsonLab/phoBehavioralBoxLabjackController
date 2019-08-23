@@ -126,10 +126,10 @@ void LabjackLiveStateWidget::setupInterface()
   this->tblLiveLabjackData->setEditTriggers(EditTrigger::SingleClicked);
 
   // We use a single delegate for all items which rounds values to
-// the closest integer value.
-  std::shared_ptr<WItemDelegate> tableEditDelegate = std::make_shared<WItemDelegate>();
-  tableEditDelegate->setTextFormat("%.f");
-  this->tblLiveLabjackData->setItemDelegate(tableEditDelegate);
+  // the closest integer value.
+  //std::shared_ptr<WItemDelegate> tableEditDelegate = std::make_shared<WItemDelegate>();
+  //tableEditDelegate->setTextFormat("%.f");
+  //this->tblLiveLabjackData->setItemDelegate(tableEditDelegate);
 
   this->tblLiveLabjackData->setColumnWidth(0, 140);
   //this->updateTableModel();
@@ -170,8 +170,8 @@ void LabjackLiveStateWidget::updateTableModel()
 std::shared_ptr<WAbstractItemModel> LabjackLiveStateWidget::buildLiveLabjacksModel()
 {
 	std::shared_ptr<WStandardItemModel> model = std::make_shared<WStandardItemModel>(0, 0);
-	std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
-	model->setItemPrototype(std::move(prototype));
+	//std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
+	//model->setItemPrototype(std::move(prototype));
 
 	// Iterate through labjacks (rows)
 	for (int rowIndex = 0; rowIndex < this->activeLabjacks.size(); rowIndex++) {
@@ -232,6 +232,7 @@ std::shared_ptr<WAbstractItemModel> LabjackLiveStateWidget::buildLiveLabjacksMod
 			//TODO: do I used 0 or 1-indexed column
 			model->setData(rowIndex, columnIndex, data);
 			model->item(rowIndex, columnIndex)->setFlags(ItemFlag::Selectable | ItemFlag::Editable);
+			//model->item(rowIndex, columnIndex)->setFlags(ItemFlag::Selectable);
 		} // end column loop
 
 	} // end row (Labjack) loop

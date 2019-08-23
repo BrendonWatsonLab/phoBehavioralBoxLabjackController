@@ -70,6 +70,7 @@ public:
 	vector<std::string> getInputPortNames();
 	vector<std::string> getInputPortPurpose();
 	vector<double> getLastReadValues();
+	string getOutputDirectory() { return this->outputDirectory; }
 
 #if LAUNCH_WEB_SERVER
 	Wt::Signal<int, int, double>& valueChanged() { return this->valueChanged_; }

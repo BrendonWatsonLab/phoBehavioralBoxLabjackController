@@ -63,12 +63,6 @@
     <ClCompile Include="src\OutputState.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
-    <ClCompile Include="src\LabjackControllerOuterWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LabjackControllerWebApplication.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\PanelList.cpp">
       <Filter>WtWebServer\Obsolite</Filter>
     </ClCompile>
@@ -77,6 +71,15 @@
     </ClCompile>
     <ClCompile Include="src\LabjackLiveStateWidget.cpp">
       <Filter>WtWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackControllerOuterWidget.cpp">
+      <Filter>WtWebServer\OuterWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackControllerWebApplication.cpp">
+      <Filter>WtWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BehavioralBoxHistoricalData.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,12 +128,6 @@
     <ClInclude Include="src\StateMonitor.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\LabjackControllerOuterWidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LabjackControllerWebApplication.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\PanelList.h">
       <Filter>WtWebServer\Obsolite</Filter>
     </ClInclude>
@@ -139,6 +136,21 @@
     </ClInclude>
     <ClInclude Include="src\LabjackLiveStateWidget.h">
       <Filter>WtWebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FilesystemHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackControllerOuterWidget.h">
+      <Filter>WtWebServer\OuterWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackControllerWebApplication.h">
+      <Filter>WtWebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BehavioralBoxHistoricalData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackDataFile.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
