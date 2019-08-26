@@ -95,6 +95,9 @@ bool LabjackDataFile::reloadContents()
 	// Close the file when done
 	csvFile.close();
 
+	// Sort the data lines (should already be sorted)...
+	this->sort();
+
 	//TODO: perhaps record the last read time or something
 
 	return true;

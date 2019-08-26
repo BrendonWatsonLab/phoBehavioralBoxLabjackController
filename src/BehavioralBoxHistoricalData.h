@@ -19,6 +19,8 @@ public:
 
 	static void concatenateCsvFiles(std::vector<LabjackDataFile> dataFiles_);
 
+	void getHistoricalDataEvents();
+
 private:
 	std::string boxID_;
 	int labjackSerialNumber_;
@@ -27,8 +29,15 @@ private:
 	// A list of data files for that particular box
 	std::vector<LabjackDataFile> dataFiles_;
 
+	// Accumulated line timestamps and values for all files:
+	std::vector<unsigned long long> milliseconds_since_epoch;
+	std::vector<std::vector<double>> values;
+
 	void findDataFiles();
 	void reloadDataFiles();
+	void sort() {
+		std::sort(dataFiles_.begin(), dataFiles_.end());
+	}
 
 };
 

@@ -16,6 +16,9 @@ BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirec
 
 	// TODO: load the data files in the background
 	this->reloadDataFiles();
+
+	// TODO: collect the events in the background
+	this->getHistoricalDataEvents();
 }
 
 BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber): BehavioralBoxHistoricalData(searchDirectory, labjackSerialNumber, std::to_string(labjackSerialNumber))
@@ -88,14 +91,40 @@ void BehavioralBoxHistoricalData::concatenateCsvFiles(std::vector<LabjackDataFil
 {
 }
 
+//getHistoricalDataEvents(): called after reloadDataFiles()
+/*
+Populates the this->milliseconds_since_epoch and this->values variables with the parsed results of the lines
+*/
+void BehavioralBoxHistoricalData::getHistoricalDataEvents()
+{
+	this->milliseconds_since_epoch.clear();
+	this->values.clear();
+	// For each data file object:
+	for (int i = 0; i < this->dataFiles_.size(); i++)
+	{
+		std::vector<LabjackDataFileLine> tempLines = this->dataFiles_[i].getParsedLines();
+		// For each line the returned set of lines for a given file:
+		for each (LabjackDataFileLine aLineObject in tempLines)
+		{
+			this->milliseconds_since_epoch.push_back(aLineObject.milliseconds_since_epoch);
+			this->values.push_back(aLineObject.values);
+		}
+	}
+	//TODO: perhaps have a "reloading" event
+}
+
+//findDataFiles(): called first, to find the .csv data files in the output directory.
 void BehavioralBoxHistoricalData::findDataFiles()
 {
 	//TODO: It may be smarter to do this differntly when the dataFiles objects start containing actually loaded data.
 	// Any given data file can potentially have its contents change without updating its filename. Maybe do some smart caching and looking at modification times, or look for existing monitoring solutions.
 	this->dataFiles_.clear();
 	this->dataFiles_ = BehavioralBoxHistoricalData::findDataFiles(this->dataFilesSearchDirectory_, this->labjackSerialNumber_);
+	// Sort the data files by decending recency:
+	this->sort();
 }
 
+//reloadDataFiles(): called after findDataFiles()
 void BehavioralBoxHistoricalData::reloadDataFiles()
 {
 	for (int i = 0; i < this->dataFiles_.size(); i++)

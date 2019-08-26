@@ -10,6 +10,17 @@ namespace fs = std::experimental::filesystem;
 struct LabjackDataFileLine {
 	unsigned long long milliseconds_since_epoch;
 	std::vector<double> values;
+
+	// Can be called with std::sort(vec.begin(), vec.end());
+	bool operator < (const LabjackDataFileLine& line) const
+	{
+		return (milliseconds_since_epoch < line.milliseconds_since_epoch);
+	}
+	// Can be called with std::sort(vec.begin(), vec.end(),greater<MyStruct>());
+	bool operator > (const LabjackDataFileLine& line) const
+	{
+		return (milliseconds_since_epoch > line.milliseconds_since_epoch);
+	}
 };
 
 
@@ -33,12 +44,30 @@ struct LabjackDataFile {
 		this->millisecondsSinceEpoch = millisecondsSinceEpoch;
 	}
 
+	// Can be called with std::sort(vec.begin(), vec.end());
+	bool operator < (const LabjackDataFile& file) const
+	{
+		return (millisecondsSinceEpoch < file.millisecondsSinceEpoch);
+	}
+	// Can be called with std::sort(vec.begin(), vec.end(),greater<MyStruct>());
+	bool operator > (const LabjackDataFile& file) const
+	{
+		return (millisecondsSinceEpoch > file.millisecondsSinceEpoch);
+	}
+
 	// Reloads the contents from the file
 	bool reloadContents();
+
+	std::vector<std::string> getParsedHeaderLabels() { return this->headerLabels_; };
+	std::vector<LabjackDataFileLine> getParsedLines() { return this->lineValues_; };
 
 private:
 	std::vector<std::string> headerLabels_;
 	std::vector<LabjackDataFileLine> lineValues_;
 	bool hadError = false;
+
+	void sort() {
+		std::sort(lineValues_.begin(), lineValues_.end());
+	}
 
 };
