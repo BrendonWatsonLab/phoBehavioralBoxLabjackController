@@ -99,6 +99,10 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 {
 	this->milliseconds_since_epoch.clear();
 	this->values.clear();
+	this->output_milliseconds_since_epoch.clear();
+	this->output_values.clear();
+	int numVariables = 0;
+
 	// For each data file object:
 	for (int i = 0; i < this->dataFiles_.size(); i++)
 	{
@@ -107,10 +111,68 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 		for each (LabjackDataFileLine aLineObject in tempLines)
 		{
 			this->milliseconds_since_epoch.push_back(aLineObject.milliseconds_since_epoch);
+			numVariables = aLineObject.values.size();
 			this->values.push_back(aLineObject.values);
 		}
 	}
 	//TODO: perhaps have a "reloading" event
+
+	// Compute Differences and such
+	int numSamples = this->milliseconds_since_epoch.size();
+	if (numSamples < 2) { return; }
+
+	//unsigned long long prev_time = this->milliseconds_since_epoch[0];
+	//std::vector<double> prev_values = this->values[0];
+	unsigned long long prev_time = this->milliseconds_since_epoch[0];
+	std::vector<double> prev_values = this->values[0];
+
+	unsigned long long curr_time;
+	std::vector<double> curr_values;
+
+	std::vector<double> temp_output_values;
+
+	//std::vector<unsigned long long> output_date_times;
+	//std::vector<std::vector<double>> output_values;
+
+	bool shouldIncludeCurrentLine = false;
+	// Loop through all the samples (lines)
+	for (int i = 0; i < numSamples; i++)
+	{
+		shouldIncludeCurrentLine = false;
+		temp_output_values.clear();
+
+		curr_time = this->milliseconds_since_epoch[i];
+		curr_values = this->values[i];
+
+		//unsigned long long curr_time_diff = curr_time - prev_time;
+
+		//TODO: deal with the first sample. 
+
+		// Loop through the variables
+		for (int j = 0; j < numVariables; j++) {
+			double currDiff = curr_values[j] - prev_values[j];
+			if (currDiff < -0.01) {
+				// Include the value because it's a falling_edge (transition to negative values)
+				shouldIncludeCurrentLine = true;
+				temp_output_values.push_back(1.0);
+			}
+			else {
+				temp_output_values.push_back(0.0);
+			}
+		}
+
+		// Output the line if wanted
+		if (shouldIncludeCurrentLine) {
+			this->output_milliseconds_since_epoch.push_back(curr_time);
+			this->output_values.push_back(temp_output_values);
+		}
+
+		prev_time = curr_time;
+		prev_values = curr_values;
+	} // end sample for loop
+
+
+
 }
 
 //findDataFiles(): called first, to find the .csv data files in the output directory.

@@ -20,6 +20,9 @@ public:
 	static void concatenateCsvFiles(std::vector<LabjackDataFile> dataFiles_);
 
 	void getHistoricalDataEvents();
+	std::vector<unsigned long long> getFinalMillisecondsSinceEpoch() { return this->output_milliseconds_since_epoch; };
+	std::vector<std::vector<double>> getFinalOutputValues() { return this->output_values; };
+
 
 private:
 	std::string boxID_;
@@ -32,6 +35,10 @@ private:
 	// Accumulated line timestamps and values for all files:
 	std::vector<unsigned long long> milliseconds_since_epoch;
 	std::vector<std::vector<double>> values;
+
+	// Parsed outputs
+	std::vector<unsigned long long> output_milliseconds_since_epoch;
+	std::vector<std::vector<double>> output_values;
 
 	void findDataFiles();
 	void reloadDataFiles();
