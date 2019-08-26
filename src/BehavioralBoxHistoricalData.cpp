@@ -13,6 +13,9 @@ BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirec
 
 	// TODO: find data files in the background
 	this->findDataFiles();
+
+	// TODO: load the data files in the background
+	this->reloadDataFiles();
 }
 
 BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber): BehavioralBoxHistoricalData(searchDirectory, labjackSerialNumber, std::to_string(labjackSerialNumber))
@@ -81,10 +84,22 @@ std::vector<LabjackDataFile> BehavioralBoxHistoricalData::findDataFiles(std::str
 	return outputVector;
 }
 
+void BehavioralBoxHistoricalData::concatenateCsvFiles(std::vector<LabjackDataFile> dataFiles_)
+{
+}
+
 void BehavioralBoxHistoricalData::findDataFiles()
 {
 	//TODO: It may be smarter to do this differntly when the dataFiles objects start containing actually loaded data.
 	// Any given data file can potentially have its contents change without updating its filename. Maybe do some smart caching and looking at modification times, or look for existing monitoring solutions.
 	this->dataFiles_.clear();
 	this->dataFiles_ = BehavioralBoxHistoricalData::findDataFiles(this->dataFilesSearchDirectory_, this->labjackSerialNumber_);
+}
+
+void BehavioralBoxHistoricalData::reloadDataFiles()
+{
+	for (int i = 0; i < this->dataFiles_.size(); i++)
+	{
+		this->dataFiles_[i].reloadContents();
+	}
 }

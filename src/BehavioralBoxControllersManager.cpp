@@ -165,6 +165,7 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	for (int i = 0; i < this->getActiveLabjacks().size(); i++) {
 		//std::vector<LabjackDataFile> currLabjackDataFile = this->findDataFiles(this->getActiveLabjacks()[i]->getOutputDirectory(), this->getActiveLabjacks()[i]->getSerialNumber());
 		BehavioralBoxHistoricalData currHistoryManager = BehavioralBoxHistoricalData(this->getActiveLabjacks()[i]->getOutputDirectory(), this->getActiveLabjacks()[i]->getSerialNumber());
+		
 		this->historicalData_.push_back(currHistoryManager);
 	}
 }

@@ -81,6 +81,9 @@
     <ClCompile Include="src\BehavioralBoxControllersManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\LabjackDataFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BehavioralBoxLabjack.h">

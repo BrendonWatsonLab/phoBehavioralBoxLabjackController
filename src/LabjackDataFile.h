@@ -7,6 +7,12 @@
 //using namespace std;
 namespace fs = std::experimental::filesystem;
 
+struct LabjackDataFileLine {
+	unsigned long long milliseconds_since_epoch;
+	std::vector<double> values;
+};
+
+
 struct LabjackDataFile {
 	fs::path fullPath;
 	std::string fileName;
@@ -26,5 +32,13 @@ struct LabjackDataFile {
 		this->owningLabjackSerialNumber = owningLabjackSerialNumber;
 		this->millisecondsSinceEpoch = millisecondsSinceEpoch;
 	}
+
+	// Reloads the contents from the file
+	bool reloadContents();
+
+private:
+	std::vector<std::string> headerLabels_;
+	std::vector<LabjackDataFileLine> lineValues_;
+	bool hadError = false;
 
 };

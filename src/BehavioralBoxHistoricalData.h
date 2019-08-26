@@ -17,6 +17,7 @@ public:
 	// NOTE: the start/end milliseconds are non-inclusive
 	static std::vector<LabjackDataFile> findDataFiles(std::string searchDirectory, int labjackSerialNumber, unsigned long long startMillisecondsSinceEpoch, unsigned long long endMillisecondsSinceEpoch);
 
+	static void concatenateCsvFiles(std::vector<LabjackDataFile> dataFiles_);
 
 private:
 	std::string boxID_;
@@ -27,6 +28,7 @@ private:
 	std::vector<LabjackDataFile> dataFiles_;
 
 	void findDataFiles();
+	void reloadDataFiles();
 
 };
 

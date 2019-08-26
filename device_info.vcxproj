@@ -26,6 +26,7 @@
     <ClCompile Include="src\InputState.cpp" />
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp" />
     <ClCompile Include="src\LabjackControllerWebApplication.cpp" />
+    <ClCompile Include="src\LabjackDataFile.cpp" />
     <ClCompile Include="src\LabjackLiveStateWidget.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\ChartConfig.cpp" />
