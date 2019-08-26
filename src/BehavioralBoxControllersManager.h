@@ -40,9 +40,15 @@ public:
 		this->shouldStop_ = true;
 	}
 
+	// Scans for un-managed Labjacks:
+	bool scanForNewLabjacks();
+
 	// Idles and waits for a labjack to be found.
 	bool waitForFoundLabjacks();
 	//int shutdownApplication(int shutdownCode);
+
+	// Getters:
+	bool isReady();
 
 private:
 	struct Connection {
@@ -58,12 +64,20 @@ private:
 		std::function<void()> function;
 	};
 
+	// State Variables:
 	mutable std::mutex mutex_;
 	std::thread thread_;
-	// Vector of Labjack Objects
-	std::vector<BehavioralBoxLabjack*> foundLabjacks_;
+	bool stillWaitingToFindLabjacks_ = true;
 	bool shouldStop_ = false;
 
+
+
+	// Vector of Labjack Objects
+	std::vector<BehavioralBoxLabjack*> foundLabjacks_;
+	int numberActiveLabjacks_ = 0;
+	bool addLabjack(BehavioralBoxLabjack* newLabjack);
+	
+	
 	std::vector<Connection> connections_;
 
 	void run();

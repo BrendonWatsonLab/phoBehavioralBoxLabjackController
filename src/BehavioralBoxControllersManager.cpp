@@ -38,9 +38,34 @@ void BehavioralBoxControllersManager::disconnect(Client* client)
 	assert(false);
 }
 
+bool BehavioralBoxControllersManager::scanForNewLabjacks()
+{
+	int previouslyFoundLabjackSerialNumbers[max_number_labjacks] = {};
+	int numberPreviouslyFoundLabjacks = this->numberActiveLabjacks_;
+	for (int i = 0; i < numberPreviouslyFoundLabjacks; i++) {
+		previouslyFoundLabjackSerialNumbers[i] = this->foundLabjacks_[i]->getSerialNumber();
+	}
+
+	// Find the labjacks
+	std::vector<BehavioralBoxLabjack*> newlyFoundAdditionalLabjacks = LabjackHelpers::findAllLabjacks(previouslyFoundLabjackSerialNumbers, numberPreviouslyFoundLabjacks);
+
+	if (newlyFoundAdditionalLabjacks.size() > 0) {
+		cout << "Found " << newlyFoundAdditionalLabjacks.size() << " new labjacks!" << endl;
+		// Iterate through all newly found labjacks and append them to the list of found labjacks
+		for (int i = 0; i < newlyFoundAdditionalLabjacks.size(); i++) {
+			this->addLabjack(newlyFoundAdditionalLabjacks[i]);
+		}
+	}
+	else {
+		cout << "Found no new labjacks." << endl;
+	}
+
+	return false;
+}
+
 bool BehavioralBoxControllersManager::waitForFoundLabjacks()
 {
-	bool stillWaitingToFindLabjacks = true;
+	this->stillWaitingToFindLabjacks_ = true;
 	int character;
 	do {
 		// Find the labjacks
@@ -71,11 +96,29 @@ bool BehavioralBoxControllersManager::waitForFoundLabjacks()
 				this->foundLabjacks_[i]->syncDeviceTimes();
 				this->foundLabjacks_[i]->updateVisibleLightRelayIfNeeded();
 			}
-			stillWaitingToFindLabjacks = false;
+			this->stillWaitingToFindLabjacks_ = false;
 		}
 
-	} while (stillWaitingToFindLabjacks == true);
+	} while (this->stillWaitingToFindLabjacks_ == true);
 	// Returns true to indicate that labjacks have been found and we should move forward with the program.
+	return true;
+}
+
+// Returns true only if it's ready for a connection from the client
+bool BehavioralBoxControllersManager::isReady()
+{
+	if (this->stillWaitingToFindLabjacks_ || this->shouldStop_) {
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+
+bool BehavioralBoxControllersManager::addLabjack(BehavioralBoxLabjack* newLabjack)
+{
+	this->foundLabjacks_.push_back(newLabjack);
+	this->numberActiveLabjacks_ = this->foundLabjacks_.size();
 	return true;
 }
 
@@ -111,6 +154,10 @@ void BehavioralBoxControllersManager::run()
 
 void BehavioralBoxControllersManager::loadHistoricalData()
 {
+	if (!this->isReady()) {
+		// Not ready.
+		return;
+	}
 	this->historicalData_.clear();
 	for (int i = 0; i < this->getActiveLabjacks().size(); i++) {
 		
