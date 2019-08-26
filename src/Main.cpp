@@ -35,10 +35,10 @@
 std::thread web_server_thread;
 #endif // LAUNCH_WEB_SERVER
 
-//BehavioralBoxControllersManager controller;
+BehavioralBoxControllersManager controller;
 
 // Vector of Labjack Objects
-std::vector<BehavioralBoxLabjack*> foundLabjacks;
+//std::vector<BehavioralBoxLabjack*> foundLabjacks;
 
 
 //// Scheduler
@@ -48,7 +48,7 @@ std::vector<BehavioralBoxLabjack*> foundLabjacks;
 Bosma::Scheduler s(max_n_threads);
 
 // FUNCTION PROTOTYPES:
-bool waitForFoundLabjacks();
+//bool waitForFoundLabjacks();
 #if LAUNCH_WEB_SERVER
 bool startWebserver(int argc, char** argv);
 #endif // LAUNCH_WEB_SERVER
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
 #endif // LAUNCH_WEB_SERVER
 
 	cout << endl << "Scanning for attached Labjacks..." << endl;
-	if (!waitForFoundLabjacks()) {
+	if (!controller.waitForFoundLabjacks()) {
 		// User wants to quit.
 		cout << "User chose to quit. Done." << endl;
 		return shutdownApplication(LJME_NO_DEVICES_FOUND);
@@ -109,8 +109,9 @@ int main(int argc, char** argv)
 			// Show the data files:
 			cout << "Showing current log files..." << endl;
 			// Iterate through all found Labjacks
-			for (int i = 0; i < foundLabjacks.size(); i++) {
-				std::string foundRelativeFilePathString = foundLabjacks[i]->getFullFilePath();
+			
+			for (int i = 0; i < controller.getActiveLabjacks().size(); i++) {
+				std::string foundRelativeFilePathString = controller.getActiveLabjacks()[i]->getFullFilePath();
 				std::string fullFilePathString = LabjackHelpers::getFullPath(foundRelativeFilePathString);
 
 				cout << "\t Showing log file at " << fullFilePathString << endl;
@@ -122,17 +123,17 @@ int main(int argc, char** argv)
 			// Prints the current data
 			cout << "Printing current data..." << endl;
 			// Iterate through all found Labjacks
-			for (int i = 0; i < foundLabjacks.size(); i++) {
-				foundLabjacks[i]->diagnosticPrintLastValues();
+			for (int i = 0; i < controller.getActiveLabjacks().size(); i++) {
+				controller.getActiveLabjacks()[i]->diagnosticPrintLastValues();
 			}
 			cout << "\t done." << endl;
 		}
 		else if (character == 'R') {
 			cout << "Refreshing Labjacks..." << endl;
 			int previouslyFoundLabjackSerialNumbers[max_number_labjacks] = {};
-			int numberPreviouslyFoundLabjacks = foundLabjacks.size();
+			int numberPreviouslyFoundLabjacks = controller.getActiveLabjacks().size();
 			for (int i = 0; i < numberPreviouslyFoundLabjacks; i++) {
-				previouslyFoundLabjackSerialNumbers[i] = foundLabjacks[i]->getSerialNumber();
+				previouslyFoundLabjackSerialNumbers[i] = controller.getActiveLabjacks()[i]->getSerialNumber();
 			}
 
 			// Find the labjacks
@@ -142,7 +143,7 @@ int main(int argc, char** argv)
 				cout << "Found " << newlyFoundAdditionalLabjacks.size() << " new labjacks!" << endl;
 				// Iterate through all newly found labjacks and append them to the list of found labjacks
 				for (int i = 0; i < newlyFoundAdditionalLabjacks.size(); i++) {
-					foundLabjacks.push_back(newlyFoundAdditionalLabjacks[i]);
+					controller.getActiveLabjacks().push_back(newlyFoundAdditionalLabjacks[i]);
 				}
 			}
 			else {
@@ -158,16 +159,16 @@ int main(int argc, char** argv)
 		else if (character == 'L') {
 			cout << "Toggling visible LED Light mode on all labjacks..." << endl;
 			// Iterate through all found Labjacks
-			for (int i = 0; i < foundLabjacks.size(); i++) {
-				foundLabjacks[i]->toggleOverrideMode_VisibleLED();
+			for (int i = 0; i < controller.getActiveLabjacks().size(); i++) {
+				controller.getActiveLabjacks()[i]->toggleOverrideMode_VisibleLED();
 			}
 			cout << "\t done." << endl;
 		}
 		else if (character == 'A') {
 			cout << "Toggling attract mode on all Labjacks..." << endl;
 			// Iterate through all found Labjacks
-			for (int i = 0; i < foundLabjacks.size(); i++) {
-				foundLabjacks[i]->toggleOverrideMode_AttractModeLEDs();
+			for (int i = 0; i < controller.getActiveLabjacks().size(); i++) {
+				controller.getActiveLabjacks()[i]->toggleOverrideMode_AttractModeLEDs();
 			}
 			cout << "\t done." << endl;
 		}
@@ -181,46 +182,46 @@ int main(int argc, char** argv)
 }
 
 // Idles and waits for a labjack to be found.
-bool waitForFoundLabjacks()
-{
-	bool stillWaitingToFindLabjacks = true;
-	int character;
-	do {
-		// Find the labjacks
-		foundLabjacks = LabjackHelpers::findAllLabjacks();
-
-		if (foundLabjacks.size() == 0) {
-			printf("No labjacks found!!\n");
-			printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.\n");
-			cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
-			// Read a character from the keyboard
-			character = _getch();
-			character = toupper(character);
-			if (character == 'Q') {
-				// Returns false to indicate that the user gave up.
-				cout << "\t Quitting..." << endl;
-				return false;
-			}
-			else {
-				//std::this_thread::sleep_for(std::chrono::seconds(1));
-				cout << "\t Refreshing Labjacks..." << endl;
-				continue;
-			}
-		}
-		else {
-			// Otherwise labjacks have found, move forward with the program.
-			// Iterate through all found Labjacks
-			for (int i = 0; i < foundLabjacks.size(); i++) {
-				foundLabjacks[i]->syncDeviceTimes();
-				foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
-			}
-			stillWaitingToFindLabjacks = false;
-		}
-
-	} while (stillWaitingToFindLabjacks == true);
-	// Returns true to indicate that labjacks have been found and we should move forward with the program.
-	return true;
-}
+//bool waitForFoundLabjacks()
+//{
+//	bool stillWaitingToFindLabjacks = true;
+//	int character;
+//	do {
+//		// Find the labjacks
+//		foundLabjacks = LabjackHelpers::findAllLabjacks();
+//
+//		if (controller.getActiveLabjacks().size() == 0) {
+//			printf("No labjacks found!!\n");
+//			printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.\n");
+//			cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
+//			// Read a character from the keyboard
+//			character = _getch();
+//			character = toupper(character);
+//			if (character == 'Q') {
+//				// Returns false to indicate that the user gave up.
+//				cout << "\t Quitting..." << endl;
+//				return false;
+//			}
+//			else {
+//				//std::this_thread::sleep_for(std::chrono::seconds(1));
+//				cout << "\t Refreshing Labjacks..." << endl;
+//				continue;
+//			}
+//		}
+//		else {
+//			// Otherwise labjacks have found, move forward with the program.
+//			// Iterate through all found Labjacks
+//			for (int i = 0; i < controller.getActiveLabjacks().size(); i++) {
+//				foundLabjacks[i]->syncDeviceTimes();
+//				foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
+//			}
+//			stillWaitingToFindLabjacks = false;
+//		}
+//
+//	} while (stillWaitingToFindLabjacks == true);
+//	// Returns true to indicate that labjacks have been found and we should move forward with the program.
+//	return true;
+//}
 
 #if LAUNCH_WEB_SERVER
 

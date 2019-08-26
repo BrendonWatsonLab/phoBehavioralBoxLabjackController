@@ -1,7 +1,12 @@
 #include <limits>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <conio.h>
 #include <Wt/WApplication.h>
 #include <Wt/WServer.h>
 #include "BehavioralBoxControllersManager.h"
+#include "LabjackHelpers.h"
 
 BehavioralBoxControllersManager::BehavioralBoxControllersManager()
 {
@@ -31,6 +36,47 @@ void BehavioralBoxControllersManager::disconnect(Client* client)
 		}
 	}
 	assert(false);
+}
+
+bool BehavioralBoxControllersManager::waitForFoundLabjacks()
+{
+	bool stillWaitingToFindLabjacks = true;
+	int character;
+	do {
+		// Find the labjacks
+		this->foundLabjacks_ = LabjackHelpers::findAllLabjacks();
+
+		if (this->foundLabjacks_.size() == 0) {
+			printf("No labjacks found!!\n");
+			printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.\n");
+			cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
+			// Read a character from the keyboard
+			character = _getch();
+			character = toupper(character);
+			if (character == 'Q') {
+				// Returns false to indicate that the user gave up.
+				cout << "\t Quitting..." << endl;
+				return false;
+			}
+			else {
+				//std::this_thread::sleep_for(std::chrono::seconds(1));
+				cout << "\t Refreshing Labjacks..." << endl;
+				continue;
+			}
+		}
+		else {
+			// Otherwise labjacks have found, move forward with the program.
+			// Iterate through all found Labjacks
+			for (int i = 0; i < this->foundLabjacks_.size(); i++) {
+				this->foundLabjacks_[i]->syncDeviceTimes();
+				this->foundLabjacks_[i]->updateVisibleLightRelayIfNeeded();
+			}
+			stillWaitingToFindLabjacks = false;
+		}
+
+	} while (stillWaitingToFindLabjacks == true);
+	// Returns true to indicate that labjacks have been found and we should move forward with the program.
+	return true;
 }
 
 void BehavioralBoxControllersManager::run()

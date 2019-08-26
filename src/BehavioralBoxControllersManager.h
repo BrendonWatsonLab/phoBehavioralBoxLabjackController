@@ -8,8 +8,6 @@
 #include "BehavioralBoxLabjack.h"
 #include "BehavioralBoxHistoricalData.h"
 
-//TODO: perhaps this should be referred to as a "Manager" of controllers.
-
 
 /*
  * Simple interface to uniquely identify a client
@@ -42,7 +40,8 @@ public:
 		this->shouldStop_ = true;
 	}
 
-	//bool waitForFoundLabjacks();
+	// Idles and waits for a labjack to be found.
+	bool waitForFoundLabjacks();
 	//int shutdownApplication(int shutdownCode);
 
 private:
