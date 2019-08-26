@@ -42,6 +42,8 @@ std::vector<LabjackDataFile> BehavioralBoxHistoricalData::findDataFiles(std::str
 		std::string currFileBasename = foundFiles[i].stem().string(); // Stem returns the filename without the extension.
 		// stringstream class check1 
 		std::stringstream currNameSplitterStream(currFileBasename);
+		// Clear the name parts for the next file
+		fileNameParts.clear();
 		// Tokenizing w.r.t. underscore '_' 
 		while (getline(currNameSplitterStream, intermediate, '_'))
 		{
@@ -75,8 +77,6 @@ std::vector<LabjackDataFile> BehavioralBoxHistoricalData::findDataFiles(std::str
 		// It meets all criteria to be returned. Add it to the output vector
 		LabjackDataFile currFile = LabjackDataFile(foundFiles[i], labjackSerialNumber, millisecondsComponent);
 		outputVector.push_back(currFile);
-		// Clear the name parts for the next file
-		fileNameParts.clear();
 	}
 	return outputVector;
 }

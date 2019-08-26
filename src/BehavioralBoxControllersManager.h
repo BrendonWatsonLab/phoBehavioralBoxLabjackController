@@ -47,6 +47,8 @@ public:
 	bool waitForFoundLabjacks();
 	//int shutdownApplication(int shutdownCode);
 
+	void reloadHistoricalData();
+
 	// Getters:
 	bool isReady();
 
@@ -84,7 +86,7 @@ private:
 
 	//Historical Labjack Data loading:
 	std::vector<BehavioralBoxHistoricalData> historicalData_;
-	void loadHistoricalData();
+	
 	
 };
 

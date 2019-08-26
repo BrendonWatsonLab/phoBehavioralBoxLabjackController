@@ -71,6 +71,11 @@ int main(int argc, char** argv)
 		return shutdownApplication(LJME_NO_DEVICES_FOUND);
 	}
 
+#if LOAD_HISTORICAL_DATA
+	controller.reloadHistoricalData();
+#endif // LOAD_HISTORICAL_DATA
+
+
 #if LAUNCH_WEB_SERVER
 	WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
 #endif // LAUNCH_WEB_SERVER
