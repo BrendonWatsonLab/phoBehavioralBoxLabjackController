@@ -49,50 +49,12 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 			model->setData(i, 0, currTimestampDateTime);
 		}
 	}
-	// Show a view that allows editing of the model.
-	auto* w = this->addWidget(cpp14::make_unique<Wt::WContainerWidget>());
-	auto* table = w->addWidget(cpp14::make_unique<Wt::WTableView>());
+	
+	/*
+	 * Build the data table.
+	 */
+	this->setupTable(model);
 
-	table->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);
-	//table->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right);
-	table->setMargin(10, Wt::Side::Left | Wt::Side::Right);
-
-	table->setModel(model);
-	table->setSortingEnabled(false); // Does not make much sense for time series
-	table->setColumnResizeEnabled(false);
-	table->setSelectionMode(Wt::SelectionMode::None);
-	table->setAlternatingRowColors(true);
-	//table->setColumnAlignment(0, Wt::AlignmentFlag::Center);
-	//table->setHeaderAlignment(0, Wt::AlignmentFlag::Center);
-	table->setRowHeight(TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT);
-
-	// Editing does not really work without Ajax, it would require an
-	// additional button somewhere to confirm the edited value.
-	if (Wt::WApplication::instance()->environment().ajax()) {
-		table->resize(1024, 20 + TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN * TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT);
-		table->setEditTriggers(Wt::EditTrigger::SingleClicked);
-	}
-	else {
-		table->resize(1024, 20 + TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN * TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT + 25);
-		table->setEditTriggers(Wt::EditTrigger::None);
-	}
-
-	std::shared_ptr<Wt::WItemDelegate> delegate	= std::make_shared<Wt::WItemDelegate>();
-	delegate->setTextFormat("%.1f");
-	table->setItemDelegate(delegate);
-
-	std::shared_ptr<Wt::WItemDelegate> delegateColumn = std::make_shared<Wt::WItemDelegate>();
-	table->setItemDelegateForColumn(0, delegateColumn);
-
-	table->setColumnWidth(0, 140);
-	table->setColumnAlignment(0, Wt::AlignmentFlag::Left);
-	table->setHeaderAlignment(0, Wt::AlignmentFlag::Left);
-	for (int i = 1; i < model->columnCount(); ++i) {
-		//table->setColumnWidth(i, Wt::WLength::Auto);
-		table->setColumnWidth(i, 90);
-		table->setColumnAlignment(0, Wt::AlignmentFlag::Center);
-		table->setHeaderAlignment(0, Wt::AlignmentFlag::Center);
-	}
 
 	/*
 	 * Create the scatter plot.
@@ -272,4 +234,50 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 
 	return model;
 }
+
+void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model)
+{
+	// Show a view that allows editing of the model.
+	auto* w = this->addWidget(cpp14::make_unique<Wt::WContainerWidget>());
+	auto* table = w->addWidget(cpp14::make_unique<Wt::WTableView>());
+
+	table->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);
+	table->setMargin(10, Wt::Side::Left | Wt::Side::Right);
+
+	table->setModel(model);
+	table->setSortingEnabled(false); // Does not make much sense for time series
+	table->setColumnResizeEnabled(false);
+	table->setSelectionMode(Wt::SelectionMode::None);
+	table->setAlternatingRowColors(true);
+	table->setRowHeight(TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT);
+
+	// Editing does not really work without Ajax, it would require an
+	// additional button somewhere to confirm the edited value.
+	if (Wt::WApplication::instance()->environment().ajax()) {
+		table->resize(1024, 20 + TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN * TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT);
+		table->setEditTriggers(Wt::EditTrigger::SingleClicked);
+	}
+	else {
+		table->resize(1024, 20 + TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN * TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT + 25);
+		table->setEditTriggers(Wt::EditTrigger::None);
+	}
+
+	std::shared_ptr<Wt::WItemDelegate> delegate = std::make_shared<Wt::WItemDelegate>();
+	delegate->setTextFormat("%.1f");
+	table->setItemDelegate(delegate);
+
+	std::shared_ptr<Wt::WItemDelegate> delegateColumn = std::make_shared<Wt::WItemDelegate>();
+	table->setItemDelegateForColumn(0, delegateColumn);
+
+	table->setColumnWidth(0, 140);
+	table->setColumnAlignment(0, Wt::AlignmentFlag::Left);
+	table->setHeaderAlignment(0, Wt::AlignmentFlag::Left);
+	for (int i = 1; i < model->columnCount(); ++i) {
+		//table->setColumnWidth(i, Wt::WLength::Auto);
+		table->setColumnWidth(i, 90);
+		table->setColumnAlignment(i, Wt::AlignmentFlag::Center);
+		table->setHeaderAlignment(i, Wt::AlignmentFlag::Center);
+	}
+}
+
 
