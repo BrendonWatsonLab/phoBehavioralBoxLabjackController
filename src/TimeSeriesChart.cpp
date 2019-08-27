@@ -80,10 +80,10 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	std::shared_ptr<Wt::WItemDelegate> delegateColumn = std::make_shared<Wt::WItemDelegate>();
 	table->setItemDelegateForColumn(0, delegateColumn);
 
-	table->setColumnWidth(0, 80);
+	table->setColumnWidth(0, 140);
 	for (int i = 1; i < model->columnCount(); ++i) {
-		table->setColumnWidth(i, Wt::WLength::Auto);
-		//table->setColumnWidth(i, 90);
+		//table->setColumnWidth(i, Wt::WLength::Auto);
+		table->setColumnWidth(i, 90);
 	}
 
 	/*
@@ -97,9 +97,8 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	chart->setLegendEnabled(true); // enable the legend
 	chart->setZoomEnabled(true);
 	chart->setPanEnabled(true);
-	chart->axis(Wt::Chart::Axis::Y).setVisible(false);
-	chart->axis(Wt::Chart::Axis::X).setVisible(false);
-	chart->setLegendEnabled(false);
+	//chart->axis(Wt::Chart::Axis::Y).setVisible(false);
+	//chart->axis(Wt::Chart::Axis::X).setVisible(false);
 
 	//type: Bar
 	// Marker: Inverted Triangle
@@ -114,12 +113,13 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	/*
 	  * Add first two columns as line series
 	  */
-	for (int i = 1; i < 3; ++i) {
+	for (int i = 1; i < model->columnCount(); ++i) {
 		std::unique_ptr<Wt::Chart::WDataSeries> s = cpp14::make_unique<Wt::Chart::WDataSeries>(i, Wt::Chart::SeriesType::Bar);
 		//s->setShadow(WShadow(3, 3, WColor(0, 0, 0, 127), 3));
 		s->setMarker(Wt::Chart::MarkerType::InvertedTriangle); // Make the series display upsidown triangles on top of the impulse plot bars
 		s->setType(Wt::Chart::SeriesType::Bar); // Make the series display tall skinny bars, like an impulse plot
-		s->setLegendEnabled(false); // Disable the legend
+		s->setLegendEnabled(true); // Disable the legend
+		//s->setLegendEnabled(false); // Disable the legend
 		chart->addSeries(std::move(s));
 	}
 
@@ -144,6 +144,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	/*std::vector<std::string> headerLabels = activeHistoricalData.getHeaderLabels();*/
 
 	auto headerLabels = activeHistoricalData.getHeaderLabels();
+	double verticalVariableSeparatorMultiplier = 1.0;
 
 	for (int variableIndex = 0; variableIndex < numVariables; variableIndex++)
 	{	
@@ -159,8 +160,6 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		}
 		std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
 		model->setItemPrototype(std::move(prototype));
-		//model->setHeaderData(0, WString("time"));
-		//model->setHeaderData(1, WString("Event Value"));
 		// Iterate through the events for the given variable
 		for (unsigned i = 0; i < currVarNumEvents; ++i) {
 			std::pair<unsigned long long, double> currEvent = historicalEvents[i];
@@ -173,7 +172,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 				x = currEvent.first - earliest_event_timestamp;
 			}
 			model->setData(i, 0, x);
-			model->setData(i, 1, 10.0);
+			model->setData(i, (variableIndex+1), (double(variableIndex) * verticalVariableSeparatorMultiplier));
 		}
 	}
 
