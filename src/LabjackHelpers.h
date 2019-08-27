@@ -36,6 +36,8 @@ public:
 
 	static bool showInExplorer(const std::string path);
 
+	// Computes the change
+	static std::vector<double> computeDelta(std::vector<double> V1, std::vector<double> V2);
 
 };
 

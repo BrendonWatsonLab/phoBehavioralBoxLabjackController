@@ -302,3 +302,12 @@ bool LabjackHelpers::showInExplorer(const std::string path)
 	ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWDEFAULT);
 	return true;
 }
+
+std::vector<double> LabjackHelpers::computeDelta(std::vector<double> V1, std::vector<double> V2)
+{
+	std::vector<double> result;
+	std::transform(V1.begin(), V1.end(), V2.begin(),
+		std::back_inserter(result),
+		std::minus<int>());
+	return result;
+}

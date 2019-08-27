@@ -3,6 +3,7 @@
 #include <string>
 #include "BehavioralBoxHistoricalData.h"
 #include "FilesystemHelpers.h"
+#include "LabjackHelpers.h"
 #include <sstream>
 
 BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID)
@@ -101,7 +102,10 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 	this->values.clear();
 	this->output_milliseconds_since_epoch.clear();
 	this->output_values.clear();
+	this->variableEventVectors.clear();
+
 	int numVariables = 0;
+	int maxNumVariables = -1;
 
 	// For each data file object:
 	for (int i = 0; i < this->dataFiles_.size(); i++)
@@ -110,16 +114,34 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 		// For each line the returned set of lines for a given file:
 		for each (LabjackDataFileLine aLineObject in tempLines)
 		{
-			this->milliseconds_since_epoch.push_back(aLineObject.milliseconds_since_epoch);
+			// Check the variables for each line. They should be the same within a file, but they may differ across files.
 			numVariables = aLineObject.values.size();
+			if (numVariables != maxNumVariables) {
+				if (i > 0) {
+					// If it's not the first file/line found
+					std::cout << "dataFile[" << std::to_string(i) << "] has " << std::to_string(numVariables) << " variables while previous files only had " << std::to_string(maxNumVariables) << ". Need to adjust all with fewer variables to max." << std::endl;
+				}
+				maxNumVariables = max(maxNumVariables, numVariables);
+			}
+
+			this->milliseconds_since_epoch.push_back(aLineObject.milliseconds_since_epoch);
 			this->values.push_back(aLineObject.values);
-		}
-	}
+		} // end for each line
+	} // end for each file
 	//TODO: perhaps have a "reloading" event
+
+	// Build arrays to hold the state change events for each variable
+	for (int j = 0; j < maxNumVariables; j++) {
+		std::vector<std::pair<unsigned long long, double>> newVariableVect;
+		this->variableEventVectors.push_back(newVariableVect);
+	}
+
 
 	// Compute Differences and such
 	int numSamples = this->milliseconds_since_epoch.size();
 	if (numSamples < 2) { return; }
+
+
 
 	//unsigned long long prev_time = this->milliseconds_since_epoch[0];
 	//std::vector<double> prev_values = this->values[0];
@@ -147,14 +169,18 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 		//unsigned long long curr_time_diff = curr_time - prev_time;
 
 		//TODO: deal with the first sample. 
+		std::vector<double> currDiffVect = LabjackHelpers::computeDelta(curr_values, prev_values);
 
 		// Loop through the variables
-		for (int j = 0; j < numVariables; j++) {
-			double currDiff = curr_values[j] - prev_values[j];
+		for (int j = 0; j < maxNumVariables; j++) {
+			//double currDiff = curr_values[j] - prev_values[j];
+			double currDiff = currDiffVect[j];
 			if (currDiff < -0.01) {
 				// Include the value because it's a falling_edge (transition to negative values)
 				shouldIncludeCurrentLine = true;
 				temp_output_values.push_back(1.0);
+				// Add the event timestamp and value to the appropriate vector
+				this->variableEventVectors[j].push_back(make_pair(curr_time, curr_values[j]));
 			}
 			else {
 				temp_output_values.push_back(0.0);

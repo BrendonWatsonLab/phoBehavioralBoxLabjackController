@@ -40,6 +40,12 @@ private:
 	std::vector<unsigned long long> output_milliseconds_since_epoch;
 	std::vector<std::vector<double>> output_values;
 
+	// Variable event outputs:
+	// A vector (corresponding to an entry for each variable) of vectors (corresponding to an entry for each event for a given variable) of type pair.
+	// The pair contains the timestamp and the new value at that timestamp
+	//std::array<std::vector<pair<unsigned long long, double>>, NUM_CHANNELS> variableEventVectors;
+	std::vector< std::vector< std::pair<unsigned long long, double> > > variableEventVectors;
+
 	void findDataFiles();
 	void reloadDataFiles();
 	void sort() {
