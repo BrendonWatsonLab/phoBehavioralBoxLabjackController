@@ -47,6 +47,15 @@ Run LabJack-2019-05-20.exe:
 	Install with defaults
 
 
+// LABJACK API:
+https://labjack.com/support/software/examples/ljm/c
+Download the latest version. 
+Extract the contents of the folder within the .zip (for example in "C_C++_LJM_2019-05-20-beta.zip" there is a folder called "C_C++_LJM_2019-05-20")
+to the "src/External/C_C++_LJM" folder.
+
+
+
+
 
 
 
