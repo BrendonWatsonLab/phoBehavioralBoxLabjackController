@@ -60,11 +60,19 @@ std::vector<LabjackDataFile> BehavioralBoxHistoricalData::findDataFiles(std::str
 			std::cout << "Warning: File " << currFileBasename << " does not match the expected format (out_file_s{ SERIAL_NUMBER }_{ MILLISECONDS_SINCE_EPOCH }). Skipping." << std::endl;
 			continue;
 		}
-		// Check if the serial number matches the search serial number
-		if (fileNameParts[2] != expectedSerialNumberString) {
-			// Serial number doesn't match
-			continue;
+
+		if (labjackSerialNumber == 0) {
+			// The "0" serial number is handled as a wildcard, returning results for any labjack.
+			//fileNameParts[2].first
 		}
+		else {
+			// Check if the serial number matches the search serial number
+			if (fileNameParts[2] != expectedSerialNumberString) {
+				// Serial number doesn't match
+				continue;
+			}
+		}
+
 		// Parse the milliseconds component
 		std::string millisecondsComponentString = fileNameParts[3];
 		unsigned long long millisecondsComponent = 0;

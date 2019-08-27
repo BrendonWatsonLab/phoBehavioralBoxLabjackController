@@ -69,11 +69,16 @@ bool BehavioralBoxControllersManager::waitForFoundLabjacks()
 	int character;
 	do {
 		// Find the labjacks
-		this->foundLabjacks_ = LabjackHelpers::findAllLabjacks();
+		std::vector<BehavioralBoxLabjack*> newlyFoundAdditionalLabjacks = LabjackHelpers::findAllLabjacks();
+		//this->foundLabjacks_ = LabjackHelpers::findAllLabjacks();
 
-		if (this->foundLabjacks_.size() == 0) {
+		if (newlyFoundAdditionalLabjacks.size() == 0) {
 			printf("No labjacks found!!\n");
 			printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.\n");
+
+#if CONTINUE_WITHOUT_LABJACKS
+			this->stillWaitingToFindLabjacks_ = false;
+#else
 			cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
 			// Read a character from the keyboard
 			character = _getch();
@@ -88,13 +93,13 @@ bool BehavioralBoxControllersManager::waitForFoundLabjacks()
 				cout << "\t Refreshing Labjacks..." << endl;
 				continue;
 			}
+#endif // CONTINUE_WITHOUT_LABJACKS
 		}
 		else {
 			// Otherwise labjacks have found, move forward with the program.
-			// Iterate through all found Labjacks
-			for (int i = 0; i < this->foundLabjacks_.size(); i++) {
-				this->foundLabjacks_[i]->syncDeviceTimes();
-				this->foundLabjacks_[i]->updateVisibleLightRelayIfNeeded();
+			// Iterate through all found Labjacks and add them
+			for (int i = 0; i < newlyFoundAdditionalLabjacks.size(); i++) {
+				this->addLabjack(newlyFoundAdditionalLabjacks[i]);
 			}
 			this->stillWaitingToFindLabjacks_ = false;
 		}
@@ -117,6 +122,8 @@ bool BehavioralBoxControllersManager::isReady()
 
 bool BehavioralBoxControllersManager::addLabjack(BehavioralBoxLabjack* newLabjack)
 {
+	newLabjack->syncDeviceTimes();
+	newLabjack->updateVisibleLightRelayIfNeeded();
 	this->foundLabjacks_.push_back(newLabjack);
 	this->numberActiveLabjacks_ = this->foundLabjacks_.size();
 	return true;
@@ -168,4 +175,11 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 		
 		this->historicalData_.push_back(currHistoryManager);
 	}
+}
+
+std::vector<BehavioralBoxHistoricalData> BehavioralBoxControllersManager::loadHistoricalData()
+{
+	std::vector<BehavioralBoxHistoricalData> outputVector;
+
+	return std::vector<BehavioralBoxHistoricalData>();
 }

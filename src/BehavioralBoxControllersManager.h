@@ -49,6 +49,8 @@ public:
 
 	void reloadHistoricalData();
 
+	static std::vector<BehavioralBoxHistoricalData> loadHistoricalData();
+
 	// Getters:
 	bool isReady();
 

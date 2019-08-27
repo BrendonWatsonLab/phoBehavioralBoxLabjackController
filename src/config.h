@@ -25,6 +25,12 @@ Specifies what ports to open
 #define LAUNCH_WEB_SERVER false
 #define LOAD_HISTORICAL_DATA true
 
+
+
+////// DEBUGGING ONLY:
+//CONTINUE_WITHOUT_LABJACKS: if false, it waits on at least one labjack hardware to be detected before moving forward.
+#define CONTINUE_WITHOUT_LABJACKS true
+
 ////// Labjack Port Configurations:
 // Only one of these should be un-commented at a time.
 //#include "../ConfigFiles/config-DownstairsBox.h"
