@@ -22,14 +22,14 @@ Specifies what ports to open
 ////// GUI Config:
 #define PRINT_OUTPUT_VALUES_TO_CONSOLE false
 
-#define LAUNCH_WEB_SERVER false
+#define LAUNCH_WEB_SERVER true
 #define LOAD_HISTORICAL_DATA true
 
 
 
 ////// DEBUGGING ONLY:
 //CONTINUE_WITHOUT_LABJACKS: if false, it waits on at least one labjack hardware to be detected before moving forward.
-#define CONTINUE_WITHOUT_LABJACKS true
+#define CONTINUE_WITHOUT_LABJACKS false
 
 ////// Labjack Port Configurations:
 // Only one of these should be un-commented at a time.

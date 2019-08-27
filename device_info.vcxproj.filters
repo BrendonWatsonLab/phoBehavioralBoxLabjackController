@@ -34,6 +34,9 @@
     <Filter Include="WtWebServer\Obsolite">
       <UniqueIdentifier>{197677d6-67bf-473c-9e18-7126cf24e7b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WtWebServer\Charts">
+      <UniqueIdentifier>{504fad54-f3e9-4297-a59f-33b881c198d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BehavioralBoxLabjack.cpp">
@@ -83,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="src\LabjackDataFile.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TimeSeriesChart.cpp">
+      <Filter>WtWebServer\Charts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="src\BehavioralBoxControllersManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TimeSeriesChart.h">
+      <Filter>WtWebServer\Charts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
