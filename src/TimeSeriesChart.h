@@ -13,5 +13,10 @@ public:
 
 	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel();
 
+	std::vector<Wt::WColor> getVariableColors() { return this->colorVect_; }
+	Wt::WColor getDefaultColor() { return this->otherColor_; }
+private:
+	std::vector<Wt::WColor> colorVect_ = { Wt::WColor(0, 255, 255, 255), Wt::WColor(127, 255, 212, 255), Wt::WColor(255, 127, 80, 255), Wt::WColor(255, 0, 255, 255), Wt::WColor(0, 0, 255, 255), Wt::WColor(0, 0, 139, 255), Wt::WColor(220, 20, 60, 255), Wt::WColor(128, 0, 0, 255) };
+	Wt::WColor otherColor_ = Wt::WColor(200, 200, 200, 255);
 };
 

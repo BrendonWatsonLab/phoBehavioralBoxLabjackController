@@ -22,16 +22,18 @@
 #include "BehavioralBoxControllersManager.h"
 #include "NumericItem.h"
 
+#define TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN 8
+#define TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT 26
+
 TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 {
-	//this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString::tr("scatter plot")));
 	this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Historic Labjack Data:")));
 
 	std::shared_ptr<WAbstractItemModel> model = this->buildHistoricDataModel();
-	//std::shared_ptr<Wt::WStandardItemModel> model = this->buildHistoricDataModel();
-
 	if (!model)
 		return;
+
+	std::vector<Wt::WColor> colorVect = this->getVariableColors();
 
 	/*
 	 * Parses the first column as dates, to be able to use a date scale
@@ -62,16 +64,16 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	table->setAlternatingRowColors(true);
 	//table->setColumnAlignment(0, Wt::AlignmentFlag::Center);
 	//table->setHeaderAlignment(0, Wt::AlignmentFlag::Center);
-	table->setRowHeight(22);
+	table->setRowHeight(TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT);
 
 	// Editing does not really work without Ajax, it would require an
 	// additional button somewhere to confirm the edited value.
 	if (Wt::WApplication::instance()->environment().ajax()) {
-		table->resize(1024, 20 + 5 * 22);
+		table->resize(1024, 20 + TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN * TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT);
 		table->setEditTriggers(Wt::EditTrigger::SingleClicked);
 	}
 	else {
-		table->resize(1024, 20 + 5 * 22 + 25);
+		table->resize(1024, 20 + TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN * TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT + 25);
 		table->setEditTriggers(Wt::EditTrigger::None);
 	}
 
@@ -106,6 +108,7 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	//chart->axis(Wt::Chart::Axis::Y).setVisible(false);
 	//chart->axis(Wt::Chart::Axis::X).setVisible(false);
 
+
 	//type: Bar
 	// Marker: Inverted Triangle
 	chart->setType(Wt::Chart::ChartType::Scatter);            // set type to ScatterPlot
@@ -118,6 +121,12 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	chart->axis(Wt::Chart::Axis::X).setGridLinesEnabled(true);
 
 
+	///// SETUP Y-AXIS:
+	chart->axis(Wt::Chart::Axis::Y).setScale(Wt::Chart::AxisScale::Linear);
+	chart->axis(Wt::Chart::Axis::Y).setLocation(Chart::AxisValue::Zero);
+	chart->axis(Wt::Chart::Axis::Y).setMinimum(0.0);
+	chart->axis(Wt::Chart::Axis::Y).setMaximum(model->columnCount());
+
 	// Automatically layout chart (space for axes, legend, ...)
 	chart->setAutoLayoutEnabled();
 
@@ -125,12 +134,69 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	/*
 	  * Add first two columns as line series
 	  */
-	for (int i = 1; i < model->columnCount(); ++i) {
-		std::unique_ptr<Wt::Chart::WDataSeries> s = cpp14::make_unique<Wt::Chart::WDataSeries>(i, Wt::Chart::SeriesType::Bar);
-		//s->setShadow(WShadow(3, 3, WColor(0, 0, 0, 127), 3));
+	for (int colIndex = 1; colIndex < model->columnCount(); ++colIndex) {
+		int currVariableIndex = colIndex - 1;
+		std::unique_ptr<Wt::Chart::WDataSeries> s = cpp14::make_unique<Wt::Chart::WDataSeries>(colIndex, Wt::Chart::SeriesType::Bar);
 		s->setMarker(Wt::Chart::MarkerType::InvertedTriangle); // Make the series display upsidown triangles on top of the impulse plot bars
 		s->setType(Wt::Chart::SeriesType::Bar); // Make the series display tall skinny bars, like an impulse plot
 		s->setLegendEnabled(true); // Disable the legend
+		s->setOffset(double(currVariableIndex) * 5.0);
+
+		Wt::WColor currVariableColor;
+		
+		if (currVariableIndex < colorVect.size()) {
+			currVariableColor = colorVect[currVariableIndex];
+		}
+		else {
+			currVariableColor = this->getDefaultColor();
+		}
+		Wt::WColor translucentCurrentColor = Wt::WColor(currVariableColor.red(), currVariableColor.green(), currVariableColor.blue(), 128);
+		// Sets the label (text) colors:
+		s->setLabelColor(currVariableColor); // Subtract one to step back down to the variable indexing
+		//currVariableColor.alpha = 127;
+
+		// Sets the fill in the legend and the markers
+		Wt::WBrush fillBrush = std::move(currVariableColor);
+		fillBrush.setStyle(Wt::BrushStyle::Solid);
+		s->setBrush(fillBrush);
+		//s->setBrush(Wt::WBrush(currVariableColor));
+
+		// Sets the shadow colors:
+		//s->setShadow(WShadow(2, 2, currVariableColor, 3));
+		//s->setShadow(WShadow(3, 3, WColor(0, 0, 0, 127), 3));
+
+
+		//Wt::WPen markerPen = s->markerPen();
+		//markerPen.setColor(currVariableColor);
+		//s->setMarkerPen(Wt::WPen(currVariableColor));
+		//s->setMarkerBrush(Wt::WBrush(currVariableColor));
+
+
+		//Wt::WPen mainPen = s->pen();
+		//mainPen.setColor(currVariableColor);
+
+		// Sets the lines
+		//Wt::WPen mainPen = Wt::WColor(0, 191, 255);
+
+		Wt::WPen mainPen = translucentCurrentColor;
+		mainPen.setCapStyle(Wt::PenCapStyle::Round);
+		mainPen.setJoinStyle(Wt::PenJoinStyle::Round);
+		mainPen.setWidth(3.0);
+		s->setPen(mainPen);
+		//s->setPen(Wt::WPen(currVariableColor));
+		
+
+		//Wt::WBrush existingBrush = s->brush();
+		//existingBrush.setColor(currVariableColor);
+		//s->setBrush(existingBrush);
+		//Wt::WBrush existingBrush = s->brush();
+		//existingBrush.setColor(Wt::WColor(Wt::StandardColor::Blue));
+		//s->setBrush(existingBrush);
+		//s->setBrush(Wt::WBrush(Wt::WColor(Wt::StandardColor::Blue)));
+		
+
+		
+
 		//s->setLegendEnabled(false); // Disable the legend
 		chart->addSeries(std::move(s));
 	}
