@@ -23,6 +23,9 @@ public:
 	std::vector<unsigned long long> getFinalMillisecondsSinceEpoch() { return this->output_milliseconds_since_epoch; };
 	std::vector<std::vector<double>> getFinalOutputValues() { return this->output_values; };
 
+	int getNumberVariables() { return this->variableEventVectors.size(); };
+	std::vector< std::pair<unsigned long long, double> > getEvents(int forVariableIndex) { return this->variableEventVectors[forVariableIndex]; };
+
 
 private:
 	std::string boxID_;

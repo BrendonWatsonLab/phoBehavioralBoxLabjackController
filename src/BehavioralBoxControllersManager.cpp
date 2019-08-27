@@ -189,5 +189,6 @@ std::vector<BehavioralBoxHistoricalData> BehavioralBoxControllersManager::loadHi
 	std::vector<BehavioralBoxHistoricalData> outputVector;
 	BehavioralBoxHistoricalData currHistoryManager = BehavioralBoxHistoricalData(outputDirectory, 0);
 	outputVector.push_back(currHistoryManager);
+	//TODO: should sort the output
 	return outputVector;
 }

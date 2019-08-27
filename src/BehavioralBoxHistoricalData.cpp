@@ -118,6 +118,7 @@ std::vector<LabjackDataFile> BehavioralBoxHistoricalData::findDataFiles(std::str
 
 void BehavioralBoxHistoricalData::concatenateCsvFiles(std::vector<LabjackDataFile> dataFiles_)
 {
+	//TODO:
 }
 
 //getHistoricalDataEvents(): called after reloadDataFiles()
