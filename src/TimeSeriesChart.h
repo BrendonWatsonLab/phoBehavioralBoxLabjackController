@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+#include <string>
 #include <Wt/WApplication.h>
 #include <Wt/WContainerWidget.h>
 

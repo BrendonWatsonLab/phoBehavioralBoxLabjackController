@@ -1,10 +1,12 @@
 #include <limits>
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <algorithm>
 #include "BehavioralBoxHistoricalData.h"
 #include "FilesystemHelpers.h"
 #include "LabjackHelpers.h"
-#include <sstream>
+
 
 BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID)
 {
@@ -132,14 +134,42 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 	this->output_milliseconds_since_epoch.clear();
 	this->output_values.clear();
 	this->variableEventVectors.clear();
+	this->headerLabels_.clear();
 
 	int numVariables = 0;
 	int maxNumVariables = -1;
+	std::vector<std::string> headerLabels;
+	std::string debugPrintDelimiter = ",";
+	std::stringstream debugStringStream;
 
 	// For each data file object:
 	for (int i = 0; i < this->dataFiles_.size(); i++)
 	{
 		std::vector<LabjackDataFileLine> tempLines = this->dataFiles_[i].getParsedLines();
+		std::vector<std::string> fileHeaderLabels = this->dataFiles_[i].getParsedHeaderLabels();
+		// If it's not the first file found and we already have a set of header labels
+		if (i > 0) {
+			bool areHeaderLabelsSame = std::equal(headerLabels.begin(), headerLabels.end(), fileHeaderLabels.begin());
+			if (!areHeaderLabelsSame) {
+				// Generate a string from the headers to print the debug string if they're different
+				std::string fileHeadersDebugString = "";
+				for each (std::string aFileHeaderLabel in fileHeaderLabels)
+				{
+					fileHeadersDebugString += aFileHeaderLabel;
+					fileHeadersDebugString += ",";
+				}
+				std::string allHeadersDebugString = debugStringStream.str();
+				for each (std::string aHeaderLabel in headerLabels)
+				{
+					allHeadersDebugString += aHeaderLabel;
+					allHeadersDebugString += ",";
+				}
+				std::cout << "WARNING: dataFile[" << std::to_string(i) << "] has <" << fileHeadersDebugString << "> while the previous headers were <" << allHeadersDebugString << ">." << std::endl;
+			}
+		}
+		// Update the header labels
+		headerLabels = fileHeaderLabels;
+
 		// For each line the returned set of lines for a given file:
 		for each (LabjackDataFileLine aLineObject in tempLines)
 		{
@@ -226,8 +256,25 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 		prev_values = curr_values;
 	} // end sample for loop
 
+	// Set the header labels
+	this->headerLabels_ = headerLabels;
+}
 
+std::vector<int> BehavioralBoxHistoricalData::getNumberEvents()
+{
+	std::vector<int> outputCounts;
+	for each (auto aVariableVect in this->variableEventVectors)
+	{
+		outputCounts.push_back(aVariableVect.size());
+	}
+	return outputCounts;
+}
 
+int BehavioralBoxHistoricalData::getMaxNumberEvents()
+{
+	std::vector<int> counts = this->getNumberEvents();
+	int max_count = *std::max_element(std::begin(counts), std::end(counts));
+	return max_count;
 }
 
 //findDataFiles(): called first, to find the .csv data files in the output directory.

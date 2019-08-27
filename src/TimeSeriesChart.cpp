@@ -99,6 +99,7 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	chart->setPanEnabled(true);
 	chart->axis(Wt::Chart::Axis::Y).setVisible(false);
 	chart->axis(Wt::Chart::Axis::X).setVisible(false);
+	chart->setLegendEnabled(false);
 
 	//type: Bar
 	// Marker: Inverted Triangle
@@ -114,7 +115,7 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	  * Add first two columns as line series
 	  */
 	for (int i = 1; i < 3; ++i) {
-		std::unique_ptr<Wt::Chart::WDataSeries> s	= cpp14::make_unique<Wt::Chart::WDataSeries>(i, Wt::Chart::SeriesType::Line);
+		std::unique_ptr<Wt::Chart::WDataSeries> s = cpp14::make_unique<Wt::Chart::WDataSeries>(i, Wt::Chart::SeriesType::Bar);
 		//s->setShadow(WShadow(3, 3, WColor(0, 0, 0, 127), 3));
 		s->setMarker(Wt::Chart::MarkerType::InvertedTriangle); // Make the series display upsidown triangles on top of the impulse plot bars
 		s->setType(Wt::Chart::SeriesType::Bar); // Make the series display tall skinny bars, like an impulse plot
@@ -136,40 +137,54 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 {
 	std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadHistoricalData();
 	BehavioralBoxHistoricalData activeHistoricalData = historicalData[0];
-	std::vector< std::pair<unsigned long long, double> > historicalEvents = activeHistoricalData.getEvents(3);
+	int numVariables = activeHistoricalData.getNumberVariables();
+	int maxNumEvents = activeHistoricalData.getMaxNumberEvents();
+	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(maxNumEvents, (1 + numVariables)); // Add one to numVariables to account for the timestamp column
 
-	// Sort the events by ascending timestamp
-	sort(historicalEvents.begin(), historicalEvents.end());
+	/*std::vector<std::string> headerLabels = activeHistoricalData.getHeaderLabels();*/
 
-	int numEvents = historicalEvents.size();
-	unsigned long long earliest_event_timestamp = historicalEvents[0].first;
-	//double earliest_event_timestamp_value = static_cast<double>(earliest_event_timestamp);
-	//std::shared_ptr<WStandardItemModel> model = std::make_shared<WStandardItemModel>(0, 0);
-	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(numEvents, 2);
-	std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
-	model->setItemPrototype(std::move(prototype));
-	model->setHeaderData(0, WString("X"));
-	model->setHeaderData(1, WString("Event Value"));
+	auto headerLabels = activeHistoricalData.getHeaderLabels();
 
-	for (unsigned i = 0; i < numEvents; ++i) {
-		std::pair<unsigned long long, double> currEvent = historicalEvents[i];
+	for (int variableIndex = 0; variableIndex < numVariables; variableIndex++)
+	{	
+		std::vector< std::pair<unsigned long long, double> > historicalEvents = activeHistoricalData.getEvents(variableIndex);
+		int currVarNumEvents = historicalEvents.size();
 
-		/*double x = (static_cast<double>(i) - 20) / 4;*/
-		//double x = (static_cast<double>(currEvent.first) - earliest_event_timestamp);
-		//unsigned long long x = currEvent.first - earliest_event_timestamp;
-		//double x = static_cast<double>(currEvent.first - earliest_event_timestamp);
-
-		unsigned long long x;
-		if (this->shouldUseDateXAxis) {
-			x = currEvent.first;
+		// Sort the events by ascending timestamp
+		unsigned long long earliest_event_timestamp = 0;
+		if (!this->shouldUseDateXAxis) {
+			sort(historicalEvents.begin(), historicalEvents.end());
+			// Compute earliest timestamp if we're in relative (not absolute date axis) mode.
+			earliest_event_timestamp = historicalEvents[0].first;
 		}
-		else {
-			// Compute the relative (from the first timestamp) if we aren't using the date axis
-			x = currEvent.first - earliest_event_timestamp;
+		std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
+		model->setItemPrototype(std::move(prototype));
+		//model->setHeaderData(0, WString("time"));
+		//model->setHeaderData(1, WString("Event Value"));
+		// Iterate through the events for the given variable
+		for (unsigned i = 0; i < currVarNumEvents; ++i) {
+			std::pair<unsigned long long, double> currEvent = historicalEvents[i];
+			unsigned long long x;
+			if (this->shouldUseDateXAxis) {
+				x = currEvent.first;
+			}
+			else {
+				// Compute the relative (from the first timestamp) if we aren't using the date axis
+				x = currEvent.first - earliest_event_timestamp;
+			}
+			model->setData(i, 0, x);
+			model->setData(i, 1, 10.0);
 		}
-		model->setData(i, 0, x);
-		model->setData(i, 1, 10.0);
 	}
+
+
+	// Setup headers:
+	for (int headerIndex = 0; headerIndex < headerLabels.size(); headerIndex++) {
+		model->setHeaderData(headerIndex, WString(headerLabels[headerIndex]));
+	}
+
+
+	
 
 	return model;
 }

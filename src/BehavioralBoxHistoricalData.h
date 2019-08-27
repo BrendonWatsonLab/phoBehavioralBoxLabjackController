@@ -26,6 +26,14 @@ public:
 	int getNumberVariables() { return this->variableEventVectors.size(); };
 	std::vector< std::pair<unsigned long long, double> > getEvents(int forVariableIndex) { return this->variableEventVectors[forVariableIndex]; };
 
+	// returns the number of events in each variable
+	std::vector<int> getNumberEvents();
+	// get the maximum number of events any variable has
+	int getMaxNumberEvents();
+	// Returns a vector of the header strings that were parsed from the files
+	std::vector<std::string> getHeaderLabels() { return this->headerLabels_; };
+
+
 
 private:
 	std::string boxID_;
@@ -42,6 +50,7 @@ private:
 	// Parsed outputs
 	std::vector<unsigned long long> output_milliseconds_since_epoch;
 	std::vector<std::vector<double>> output_values;
+	std::vector<std::string> headerLabels_;
 
 	// Variable event outputs:
 	// A vector (corresponding to an entry for each variable) of vectors (corresponding to an entry for each event for a given variable) of type pair.
