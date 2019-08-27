@@ -1,9 +1,9 @@
-[submodule "src\\External\\Scheduler"]
-	path = src\\External\\Scheduler
+[submodule "src/External/Scheduler"]
+	path = src/External/Scheduler
 	url = https://github.com/Bosma/Scheduler.git
-[submodule "src\\External\\CTPL"]
-	path = src\\External\\CTPL
+[submodule "src/External/CTPL"]
+	path = src/External/CTPL
 	url = https://github.com/vit-vit/CTPL.git
-[submodule "src\\External\\civetweb"]
-	path = src\\External\\civetweb
+[submodule "src/External/civetweb"]
+	path = src/External/civetweb
 	url = https://github.com/civetweb/civetweb.git
