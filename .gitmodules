@@ -4,6 +4,3 @@
 [submodule "src/External/CTPL"]
 	path = src/External/CTPL
 	url = https://github.com/vit-vit/CTPL.git
-[submodule "src/External/civetweb"]
-	path = src/External/civetweb
-	url = https://github.com/civetweb/civetweb.git
