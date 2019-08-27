@@ -99,6 +99,8 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	chart->setZoomEnabled(true);
 	chart->setPanEnabled(true);
 
+	//type: Bar
+	// Marker: Inverted Triangle
 	chart->setType(ChartType::Scatter);            // set type to ScatterPlot
 	//chart->axis(Axis::X).setScale(AxisScale::Date); // set scale of X axis to DateScale
 
@@ -111,7 +113,10 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	  */
 	for (int i = 1; i < 3; ++i) {
 		std::unique_ptr<WDataSeries> s	= cpp14::make_unique<WDataSeries>(i, SeriesType::Line);
-		s->setShadow(WShadow(3, 3, WColor(0, 0, 0, 127), 3));
+		//s->setShadow(WShadow(3, 3, WColor(0, 0, 0, 127), 3));
+		s->setMarker(MarkerType::InvertedTriangle); // Make the series display upsidown triangles on top of the impulse plot bars
+		s->setType(SeriesType::Bar); // Make the series display tall skinny bars, like an impulse plot
+		s->setLegendEnabled(false); // Disable the legend
 		chart->addSeries(std::move(s));
 	}
 
