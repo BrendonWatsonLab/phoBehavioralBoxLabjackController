@@ -35,6 +35,8 @@ std::vector<LabjackDataFile> BehavioralBoxHistoricalData::findDataFiles(std::str
 std::vector<LabjackDataFile> BehavioralBoxHistoricalData::findDataFiles(std::string searchDirectory, int labjackSerialNumber, unsigned long long startMillisecondsSinceEpoch, unsigned long long endMillisecondsSinceEpoch)
 {
 	// Looks for files of the form "out_file_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}.csv"
+	// activeLabjackSerialNumber: used to hold the parsed LabjackSerial Number when the requested one is 0.
+	int activeLabjackSerialNumber = labjackSerialNumber; // only not equal to labjackSerialNumber if labjackSerialNumber == 0.
 	// Build Serial Number String:
 	std::string expectedSerialNumberString = "s" + std::to_string(labjackSerialNumber);
 	std::vector<LabjackDataFile> outputVector = std::vector<LabjackDataFile>();
@@ -61,9 +63,27 @@ std::vector<LabjackDataFile> BehavioralBoxHistoricalData::findDataFiles(std::str
 			continue;
 		}
 
+		if (fileNameParts[2].empty()) {
+			// serial string portition is empty
+			continue;
+		}
+
 		if (labjackSerialNumber == 0) {
 			// The "0" serial number is handled as a wildcard, returning results for any labjack.
 			//fileNameParts[2].first
+			const std::string serialOnlyString(fileNameParts[2].begin() + 1, fileNameParts[2].end());
+			// Try to parse the string to the labjack serial number
+			try {
+				activeLabjackSerialNumber = std::stoi(serialOnlyString);
+			}
+			catch (const std::invalid_argument& ia) {
+				std::cout << ia.what() << std::endl, 1;
+				continue;
+			}
+			catch (const std::out_of_range& oor) {
+				std::cout << oor.what() << std::endl, 2;
+				continue;
+			}
 		}
 		else {
 			// Check if the serial number matches the search serial number
@@ -90,7 +110,7 @@ std::vector<LabjackDataFile> BehavioralBoxHistoricalData::findDataFiles(std::str
 			continue;
 		}
 		// It meets all criteria to be returned. Add it to the output vector
-		LabjackDataFile currFile = LabjackDataFile(foundFiles[i], labjackSerialNumber, millisecondsComponent);
+		LabjackDataFile currFile = LabjackDataFile(foundFiles[i], activeLabjackSerialNumber, millisecondsComponent);
 		outputVector.push_back(currFile);
 	}
 	return outputVector;

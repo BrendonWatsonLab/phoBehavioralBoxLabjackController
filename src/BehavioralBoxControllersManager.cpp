@@ -168,18 +168,26 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	}
 	// Clear the old historical data
 	this->historicalData_.clear();
-	// Loop through the active labjacks and get the historical data corresponding to them.
-	for (int i = 0; i < this->getActiveLabjacks().size(); i++) {
-		//std::vector<LabjackDataFile> currLabjackDataFile = this->findDataFiles(this->getActiveLabjacks()[i]->getOutputDirectory(), this->getActiveLabjacks()[i]->getSerialNumber());
-		BehavioralBoxHistoricalData currHistoryManager = BehavioralBoxHistoricalData(this->getActiveLabjacks()[i]->getOutputDirectory(), this->getActiveLabjacks()[i]->getSerialNumber());
-		
-		this->historicalData_.push_back(currHistoryManager);
+
+	if (this->getActiveLabjacks().size() > 0) {
+		// Loop through the active labjacks and get the historical data corresponding to them.
+		for (int i = 0; i < this->getActiveLabjacks().size(); i++) {
+			//std::vector<LabjackDataFile> currLabjackDataFile = this->findDataFiles(this->getActiveLabjacks()[i]->getOutputDirectory(), this->getActiveLabjacks()[i]->getSerialNumber());
+			BehavioralBoxHistoricalData currHistoryManager = BehavioralBoxHistoricalData(this->getActiveLabjacks()[i]->getOutputDirectory(), this->getActiveLabjacks()[i]->getSerialNumber());
+			this->historicalData_.push_back(currHistoryManager);
+		}
+	}
+	else {
+		// No actual labjacks, load everything:
+		this->historicalData_ = BehavioralBoxControllersManager::loadHistoricalData();
 	}
 }
 
 std::vector<BehavioralBoxHistoricalData> BehavioralBoxControllersManager::loadHistoricalData()
 {
+	std::string outputDirectory = "output_data/";
 	std::vector<BehavioralBoxHistoricalData> outputVector;
-
-	return std::vector<BehavioralBoxHistoricalData>();
+	BehavioralBoxHistoricalData currHistoryManager = BehavioralBoxHistoricalData(outputDirectory, 0);
+	outputVector.push_back(currHistoryManager);
+	return outputVector;
 }
