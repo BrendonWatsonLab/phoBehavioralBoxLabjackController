@@ -24,7 +24,8 @@
 
 TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 {
-	this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString::tr("scatter plot")));
+	//this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString::tr("scatter plot")));
+	this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Historic Labjack Data:")));
 
 	std::shared_ptr<WAbstractItemModel> model = this->buildHistoricDataModel();
 	//std::shared_ptr<Wt::WStandardItemModel> model = this->buildHistoricDataModel();
@@ -51,25 +52,26 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	auto* table = w->addWidget(cpp14::make_unique<Wt::WTableView>());
 
 	table->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);
-	table->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right);
+	//table->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right);
+	table->setMargin(10, Wt::Side::Left | Wt::Side::Right);
 
 	table->setModel(model);
 	table->setSortingEnabled(false); // Does not make much sense for time series
-	table->setColumnResizeEnabled(true);
+	table->setColumnResizeEnabled(false);
 	table->setSelectionMode(Wt::SelectionMode::None);
 	table->setAlternatingRowColors(true);
-	table->setColumnAlignment(0, Wt::AlignmentFlag::Center);
-	table->setHeaderAlignment(0, Wt::AlignmentFlag::Center);
+	//table->setColumnAlignment(0, Wt::AlignmentFlag::Center);
+	//table->setHeaderAlignment(0, Wt::AlignmentFlag::Center);
 	table->setRowHeight(22);
 
 	// Editing does not really work without Ajax, it would require an
 	// additional button somewhere to confirm the edited value.
 	if (Wt::WApplication::instance()->environment().ajax()) {
-		table->resize(800, 20 + 5 * 22);
+		table->resize(1024, 20 + 5 * 22);
 		table->setEditTriggers(Wt::EditTrigger::SingleClicked);
 	}
 	else {
-		table->resize(800, 20 + 5 * 22 + 25);
+		table->resize(1024, 20 + 5 * 22 + 25);
 		table->setEditTriggers(Wt::EditTrigger::None);
 	}
 
@@ -81,9 +83,13 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	table->setItemDelegateForColumn(0, delegateColumn);
 
 	table->setColumnWidth(0, 140);
+	table->setColumnAlignment(0, Wt::AlignmentFlag::Left);
+	table->setHeaderAlignment(0, Wt::AlignmentFlag::Left);
 	for (int i = 1; i < model->columnCount(); ++i) {
 		//table->setColumnWidth(i, Wt::WLength::Auto);
 		table->setColumnWidth(i, 90);
+		table->setColumnAlignment(0, Wt::AlignmentFlag::Center);
+		table->setHeaderAlignment(0, Wt::AlignmentFlag::Center);
 	}
 
 	/*
@@ -103,9 +109,15 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	//type: Bar
 	// Marker: Inverted Triangle
 	chart->setType(Wt::Chart::ChartType::Scatter);            // set type to ScatterPlot
+
+
+	///// SETUP X-AXIS:
 	if (this->shouldUseDateXAxis) {
 		chart->axis(Wt::Chart::Axis::X).setScale(Wt::Chart::AxisScale::DateTime); // set scale of X axis to DateScale
 	}
+	chart->axis(Wt::Chart::Axis::X).setGridLinesEnabled(true);
+
+
 	// Automatically layout chart (space for axes, legend, ...)
 	chart->setAutoLayoutEnabled();
 
@@ -128,7 +140,8 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	chart->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);            // add margin vertically
 	chart->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
 
-	this->addWidget(cpp14::make_unique<ChartConfig>(chart));
+
+	//this->addWidget(cpp14::make_unique<ChartConfig>(chart));
 }
 
 
@@ -143,7 +156,13 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 
 	/*std::vector<std::string> headerLabels = activeHistoricalData.getHeaderLabels();*/
 
-	auto headerLabels = activeHistoricalData.getHeaderLabels();
+	//auto headerLabels = activeHistoricalData.getHeaderLabels();
+	std::vector<std::string> headerLabels = globalLabjackInputPortPurpose;
+	// Add "time" variable to front of list
+	headerLabels.insert(headerLabels.begin(), "time");
+	
+
+	//verticalVariableSeparatorMultiplier: the vertical separation between the variables on the graph
 	double verticalVariableSeparatorMultiplier = 1.0;
 
 	for (int variableIndex = 0; variableIndex < numVariables; variableIndex++)
