@@ -105,14 +105,8 @@ private:
 
 	// Variables for holding the last read values
 	StateMonitor* monitor;
-	//char * inputPortNames[NUM_CHANNELS] = globalLabjackInputPortNames;
-	//char * inputPortPurpose[NUM_CHANNELS] = globalLabjackInputPortPurpose;
-
-	const int numberOfChannels;
-
-	const char** inputPortNames;
-	const char** inputPortPurpose;
-
+	char * inputPortNames[NUM_CHANNELS] = globalLabjackInputPortNames;
+	char * inputPortPurpose[NUM_CHANNELS] = globalLabjackInputPortPurpose;
 	double previousReadInputPortValues[NUM_CHANNELS] = {0.0};
 	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
 	bool inputPortValuesChanged[NUM_CHANNELS] = {false};
