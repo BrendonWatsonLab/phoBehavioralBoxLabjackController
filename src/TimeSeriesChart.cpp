@@ -22,14 +22,12 @@
 #include "BehavioralBoxControllersManager.h"
 #include "NumericItem.h"
 
-using namespace Wt;
-using namespace Wt::Chart;
-
 TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 {
-	this->addWidget(cpp14::make_unique<WText>(WString::tr("scatter plot")));
+	this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString::tr("scatter plot")));
 
 	std::shared_ptr<WAbstractItemModel> model = this->buildHistoricDataModel();
+	//std::shared_ptr<Wt::WStandardItemModel> model = this->buildHistoricDataModel();
 
 	if (!model)
 		return;
@@ -37,50 +35,53 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	/*
 	 * Parses the first column as dates, to be able to use a date scale
 	 */
-	//for (int i = 0; i < model->rowCount(); ++i) {
-	//	WString s = asString(model->data(i, 0));
-	//	wcstoull(s, )
-	//	//auto currData = model->data(i, 0);
-	//	/*unsigned long long currData = static_cast<unsigned long long>(model->data(i, 0));*/
-	//	unsigned long long currData = static_cast<unsigned long long>(model->data(i, 0));
-	//	std::chrono::time_point<Clock> currDataTimepoint = LabjackHelpers::date_from_milliseconds_since_epoch(currData);
+	for (int i = 0; i < model->rowCount(); ++i) {
+		cpp17::any currData = model->data(i, 0);
 
-	//	WDate d = WDate::fromString(s, "dd/MM/yy");
-	//	model->setData(i, 0, d);
-	//}
+		//any currData = model->data(i, 0);
+		Wt::WString s = Wt::asString(currData);
+		//auto currData = model->data(i, 0);
+		/*unsigned long long currData = static_cast<unsigned long long>(model->data(i, 0));*/
+		std::string::size_type sz = 0;   // alias of size_t
+		unsigned long long currTimestampData = stoull(s, &sz);
+		std::chrono::time_point<Clock> currDataTimepoint = LabjackHelpers::date_from_milliseconds_since_epoch(currTimestampData);
+		Wt::WDate d = Wt::WDate(currDataTimepoint);
+		//WDate d = WDate::fromString(s, "dd/MM/yy");
+		model->setData(i, 0, d);
+	}
 
 	// Show a view that allows editing of the model.
-	auto* w = this->addWidget(cpp14::make_unique<WContainerWidget>());
-	auto* table = w->addWidget(cpp14::make_unique<WTableView>());
+	auto* w = this->addWidget(cpp14::make_unique<Wt::WContainerWidget>());
+	auto* table = w->addWidget(cpp14::make_unique<Wt::WTableView>());
 
-	table->setMargin(10, Side::Top | Side::Bottom);
-	table->setMargin(WLength::Auto, Side::Left | Side::Right);
+	table->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);
+	table->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right);
 
 	table->setModel(model);
 	table->setSortingEnabled(false); // Does not make much sense for time series
 	table->setColumnResizeEnabled(true);
-	table->setSelectionMode(SelectionMode::None);
+	table->setSelectionMode(Wt::SelectionMode::None);
 	table->setAlternatingRowColors(true);
-	table->setColumnAlignment(0, AlignmentFlag::Center);
-	table->setHeaderAlignment(0, AlignmentFlag::Center);
+	table->setColumnAlignment(0, Wt::AlignmentFlag::Center);
+	table->setHeaderAlignment(0, Wt::AlignmentFlag::Center);
 	table->setRowHeight(22);
 
 	// Editing does not really work without Ajax, it would require an
 	// additional button somewhere to confirm the edited value.
-	if (WApplication::instance()->environment().ajax()) {
+	if (Wt::WApplication::instance()->environment().ajax()) {
 		table->resize(800, 20 + 5 * 22);
-		table->setEditTriggers(EditTrigger::SingleClicked);
+		table->setEditTriggers(Wt::EditTrigger::SingleClicked);
 	}
 	else {
 		table->resize(800, 20 + 5 * 22 + 25);
-		table->setEditTriggers(EditTrigger::None);
+		table->setEditTriggers(Wt::EditTrigger::None);
 	}
 
-	std::shared_ptr<WItemDelegate> delegate	= std::make_shared<WItemDelegate>();
+	std::shared_ptr<Wt::WItemDelegate> delegate	= std::make_shared<Wt::WItemDelegate>();
 	delegate->setTextFormat("%.1f");
 	table->setItemDelegate(delegate);
 
-	std::shared_ptr<WItemDelegate> delegateColumn = std::make_shared<WItemDelegate>();
+	std::shared_ptr<Wt::WItemDelegate> delegateColumn = std::make_shared<Wt::WItemDelegate>();
 	table->setItemDelegateForColumn(0, delegateColumn);
 
 	table->setColumnWidth(0, 80);
@@ -90,7 +91,7 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	/*
 	 * Create the scatter plot.
 	 */
-	WCartesianChart* chart = this->addWidget(cpp14::make_unique<WCartesianChart>());
+	Wt::Chart::WCartesianChart* chart = this->addWidget(cpp14::make_unique<Wt::Chart::WCartesianChart>());
 	//chart->setPreferredMethod(WPaintedWidget::PngImage);
 	//chart->setBackground(gray);
 	chart->setModel(model);        // set the model
@@ -101,38 +102,40 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 
 	//type: Bar
 	// Marker: Inverted Triangle
-	chart->setType(ChartType::Scatter);            // set type to ScatterPlot
-	//chart->axis(Axis::X).setScale(AxisScale::Date); // set scale of X axis to DateScale
+	chart->setType(Wt::Chart::ChartType::Scatter);            // set type to ScatterPlot
+	chart->axis(Wt::Chart::Axis::X).setScale(Wt::Chart::AxisScale::DateTime); // set scale of X axis to DateScale
 
 	// Automatically layout chart (space for axes, legend, ...)
 	chart->setAutoLayoutEnabled();
 
-	chart->setBackground(WColor(200, 200, 200));
+	chart->setBackground(Wt::WColor(200, 200, 200));
 	/*
 	  * Add first two columns as line series
 	  */
 	for (int i = 1; i < 3; ++i) {
-		std::unique_ptr<WDataSeries> s	= cpp14::make_unique<WDataSeries>(i, SeriesType::Line);
+		std::unique_ptr<Wt::Chart::WDataSeries> s	= cpp14::make_unique<Wt::Chart::WDataSeries>(i, Wt::Chart::SeriesType::Line);
 		//s->setShadow(WShadow(3, 3, WColor(0, 0, 0, 127), 3));
-		s->setMarker(MarkerType::InvertedTriangle); // Make the series display upsidown triangles on top of the impulse plot bars
-		s->setType(SeriesType::Bar); // Make the series display tall skinny bars, like an impulse plot
+		s->setMarker(Wt::Chart::MarkerType::InvertedTriangle); // Make the series display upsidown triangles on top of the impulse plot bars
+		s->setType(Wt::Chart::SeriesType::Bar); // Make the series display tall skinny bars, like an impulse plot
 		s->setLegendEnabled(false); // Disable the legend
 		chart->addSeries(std::move(s));
 	}
 
 	chart->resize(800, 400); // WPaintedWidget must be given explicit size
 
-	chart->setMargin(10, Side::Top | Side::Bottom);            // add margin vertically
-	chart->setMargin(WLength::Auto, Side::Left | Side::Right); // center horizontally
+	chart->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);            // add margin vertically
+	chart->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
 
 	this->addWidget(cpp14::make_unique<ChartConfig>(chart));
 }
 
-std::shared_ptr<Wt::WAbstractItemModel> TimeSeriesChart::buildHistoricDataModel()
+
+
+std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel()
 {
 	std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadHistoricalData();
 	BehavioralBoxHistoricalData activeHistoricalData = historicalData[0];
-	std::vector< std::pair<unsigned long long, double> > historicalEvents = activeHistoricalData.getEvents(0);
+	std::vector< std::pair<unsigned long long, double> > historicalEvents = activeHistoricalData.getEvents(3);
 
 	// Sort the events by ascending timestamp
 	sort(historicalEvents.begin(), historicalEvents.end());
@@ -151,7 +154,8 @@ std::shared_ptr<Wt::WAbstractItemModel> TimeSeriesChart::buildHistoricDataModel(
 		std::pair<unsigned long long, double> currEvent = historicalEvents[i];
 
 		/*double x = (static_cast<double>(i) - 20) / 4;*/
-		double x = (static_cast<double>(currEvent.first) - earliest_event_timestamp);
+		//double x = (static_cast<double>(currEvent.first) - earliest_event_timestamp);
+		unsigned long long x = currEvent.first - earliest_event_timestamp;
 		model->setData(i, 0, x);
 		model->setData(i, 1, 10.0);
 	}

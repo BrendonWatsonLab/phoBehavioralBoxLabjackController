@@ -7,7 +7,7 @@ class TimeSeriesChart : public Wt::WContainerWidget
 public:
 	TimeSeriesChart();
 
-	std::shared_ptr<Wt::WAbstractItemModel> buildHistoricDataModel();
+	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel();
 
 };
 
