@@ -13,7 +13,9 @@ public:
 	LabjackControllerOuterWidget();
 
 	void setActiveLabjacks(std::vector<BehavioralBoxLabjack*> activeLabjacks);
+#if ENABLE_WEB_SERVER_LIVE_WIDGET
 	LabjackLiveStateWidget* labjackExampleWidget;
+#endif // ENABLE_WEB_SERVER_LIVE_WIDGET
 
 private:
 	std::string appName = "";

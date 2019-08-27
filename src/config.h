@@ -23,6 +23,8 @@ Specifies what ports to open
 #define PRINT_OUTPUT_VALUES_TO_CONSOLE false
 
 #define LAUNCH_WEB_SERVER true
+#define ENABLE_WEB_SERVER_LIVE_WIDGET false
+
 #define LOAD_HISTORICAL_DATA true
 
 
