@@ -7,6 +7,8 @@ class TimeSeriesChart : public Wt::WContainerWidget
 public:
 	TimeSeriesChart();
 
+	bool shouldUseDateXAxis = true;
+
 	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel();
 
 };

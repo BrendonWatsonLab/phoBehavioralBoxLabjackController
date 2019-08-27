@@ -35,21 +35,17 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	/*
 	 * Parses the first column as dates, to be able to use a date scale
 	 */
-	for (int i = 0; i < model->rowCount(); ++i) {
-		cpp17::any currData = model->data(i, 0);
-
-		//any currData = model->data(i, 0);
-		Wt::WString s = Wt::asString(currData);
-		//auto currData = model->data(i, 0);
-		/*unsigned long long currData = static_cast<unsigned long long>(model->data(i, 0));*/
-		std::string::size_type sz = 0;   // alias of size_t
-		unsigned long long currTimestampData = stoull(s, &sz);
-		std::chrono::time_point<Clock> currDataTimepoint = LabjackHelpers::date_from_milliseconds_since_epoch(currTimestampData);
-		Wt::WDate d = Wt::WDate(currDataTimepoint);
-		//WDate d = WDate::fromString(s, "dd/MM/yy");
-		model->setData(i, 0, d);
+	if (this->shouldUseDateXAxis) {
+		for (int i = 0; i < model->rowCount(); ++i) {
+			cpp17::any currData = model->data(i, 0);
+			Wt::WString s = Wt::asString(currData);
+			std::string::size_type sz = 0;   // alias of size_t
+			unsigned long long currTimestampData = stoull(s, &sz);
+			std::chrono::time_point<Clock> currDataTimepoint = LabjackHelpers::date_from_milliseconds_since_epoch(currTimestampData);
+			Wt::WDateTime currTimestampDateTime = Wt::WDateTime(currDataTimepoint);
+			model->setData(i, 0, currTimestampDateTime);
+		}
 	}
-
 	// Show a view that allows editing of the model.
 	auto* w = this->addWidget(cpp14::make_unique<Wt::WContainerWidget>());
 	auto* table = w->addWidget(cpp14::make_unique<Wt::WTableView>());
@@ -85,8 +81,10 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	table->setItemDelegateForColumn(0, delegateColumn);
 
 	table->setColumnWidth(0, 80);
-	for (int i = 1; i < model->columnCount(); ++i)
-		table->setColumnWidth(i, 90);
+	for (int i = 1; i < model->columnCount(); ++i) {
+		table->setColumnWidth(i, Wt::WLength::Auto);
+		//table->setColumnWidth(i, 90);
+	}
 
 	/*
 	 * Create the scatter plot.
@@ -99,12 +97,15 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	chart->setLegendEnabled(true); // enable the legend
 	chart->setZoomEnabled(true);
 	chart->setPanEnabled(true);
+	chart->axis(Wt::Chart::Axis::Y).setVisible(false);
+	chart->axis(Wt::Chart::Axis::X).setVisible(false);
 
 	//type: Bar
 	// Marker: Inverted Triangle
 	chart->setType(Wt::Chart::ChartType::Scatter);            // set type to ScatterPlot
-	chart->axis(Wt::Chart::Axis::X).setScale(Wt::Chart::AxisScale::DateTime); // set scale of X axis to DateScale
-
+	if (this->shouldUseDateXAxis) {
+		chart->axis(Wt::Chart::Axis::X).setScale(Wt::Chart::AxisScale::DateTime); // set scale of X axis to DateScale
+	}
 	// Automatically layout chart (space for axes, legend, ...)
 	chart->setAutoLayoutEnabled();
 
@@ -155,7 +156,17 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 
 		/*double x = (static_cast<double>(i) - 20) / 4;*/
 		//double x = (static_cast<double>(currEvent.first) - earliest_event_timestamp);
-		unsigned long long x = currEvent.first - earliest_event_timestamp;
+		//unsigned long long x = currEvent.first - earliest_event_timestamp;
+		//double x = static_cast<double>(currEvent.first - earliest_event_timestamp);
+
+		unsigned long long x;
+		if (this->shouldUseDateXAxis) {
+			x = currEvent.first;
+		}
+		else {
+			// Compute the relative (from the first timestamp) if we aren't using the date axis
+			x = currEvent.first - earliest_event_timestamp;
+		}
 		model->setData(i, 0, x);
 		model->setData(i, 1, 10.0);
 	}
