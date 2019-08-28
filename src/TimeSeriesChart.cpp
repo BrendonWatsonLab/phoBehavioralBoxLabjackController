@@ -191,7 +191,7 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 		currChart->setLegendEnabled(true); // enable the legend
 		currChart->setZoomEnabled(true);
 		currChart->setPanEnabled(true);
-		//chart->axis(Wt::Chart::Axis::Y).setVisible(false);
+		currChart->axis(Wt::Chart::Axis::Y).setVisible(false);
 		//chart->axis(Wt::Chart::Axis::X).setVisible(false);
 		//type: Bar
 		// Marker: Inverted Triangle
@@ -249,7 +249,7 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 		s->setMarker(Wt::Chart::MarkerType::InvertedTriangle); // Make the series display upsidown triangles on top of the impulse plot bars
 		s->setType(Wt::Chart::SeriesType::Bar); // Make the series display tall skinny bars, like an impulse plot
 		s->setLegendEnabled(true); // Disable the legend
-		s->setOffset(double(currVariableIndex) * 5.0); //isn't doing anything
+		//s->setOffset(double(currVariableIndex) * 5.0); //isn't doing anything
 
 		Wt::WColor currVariableColor;
 		if (currVariableIndex < colorVect.size()) {
