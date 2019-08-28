@@ -24,6 +24,9 @@
 
 #define TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN 8
 #define TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT 26
+#define TIME_SERIES_CHART_SUBPLOT_HEIGHT 230
+
+
 
 TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 {
@@ -32,8 +35,6 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	std::shared_ptr<WAbstractItemModel> model = this->buildHistoricDataModel();
 	if (!model)
 		return;
-
-	std::vector<Wt::WColor> colorVect = this->getVariableColors();
 
 	/*
 	 * Parses the first column as dates, to be able to use a date scale
@@ -57,116 +58,9 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 
 
 	/*
-	 * Create the scatter plot.
+	 * Build the graphs.
 	 */
-	Wt::Chart::WCartesianChart* chart = this->addWidget(cpp14::make_unique<Wt::Chart::WCartesianChart>());
-	//chart->setPreferredMethod(WPaintedWidget::PngImage);
-	//chart->setBackground(gray);
-	chart->setModel(model);        // set the model
-	chart->setXSeriesColumn(0);    // set the column that holds the X data
-	chart->setLegendEnabled(true); // enable the legend
-	chart->setZoomEnabled(true);
-	chart->setPanEnabled(true);
-	//chart->axis(Wt::Chart::Axis::Y).setVisible(false);
-	//chart->axis(Wt::Chart::Axis::X).setVisible(false);
-
-
-	//type: Bar
-	// Marker: Inverted Triangle
-	chart->setType(Wt::Chart::ChartType::Scatter);            // set type to ScatterPlot
-
-
-	///// SETUP X-AXIS:
-	if (this->shouldUseDateXAxis) {
-		chart->axis(Wt::Chart::Axis::X).setScale(Wt::Chart::AxisScale::DateTime); // set scale of X axis to DateScale
-	}
-	chart->axis(Wt::Chart::Axis::X).setGridLinesEnabled(true);
-
-
-	///// SETUP Y-AXIS:
-	chart->axis(Wt::Chart::Axis::Y).setScale(Wt::Chart::AxisScale::Linear);
-	chart->axis(Wt::Chart::Axis::Y).setLocation(Chart::AxisValue::Zero);
-	chart->axis(Wt::Chart::Axis::Y).setMinimum(0.0);
-	chart->axis(Wt::Chart::Axis::Y).setMaximum(model->columnCount());
-
-	// Automatically layout chart (space for axes, legend, ...)
-	chart->setAutoLayoutEnabled();
-
-	chart->setBackground(Wt::WColor(200, 200, 200));
-	/*
-	  * Add first two columns as line series
-	  */
-	for (int colIndex = 1; colIndex < model->columnCount(); ++colIndex) {
-		int currVariableIndex = colIndex - 1;
-		std::unique_ptr<Wt::Chart::WDataSeries> s = cpp14::make_unique<Wt::Chart::WDataSeries>(colIndex, Wt::Chart::SeriesType::Bar);
-		s->setMarker(Wt::Chart::MarkerType::InvertedTriangle); // Make the series display upsidown triangles on top of the impulse plot bars
-		s->setType(Wt::Chart::SeriesType::Bar); // Make the series display tall skinny bars, like an impulse plot
-		s->setLegendEnabled(true); // Disable the legend
-		s->setOffset(double(currVariableIndex) * 5.0);
-
-		Wt::WColor currVariableColor;
-		
-		if (currVariableIndex < colorVect.size()) {
-			currVariableColor = colorVect[currVariableIndex];
-		}
-		else {
-			currVariableColor = this->getDefaultColor();
-		}
-		Wt::WColor translucentCurrentColor = Wt::WColor(currVariableColor.red(), currVariableColor.green(), currVariableColor.blue(), 128);
-		// Sets the label (text) colors:
-		s->setLabelColor(currVariableColor); // Subtract one to step back down to the variable indexing
-		//currVariableColor.alpha = 127;
-
-		// Sets the fill in the legend and the markers
-		Wt::WBrush fillBrush = std::move(currVariableColor);
-		fillBrush.setStyle(Wt::BrushStyle::Solid);
-		s->setBrush(fillBrush);
-		//s->setBrush(Wt::WBrush(currVariableColor));
-
-		// Sets the shadow colors:
-		//s->setShadow(WShadow(2, 2, currVariableColor, 3));
-		//s->setShadow(WShadow(3, 3, WColor(0, 0, 0, 127), 3));
-
-
-		//Wt::WPen markerPen = s->markerPen();
-		//markerPen.setColor(currVariableColor);
-		//s->setMarkerPen(Wt::WPen(currVariableColor));
-		//s->setMarkerBrush(Wt::WBrush(currVariableColor));
-
-
-		//Wt::WPen mainPen = s->pen();
-		//mainPen.setColor(currVariableColor);
-
-		// Sets the lines
-		//Wt::WPen mainPen = Wt::WColor(0, 191, 255);
-
-		Wt::WPen mainPen = translucentCurrentColor;
-		mainPen.setCapStyle(Wt::PenCapStyle::Round);
-		mainPen.setJoinStyle(Wt::PenJoinStyle::Round);
-		mainPen.setWidth(3.0);
-		s->setPen(mainPen);
-		//s->setPen(Wt::WPen(currVariableColor));
-		
-
-		//Wt::WBrush existingBrush = s->brush();
-		//existingBrush.setColor(currVariableColor);
-		//s->setBrush(existingBrush);
-		//Wt::WBrush existingBrush = s->brush();
-		//existingBrush.setColor(Wt::WColor(Wt::StandardColor::Blue));
-		//s->setBrush(existingBrush);
-		//s->setBrush(Wt::WBrush(Wt::WColor(Wt::StandardColor::Blue)));
-		
-
-		
-
-		//s->setLegendEnabled(false); // Disable the legend
-		chart->addSeries(std::move(s));
-	}
-
-	chart->resize(800, 400); // WPaintedWidget must be given explicit size
-
-	chart->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);            // add margin vertically
-	chart->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
+	this->setupCharts(model);
 
 
 	//this->addWidget(cpp14::make_unique<ChartConfig>(chart));
@@ -229,9 +123,6 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		model->setHeaderData(headerIndex, WString(headerLabels[headerIndex]));
 	}
 
-
-	
-
 	return model;
 }
 
@@ -278,6 +169,140 @@ void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model
 		table->setColumnAlignment(i, Wt::AlignmentFlag::Center);
 		table->setHeaderAlignment(i, Wt::AlignmentFlag::Center);
 	}
+}
+
+void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> model)
+{
+	// Build the data series
+	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> dataSeries = this->buildDataSeries(model);
+	int numSubplots = 5; // 4 food/water signals + 1 for running wheel
+
+	// the data series to include on a given subplot
+	std::vector<std::vector<int>> subplotDataSeriesIndicies = { {0, 4}, {1, 5}, {2, 6}, {3, 7}, {8} };
+
+	std::vector<Wt::WColor> colorVect = this->getVariableColors();
+	// Iterate through and create each desired subplot
+	for (int subplotIndex = 0; subplotIndex < numSubplots; subplotIndex++) {
+		Wt::Chart::WCartesianChart* currChart = this->addWidget(cpp14::make_unique<Wt::Chart::WCartesianChart>());
+		//chart->setPreferredMethod(WPaintedWidget::PngImage);
+		//chart->setBackground(gray);
+		currChart->setModel(model);        // set the model
+		currChart->setXSeriesColumn(0);    // set the column that holds the X data
+		currChart->setLegendEnabled(true); // enable the legend
+		currChart->setZoomEnabled(true);
+		currChart->setPanEnabled(true);
+		//chart->axis(Wt::Chart::Axis::Y).setVisible(false);
+		//chart->axis(Wt::Chart::Axis::X).setVisible(false);
+		//type: Bar
+		// Marker: Inverted Triangle
+		currChart->setType(Wt::Chart::ChartType::Scatter);            // set type to ScatterPlot
+
+		///// SETUP X-AXIS:
+		if (this->shouldUseDateXAxis) {
+			currChart->axis(Wt::Chart::Axis::X).setScale(Wt::Chart::AxisScale::DateTime); // set scale of X axis to DateScale
+		}
+		currChart->axis(Wt::Chart::Axis::X).setGridLinesEnabled(true);
+
+		///// SETUP Y-AXIS:
+		currChart->axis(Wt::Chart::Axis::Y).setScale(Wt::Chart::AxisScale::Linear);
+		currChart->axis(Wt::Chart::Axis::Y).setLocation(Chart::AxisValue::Zero);
+		currChart->axis(Wt::Chart::Axis::Y).setMinimum(0.0);
+		currChart->axis(Wt::Chart::Axis::Y).setMaximum(model->columnCount());
+
+		// Automatically layout chart (space for axes, legend, ...)
+		currChart->setAutoLayoutEnabled();
+		currChart->setBackground(Wt::WColor(200, 200, 200));
+	
+		// Data series:
+		for each (int aSeriesIndex in subplotDataSeriesIndicies[subplotIndex])
+		{ // Add each series index in the array to the chart.
+			currChart->addSeries(std::move(dataSeries[aSeriesIndex]));	
+		}
+		
+		currChart->resize(1080, TIME_SERIES_CHART_SUBPLOT_HEIGHT); // WPaintedWidget must be given explicit size
+
+		currChart->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);            // add margin vertically
+		currChart->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
+	}
+
+
+
+	
+
+
+	
+	
+}
+
+
+// Build vector of line series objects
+std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataSeries(const std::shared_ptr<Wt::WAbstractItemModel> model)
+{
+	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> outputVector;
+	std::vector<Wt::WColor> colorVect = this->getVariableColors();
+	/*
+  * Add first two columns as line series
+  */
+	for (int colIndex = 1; colIndex < model->columnCount(); ++colIndex) {
+		int currVariableIndex = colIndex - 1;
+		std::unique_ptr<Wt::Chart::WDataSeries> s = cpp14::make_unique<Wt::Chart::WDataSeries>(colIndex, Wt::Chart::SeriesType::Bar);
+		s->setMarker(Wt::Chart::MarkerType::InvertedTriangle); // Make the series display upsidown triangles on top of the impulse plot bars
+		s->setType(Wt::Chart::SeriesType::Bar); // Make the series display tall skinny bars, like an impulse plot
+		s->setLegendEnabled(true); // Disable the legend
+		s->setOffset(double(currVariableIndex) * 5.0); //isn't doing anything
+
+		Wt::WColor currVariableColor;
+		if (currVariableIndex < colorVect.size()) {
+			currVariableColor = colorVect[currVariableIndex];
+		}
+		else {
+			currVariableColor = this->getDefaultColor();
+		}
+		Wt::WColor translucentCurrentColor = Wt::WColor(currVariableColor.red(), currVariableColor.green(), currVariableColor.blue(), 128);
+		// Sets the label (text) colors:
+		s->setLabelColor(currVariableColor); // Subtract one to step back down to the variable indexing
+
+		// Sets the fill in the legend and the markers
+		Wt::WBrush fillBrush = std::move(currVariableColor);
+		fillBrush.setStyle(Wt::BrushStyle::Solid);
+		s->setBrush(fillBrush);
+		//s->setBrush(Wt::WBrush(currVariableColor));
+
+		// Sets the shadow colors:
+		//s->setShadow(WShadow(2, 2, currVariableColor, 3));
+		//s->setShadow(WShadow(3, 3, WColor(0, 0, 0, 127), 3));
+
+		//Wt::WPen markerPen = s->markerPen();
+		//markerPen.setColor(currVariableColor);
+		//s->setMarkerPen(Wt::WPen(currVariableColor));
+		//s->setMarkerBrush(Wt::WBrush(currVariableColor));
+
+		//Wt::WPen mainPen = s->pen();
+		//mainPen.setColor(currVariableColor);
+
+		// Sets the lines
+		//Wt::WPen mainPen = Wt::WColor(0, 191, 255);
+
+		Wt::WPen mainPen = translucentCurrentColor;
+		mainPen.setCapStyle(Wt::PenCapStyle::Round);
+		mainPen.setJoinStyle(Wt::PenJoinStyle::Round);
+		mainPen.setWidth(3.0);
+		s->setPen(mainPen);
+		//s->setPen(Wt::WPen(currVariableColor));
+
+		//Wt::WBrush existingBrush = s->brush();
+		//existingBrush.setColor(currVariableColor);
+		//s->setBrush(existingBrush);
+		//Wt::WBrush existingBrush = s->brush();
+		//existingBrush.setColor(Wt::WColor(Wt::StandardColor::Blue));
+		//s->setBrush(existingBrush);
+		//s->setBrush(Wt::WBrush(Wt::WColor(Wt::StandardColor::Blue)));
+
+		//s->setLegendEnabled(false); // Disable the legend
+		//currChart->addSeries(std::move(s));
+		outputVector.push_back(std::move(s));
+	}
+	return outputVector;
 }
 
 
