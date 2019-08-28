@@ -5,7 +5,36 @@
 
 #include "LabjackDataFile.h"
 
-typedef std::tuple<unsigned long long, std::chrono::time_point<Clock>, double> ParsedVariableEventType;
+typedef std::chrono::system_clock Clock;
+
+//typedef std::tuple<unsigned long long, std::chrono::time_point<Clock>, double> ParsedVariableEventType;
+
+// ParsedVariableEvent represents an event that was parsed from a historical CSV file
+struct ParsedVariableEvent {
+	unsigned long long milliseconds_since_epoch;
+	std::chrono::time_point<Clock> datetime;
+	double labjackValue;
+
+	ParsedVariableEvent(unsigned long long milliseconds_since_epoch, std::chrono::time_point<Clock> datetime, double labjackValue) : milliseconds_since_epoch(milliseconds_since_epoch), datetime(datetime), labjackValue(labjackValue)
+	{
+
+	}
+
+	// Can be called with std::sort(vec.begin(), vec.end(),greater<MyStruct>());
+	bool operator > (const ParsedVariableEvent& event) const
+	{
+		return (milliseconds_since_epoch > event.milliseconds_since_epoch);
+	}
+
+	bool operator < (const ParsedVariableEvent& event) const
+	{
+		return (milliseconds_since_epoch < event.milliseconds_since_epoch);
+	}
+
+};
+
+typedef ParsedVariableEvent ParsedVariableEventType;
+
 
 // Serves to keep track of the historical data for a specific Behavioral Box. 
 // Most specifically the record of Labjack events that have been loaded/parsed from the the .CSV output files

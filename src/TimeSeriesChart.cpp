@@ -99,7 +99,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		if (!this->shouldUseDateXAxis) {
 			sort(historicalEvents.begin(), historicalEvents.end());
 			// Compute earliest timestamp if we're in relative (not absolute date axis) mode.
-			earliest_event_timestamp = historicalEvents[0].first;
+			earliest_event_timestamp = historicalEvents[0].milliseconds_since_epoch;
 		}
 		std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
 		model->setItemPrototype(std::move(prototype));
@@ -108,11 +108,11 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 			ParsedVariableEventType currEvent = historicalEvents[i];
 			unsigned long long x;
 			if (this->shouldUseDateXAxis) {
-				x = currEvent.first;
+				x = currEvent.milliseconds_since_epoch;
 			}
 			else {
 				// Compute the relative (from the first timestamp) if we aren't using the date axis
-				x = currEvent.first - earliest_event_timestamp;
+				x = currEvent.milliseconds_since_epoch - earliest_event_timestamp;
 			}
 			model->setData(i, 0, x);
 			model->setData(i, (variableIndex+1), (double(variableIndex) * verticalVariableSeparatorMultiplier));

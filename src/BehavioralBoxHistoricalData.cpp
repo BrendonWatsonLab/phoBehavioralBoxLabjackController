@@ -7,7 +7,7 @@
 #include "FilesystemHelpers.h"
 #include "LabjackHelpers.h"
 
-typedef std::chrono::system_clock Clock;
+
 
 BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID)
 {
@@ -242,8 +242,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 				shouldIncludeCurrentLine = true;
 				temp_output_values.push_back(1.0);
 				// Add the event timestamp and value to the appropriate vector
-				
-				this->variableEventVectors[j].push_back(make_tuple(curr_time, curr_timepoint, curr_values[j]));
+				this->variableEventVectors[j].push_back(ParsedVariableEvent(curr_time, curr_timepoint, curr_values[j]));
 				
 			}
 			else {
