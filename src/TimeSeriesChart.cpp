@@ -230,27 +230,33 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 		chartInteractionMouseWheelActions[KeyboardModifier::Control] = InteractiveAction::ZoomX;
 		chartInteractionMouseWheelActions[WFlags<KeyboardModifier>(KeyboardModifier::Alt) |	KeyboardModifier::Control |	KeyboardModifier::Shift] = InteractiveAction::ZoomX;
 		currChart->setWheelActions(chartInteractionMouseWheelActions);
+
+
 		// Automatically layout chart (space for axes, legend, ...)
 		currChart->setAutoLayoutEnabled();
-		currChart->setBackground(Wt::WColor(200, 200, 200));
+		currChart->setBackground(Wt::WColor(210, 210, 210));
 	
 		// Data series:
 		bool isFirstSeriesForSubplot = true;
 		for each (int aSeriesIndex in subplotDataSeriesIndicies[subplotIndex])
 		{ // Add each series index in the array to the chart.
-			auto currSeriesPointer_ = dataSeries[aSeriesIndex].get();
+			//auto currSeriesPointer_ = dataSeries[aSeriesIndex].get();
 			currChart->addSeries(std::move(dataSeries[aSeriesIndex]));
-			if (isFirstSeriesForSubplot) {				
-				// Add a WAxisSliderWidget for the chart using the first data series
-				auto sliderWidget = this->addWidget(cpp14::make_unique<Wt::Chart::WAxisSliderWidget>(currSeriesPointer_));
-				//auto sliderWidget = currSubplotContainer->addWidget(cpp14::make_unique<Chart::WAxisSliderWidget>(currSeriesPointer_));
-				sliderWidget->resize(TIME_SERIES_CHART_SUBPLOT_WIDTH, TIME_SERIES_CHART_RANGE_SLIDER_HEIGHT);
-				sliderWidget->setSelectionAreaPadding(40, Side::Left | Side::Right);
-				sliderWidget->setBackground(Wt::WBrush(Wt::WColor(190, 190, 190, 255)));
-				sliderWidget->setMargin(2, Wt::Side::Top | Wt::Side::Bottom); // remove margin vertically
-				sliderWidget->setMargin(WLength::Auto, Side::Left | Side::Right); // Center horizontally
-				isFirstSeriesForSubplot = false; // Indicate that any series following this one are not the first series
-			}
+			// Add WAxisSliderWidget:
+			//if (isFirstSeriesForSubplot) {				
+			//	// Add a WAxisSliderWidget for the chart using the first data series
+			//	Wt::Chart::WAxisSliderWidget* sliderWidget = this->addWidget(cpp14::make_unique<Wt::Chart::WAxisSliderWidget>());
+			//	sliderWidget->setSeries(currSeriesPointer_);
+			//	//currChart->addAxisSliderWidget(sliderWidget);
+
+			//	//auto sliderWidget = currSubplotContainer->addWidget(cpp14::make_unique<Chart::WAxisSliderWidget>(currSeriesPointer_));
+			//	sliderWidget->resize(TIME_SERIES_CHART_SUBPLOT_WIDTH, TIME_SERIES_CHART_RANGE_SLIDER_HEIGHT);
+			//	//sliderWidget->setSelectionAreaPadding(40, Side::Left | Side::Right);
+			//	sliderWidget->setBackground(Wt::WBrush(Wt::WColor(255, 0, 0, 255)));
+			//	//sliderWidget->setMargin(2, Wt::Side::Top | Wt::Side::Bottom); // remove margin vertically
+			//	//sliderWidget->setMargin(WLength::Auto, Side::Left | Side::Right); // Center horizontally
+			//	//isFirstSeriesForSubplot = false; // Indicate that any series following this one are not the first series
+			//}
 			
 		}
 		
