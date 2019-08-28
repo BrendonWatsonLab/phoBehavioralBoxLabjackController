@@ -31,6 +31,19 @@ struct ParsedVariableEvent {
 		return (milliseconds_since_epoch < event.milliseconds_since_epoch);
 	}
 
+	// Tries to get the day of the month for the purpose of clustering events by day.
+	tm getDateDay() {
+		time_t tt = Clock::to_time_t(this->datetime);
+		tm local_tm = *localtime(&tt);
+		//std::cout << local_tm.tm_year + 1900 << '\n';
+		//std::cout << local_tm.tm_mon + 1 << '\n';
+		//std::cout << local_tm.tm_mday << '\n';
+		local_tm.tm_hour = 0;
+		local_tm.tm_min = 0;
+		local_tm.tm_sec = 0;
+		return local_tm;
+	}
+
 };
 
 typedef ParsedVariableEvent ParsedVariableEventType;
