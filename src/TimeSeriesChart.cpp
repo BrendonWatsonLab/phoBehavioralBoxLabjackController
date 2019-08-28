@@ -25,7 +25,8 @@
 #define TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN 8
 #define TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT 26
 #define TIME_SERIES_CHART_SUBPLOT_HEIGHT 230
-
+#define TIME_SERIES_CHART_SUBPLOT_WIDTH 1080
+#define TIME_SERIES_CHART_RANGE_SLIDER_HEIGHT 80
 
 
 TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
@@ -183,7 +184,12 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 	std::vector<Wt::WColor> colorVect = this->getVariableColors();
 	// Iterate through and create each desired subplot
 	for (int subplotIndex = 0; subplotIndex < numSubplots; subplotIndex++) {
+		// Make a container to hold the subplot and its related controls
+		auto currSubplotContainer = this->addWidget(cpp14::make_unique<WContainerWidget>());
+		currSubplotContainer->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
+
 		Wt::Chart::WCartesianChart* currChart = this->addWidget(cpp14::make_unique<Wt::Chart::WCartesianChart>());
+		//Wt::Chart::WCartesianChart* currChart = currSubplotContainer->addWidget(cpp14::make_unique<Wt::Chart::WCartesianChart>());
 		//chart->setPreferredMethod(WPaintedWidget::PngImage);
 		//chart->setBackground(gray);
 		currChart->setModel(model);        // set the model
@@ -219,9 +225,9 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 			currChart->addSeries(std::move(dataSeries[aSeriesIndex]));	
 		}
 		
-		currChart->resize(1080, TIME_SERIES_CHART_SUBPLOT_HEIGHT); // WPaintedWidget must be given explicit size
+		currChart->resize(TIME_SERIES_CHART_SUBPLOT_WIDTH, TIME_SERIES_CHART_SUBPLOT_HEIGHT); // WPaintedWidget must be given explicit size
 
-		currChart->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);            // add margin vertically
+		currChart->setMargin(10, Wt::Side::Top | Wt::Side::Bottom); // add margin vertically
 		currChart->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
 	}
 
