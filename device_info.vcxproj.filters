@@ -173,6 +173,9 @@
     <ClInclude Include="src\LabjackLiveStateWidget.h">
       <Filter>WtWebServer\WebComponents</Filter>
     </ClInclude>
+    <ClInclude Include="src\LabjackPortInformation.h">
+      <Filter>WtWebServer\Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml">
