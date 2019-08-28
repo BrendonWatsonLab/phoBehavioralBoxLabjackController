@@ -1,6 +1,7 @@
 #include <Wt/WApplication.h>
 #include "LabjackControllerOuterWidget.h"
 #include "TimeSeriesChart.h"
+#include "WebAppHelpWidget.h"
 
 using namespace Wt;
 
@@ -15,7 +16,12 @@ LabjackControllerOuterWidget::LabjackControllerOuterWidget() : WContainerWidget(
 
 	this->setPadding(10);
 	this->resize(WLength::Auto, WLength::Auto);
+
+	// Timeseries Charts:
 	this->addWidget(cpp14::make_unique<TimeSeriesChart>());
+
+	// Help Panel:
+	this->addWidget(cpp14::make_unique<WebAppHelpWidget>());
 
 }
 

@@ -28,14 +28,17 @@
     <Filter Include="Source Files\Model">
       <UniqueIdentifier>{23d95ed8-c489-475b-92b2-8af44bab6311}</UniqueIdentifier>
     </Filter>
-    <Filter Include="WtWebServer\OuterWidget">
-      <UniqueIdentifier>{b4a2b5af-fa94-4bcc-8326-ca26959f0ed6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="WtWebServer\Obsolite">
       <UniqueIdentifier>{197677d6-67bf-473c-9e18-7126cf24e7b7}</UniqueIdentifier>
     </Filter>
     <Filter Include="WtWebServer\Charts">
       <UniqueIdentifier>{504fad54-f3e9-4297-a59f-33b881c198d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WtWebServer\WebComponents">
+      <UniqueIdentifier>{a36f7a91-bbff-4825-b295-5033c51c60f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WtWebServer\WebComponents\OuterWidget">
+      <UniqueIdentifier>{b4a2b5af-fa94-4bcc-8326-ca26959f0ed6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -69,11 +72,8 @@
     <ClCompile Include="src\ChartConfig.cpp">
       <Filter>WtWebServer\Obsolite</Filter>
     </ClCompile>
-    <ClCompile Include="src\LabjackLiveStateWidget.cpp">
-      <Filter>WtWebServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp">
-      <Filter>WtWebServer\OuterWidget</Filter>
+      <Filter>WtWebServer\WebComponents\OuterWidget</Filter>
     </ClCompile>
     <ClCompile Include="src\LabjackControllerWebApplication.cpp">
       <Filter>WtWebServer</Filter>
@@ -89,6 +89,12 @@
     </ClCompile>
     <ClCompile Include="src\TimeSeriesChart.cpp">
       <Filter>WtWebServer\Charts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackLiveStateWidget.cpp">
+      <Filter>WtWebServer\WebComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WebAppHelpWidget.cpp">
+      <Filter>WtWebServer\WebComponents</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,14 +146,11 @@
     <ClInclude Include="src\ChartConfig.h">
       <Filter>WtWebServer\Obsolite</Filter>
     </ClInclude>
-    <ClInclude Include="src\LabjackLiveStateWidget.h">
-      <Filter>WtWebServer</Filter>
-    </ClInclude>
     <ClInclude Include="src\FilesystemHelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\LabjackControllerOuterWidget.h">
-      <Filter>WtWebServer\OuterWidget</Filter>
+      <Filter>WtWebServer\WebComponents\OuterWidget</Filter>
     </ClInclude>
     <ClInclude Include="src\LabjackControllerWebApplication.h">
       <Filter>WtWebServer</Filter>
@@ -163,6 +166,12 @@
     </ClInclude>
     <ClInclude Include="src\TimeSeriesChart.h">
       <Filter>WtWebServer\Charts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WebAppHelpWidget.h">
+      <Filter>WtWebServer\WebComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackLiveStateWidget.h">
+      <Filter>WtWebServer\WebComponents</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

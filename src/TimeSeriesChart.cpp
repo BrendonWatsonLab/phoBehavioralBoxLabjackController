@@ -15,6 +15,7 @@
 #include <Wt/WStandardItem.h>
 #include <Wt/WTableView.h>
 
+#include <Wt/Chart/WAxisSliderWidget.h>
 #include <Wt/Chart/WCartesianChart.h>
 #include <Wt/Chart/WPieChart.h>
 
@@ -197,6 +198,7 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 		currChart->setLegendEnabled(true); // enable the legend
 		currChart->setZoomEnabled(true);
 		currChart->setPanEnabled(true);
+		currChart->setCrosshairEnabled(true);
 		currChart->axis(Wt::Chart::Axis::Y).setVisible(false);
 		//chart->axis(Wt::Chart::Axis::X).setVisible(false);
 		//type: Bar
@@ -208,6 +210,10 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 			currChart->axis(Wt::Chart::Axis::X).setScale(Wt::Chart::AxisScale::DateTime); // set scale of X axis to DateScale
 		}
 		currChart->axis(Wt::Chart::Axis::X).setGridLinesEnabled(true);
+		// Set maximum X zoom level to 16x zoom
+		double min = asNumber(model->data(0, 0));
+		double max = asNumber(model->data(model->rowCount() - 1, 0));
+		currChart->axis(Chart::Axis::X).setMinimumZoomRange((max - min) / 16.0);
 
 		///// SETUP Y-AXIS:
 		currChart->axis(Wt::Chart::Axis::Y).setScale(Wt::Chart::AxisScale::Linear);
@@ -220,9 +226,23 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 		currChart->setBackground(Wt::WColor(200, 200, 200));
 	
 		// Data series:
+		bool isFirstSeriesForSubplot = true;
 		for each (int aSeriesIndex in subplotDataSeriesIndicies[subplotIndex])
 		{ // Add each series index in the array to the chart.
-			currChart->addSeries(std::move(dataSeries[aSeriesIndex]));	
+			auto currSeriesPointer_ = dataSeries[aSeriesIndex].get();
+			currChart->addSeries(std::move(dataSeries[aSeriesIndex]));
+			if (isFirstSeriesForSubplot) {				
+				// Add a WAxisSliderWidget for the chart using the first data series
+				auto sliderWidget = this->addWidget(cpp14::make_unique<Wt::Chart::WAxisSliderWidget>(currSeriesPointer_));
+				//auto sliderWidget = currSubplotContainer->addWidget(cpp14::make_unique<Chart::WAxisSliderWidget>(currSeriesPointer_));
+				sliderWidget->resize(TIME_SERIES_CHART_SUBPLOT_WIDTH, TIME_SERIES_CHART_RANGE_SLIDER_HEIGHT);
+				sliderWidget->setSelectionAreaPadding(40, Side::Left | Side::Right);
+				sliderWidget->setBackground(Wt::WBrush(Wt::WColor(190, 190, 190, 255)));
+				sliderWidget->setMargin(2, Wt::Side::Top | Wt::Side::Bottom); // remove margin vertically
+				sliderWidget->setMargin(WLength::Auto, Side::Left | Side::Right); // Center horizontally
+				isFirstSeriesForSubplot = false; // Indicate that any series following this one are not the first series
+			}
+			
 		}
 		
 		currChart->resize(TIME_SERIES_CHART_SUBPLOT_WIDTH, TIME_SERIES_CHART_SUBPLOT_HEIGHT); // WPaintedWidget must be given explicit size

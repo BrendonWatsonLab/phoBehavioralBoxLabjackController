@@ -36,6 +36,7 @@
     <ClCompile Include="src\PanelList.cpp" />
     <ClCompile Include="src\StateMonitor.cpp" />
     <ClCompile Include="src\TimeSeriesChart.cpp" />
+    <ClCompile Include="src\WebAppHelpWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConfigFiles\config-DownstairsBox.h" />
@@ -62,6 +63,7 @@
     <ClInclude Include="src\PanelList.h" />
     <ClInclude Include="src\StateMonitor.h" />
     <ClInclude Include="src\TimeSeriesChart.h" />
+    <ClInclude Include="src\WebAppHelpWidget.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml" />
