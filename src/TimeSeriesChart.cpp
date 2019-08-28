@@ -17,7 +17,7 @@
 
 #include <Wt/Chart/WAxisSliderWidget.h>
 #include <Wt/Chart/WCartesianChart.h>
-#include <Wt/Chart/WPieChart.h>
+#include <Wt/Chart/WDataSeries.h>
 
 #include "LabjackHelpers.h"
 #include "BehavioralBoxControllersManager.h"
@@ -221,6 +221,15 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 		currChart->axis(Wt::Chart::Axis::Y).setMinimum(0.0);
 		currChart->axis(Wt::Chart::Axis::Y).setMaximum(model->columnCount());
 
+		// Set up the User Interaction Behavior:
+		/*Wt::Chart::WheelActions newWheelActions = Wt::Chart::WheelActions();*/
+		Wt::Chart::WheelActions chartInteractionMouseWheelActions = currChart->wheelActions();
+		chartInteractionMouseWheelActions[KeyboardModifier::None] = InteractiveAction::PanX;
+		chartInteractionMouseWheelActions[WFlags<KeyboardModifier>(KeyboardModifier::Alt) |	KeyboardModifier::Control] = InteractiveAction::ZoomX;
+		chartInteractionMouseWheelActions[WFlags<KeyboardModifier>(KeyboardModifier::Control) |	KeyboardModifier::Shift] = InteractiveAction::ZoomX;
+		chartInteractionMouseWheelActions[KeyboardModifier::Control] = InteractiveAction::ZoomX;
+		chartInteractionMouseWheelActions[WFlags<KeyboardModifier>(KeyboardModifier::Alt) |	KeyboardModifier::Control |	KeyboardModifier::Shift] = InteractiveAction::ZoomX;
+		currChart->setWheelActions(chartInteractionMouseWheelActions);
 		// Automatically layout chart (space for axes, legend, ...)
 		currChart->setAutoLayoutEnabled();
 		currChart->setBackground(Wt::WColor(200, 200, 200));
@@ -247,7 +256,7 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 		
 		currChart->resize(TIME_SERIES_CHART_SUBPLOT_WIDTH, TIME_SERIES_CHART_SUBPLOT_HEIGHT); // WPaintedWidget must be given explicit size
 
-		currChart->setMargin(10, Wt::Side::Top | Wt::Side::Bottom); // add margin vertically
+		currChart->setMargin(0, Wt::Side::Top | Wt::Side::Bottom); // add margin vertically
 		currChart->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
 	}
 
