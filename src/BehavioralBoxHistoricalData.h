@@ -1,7 +1,11 @@
 #pragma once
+#include <time.h>
+#include <chrono>
 #include <vector>
 
 #include "LabjackDataFile.h"
+
+typedef std::tuple<unsigned long long, std::chrono::time_point<Clock>, double> ParsedVariableEventType;
 
 // Serves to keep track of the historical data for a specific Behavioral Box. 
 // Most specifically the record of Labjack events that have been loaded/parsed from the the .CSV output files
@@ -24,7 +28,7 @@ public:
 	std::vector<std::vector<double>> getFinalOutputValues() { return this->output_values; };
 
 	int getNumberVariables() { return this->variableEventVectors.size(); };
-	std::vector< std::pair<unsigned long long, double> > getEvents(int forVariableIndex) { return this->variableEventVectors[forVariableIndex]; };
+	std::vector< ParsedVariableEventType > getEvents(int forVariableIndex) { return this->variableEventVectors[forVariableIndex]; };
 
 	// returns the number of events in each variable
 	std::vector<int> getNumberEvents();
@@ -56,7 +60,7 @@ private:
 	// A vector (corresponding to an entry for each variable) of vectors (corresponding to an entry for each event for a given variable) of type pair.
 	// The pair contains the timestamp and the new value at that timestamp
 	//std::array<std::vector<pair<unsigned long long, double>>, NUM_CHANNELS> variableEventVectors;
-	std::vector< std::vector< std::pair<unsigned long long, double> > > variableEventVectors;
+	std::vector< std::vector< ParsedVariableEventType > > variableEventVectors;
 
 	void findDataFiles();
 	void reloadDataFiles();

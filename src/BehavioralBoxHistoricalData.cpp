@@ -7,6 +7,7 @@
 #include "FilesystemHelpers.h"
 #include "LabjackHelpers.h"
 
+typedef std::chrono::system_clock Clock;
 
 BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID)
 {
@@ -192,7 +193,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 
 	// Build arrays to hold the state change events for each variable
 	for (int j = 0; j < maxNumVariables; j++) {
-		std::vector<std::pair<unsigned long long, double>> newVariableVect;
+		std::vector<ParsedVariableEventType> newVariableVect;
 		this->variableEventVectors.push_back(newVariableVect);
 	}
 
@@ -225,6 +226,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 
 		curr_time = this->milliseconds_since_epoch[i];
 		curr_values = this->values[i];
+		std::chrono::time_point<Clock> curr_timepoint = LabjackHelpers::date_from_milliseconds_since_epoch(curr_time);
 
 		//unsigned long long curr_time_diff = curr_time - prev_time;
 
@@ -240,7 +242,9 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 				shouldIncludeCurrentLine = true;
 				temp_output_values.push_back(1.0);
 				// Add the event timestamp and value to the appropriate vector
-				this->variableEventVectors[j].push_back(make_pair(curr_time, curr_values[j]));
+				
+				this->variableEventVectors[j].push_back(make_tuple(curr_time, curr_timepoint, curr_values[j]));
+				
 			}
 			else {
 				temp_output_values.push_back(0.0);

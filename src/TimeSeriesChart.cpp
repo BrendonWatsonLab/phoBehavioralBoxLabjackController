@@ -91,7 +91,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 
 	for (int variableIndex = 0; variableIndex < numVariables; variableIndex++)
 	{	
-		std::vector< std::pair<unsigned long long, double> > historicalEvents = activeHistoricalData.getEvents(variableIndex);
+		std::vector< ParsedVariableEventType > historicalEvents = activeHistoricalData.getEvents(variableIndex);
 		int currVarNumEvents = historicalEvents.size();
 
 		// Sort the events by ascending timestamp
@@ -105,7 +105,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		model->setItemPrototype(std::move(prototype));
 		// Iterate through the events for the given variable
 		for (unsigned i = 0; i < currVarNumEvents; ++i) {
-			std::pair<unsigned long long, double> currEvent = historicalEvents[i];
+			ParsedVariableEventType currEvent = historicalEvents[i];
 			unsigned long long x;
 			if (this->shouldUseDateXAxis) {
 				x = currEvent.first;
@@ -210,6 +210,9 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 			currChart->axis(Wt::Chart::Axis::X).setScale(Wt::Chart::AxisScale::DateTime); // set scale of X axis to DateScale
 		}
 		currChart->axis(Wt::Chart::Axis::X).setGridLinesEnabled(true);
+		//Wt::Chart::AxisConfig xAxisConfig = currChart->axis(Chart::Axis::X).config
+
+		//currChart->axis(Chart::Axis::X).gridLinePositions()
 		// Set maximum X zoom level to 16x zoom
 		double min = asNumber(model->data(0, 0));
 		double max = asNumber(model->data(model->rowCount() - 1, 0));
