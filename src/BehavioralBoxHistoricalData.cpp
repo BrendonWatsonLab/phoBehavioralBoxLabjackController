@@ -145,6 +145,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 	// For each data file object:
 	for (int i = 0; i < this->dataFiles_.size(); i++)
 	{
+		std::string currDataFileName = this->dataFiles_[i].fileName;
 		std::vector<LabjackDataFileLine> tempLines = this->dataFiles_[i].getParsedLines();
 		std::vector<std::string> fileHeaderLabels = this->dataFiles_[i].getParsedHeaderLabels();
 		// If it's not the first file found and we already have a set of header labels
@@ -164,7 +165,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 					allHeadersDebugString += aHeaderLabel;
 					allHeadersDebugString += ",";
 				}
-				std::cout << "WARNING: dataFile[" << std::to_string(i) << "] has <" << fileHeadersDebugString << "> while the previous headers were <" << allHeadersDebugString << ">." << std::endl;
+				std::cout << "WARNING: dataFile[" << currDataFileName << "] has <" << fileHeadersDebugString << "> while the previous headers were <" << allHeadersDebugString << ">." << std::endl;
 			}
 		}
 		// Update the header labels
@@ -178,7 +179,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 			if (numVariables != maxNumVariables) {
 				if (i > 0) {
 					// If it's not the first file/line found
-					std::cout << "dataFile[" << std::to_string(i) << "] has " << std::to_string(numVariables) << " variables while previous files only had " << std::to_string(maxNumVariables) << ". Need to adjust all with fewer variables to max." << std::endl;
+					std::cout << "dataFile[" << currDataFileName << "] has " << std::to_string(numVariables) << " variables while previous files only had " << std::to_string(maxNumVariables) << ". Need to adjust all with fewer variables to max." << std::endl;
 				}
 				maxNumVariables = max(maxNumVariables, numVariables);
 			}

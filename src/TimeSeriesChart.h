@@ -4,6 +4,9 @@
 #include <Wt/WApplication.h>
 #include <Wt/WContainerWidget.h>
 #include <Wt/WAbstractItemModel.h>
+#include "LabjackPortInformation.h"
+
+
 
 class TimeSeriesChart : public Wt::WContainerWidget
 {
