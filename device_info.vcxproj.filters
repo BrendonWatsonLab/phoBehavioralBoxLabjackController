@@ -96,6 +96,9 @@
     <ClCompile Include="src\WebAppHelpWidget.cpp">
       <Filter>WtWebServer\WebComponents</Filter>
     </ClCompile>
+    <ClCompile Include="src\FilesystemHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BehavioralBoxLabjack.h">

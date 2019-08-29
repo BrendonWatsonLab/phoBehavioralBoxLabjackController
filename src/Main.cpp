@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 
 #if LOAD_HISTORICAL_DATA
 	controller.reloadHistoricalData();
-	//BehavioralBoxControllersManager::loadHistoricalData();
+	//BehavioralBoxControllersManager::loadAllHistoricalData();
 
 #endif // LOAD_HISTORICAL_DATA
 

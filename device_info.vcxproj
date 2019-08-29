@@ -23,6 +23,7 @@
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
     <ClCompile Include="src\BehavioralBoxControllersManager.cpp" />
     <ClCompile Include="src\ConfigurationFile.cpp" />
+    <ClCompile Include="src\FilesystemHelpers.cpp" />
     <ClCompile Include="src\InputState.cpp" />
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp" />
     <ClCompile Include="src\LabjackControllerWebApplication.cpp" />

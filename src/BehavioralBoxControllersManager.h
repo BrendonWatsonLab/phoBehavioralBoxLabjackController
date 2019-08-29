@@ -5,6 +5,7 @@
 #include <chrono>
 #include <mutex>
 
+#include "FilesystemHelpers.h"
 #include "BehavioralBoxLabjack.h"
 #include "BehavioralBoxHistoricalData.h"
 
@@ -49,7 +50,7 @@ public:
 
 	void reloadHistoricalData();
 
-	static std::vector<BehavioralBoxHistoricalData> loadHistoricalData();
+	std::vector<BehavioralBoxHistoricalData> loadAllHistoricalData();
 
 	// Getters:
 	bool isReady();
@@ -87,7 +88,13 @@ private:
 	void run();
 
 	//Historical Labjack Data loading:
+	std::string dataFilesSearchDirectory_ = "output_data/";
+	std::map<int, std::vector<LabjackDataFile>> labjackDataFilesMap_;
 	std::vector<BehavioralBoxHistoricalData> historicalData_;
+
+	//TODO: currently doesn't make use of the individual Labjack object's output directory, and instead uses this class' member variable dataFilesSearchDirectory_
+	BehavioralBoxHistoricalData getHistoricalData(int labjackSerialNumber, unsigned long long startMillisecondsSinceEpoch, unsigned long long endMillisecondsSinceEpoch);
+	BehavioralBoxHistoricalData getHistoricalData(int labjackSerialNumber);
 	
 	
 };

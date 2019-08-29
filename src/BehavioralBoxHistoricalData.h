@@ -55,15 +55,8 @@ class BehavioralBoxHistoricalData
 {
 public:
 
-	BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID);
-	BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber);
-
-	// Find the Labjack data files for the labjack with the specified serial number
-	static std::vector<LabjackDataFile> findDataFiles(std::string searchDirectory, int labjackSerialNumber);
-	// NOTE: the start/end milliseconds are non-inclusive
-	static std::vector<LabjackDataFile> findDataFiles(std::string searchDirectory, int labjackSerialNumber, unsigned long long startMillisecondsSinceEpoch, unsigned long long endMillisecondsSinceEpoch);
-
-	static void concatenateCsvFiles(std::vector<LabjackDataFile> dataFiles_);
+	BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID, std::vector<LabjackDataFile> dataFiles);
+	BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::vector<LabjackDataFile> dataFiles);
 
 	void getHistoricalDataEvents();
 	std::vector<unsigned long long> getFinalMillisecondsSinceEpoch() { return this->output_milliseconds_since_epoch; };
@@ -104,8 +97,7 @@ private:
 	//std::array<std::vector<pair<unsigned long long, double>>, NUM_CHANNELS> variableEventVectors;
 	std::vector< std::vector< ParsedVariableEventType > > variableEventVectors;
 
-	void findDataFiles();
-	void reloadDataFiles();
+	void reloadDataFilesContents();
 	void sort() {
 		std::sort(dataFiles_.begin(), dataFiles_.end());
 	}
