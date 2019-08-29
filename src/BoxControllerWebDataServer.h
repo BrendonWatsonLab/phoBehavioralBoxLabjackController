@@ -7,6 +7,9 @@
 #include <thread>
 #include <mutex>
 
+#include "LabjackDataFile.h"
+//class LabjackDataFile;
+
 
 namespace Wt {
 	class WServer;
@@ -19,48 +22,39 @@ class DataServerEvent
 public:
 	/*! \brief Enumeration for the event type.
 	 */
-	enum Type { Login, Logout, Rename, Message };
+	enum Type { Login, Logout, LabjackListRefreshed, HistoricalDataRefreshed, LabjackLiveDataRefreshed };
 
 	/*! \brief Get the event type.
 	 */
 	Type type() const { return type_; }
 
-	/*! \brief Get the user who caused the event.
-	 */
-	const Wt::WString& user() const { return user_; }
-
-	/*! \brief Get the message of the event.
-	 */
-	const Wt::WString& message() const { return message_; }
-
 	/*! \brief Get the extra data for this event.
 	 */
-	const Wt::WString& data() const { return data_; }
+	const std::map<int, std::vector<LabjackDataFile>>& dataFilesMap() const { return data_labjackDataFilesMap_; }
+	//const Wt::WString& data() const { return data_; }
 
-	/*! \brief Get the message formatted as HTML, rendered for the given user.
-	 *
-	 * The \p format indicates how the message should be formatted.
-	 */
-	const Wt::WString formattedHTML(const Wt::WString& user,
-		Wt::TextFormat format) const;
 
 private:
 	Type    type_;
-	Wt::WString user_;
-	Wt::WString data_;
-	Wt::WString message_;
+	//Wt::WString user_;
+	// Data Block
+	std::map<int, std::vector<LabjackDataFile>> data_labjackDataFilesMap_;
+	//Wt::WString data_;
+	//Wt::WString message_;
 
 	/*
-	 * Both user and html will be formatted as html
+	 * Data files update version
 	 */
-	DataServerEvent(const Wt::WString& user, const Wt::WString& message)
-		: type_(Message), user_(user), message_(message)
+	DataServerEvent(const std::map<int, std::vector<LabjackDataFile>>& dataFilesMap)
+		: type_(HistoricalDataRefreshed), data_labjackDataFilesMap_(dataFilesMap)
 	{ }
 
-	DataServerEvent(Type type, const Wt::WString& user,
-		const Wt::WString& data = Wt::WString::Empty)
-		: type_(type), user_(user), data_(data)
+	// Other version
+	DataServerEvent(Type eventType)
+		: type_(eventType), data_labjackDataFilesMap_(std::map<int, std::vector<LabjackDataFile>>())
 	{ }
+
+	//TODO: add a labjacks vector and make an initialzier for that version too.
 
 	friend class BoxControllerWebDataServer;
 };
@@ -103,24 +97,6 @@ public:
 	 * was not connected).
 	 */
 	bool disconnect(Client* client);
-
-	///*! \brief Try to login with given user name.
-	// *
-	// * Returns false if the login was not successful.
-	// */
-	//bool login(const Wt::WString& user);
-
-	///*! \brief Logout from the server.
-	// */
-	//void logout(const Wt::WString& user);
-
-	///*! \brief Changes the name.
-	// */
-	//bool changeName(const Wt::WString& user, const Wt::WString& newUser);
-
-	///*! \brief Get a suggestion for a guest user name.
-	// */
-	//Wt::WString suggestGuest();
 
 	///*! \brief Send a message on behalve of a user.
 	// */
