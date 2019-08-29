@@ -22,6 +22,7 @@
     <ClCompile Include="src\BehavioralBoxHistoricalData.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
     <ClCompile Include="src\BehavioralBoxControllersManager.cpp" />
+    <ClCompile Include="src\BoxControllerWebDataServer.cpp" />
     <ClCompile Include="src\ConfigurationFile.cpp" />
     <ClCompile Include="src\FilesystemHelpers.cpp" />
     <ClCompile Include="src\InputState.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="src\BehavioralBoxHistoricalData.h" />
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
     <ClInclude Include="src\BehavioralBoxControllersManager.h" />
+    <ClInclude Include="src\BoxControllerWebDataServer.h" />
     <ClInclude Include="src\ChartConfig.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\ConfigurationFile.h" />

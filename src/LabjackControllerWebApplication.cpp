@@ -5,7 +5,7 @@
 
 using namespace Wt;
 
-LabjackControllerWebApplication::LabjackControllerWebApplication(const WEnvironment& env) : WApplication(env)
+LabjackControllerWebApplication::LabjackControllerWebApplication(const WEnvironment& env, BoxControllerWebDataServer& server) : WApplication(env), server_(server), env_(env)
 {
 	this->enableUpdates(true);
 	WApplication::instance()->enableUpdates(true);
@@ -46,6 +46,25 @@ void LabjackControllerWebApplication::staticRefreshLabjacksData()
 	//TODO
 }
 
+void LabjackControllerWebApplication::javaScriptTest()
+{
+	if (!env_.javaScript()) {
+		javaScriptError_ =
+			root()->addWidget(Wt::cpp14::make_unique<Wt::WText>(Wt::WString::tr("serverpushwarning")));
+
+		// The 5 second timer is a fallback for real server push. The updated
+		// server state will piggy back on the response to this timeout.
+		timer_ = Wt::cpp14::make_unique<Wt::WTimer>();
+		timer_->setInterval(std::chrono::milliseconds{ 5000 });
+		timer_->timeout().connect(this, &LabjackControllerWebApplication::emptyFunc);
+		timer_->start();
+	}
+}
+
+void LabjackControllerWebApplication::emptyFunc()
+{
+}
+
 void LabjackControllerWebApplication::updateActiveLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks)
 {
 	// Loading Indicator
@@ -68,12 +87,27 @@ void LabjackControllerWebApplication::updateActiveLabjacks(std::vector<Behaviora
 
 
 //GLOBAL:
-std::unique_ptr<WApplication> createApplication(const WEnvironment& env)
+std::unique_ptr<WApplication> createApplication(const WEnvironment& env, BoxControllerWebDataServer& server)
 {
-	return cpp14::make_unique<LabjackControllerWebApplication>(env);
+	return cpp14::make_unique<LabjackControllerWebApplication>(env, server);
 }
 
 int labjackControllerApplicationWebServer(int argc, char** argv)
 {
-	return WRun(argc, argv, &createApplication);
+	Wt::WServer server(argc, argv, WTHTTP_CONFIGURATION);
+	BoxControllerWebDataServer dataServer(server);
+
+	/*
+   * We add two entry points: one for the full-window application,
+   * and one for a widget that can be integrated in another page.
+   */
+	server.addEntryPoint(Wt::EntryPointType::Application, std::bind(createApplication, std::placeholders::_1, std::ref(dataServer)));
+	//server.addEntryPoint(Wt::EntryPointType::WidgetSet, std::bind(createWidget, std::placeholders::_1, std::ref(dataServer)), "/chat.js");
+
+	if (server.start()) {
+		int sig = Wt::WServer::waitForShutdown();
+		std::cerr << "Shutting down: (signal = " << sig << ")" << std::endl;
+		server.stop();
+	}
+
 }

@@ -99,6 +99,9 @@
     <ClCompile Include="src\FilesystemHelpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\BoxControllerWebDataServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BehavioralBoxLabjack.h">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="src\LabjackPortInformation.h">
       <Filter>WtWebServer\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BoxControllerWebDataServer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
