@@ -59,6 +59,12 @@ int main(int argc, char** argv)
 	cout << "BehavioralBoxLabjackController:" << endl;
 	cout << "\t Pho Hale 2019" << endl << endl;
 
+	//TODO: this doesn't currently matter because the webserver reloads everything in TimeSeriesChart::buildHistoricDataModel() by calling the static BehavioralBoxControllersManager::loadAllHistoricalData() function.
+	// Eventually we weant to implement it in a singleton-like fashion.
+#if LOAD_HISTORICAL_DATA
+	//controller.reloadHistoricalData();
+#endif // LOAD_HISTORICAL_DATA
+
 #if LAUNCH_WEB_SERVER
 	// Run the webserver:
 	startWebserver(argc, argv);
@@ -70,13 +76,6 @@ int main(int argc, char** argv)
 		cout << "User chose to quit. Done." << endl;
 		return shutdownApplication(LJME_NO_DEVICES_FOUND);
 	}
-
-#if LOAD_HISTORICAL_DATA
-	controller.reloadHistoricalData();
-	//BehavioralBoxControllersManager::loadAllHistoricalData();
-
-#endif // LOAD_HISTORICAL_DATA
-
 
 #if LAUNCH_WEB_SERVER
 	WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
