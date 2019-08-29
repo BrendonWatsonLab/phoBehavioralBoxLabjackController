@@ -22,6 +22,7 @@
 #include "LabjackHelpers.h"
 #include "BehavioralBoxControllersManager.h"
 #include "NumericItem.h"
+#include "BehavioralBoxHistoricalData.h"
 
 #define TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN 8
 #define TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT 26
@@ -34,15 +35,15 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 {
 	this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Historic Labjack Data:")));
 
-	std::shared_ptr<WAbstractItemModel> model = this->buildHistoricDataModel();
-	if (!model)
+	this->model = this->buildHistoricDataModel();
+	if (!this->model)
 		return;
 
 	/*
 	 * Parses the first column as dates, to be able to use a date scale
 	 */
 	if (this->shouldUseDateXAxis) {
-		for (int i = 0; i < model->rowCount(); ++i) {
+		for (int i = 0; i < this->model->rowCount(); ++i) {
 			cpp17::any currData = model->data(i, 0);
 			Wt::WString s = Wt::asString(currData);
 			std::string::size_type sz = 0;   // alias of size_t
@@ -56,13 +57,13 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	/*
 	 * Build the data table.
 	 */
-	this->setupTable(model);
+	this->setupTable(this->model);
 
 
 	/*
 	 * Build the graphs.
 	 */
-	this->setupCharts(model);
+	this->setupCharts(this->model);
 
 
 	//this->addWidget(cpp14::make_unique<ChartConfig>(chart));
@@ -70,10 +71,15 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 
 
 
-std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel()
-{
-	std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadAllHistoricalData();
 
+void TimeSeriesChart::reload(std::vector<BehavioralBoxHistoricalData> historicalData)
+{
+	
+
+}
+
+std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData)
+{
 	if (historicalData.empty()) {
 		cout << "WARNING: Data model empty!" << endl;
 		return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
@@ -90,13 +96,12 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	std::vector<std::string> headerLabels = globalLabjackInputPortPurpose;
 	// Add "time" variable to front of list
 	headerLabels.insert(headerLabels.begin(), "time");
-	
 
 	//verticalVariableSeparatorMultiplier: the vertical separation between the variables on the graph
 	double verticalVariableSeparatorMultiplier = 1.0;
 
 	for (int variableIndex = 0; variableIndex < numVariables; variableIndex++)
-	{	
+	{
 		std::vector< ParsedVariableEventType > historicalEvents = activeHistoricalData.getEvents(variableIndex);
 		int currVarNumEvents = historicalEvents.size();
 
@@ -121,10 +126,9 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 				x = currEvent.milliseconds_since_epoch - earliest_event_timestamp;
 			}
 			model->setData(i, 0, x);
-			model->setData(i, (variableIndex+1), (double(variableIndex) * verticalVariableSeparatorMultiplier));
+			model->setData(i, (variableIndex + 1), (double(variableIndex) * verticalVariableSeparatorMultiplier));
 		}
 	}
-
 
 	// Setup headers:
 	for (int headerIndex = 0; headerIndex < headerLabels.size(); headerIndex++) {
@@ -132,6 +136,12 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	}
 
 	return model;
+}
+
+std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel()
+{
+	std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadAllHistoricalData();
+	return this->buildHistoricDataModel(historicalData);
 }
 
 void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model)

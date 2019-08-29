@@ -4,9 +4,10 @@
 #include <Wt/WApplication.h>
 #include <Wt/WContainerWidget.h>
 #include <Wt/WAbstractItemModel.h>
+
 #include "LabjackPortInformation.h"
 
-
+class BehavioralBoxHistoricalData;
 
 class TimeSeriesChart : public Wt::WContainerWidget
 {
@@ -15,10 +16,15 @@ public:
 
 	bool shouldUseDateXAxis = true;
 
+	void reload(std::vector<BehavioralBoxHistoricalData> historicalData);
+
+	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData);
 	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel();
 
 	std::vector<Wt::WColor> getVariableColors() { return this->colorVect_; }
 	Wt::WColor getDefaultColor() { return this->otherColor_; }
+
+	std::shared_ptr<Wt::WAbstractItemModel> model;
 
 private:
 	void setupTable(const std::shared_ptr<Wt::WAbstractItemModel> model);
