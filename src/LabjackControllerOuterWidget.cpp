@@ -29,7 +29,6 @@ LabjackControllerOuterWidget::~LabjackControllerOuterWidget()
 {
 	if (loggedIn()) {
 		loggedIn_ = false;
-		server_.logout(user_);
 		disconnect();
 	}
 }

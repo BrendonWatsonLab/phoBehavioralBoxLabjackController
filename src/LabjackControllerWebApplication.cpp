@@ -23,7 +23,7 @@ LabjackControllerWebApplication::LabjackControllerWebApplication(const WEnvironm
 	//loadingIndicatorWidget->setMessage("Loading History, please wait...");
 
 	// Main Widget
-	this->labjackControllerOuterWidget = root()->addWidget(cpp14::make_unique<LabjackControllerOuterWidget>());
+	this->addOuterWidget();
 
 
 	/*
@@ -44,6 +44,12 @@ void LabjackControllerWebApplication::staticUpdateActiveLabjacks()
 void LabjackControllerWebApplication::staticRefreshLabjacksData()
 {
 	//TODO
+}
+
+void LabjackControllerWebApplication::addOuterWidget()
+{
+	this->labjackControllerOuterWidget = root()->addWidget(cpp14::make_unique<LabjackControllerOuterWidget>(server_));
+	//this->labjackControllerOuterWidget->setStyleClass("chat");
 }
 
 void LabjackControllerWebApplication::javaScriptTest()
@@ -108,6 +114,10 @@ int labjackControllerApplicationWebServer(int argc, char** argv)
 		int sig = Wt::WServer::waitForShutdown();
 		std::cerr << "Shutting down: (signal = " << sig << ")" << std::endl;
 		server.stop();
+		return sig;
 	}
-
+	else {
+		return -1;
+	}
+	
 }

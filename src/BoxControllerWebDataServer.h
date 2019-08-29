@@ -126,13 +126,6 @@ public:
 	// */
 	//void sendMessage(const Wt::WString& user, const Wt::WString& message);
 
-	/*! \brief Typedef for a collection of user names.
-	 */
-	typedef std::set<Wt::WString> UserSet;
-
-	/*! \brief Get the users currently logged in.
-	 */
-	UserSet users();
 
 private:
 	struct ClientInfo {
@@ -145,7 +138,6 @@ private:
 	Wt::WServer& server_;
 	std::recursive_mutex    mutex_;
 	ClientMap               clients_;
-	UserSet                 users_;
 
 	void postDataServerEvent(const DataServerEvent& event);
 };

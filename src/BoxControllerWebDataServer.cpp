@@ -31,12 +31,12 @@ bool BoxControllerWebDataServer::disconnect(Client* client)
 	return clients_.erase(client) == 1;
 }
 
-BoxControllerWebDataServer::UserSet BoxControllerWebDataServer::users()
-{
-	std::unique_lock<std::recursive_mutex> lock(mutex_);
-	BoxControllerWebDataServer::UserSet result = users_;
-	return result;
-}
+//BoxControllerWebDataServer::UserSet BoxControllerWebDataServer::users()
+//{
+//	std::unique_lock<std::recursive_mutex> lock(mutex_);
+//	BoxControllerWebDataServer::UserSet result = users_;
+//	return result;
+//}
 
 void BoxControllerWebDataServer::postDataServerEvent(const DataServerEvent& event)
 {
