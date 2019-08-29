@@ -27,6 +27,12 @@ public:
 	BehavioralBoxControllersManager();
 	~BehavioralBoxControllersManager();
 
+	// Singleton get function
+	static BehavioralBoxControllersManager& get() {
+		static BehavioralBoxControllersManager instance;
+		return instance;
+	}
+
 	// Server Stuff:
 	void connect(Client* client, const std::function<void()>& function);
 	void disconnect(Client* client);
