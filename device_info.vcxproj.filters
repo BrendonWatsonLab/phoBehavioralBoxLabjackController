@@ -81,9 +81,6 @@
     <ClCompile Include="src\LabjackControllerWebApplication.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\BehavioralBoxHistoricalData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\BehavioralBoxControllersManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -102,14 +99,17 @@
     <ClCompile Include="src\FilesystemHelpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\BoxControllerWebDataServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\DataServerEvent.cpp">
       <Filter>WtWebServer\Events</Filter>
     </ClCompile>
     <ClCompile Include="src\HistoricalDataLoadingEvent.cpp">
       <Filter>WtWebServer\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BoxControllerWebDataServer.cpp">
+      <Filter>WtWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BehavioralBoxHistoricalData.cpp">
+      <Filter>Source Files\Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -170,9 +170,6 @@
     <ClInclude Include="src\LabjackControllerWebApplication.h">
       <Filter>WtWebServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\BehavioralBoxHistoricalData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\LabjackDataFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -191,14 +188,17 @@
     <ClInclude Include="src\LabjackPortInformation.h">
       <Filter>WtWebServer\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\BoxControllerWebDataServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\DataServerEvent.h">
       <Filter>WtWebServer\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\HistoricalDataLoadingEvent.h">
       <Filter>WtWebServer\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BoxControllerWebDataServer.h">
+      <Filter>WtWebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BehavioralBoxHistoricalData.h">
+      <Filter>Header Files\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

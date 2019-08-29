@@ -133,20 +133,12 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 	int numSamples = this->milliseconds_since_epoch.size();
 	if (numSamples < 2) { return; }
 
-
-
-	//unsigned long long prev_time = this->milliseconds_since_epoch[0];
-	//std::vector<double> prev_values = this->values[0];
 	unsigned long long prev_time = this->milliseconds_since_epoch[0];
 	std::vector<double> prev_values = this->values[0];
 
 	unsigned long long curr_time;
 	std::vector<double> curr_values;
-
 	std::vector<double> temp_output_values;
-
-	//std::vector<unsigned long long> output_date_times;
-	//std::vector<std::vector<double>> output_values;
 
 	bool shouldIncludeCurrentLine = false;
 	// Loop through all the samples (lines)
@@ -193,4 +185,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 
 	// Set the header labels
 	this->headerLabels_ = headerLabels;
+
+	// Build the statistics objects
+	this->eventStatistics_ = EventStatistics(this->variableEventVectors);
 }

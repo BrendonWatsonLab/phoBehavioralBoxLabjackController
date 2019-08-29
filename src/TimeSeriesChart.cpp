@@ -88,6 +88,11 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	BehavioralBoxHistoricalData activeHistoricalData = historicalData[0];
 	int numVariables = activeHistoricalData.getNumberVariables();
 	int maxNumEvents = activeHistoricalData.getMaxNumberEvents();
+
+	// Aggregate functions and stuff
+	//TODO: use it, plot a graph of the events per day.
+	EventStatistics activeEventStatistics = activeHistoricalData.getEventStatistics();
+
 	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(maxNumEvents, (1 + numVariables)); // Add one to numVariables to account for the timestamp column
 
 	/*std::vector<std::string> headerLabels = activeHistoricalData.getHeaderLabels();*/
