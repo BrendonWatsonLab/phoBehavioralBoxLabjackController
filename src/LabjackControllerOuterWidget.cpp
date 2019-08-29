@@ -2,6 +2,7 @@
 #include "LabjackControllerOuterWidget.h"
 #include "TimeSeriesChart.h"
 #include "WebAppHelpWidget.h"
+#include "DataServerEvent.h"
 
 using namespace Wt;
 
@@ -23,6 +24,8 @@ LabjackControllerOuterWidget::LabjackControllerOuterWidget(BoxControllerWebDataS
 	// Help Panel:
 	this->webAppHelpWidget = this->addWidget(cpp14::make_unique<WebAppHelpWidget>());
 
+	this->connect();
+	loggedIn_ = true;
 }
 
 LabjackControllerOuterWidget::~LabjackControllerOuterWidget()
@@ -35,8 +38,7 @@ LabjackControllerOuterWidget::~LabjackControllerOuterWidget()
 
 void LabjackControllerOuterWidget::connect()
 {
-	if (server_.connect
-	(this, std::bind(&LabjackControllerOuterWidget::processDataServerEvent, this, std::placeholders::_1)))
+	if (server_.connect(this, std::bind(&LabjackControllerOuterWidget::processDataServerEvent, this, std::placeholders::_1)))
 		Wt::WApplication::instance()->enableUpdates(true);
 }
 
@@ -79,17 +81,14 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 	  /*
 	   * If it is not a plain message, also update the user list.
 	   */
-	switch (event.type())
-	{
-	case DataServerEvent::HistoricalDataRefreshed:
-		event.dataFilesMap;
-
-		break;
-	default:
-		cout << "Warning: DataServerEvent Event recieved but not yet implemented!" << endl;
-		break;
+	if (event.type() == DataServerEvent::Type::HistoricalDataRefreshed) {
+		cout << "Historical data refreshed." << endl;
+		//auto updatedDataFilesMap = event.dataFilesMap;
 	}
-
+	else {
+		cout << "Warning: DataServerEvent Event recieved but not yet implemented!" << endl;
+	}
+	
 	///*
 	// * This is the server call: we (schedule to) propagate the updated UI to
 	// * the client.

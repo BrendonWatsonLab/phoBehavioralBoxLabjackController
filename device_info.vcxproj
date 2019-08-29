@@ -24,7 +24,9 @@
     <ClCompile Include="src\BehavioralBoxControllersManager.cpp" />
     <ClCompile Include="src\BoxControllerWebDataServer.cpp" />
     <ClCompile Include="src\ConfigurationFile.cpp" />
+    <ClCompile Include="src\DataServerEvent.cpp" />
     <ClCompile Include="src\FilesystemHelpers.cpp" />
+    <ClCompile Include="src\HistoricalDataLoadingEvent.cpp" />
     <ClCompile Include="src\InputState.cpp" />
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp" />
     <ClCompile Include="src\LabjackControllerWebApplication.cpp" />
@@ -51,10 +53,12 @@
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\ConfigurationFile.h" />
     <ClInclude Include="src\CsvUtil.h" />
+    <ClInclude Include="src\DataServerEvent.h" />
     <ClInclude Include="src\External\CSVWriter.h" />
     <ClInclude Include="src\External\px_sched.h" />
     <ClInclude Include="src\External\Scheduler\Scheduler.h" />
     <ClInclude Include="src\FilesystemHelpers.h" />
+    <ClInclude Include="src\HistoricalDataLoadingEvent.h" />
     <ClInclude Include="src\InputState.h" />
     <ClInclude Include="src\LabjackControllerOuterWidget.h" />
     <ClInclude Include="src\LabjackControllerWebApplication.h" />

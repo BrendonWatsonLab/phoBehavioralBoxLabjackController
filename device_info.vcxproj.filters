@@ -40,6 +40,9 @@
     <Filter Include="WtWebServer\WebComponents\OuterWidget">
       <UniqueIdentifier>{b4a2b5af-fa94-4bcc-8326-ca26959f0ed6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WtWebServer\Events">
+      <UniqueIdentifier>{66c65849-c586-45ec-922e-b9d2929672cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BehavioralBoxLabjack.cpp">
@@ -101,6 +104,12 @@
     </ClCompile>
     <ClCompile Include="src\BoxControllerWebDataServer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DataServerEvent.cpp">
+      <Filter>WtWebServer\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HistoricalDataLoadingEvent.cpp">
+      <Filter>WtWebServer\Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +193,12 @@
     </ClInclude>
     <ClInclude Include="src\BoxControllerWebDataServer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DataServerEvent.h">
+      <Filter>WtWebServer\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HistoricalDataLoadingEvent.h">
+      <Filter>WtWebServer\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

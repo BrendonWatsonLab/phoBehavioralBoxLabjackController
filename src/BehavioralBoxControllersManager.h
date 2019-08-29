@@ -8,6 +8,7 @@
 #include "FilesystemHelpers.h"
 #include "BehavioralBoxLabjack.h"
 #include "BehavioralBoxHistoricalData.h"
+#include "HistoricalDataLoadingEvent.h"
 
 
 /*
@@ -15,7 +16,6 @@
  */
 class Client {
 };
-
 
 /*
  * A (singleton) server class which would protect and manage a shared
@@ -51,6 +51,10 @@ public:
 	std::vector<BehavioralBoxHistoricalData> getLoadedHistoricalData() { return this->historicalData_; }
 	void reloadHistoricalData();
 
+
+	// Server/Manager:
+	//void postHistoricalDataUpdatedEvent(const HistoricalDataLoadingEvent& event);
+	void serverLoadAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback);
 	static std::vector<BehavioralBoxHistoricalData> loadAllHistoricalData();
 
 	// Getters:

@@ -10,6 +10,7 @@ typedef std::chrono::system_clock Clock;
 //typedef std::tuple<unsigned long long, std::chrono::time_point<Clock>, double> ParsedVariableEventType;
 
 // ParsedVariableEvent represents an event that was parsed from a historical CSV file
+// NOTE: THIS IS NOT A Wt EVENT, "Event" refers to a labjack event.
 struct ParsedVariableEvent {
 	unsigned long long milliseconds_since_epoch;
 	std::chrono::time_point<Clock> datetime;

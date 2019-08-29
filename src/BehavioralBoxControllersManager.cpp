@@ -208,13 +208,14 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	//TODO: do on background thread
 	labjackDataFilesMap_ = FilesystemHelpers::findDataFiles(this->dataFilesSearchDirectory_);
 
-	if (!this->isReady()) {
+	if (this->shouldStop_) {
 		// Not ready.
 		return;
 	}
 	// Clear the old historical data
 	this->historicalData_.clear();
 
+	// AHAH! Should correspond to the size of the map!
 	if (this->getActiveLabjacks().size() > 0) {
 		// Loop through the active labjacks and get the historical data corresponding to them.
 		for (int i = 0; i < this->getActiveLabjacks().size(); i++) {
@@ -232,6 +233,13 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	}
 }
 
+
+void BehavioralBoxControllersManager::serverLoadAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback)
+{
+	this->reloadHistoricalData();
+	auto updatedData = HistoricalDataLoadingEvent(this->historicalData_);
+	completionCallback(updatedData);
+}
 
 // Static (and inefficient) access function.
 std::vector<BehavioralBoxHistoricalData> BehavioralBoxControllersManager::loadAllHistoricalData()

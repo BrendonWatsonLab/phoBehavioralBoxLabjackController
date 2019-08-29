@@ -4,6 +4,8 @@
 
 BoxControllerWebDataServer::BoxControllerWebDataServer(Wt::WServer& server): server_(server), manager_(BehavioralBoxControllersManager())
 {
+	// Ask the manager to load the historical data and then callback when complete.
+	this->manager_.serverLoadAllHistoricalData(std::bind(&BoxControllerWebDataServer::processHistoricalDataUpdateEvent, this, std::placeholders::_1));
 }
 
 bool BoxControllerWebDataServer::connect(Client* client, const DataServerEventCallback& handleEvent)
@@ -29,6 +31,19 @@ bool BoxControllerWebDataServer::disconnect(Client* client)
 {
 	std::unique_lock<std::recursive_mutex> lock(mutex_);
 	return clients_.erase(client) == 1;
+}
+
+void BoxControllerWebDataServer::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
+{
+	cout << "processHistoricalDataUpdateEvent!" << endl;
+	if (event.type() == HistoricalDataLoadingEvent::Complete) {
+		std::vector<BehavioralBoxHistoricalData> loadedDataVect = event.dataLoadedHistoricalDataVector();
+		cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedDataVect.size() << " items." << endl;
+	}
+	else {
+		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
+	}
+
 }
 
 //BoxControllerWebDataServer::UserSet BoxControllerWebDataServer::users()
