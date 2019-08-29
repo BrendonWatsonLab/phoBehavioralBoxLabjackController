@@ -72,7 +72,13 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 
 std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel()
 {
-	std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::get().loadAllHistoricalData();
+	std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadAllHistoricalData();
+
+	if (historicalData.empty()) {
+		cout << "WARNING: Data model empty!" << endl;
+		return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
+	}
+
 	BehavioralBoxHistoricalData activeHistoricalData = historicalData[0];
 	int numVariables = activeHistoricalData.getNumberVariables();
 	int maxNumEvents = activeHistoricalData.getMaxNumberEvents();

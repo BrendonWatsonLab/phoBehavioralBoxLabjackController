@@ -27,12 +27,6 @@ public:
 	BehavioralBoxControllersManager();
 	~BehavioralBoxControllersManager();
 
-	// Singleton get function
-	static BehavioralBoxControllersManager& get() {
-		static BehavioralBoxControllersManager instance;
-		return instance;
-	}
-
 	// Server Stuff:
 	void connect(Client* client, const std::function<void()>& function);
 	void disconnect(Client* client);
@@ -54,9 +48,10 @@ public:
 	bool waitForFoundLabjacks();
 	//int shutdownApplication(int shutdownCode);
 
+	std::vector<BehavioralBoxHistoricalData> getLoadedHistoricalData() { return this->historicalData_; }
 	void reloadHistoricalData();
 
-	std::vector<BehavioralBoxHistoricalData> loadAllHistoricalData();
+	static std::vector<BehavioralBoxHistoricalData> loadAllHistoricalData();
 
 	// Getters:
 	bool isReady();

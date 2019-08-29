@@ -224,15 +224,25 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	}
 	else {
 		// No actual labjacks, load everything:
-		this->historicalData_ = BehavioralBoxControllersManager::loadAllHistoricalData();
+		//this->historicalData_ = BehavioralBoxControllersManager::loadAllHistoricalData();
+		for (const auto& labjackFilesPair : this->labjackDataFilesMap_) {
+			BehavioralBoxHistoricalData currHistoryData = BehavioralBoxHistoricalData(this->dataFilesSearchDirectory_, labjackFilesPair.first, labjackFilesPair.second);
+			this->historicalData_.push_back(currHistoryData);
+		}
 	}
 }
 
+
+// Static (and inefficient) access function.
 std::vector<BehavioralBoxHistoricalData> BehavioralBoxControllersManager::loadAllHistoricalData()
 {
+	std::string dataFilesSearchDirectory = "output_data/";
 	std::vector<BehavioralBoxHistoricalData> outputVector;
-	for (const auto& labjackFilesPair : this->labjackDataFilesMap_) {
-		BehavioralBoxHistoricalData currHistoryData = BehavioralBoxHistoricalData(this->dataFilesSearchDirectory_, labjackFilesPair.first, labjackFilesPair.second);
+	//TODO: do on background thread
+	std::map<int, std::vector<LabjackDataFile>> labjackDataFilesMap = FilesystemHelpers::findDataFiles(dataFilesSearchDirectory);
+	// Loop through the map and build the output BehavioralBoxHistoricalData objects to add to the vector
+	for (const auto& labjackFilesPair : labjackDataFilesMap) {
+		BehavioralBoxHistoricalData currHistoryData = BehavioralBoxHistoricalData(dataFilesSearchDirectory, labjackFilesPair.first, labjackFilesPair.second);
 		outputVector.push_back(currHistoryData);
 	}
 	//TODO: should sort the output
