@@ -9,6 +9,7 @@
 
 #include "LabjackDataFile.h"
 //class LabjackDataFile;
+#include "BehavioralBoxControllersManager.h"
 
 
 namespace Wt {
@@ -114,6 +115,8 @@ private:
 	Wt::WServer& server_;
 	std::recursive_mutex    mutex_;
 	ClientMap               clients_;
+
+	BehavioralBoxControllersManager& manager_;
 
 	void postDataServerEvent(const DataServerEvent& event);
 };

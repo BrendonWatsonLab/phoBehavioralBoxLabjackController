@@ -28,7 +28,7 @@ private:
 	BoxControllerWebDataServer& server_;
 	Wt::WText* javaScriptError_;
 	const Wt::WEnvironment& env_;
-	std::unique_ptr<Wt::WTimer>   timer_;
+	std::unique_ptr<Wt::WTimer> timer_;
 	/*! \brief Add another chat client.
    */
 	void addOuterWidget();

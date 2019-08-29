@@ -5,8 +5,9 @@
 #include "BoxControllerWebDataServer.h"
 #include "LabjackLiveStateWidget.h"
 
-
 class DataServerEvent;
+class TimeSeriesChart;
+class WebAppHelpWidget;
 
 /*! \brief A widget that demonstrates various aspects of the charting lib.
  */
@@ -23,15 +24,17 @@ public:
 	void connect();
 	void disconnect();
 
-
 	void setActiveLabjacks(std::vector<BehavioralBoxLabjack*> activeLabjacks);
+
+
+protected:
+	bool loggedIn() const;
 
 #if ENABLE_WEB_SERVER_LIVE_WIDGET
 	LabjackLiveStateWidget* labjackExampleWidget;
 #endif // ENABLE_WEB_SERVER_LIVE_WIDGET
-
-protected:
-	bool loggedIn() const;
+	TimeSeriesChart* timeSeriesChartWidget;
+	WebAppHelpWidget* webAppHelpWidget;
 
 private:
 	std::string appName = "";

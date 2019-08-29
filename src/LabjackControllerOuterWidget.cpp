@@ -18,10 +18,10 @@ LabjackControllerOuterWidget::LabjackControllerOuterWidget(BoxControllerWebDataS
 	this->resize(WLength::Auto, WLength::Auto);
 
 	// Timeseries Charts:
-	this->addWidget(cpp14::make_unique<TimeSeriesChart>());
+	this->timeSeriesChartWidget = this->addWidget(cpp14::make_unique<TimeSeriesChart>());
 
 	// Help Panel:
-	this->addWidget(cpp14::make_unique<WebAppHelpWidget>());
+	this->webAppHelpWidget = this->addWidget(cpp14::make_unique<WebAppHelpWidget>());
 
 }
 
@@ -79,12 +79,16 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 	  /*
 	   * If it is not a plain message, also update the user list.
 	   */
-	//if (event.type() != DataServerEvent::Message) {
-	//	if (event.type() == DataServerEvent::Rename && event.user() == user_)
-	//		user_ = event.data();
+	switch (event.type())
+	{
+	case DataServerEvent::HistoricalDataRefreshed:
+		event.dataFilesMap;
 
-	//	updateUsers();
-	//}
+		break;
+	default:
+		cout << "Warning: DataServerEvent Event recieved but not yet implemented!" << endl;
+		break;
+	}
 
 	///*
 	// * This is the server call: we (schedule to) propagate the updated UI to
@@ -92,7 +96,7 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 	// *
 	// * This schedules an update and returns immediately
 	// */
-	//app->triggerUpdate();
+	app->triggerUpdate();
 
 	//newMessage();
 

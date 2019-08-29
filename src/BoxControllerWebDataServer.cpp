@@ -2,7 +2,7 @@
 #include <Wt/WServer.h>
 #include <iostream>
 
-BoxControllerWebDataServer::BoxControllerWebDataServer(Wt::WServer& server): server_(server)
+BoxControllerWebDataServer::BoxControllerWebDataServer(Wt::WServer& server): server_(server), manager_(BehavioralBoxControllersManager())
 {
 }
 
