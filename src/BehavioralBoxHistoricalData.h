@@ -22,6 +22,11 @@ struct ParsedVariableEvent {
 
 	}
 
+	ParsedVariableEvent(std::chrono::time_point<Clock> datetime, double labjackValue) : milliseconds_since_epoch(std::chrono::duration_cast<std::chrono::milliseconds>(datetime.time_since_epoch()).count()), datetime(datetime), labjackValue(labjackValue)
+	{
+
+	}
+
 	// Can be called with std::sort(vec.begin(), vec.end(),greater<MyStruct>());
 	bool operator > (const ParsedVariableEvent& event) const
 	{
