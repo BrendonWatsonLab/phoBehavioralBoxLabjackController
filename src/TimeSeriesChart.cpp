@@ -269,19 +269,8 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		model->setItemPrototype(std::move(prototype));
 
 		// Get the height of the data bar
-		double currItemHeight = 0.0;
-		switch (this->variableKindVect_[variableIndex])
-		{
-		case BoxPortInformation::BehavioralEventKind::BeamBreak:
-			currItemHeight = 1.5;
-			break;
-		case BoxPortInformation::BehavioralEventKind::Dispense:
-			currItemHeight = 7.5;
-			break;
-		default:
-			currItemHeight = 5.5;
-			break;
-		}
+		double currItemHeight = double(to_underlying(this->variableKindVect_[variableIndex]));
+		
 
 		// Iterate through the events for the given variable
 		for (unsigned i = 0; i < currVarNumEvents; ++i) {

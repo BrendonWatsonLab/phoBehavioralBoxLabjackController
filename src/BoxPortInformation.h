@@ -26,10 +26,10 @@ struct BoxPortInformation {
 
 	/*! \brief Enumeration of the kind of event thats occuring
 	 */
-	enum class BehavioralEventKind {
-		BeamBreak,
-		Dispense,
-		Other
+	enum class BehavioralEventKind: int {
+		BeamBreak = 3,
+		Dispense = 7,
+		Other = 5
 	};
 
 	/*! \brief Enumeration of the four ports that poke into the mouse's cage.
