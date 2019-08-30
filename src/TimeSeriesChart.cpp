@@ -214,19 +214,17 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 {
 	// Build the data series
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> dataSeries = this->buildDataSeries(model);
-	int numSubplots = 5; // 4 food/water signals + 1 for running wheel
+	
 
-	// the data series to include on a given subplot
-	std::vector<std::vector<int>> subplotDataSeriesIndicies = { {0, 4}, {1, 5}, {2, 6}, {3, 7}, {8} };
-
+	
 	std::vector<Wt::WColor> colorVect = this->getVariableColors();
 	// Iterate through and create each desired subplot
-	for (int subplotIndex = 0; subplotIndex < numSubplots; subplotIndex++) {
+	for (int subplotIndex = 0; subplotIndex < this->getNumSubplots(); subplotIndex++) {
 		// Make a container to hold the subplot and its related controls
 		auto currSubplotContainer = this->addWidget(cpp14::make_unique<WContainerWidget>());
 		currSubplotContainer->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
 
-		Wt::Chart::WCartesianChart* currChart = this->addWidget(cpp14::make_unique<Wt::Chart::WCartesianChart>());
+		Wt::Chart::WCartesianChart* currChart = currSubplotContainer->addWidget(cpp14::make_unique<Wt::Chart::WCartesianChart>());
 		//Wt::Chart::WCartesianChart* currChart = currSubplotContainer->addWidget(cpp14::make_unique<Wt::Chart::WCartesianChart>());
 		//chart->setPreferredMethod(WPaintedWidget::PngImage);
 		//chart->setBackground(gray);
@@ -278,7 +276,7 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 	
 		// Data series:
 		bool isFirstSeriesForSubplot = true;
-		for each (int aSeriesIndex in subplotDataSeriesIndicies[subplotIndex])
+		for each (int aSeriesIndex in this->subplotDataSeriesIndicies_[subplotIndex])
 		{ // Add each series index in the array to the chart.
 			//auto currSeriesPointer_ = dataSeries[aSeriesIndex].get();
 			currChart->addSeries(std::move(dataSeries[aSeriesIndex]));
