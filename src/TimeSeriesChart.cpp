@@ -178,10 +178,11 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 			double earliest = double(currRange.start) / divisionFactor;
 			double latest = double(currRange.end) / divisionFactor;
 			currChart->axis(Wt::Chart::Axis::X).setRange(earliest, latest);
-
-			// manually specified using
-			//currChart->axis(Wt::Chart::Axis::X).setUn
+			// Set the label interval/spacing
 			currChart->axis(Wt::Chart::Axis::X).setLabelInterval(labelInterval);
+			// Set label to only display the date
+			currChart->axis(Wt::Chart::Axis::X).setLabelFormat(WString::fromUTF8("dd/MM/yy"));
+			//TODO: Enable minutes and seconds for the ticks WString::fromUTF8("dd/MM hh:mm:ss");
 		}
 		currChart->axis(Wt::Chart::Axis::X).setGridLinesEnabled(true);
 		//Wt::Chart::AxisConfig xAxisConfig = currChart->axis(Chart::Axis::X).config
