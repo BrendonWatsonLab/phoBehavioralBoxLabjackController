@@ -322,3 +322,10 @@ std::chrono::time_point<Clock> LabjackHelpers::date_from_milliseconds_since_epoc
 	std::chrono::time_point<std::chrono::system_clock> dt(dur);
 	return dt;
 }
+
+unsigned long long LabjackHelpers::milliseconds_since_epoch_from_date(std::chrono::time_point<Clock> datetime)
+{
+	return std::chrono::duration_cast<std::chrono::milliseconds>(datetime.time_since_epoch()).count();
+}
+
+
