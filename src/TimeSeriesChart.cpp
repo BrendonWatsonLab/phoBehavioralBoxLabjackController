@@ -181,7 +181,7 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 			// Set the label interval/spacing
 			currChart->axis(Wt::Chart::Axis::X).setLabelInterval(labelInterval);
 			// Set label to only display the date
-			currChart->axis(Wt::Chart::Axis::X).setLabelFormat(WString::fromUTF8("dd/MM/yy"));
+			currChart->axis(Wt::Chart::Axis::X).setLabelFormat(WString::fromUTF8("MM/dd"));
 			//TODO: Enable minutes and seconds for the ticks WString::fromUTF8("dd/MM hh:mm:ss");
 		}
 		currChart->axis(Wt::Chart::Axis::X).setGridLinesEnabled(true);
