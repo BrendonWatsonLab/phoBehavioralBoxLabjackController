@@ -34,17 +34,8 @@
 TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 {
 	this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Historic Labjack Data:")));
-
-	//std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadAllHistoricalData();
-	//std::vector<BehavioralBoxHistoricalData> historicalData;
-	//this->reload(historicalData);
-
 	this->setupLoadingIndicator();
-	
 }
-
-
-
 
 void TimeSeriesChart::reload(std::vector<BehavioralBoxHistoricalData> historicalData)
 {
@@ -82,92 +73,8 @@ void TimeSeriesChart::reload(std::vector<BehavioralBoxHistoricalData> historical
 
 }
 
-std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData)
-{
-	if (historicalData.empty()) {
-		cout << "WARNING: Data model empty!" << endl;
-		return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
-	}
 
-	BehavioralBoxHistoricalData activeHistoricalData = historicalData[0];
-	int numVariables = activeHistoricalData.getNumberVariables();
-	int maxNumEvents = activeHistoricalData.getMaxNumberEvents();
-
-	// Aggregate functions and stuff
-	//TODO: use it, plot a graph of the events per day.
-	EventStatistics activeEventStatistics = activeHistoricalData.getEventStatistics();
-
-	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(maxNumEvents, (1 + numVariables)); // Add one to numVariables to account for the timestamp column
-
-	/*std::vector<std::string> headerLabels = activeHistoricalData.getHeaderLabels();*/
-
-	//auto headerLabels = activeHistoricalData.getHeaderLabels();
-	std::vector<std::string> headerLabels = globalLabjackInputPortPurpose;
-	// Add "time" variable to front of list
-	headerLabels.insert(headerLabels.begin(), "time");
-
-	//verticalVariableSeparatorMultiplier: the vertical separation between the variables on the graph
-	double verticalVariableSeparatorMultiplier = 1.0;
-
-	for (int variableIndex = 0; variableIndex < numVariables; variableIndex++)
-	{
-		std::vector< ParsedVariableEventType > historicalEvents = activeHistoricalData.getEvents(variableIndex);
-		int currVarNumEvents = historicalEvents.size();
-
-		// Sort the events by ascending timestamp
-		unsigned long long earliest_event_timestamp = 0;
-		if (!this->shouldUseDateXAxis) {
-			sort(historicalEvents.begin(), historicalEvents.end());
-			// Compute earliest timestamp if we're in relative (not absolute date axis) mode.
-			earliest_event_timestamp = historicalEvents[0].milliseconds_since_epoch;
-		}
-		std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
-		model->setItemPrototype(std::move(prototype));
-		// Iterate through the events for the given variable
-		for (unsigned i = 0; i < currVarNumEvents; ++i) {
-			ParsedVariableEventType currEvent = historicalEvents[i];
-			unsigned long long x;
-			if (this->shouldUseDateXAxis) {
-				x = currEvent.milliseconds_since_epoch;
-			}
-			else {
-				// Compute the relative (from the first timestamp) if we aren't using the date axis
-				x = currEvent.milliseconds_since_epoch - earliest_event_timestamp;
-			}
-			model->setData(i, 0, x);
-			model->setData(i, (variableIndex + 1), (double(variableIndex) * verticalVariableSeparatorMultiplier));
-		}
-	}
-
-	// Setup headers:
-	for (int headerIndex = 0; headerIndex < headerLabels.size(); headerIndex++) {
-		model->setHeaderData(headerIndex, WString(headerLabels[headerIndex]));
-	}
-
-	return model;
-}
-
-//std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel()
-//{
-//	std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadAllHistoricalData();
-//	return this->buildHistoricDataModel(historicalData);
-//}
-
-void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
-{
-	cout << "TimeSeriesChart::processHistoricalDataUpdateEvent(...):" << endl;
-	if (event.type() == HistoricalDataLoadingEvent::Complete) {
-		std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = event.dataLoadedHistoricalDataVector();
-		cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << endl;
-		cout << "reloading.... " << endl;
-		this->reload(loadedHistoricalDataVect);
-		cout << "done." << endl;
-	}
-	else {
-		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
-	}
-}
-
+// GUI Setup:
 void TimeSeriesChart::setupLoadingIndicator()
 {
 	this->loadingContainerWidget = this->addWidget(cpp14::make_unique<WContainerWidget>());
@@ -227,9 +134,6 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 	// Build the data series
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> dataSeries = this->buildDataSeries(model);
 	
-
-	
-	std::vector<Wt::WColor> colorVect = this->getVariableColors();
 	// Iterate through and create each desired subplot
 	for (int subplotIndex = 0; subplotIndex < this->getNumSubplots(); subplotIndex++) {
 		// Make a container to hold the subplot and its related controls
@@ -269,7 +173,7 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 		currChart->axis(Wt::Chart::Axis::Y).setScale(Wt::Chart::AxisScale::Linear);
 		currChart->axis(Wt::Chart::Axis::Y).setLocation(Chart::AxisValue::Zero);
 		currChart->axis(Wt::Chart::Axis::Y).setMinimum(0.0);
-		currChart->axis(Wt::Chart::Axis::Y).setMaximum(model->columnCount());
+		currChart->axis(Wt::Chart::Axis::Y).setMaximum(10.0);
 
 		// Set up the User Interaction Behavior:
 		/*Wt::Chart::WheelActions newWheelActions = Wt::Chart::WheelActions();*/
@@ -288,8 +192,13 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 	
 		// Data series:
 		bool isFirstSeriesForSubplot = true;
-		for each (int aSeriesIndex in this->subplotDataSeriesIndicies_[subplotIndex])
-		{ // Add each series index in the array to the chart.
+		int numOfDataSeriesInSubplot = this->subplotDataSeriesIndicies_[subplotIndex].size();
+		for(int subplotDataSeriesIndex = 0; subplotDataSeriesIndex < numOfDataSeriesInSubplot; subplotDataSeriesIndex++) {
+		//for each (int aSeriesIndex in this->subplotDataSeriesIndicies_[subplotIndex])
+			int aSeriesIndex = this->subplotDataSeriesIndicies_[subplotIndex][subplotDataSeriesIndex];
+			double aSeriesHeight = this->subplotDataSeriesHeights_[subplotIndex][subplotDataSeriesIndex];
+
+		 // Add each series index in the array to the chart.
 			//auto currSeriesPointer_ = dataSeries[aSeriesIndex].get();
 			currChart->addSeries(std::move(dataSeries[aSeriesIndex]));
 			// Add WAxisSliderWidget:
@@ -316,15 +225,104 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 		currChart->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
 	}
 
-
-
-	
-
-
-	
-	
 }
 
+
+
+std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData)
+{
+	if (historicalData.empty()) {
+		cout << "WARNING: Data model empty!" << endl;
+		return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
+	}
+
+	BehavioralBoxHistoricalData activeHistoricalData = historicalData[0];
+	int numVariables = activeHistoricalData.getNumberVariables();
+	int maxNumEvents = activeHistoricalData.getMaxNumberEvents();
+
+	// Aggregate functions and stuff
+	//TODO: use it, plot a graph of the events per day.
+	EventStatistics activeEventStatistics = activeHistoricalData.getEventStatistics();
+
+	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(maxNumEvents, (1 + numVariables)); // Add one to numVariables to account for the timestamp column
+
+	std::vector<std::string> headerLabels = globalLabjackInputPortPurpose;
+	// Add "time" variable to front of list
+	headerLabels.insert(headerLabels.begin(), "time");
+
+	//verticalVariableSeparatorMultiplier: the vertical separation between the variables on the graph
+	double verticalVariableSeparatorMultiplier = 1.0;
+
+	for (int variableIndex = 0; variableIndex < numVariables; variableIndex++)
+	{
+		std::vector<ParsedVariableEventType> historicalEvents = activeHistoricalData.getEvents(variableIndex);
+		int currVarNumEvents = historicalEvents.size();
+
+		// Sort the events by ascending timestamp
+		unsigned long long earliest_event_timestamp = 0;
+		if (!this->shouldUseDateXAxis) {
+			sort(historicalEvents.begin(), historicalEvents.end());
+			// Compute earliest timestamp if we're in relative (not absolute date axis) mode.
+			earliest_event_timestamp = historicalEvents[0].milliseconds_since_epoch;
+		}
+		std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
+		model->setItemPrototype(std::move(prototype));
+
+		// Get the height of the data bar
+		double currItemHeight = 0.0;
+		switch (this->variableKindVect_[variableIndex])
+		{
+		case BoxPortInformation::BehavioralEventKind::BeamBreak:
+			currItemHeight = 1.5;
+			break;
+		case BoxPortInformation::BehavioralEventKind::Dispense:
+			currItemHeight = 7.5;
+			break;
+		default:
+			currItemHeight = 5.5;
+			break;
+		}
+
+		// Iterate through the events for the given variable
+		for (unsigned i = 0; i < currVarNumEvents; ++i) {
+			ParsedVariableEventType currEvent = historicalEvents[i];
+			unsigned long long x;
+			if (this->shouldUseDateXAxis) {
+				x = currEvent.milliseconds_since_epoch;
+			}
+			else {
+				// Compute the relative (from the first timestamp) if we aren't using the date axis
+				x = currEvent.milliseconds_since_epoch - earliest_event_timestamp;
+			}
+
+			model->setData(i, 0, x);
+			model->setData(i, (variableIndex + 1), currItemHeight);
+		}
+	}
+
+	// Setup headers:
+	for (int headerIndex = 0; headerIndex < headerLabels.size(); headerIndex++) {
+		model->setHeaderData(headerIndex, WString(headerLabels[headerIndex]));
+	}
+
+	return model;
+}
+
+
+void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
+{
+	cout << "TimeSeriesChart::processHistoricalDataUpdateEvent(...):" << endl;
+	if (event.type() == HistoricalDataLoadingEvent::Complete) {
+		std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = event.dataLoadedHistoricalDataVector();
+		cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << endl;
+		cout << "reloading.... " << endl;
+		this->reload(loadedHistoricalDataVect);
+		cout << "done." << endl;
+	}
+	else {
+		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
+	}
+}
 
 // Build vector of line series objects
 std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataSeries(const std::shared_ptr<Wt::WAbstractItemModel> model)
@@ -350,12 +348,16 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 		else {
 			currVariableColor = this->getDefaultColor();
 		}
-		Wt::WColor translucentCurrentColor = Wt::WColor(currVariableColor.red(), currVariableColor.green(), currVariableColor.blue(), 128);
+		Wt::WColor translucentCurrentColor = TimeSeriesChart::make_translucent(currVariableColor, 128);
+		//Wt::WColor translucentCurrentColor = Wt::WColor(currVariableColor.red(), currVariableColor.green(), currVariableColor.blue(), 128);
 		// Sets the label (text) colors:
 		s->setLabelColor(currVariableColor); // Subtract one to step back down to the variable indexing
 
 		// Sets the fill in the legend and the markers
+		
 		Wt::WBrush fillBrush = std::move(currVariableColor);
+		//Wt::WBrush fillBrush = std::move(translucentCurrentColor);
+		//Wt::WBrush fillBrush = std::move(currVariableColor);
 		fillBrush.setStyle(Wt::BrushStyle::Solid);
 		s->setBrush(fillBrush);
 		//s->setBrush(Wt::WBrush(currVariableColor));
@@ -378,7 +380,7 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 		Wt::WPen mainPen = translucentCurrentColor;
 		mainPen.setCapStyle(Wt::PenCapStyle::Round);
 		mainPen.setJoinStyle(Wt::PenJoinStyle::Round);
-		mainPen.setWidth(3.0);
+		mainPen.setWidth(1.0);
 		s->setPen(mainPen);
 		//s->setPen(Wt::WPen(currVariableColor));
 

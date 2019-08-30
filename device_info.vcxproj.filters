@@ -185,9 +185,6 @@
     <ClInclude Include="src\LabjackLiveStateWidget.h">
       <Filter>WtWebServer\WebComponents</Filter>
     </ClInclude>
-    <ClInclude Include="src\LabjackPortInformation.h">
-      <Filter>WtWebServer\Model</Filter>
-    </ClInclude>
     <ClInclude Include="src\DataServerEvent.h">
       <Filter>WtWebServer\Events</Filter>
     </ClInclude>
@@ -202,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="src\BoxControllerWebDataServer.h">
       <Filter>Singletons</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BoxPortInformation.h">
+      <Filter>WtWebServer\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

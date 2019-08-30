@@ -5,7 +5,7 @@
 #include <Wt/WContainerWidget.h>
 #include <Wt/WAbstractItemModel.h>
 
-#include "LabjackPortInformation.h"
+#include "BoxPortInformation.h"
 
 class BehavioralBoxHistoricalData;
 class HistoricalDataLoadingEvent;
@@ -19,8 +19,7 @@ public:
 
 	void reload(std::vector<BehavioralBoxHistoricalData> historicalData);
 
-	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData);
-	//std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel();
+	
 
 	std::vector<Wt::WColor> getVariableColors() { return this->colorVect_; }
 	Wt::WColor getDefaultColor() { return this->otherColor_; }
@@ -41,6 +40,8 @@ private:
 	void setupLoadingIndicator();
 	void setupTable(const std::shared_ptr<Wt::WAbstractItemModel> model);
 	void setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> model);
+
+	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData);
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> buildDataSeries(const std::shared_ptr<Wt::WAbstractItemModel> model);
 
 
@@ -49,7 +50,21 @@ private:
 	const int getNumVariables() { return this->colorVect_.size(); };
 	// subplotDataSeriesIndicies_: the data series to include on a given subplot
 	std::vector<std::vector<int>> subplotDataSeriesIndicies_ = { {0, 4}, {1, 5}, {2, 6}, {3, 7}, {8} };
+	std::vector<std::vector<double>> subplotDataSeriesHeights_ = { {2.5, 7.5}, {2.5, 7.5}, {2.5, 7.5}, {2.5, 7.5}, {5.5} };
+	std::vector<BoxPortInformation> variableVect_;
+
+	std::vector<BoxPortInformation::BehavioralEventKind> variableKindVect_ = { BoxPortInformation::BehavioralEventKind::BeamBreak, BoxPortInformation::BehavioralEventKind::BeamBreak,
+	BoxPortInformation::BehavioralEventKind::BeamBreak, BoxPortInformation::BehavioralEventKind::BeamBreak,
+	BoxPortInformation::BehavioralEventKind::Dispense, BoxPortInformation::BehavioralEventKind::Dispense,
+	BoxPortInformation::BehavioralEventKind::Dispense, BoxPortInformation::BehavioralEventKind::Dispense,
+	BoxPortInformation::BehavioralEventKind::Other};
+	
 	std::vector<Wt::WColor> colorVect_ = { Wt::WColor(0, 255, 255, 255), Wt::WColor(127, 255, 212, 255), Wt::WColor(255, 127, 80, 255), Wt::WColor(255, 0, 255, 255), Wt::WColor(0, 0, 255, 255), Wt::WColor(0, 0, 139, 255), Wt::WColor(220, 20, 60, 255), Wt::WColor(128, 0, 0, 255), Wt::WColor(200, 200, 200, 255) };
 	Wt::WColor otherColor_ = Wt::WColor(200, 200, 200, 255);
+
+	static Wt::WColor make_translucent(Wt::WColor originalColor, int opacity) { return Wt::WColor(originalColor.red(), originalColor.green(), originalColor.blue(), opacity); };
 };
+
+
+
 

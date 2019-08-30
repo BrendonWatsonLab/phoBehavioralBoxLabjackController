@@ -5,7 +5,6 @@
 #include <Wt/WApplication.h>
 #include <Wt/WContainerWidget.h>
 
-
 template <typename E>
 constexpr auto to_underlying(E e) noexcept
 {
@@ -43,13 +42,6 @@ struct BoxPortInformation {
 		None
 	};
 
-	//static std::map<std::string, int> mapOfMarks = {
-	//	{"Riti",2},
-	//	{"Jack",4}
-	//};
-
-	//static std::vector<Wt::WColor> colorVect_ = { Wt::WColor(0, 255, 255, 255), Wt::WColor(127, 255, 212, 255), Wt::WColor(255, 127, 80, 255), Wt::WColor(255, 0, 255, 255), Wt::WColor(0, 0, 255, 255), Wt::WColor(0, 0, 139, 255), Wt::WColor(220, 20, 60, 255), Wt::WColor(128, 0, 0, 255), Wt::WColor(200, 200, 200, 255) };
-	//static Wt::WColor otherColor_ = Wt::WColor(200, 200, 200, 255);
 
 	std::string portName;
 	std::string portPurpose;

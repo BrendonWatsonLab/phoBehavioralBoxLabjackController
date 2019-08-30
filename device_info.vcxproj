@@ -65,7 +65,7 @@
     <ClInclude Include="src\LabjackDataFile.h" />
     <ClInclude Include="src\LabjackLiveStateWidget.h" />
     <ClInclude Include="src\LabjackHelpers.h" />
-    <ClInclude Include="src\LabjackPortInformation.h" />
+    <ClInclude Include="src\BoxPortInformation.h" />
     <ClInclude Include="src\NumericItem.h" />
     <ClInclude Include="src\OutputState.h" />
     <ClInclude Include="src\PanelList.h" />
