@@ -26,11 +26,7 @@
 #include "NumericItem.h"
 #include "BehavioralBoxHistoricalData.h"
 
-#define TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN 8
-#define TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT 26
-#define TIME_SERIES_CHART_SUBPLOT_HEIGHT 230
-#define TIME_SERIES_CHART_SUBPLOT_WIDTH 1080
-#define TIME_SERIES_CHART_RANGE_SLIDER_HEIGHT 80
+
 
 
 TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
@@ -254,7 +250,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		std::vector<std::string> statsAggLabels;
 		for(int i = 0; i < headerLabels.size(); i++)
 		{
-			std::string statsAggLabel = headerLabels[i].append("_DayCount");
+			std::string statsAggLabel = headerLabels[i] + "_DayCount";
 			statsAggLabels.push_back(statsAggLabel);
 
 		}

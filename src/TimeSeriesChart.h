@@ -7,6 +7,12 @@
 
 #include "BoxPortInformation.h"
 
+#define TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN 8
+#define TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT 20
+#define TIME_SERIES_CHART_SUBPLOT_HEIGHT 130
+#define TIME_SERIES_CHART_SUBPLOT_WIDTH 1080
+#define TIME_SERIES_CHART_RANGE_SLIDER_HEIGHT 80
+
 class BehavioralBoxHistoricalData;
 class HistoricalDataLoadingEvent;
 
