@@ -58,7 +58,6 @@ public:
 	void serverGetAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback);
 	//serverLoadAllHistoricalData(...): reloads all historical data and then gets it
 	void serverLoadAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback);
-	static std::vector<BehavioralBoxHistoricalData> loadAllHistoricalData();
 
 	// Getters:
 	bool isReady();
@@ -80,6 +79,7 @@ private:
 	// State Variables:
 	mutable std::mutex mutex_;
 	std::thread thread_;
+	std::thread thread_reloadHistoricalData_; // used for reloading the historical data
 	bool stillWaitingToFindLabjacks_ = true;
 	bool shouldStop_ = false;
 

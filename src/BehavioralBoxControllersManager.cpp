@@ -16,7 +16,12 @@ BehavioralBoxControllersManager::BehavioralBoxControllersManager()
 BehavioralBoxControllersManager::~BehavioralBoxControllersManager()
 {
 	this->shouldStop_ = true;
+	// As the thread is using members from this object
+	  // We can not let this obect be destroyed until
+	  // the thread finishes executing.
+	this->thread_reloadHistoricalData_.join();
 	this->thread_.join();
+
 }
 
 void BehavioralBoxControllersManager::connect(Client* client, const std::function<void()>& function)
@@ -136,7 +141,7 @@ void BehavioralBoxControllersManager::run()
    * thread.
    */
 	for (;;) {
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		//std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		if (this->shouldStop_) {
 			return;
@@ -241,23 +246,11 @@ void BehavioralBoxControllersManager::serverGetAllHistoricalData(HistoricalDataL
 
 void BehavioralBoxControllersManager::serverLoadAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback)
 {
-	this->reloadHistoricalData();
-	auto updatedData = HistoricalDataLoadingEvent(this->historicalData_);
-	completionCallback(updatedData);
-}
-
-// Static (and inefficient) access function.
-std::vector<BehavioralBoxHistoricalData> BehavioralBoxControllersManager::loadAllHistoricalData()
-{
-	std::string dataFilesSearchDirectory = "output_data/";
-	std::vector<BehavioralBoxHistoricalData> outputVector;
-	//TODO: do on background thread
-	std::map<int, std::vector<LabjackDataFile>> labjackDataFilesMap = FilesystemHelpers::findDataFiles(dataFilesSearchDirectory);
-	// Loop through the map and build the output BehavioralBoxHistoricalData objects to add to the vector
-	for (const auto& labjackFilesPair : labjackDataFilesMap) {
-		BehavioralBoxHistoricalData currHistoryData = BehavioralBoxHistoricalData(dataFilesSearchDirectory, labjackFilesPair.first, labjackFilesPair.second);
-		outputVector.push_back(currHistoryData);
-	}
-	//TODO: should sort the output
-	return outputVector;
+	// std::lock_guard
+	this->thread_reloadHistoricalData_ = std::move(std::thread([=]() {
+		this->reloadHistoricalData();
+		auto updatedData = HistoricalDataLoadingEvent(this->historicalData_);
+		completionCallback(updatedData);
+		return 1;
+	}));
 }
