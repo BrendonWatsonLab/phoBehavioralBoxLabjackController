@@ -1,3 +1,5 @@
+#include <map>
+
 #include "TimeSeriesChart.h"
 #include "ChartConfig.h"
 #include "CsvUtil.h"
@@ -239,21 +241,35 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	BehavioralBoxHistoricalData activeHistoricalData = historicalData[0];
 	int numVariables = activeHistoricalData.getNumberVariables();
 	int maxNumEvents = activeHistoricalData.getMaxNumberEvents();
+	std::vector<std::string> headerLabels = globalLabjackInputPortPurpose;
 
 	// Aggregate functions and stuff
 	//TODO: use it, plot a graph of the events per day.
 	EventStatistics activeEventStatistics = activeHistoricalData.getEventStatistics();
+	int numStatisticsVariables = 0;
+	int numColumns = (1 + numVariables); // Add one to numVariables to account for the timestamp column
+	if (this->shouldEnableAggregateStatistics_) {
+		numStatisticsVariables = activeEventStatistics.variableStatsVectors.size();
+		numColumns += numStatisticsVariables;
+		std::vector<std::string> statsAggLabels;
+		for(int i = 0; i < headerLabels.size(); i++)
+		{
+			std::string statsAggLabel = headerLabels[i].append("_DayCount");
+			statsAggLabels.push_back(statsAggLabel);
 
-	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(maxNumEvents, (1 + numVariables)); // Add one to numVariables to account for the timestamp column
+		}
+		headerLabels.insert(std::end(headerLabels), std::begin(statsAggLabels), std::end(statsAggLabels));
+	}
 
-	std::vector<std::string> headerLabels = globalLabjackInputPortPurpose;
+	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(maxNumEvents, numColumns); 
+
+	
 	// Add "time" variable to front of list
 	headerLabels.insert(headerLabels.begin(), "time");
 
-	//verticalVariableSeparatorMultiplier: the vertical separation between the variables on the graph
-	double verticalVariableSeparatorMultiplier = 1.0;
-
-	for (int variableIndex = 0; variableIndex < numVariables; variableIndex++)
+	// variables for loop
+	int variableIndex = 0;
+	for (variableIndex = 0; variableIndex < numVariables; variableIndex++)
 	{
 		std::vector<ParsedVariableEventType> historicalEvents = activeHistoricalData.getEvents(variableIndex);
 		int currVarNumEvents = historicalEvents.size();
@@ -286,6 +302,44 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 
 			model->setData(i, 0, x);
 			model->setData(i, (variableIndex + 1), currItemHeight);
+		}
+	}
+
+
+	// Stats (aggregate) variables for loop
+	for (int statsVariableIndex = 0; statsVariableIndex < numStatisticsVariables; statsVariableIndex++)
+	{
+		int absoluteColumnIndex = (variableIndex + 1) + statsVariableIndex;
+		EventStatistics::VariableStatistics currVariableStats = activeEventStatistics.variableStatsVectors[statsVariableIndex];
+		std::map<Clock::time_point, int>  currDaysMap = currVariableStats.eventsPerDay;
+		int currVarNumDays = currVariableStats.numOfDays;
+		
+		// Sort the events by ascending timestamp
+		//unsigned long long earliest_event_timestamp = 0;
+		//if (!this->shouldUseDateXAxis) {
+		//	sort(historicalEvents.begin(), historicalEvents.end());
+		//	// Compute earliest timestamp if we're in relative (not absolute date axis) mode.
+		//	earliest_event_timestamp = historicalEvents[0].milliseconds_since_epoch;
+		//}
+		std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
+		model->setItemPrototype(std::move(prototype));
+
+		// Iterate through the events for the given variable
+		int rowIndex = 0;
+		for (const auto& anAggregateStatsPair : currDaysMap) {
+			double currItemHeight = double(anAggregateStatsPair.second);
+			ParsedVariableEventType currEvent = ParsedVariableEventType(anAggregateStatsPair.first, currItemHeight);
+			unsigned long long x;
+			//if (this->shouldUseDateXAxis) {
+				x = currEvent.milliseconds_since_epoch;
+			//}
+			//else {
+			//	// Compute the relative (from the first timestamp) if we aren't using the date axis
+			//	x = currEvent.milliseconds_since_epoch - earliest_event_timestamp;
+			//}
+			model->setData(rowIndex, 0, x);
+			model->setData(rowIndex, absoluteColumnIndex, currItemHeight);
+			rowIndex++;
 		}
 	}
 

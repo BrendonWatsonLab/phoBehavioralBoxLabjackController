@@ -19,8 +19,6 @@ public:
 
 	void reload(std::vector<BehavioralBoxHistoricalData> historicalData);
 
-	
-
 	std::vector<Wt::WColor> getVariableColors() { return this->colorVect_; }
 	Wt::WColor getDefaultColor() { return this->otherColor_; }
 
@@ -30,12 +28,13 @@ public:
 	void processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event);
 
 private:
+	// Config:
+	bool shouldEnableAggregateStatistics_ = true;
+
 	// UI Elements
 	WContainerWidget* loadingContainerWidget;
 	WContainerWidget* tableContainerWidget;
 	WContainerWidget* chartsContainerWidget;
-
-
 
 	void setupLoadingIndicator();
 	void setupTable(const std::shared_ptr<Wt::WAbstractItemModel> model);
@@ -43,7 +42,6 @@ private:
 
 	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData);
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> buildDataSeries(const std::shared_ptr<Wt::WAbstractItemModel> model);
-
 
 	// Data Series:
 	const int getNumSubplots() { return this->subplotDataSeriesIndicies_.size(); }; // 4 food/water signals + 1 for running wheel
