@@ -37,8 +37,8 @@ void BoxControllerWebDataServer::processHistoricalDataUpdateEvent(const Historic
 {
 	cout << "processHistoricalDataUpdateEvent!" << endl;
 	if (event.type() == HistoricalDataLoadingEvent::Complete) {
-		std::vector<BehavioralBoxHistoricalData> loadedDataVect = event.dataLoadedHistoricalDataVector();
-		cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedDataVect.size() << " items." << endl;
+		// Post a server event wrapping the historical event.
+		this->postDataServerEvent(DataServerEvent(event));
 	}
 	else {
 		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
@@ -46,12 +46,6 @@ void BoxControllerWebDataServer::processHistoricalDataUpdateEvent(const Historic
 
 }
 
-//BoxControllerWebDataServer::UserSet BoxControllerWebDataServer::users()
-//{
-//	std::unique_lock<std::recursive_mutex> lock(mutex_);
-//	BoxControllerWebDataServer::UserSet result = users_;
-//	return result;
-//}
 
 void BoxControllerWebDataServer::postDataServerEvent(const DataServerEvent& event)
 {
@@ -74,7 +68,6 @@ void BoxControllerWebDataServer::postDataServerEvent(const DataServerEvent& even
 		if (app && app->sessionId() == i->second.sessionId)
 			i->second.eventCallback(event);
 		else
-			server_.post(i->second.sessionId,
-				std::bind(i->second.eventCallback, event));
+			server_.post(i->second.sessionId, std::bind(i->second.eventCallback, event));
 	}
 }

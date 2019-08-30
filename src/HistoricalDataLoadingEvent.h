@@ -25,9 +25,15 @@ private:
 	Type    type_;
 	std::vector<BehavioralBoxHistoricalData> data_loadedHistoricalDataVector_;
 	double loadCompletionProgress_ = 0.0;
-	/*
-	 * Data files update version
-	 */
+
+
+
+	// Empty Initializer version
+	HistoricalDataLoadingEvent() : HistoricalDataLoadingEvent(0.0) {
+
+	}
+
+	// Data files update version
 	HistoricalDataLoadingEvent(const std::vector<BehavioralBoxHistoricalData>& dataLoadedHistoricalDataVector)
 		: type_(Complete), data_loadedHistoricalDataVector_(dataLoadedHistoricalDataVector), loadCompletionProgress_(100.0)
 	{ }
@@ -37,6 +43,7 @@ private:
 	{ }
 
 	friend class BehavioralBoxControllersManager;
+	friend class DataServerEvent;
 };
 
 typedef std::function<void(const HistoricalDataLoadingEvent&)> HistoricalDataLoadingEventCallback;

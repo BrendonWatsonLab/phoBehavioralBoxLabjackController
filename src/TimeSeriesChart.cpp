@@ -35,7 +35,18 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 {
 	this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Historic Labjack Data:")));
 
-	this->model = this->buildHistoricDataModel();
+	std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadAllHistoricalData();
+	this->reload(historicalData);
+	
+}
+
+
+
+
+void TimeSeriesChart::reload(std::vector<BehavioralBoxHistoricalData> historicalData)
+{
+	// Update the model
+	this->model = this->buildHistoricDataModel(historicalData);
 	if (!this->model)
 		return;
 
@@ -53,28 +64,18 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 			model->setData(i, 0, currTimestampDateTime);
 		}
 	}
-	
+
 	/*
 	 * Build the data table.
 	 */
 	this->setupTable(this->model);
-
 
 	/*
 	 * Build the graphs.
 	 */
 	this->setupCharts(this->model);
 
-
 	//this->addWidget(cpp14::make_unique<ChartConfig>(chart));
-}
-
-
-
-
-void TimeSeriesChart::reload(std::vector<BehavioralBoxHistoricalData> historicalData)
-{
-	
 
 }
 
@@ -143,10 +144,25 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	return model;
 }
 
-std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel()
+//std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel()
+//{
+//	std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadAllHistoricalData();
+//	return this->buildHistoricDataModel(historicalData);
+//}
+
+void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
 {
-	std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadAllHistoricalData();
-	return this->buildHistoricDataModel(historicalData);
+	cout << "processHistoricalDataUpdateEvent!" << endl;
+	if (event.type() == HistoricalDataLoadingEvent::Complete) {
+		std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = event.dataLoadedHistoricalDataVector();
+		cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << endl;
+		cout << "reloading.... " << endl;
+		this->reload(loadedHistoricalDataVect);
+		cout << "done." << endl;
+	}
+	else {
+		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
+	}
 }
 
 void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model)

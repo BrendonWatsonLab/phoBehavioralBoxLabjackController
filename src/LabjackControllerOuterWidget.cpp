@@ -68,22 +68,11 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 	 * This is where the "server-push" happens. The data server posts to this
 	 * event from other sessions, see SimpleChatServer::postChatEvent()
 	 */
-
-	 /*
-	  * Format and append the line to the conversation.
-	  *
-	  * This is also the step where the automatic XSS filtering will kick in:
-	  * - if another user tried to pass on some JavaScript, it is filtered away.
-	  * - if another user did not provide valid XHTML, the text is automatically
-	  *   interpreted as PlainText
-	  */
-
-	  /*
-	   * If it is not a plain message, also update the user list.
-	   */
 	if (event.type() == DataServerEvent::Type::HistoricalDataRefreshed) {
-		cout << "Historical data refreshed." << endl;
-		//auto updatedDataFilesMap = event.dataFilesMap;
+		cout << "LabjackControllerOuterWidget::processDataServerEvent(...): Historical data refreshed." << endl;
+		auto historicalEvent = event.historicalDataLoadingEvent();
+		// Update the time series chart widget
+		this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
 	}
 	else {
 		cout << "Warning: DataServerEvent Event recieved but not yet implemented!" << endl;

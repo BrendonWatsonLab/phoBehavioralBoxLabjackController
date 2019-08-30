@@ -31,9 +31,6 @@
     <Filter Include="WtWebServer\Obsolite">
       <UniqueIdentifier>{197677d6-67bf-473c-9e18-7126cf24e7b7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="WtWebServer\Charts">
-      <UniqueIdentifier>{504fad54-f3e9-4297-a59f-33b881c198d7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="WtWebServer\WebComponents">
       <UniqueIdentifier>{a36f7a91-bbff-4825-b295-5033c51c60f3}</UniqueIdentifier>
     </Filter>
@@ -42,6 +39,9 @@
     </Filter>
     <Filter Include="WtWebServer\Events">
       <UniqueIdentifier>{66c65849-c586-45ec-922e-b9d2929672cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WtWebServer\WebComponents\Charts">
+      <UniqueIdentifier>{504fad54-f3e9-4297-a59f-33b881c198d7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -88,7 +88,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\TimeSeriesChart.cpp">
-      <Filter>WtWebServer\Charts</Filter>
+      <Filter>WtWebServer\WebComponents\Charts</Filter>
     </ClCompile>
     <ClCompile Include="src\LabjackLiveStateWidget.cpp">
       <Filter>WtWebServer\WebComponents</Filter>
@@ -177,7 +177,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\TimeSeriesChart.h">
-      <Filter>WtWebServer\Charts</Filter>
+      <Filter>WtWebServer\WebComponents\Charts</Filter>
     </ClInclude>
     <ClInclude Include="src\WebAppHelpWidget.h">
       <Filter>WtWebServer\WebComponents</Filter>

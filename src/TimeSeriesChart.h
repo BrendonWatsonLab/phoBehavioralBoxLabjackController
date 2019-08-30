@@ -8,6 +8,7 @@
 #include "LabjackPortInformation.h"
 
 class BehavioralBoxHistoricalData;
+class HistoricalDataLoadingEvent;
 
 class TimeSeriesChart : public Wt::WContainerWidget
 {
@@ -19,12 +20,15 @@ public:
 	void reload(std::vector<BehavioralBoxHistoricalData> historicalData);
 
 	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData);
-	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel();
+	//std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel();
 
 	std::vector<Wt::WColor> getVariableColors() { return this->colorVect_; }
 	Wt::WColor getDefaultColor() { return this->otherColor_; }
 
 	std::shared_ptr<Wt::WAbstractItemModel> model;
+
+	// Update Function:
+	void processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event);
 
 private:
 	void setupTable(const std::shared_ptr<Wt::WAbstractItemModel> model);
