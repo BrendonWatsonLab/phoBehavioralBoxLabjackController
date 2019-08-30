@@ -2,7 +2,7 @@
 #include <Wt/WServer.h>
 #include <iostream>
 
-BoxControllerWebDataServer::BoxControllerWebDataServer(Wt::WServer& server, BehavioralBoxControllersManager& manager): server_(server), manager_(manager)
+BoxControllerWebDataServer::BoxControllerWebDataServer(Wt::WServer& server, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr): server_(server), manager_(*managerPtr)
 {
 	// Ask the manager to load the historical data and then callback when complete.
 	this->requestHistoricalDataReload();
@@ -49,13 +49,13 @@ void BoxControllerWebDataServer::processHistoricalDataUpdateEvent(const Historic
 void BoxControllerWebDataServer::requestHistoricalData()
 {
 	// Ask the manager to get all the cached historical data and then callback when complete.
-	this->manager_.serverGetAllHistoricalData(std::bind(&BoxControllerWebDataServer::processHistoricalDataUpdateEvent, this, std::placeholders::_1));
+	this->manager_->serverGetAllHistoricalData(std::bind(&BoxControllerWebDataServer::processHistoricalDataUpdateEvent, this, std::placeholders::_1));
 }
 
 void BoxControllerWebDataServer::requestHistoricalDataReload()
 {
 	// Ask the manager to load the historical data and then callback when complete.
-	this->manager_.serverLoadAllHistoricalData(std::bind(&BoxControllerWebDataServer::processHistoricalDataUpdateEvent, this, std::placeholders::_1));
+	this->manager_->serverLoadAllHistoricalData(std::bind(&BoxControllerWebDataServer::processHistoricalDataUpdateEvent, this, std::placeholders::_1));
 }
 
 

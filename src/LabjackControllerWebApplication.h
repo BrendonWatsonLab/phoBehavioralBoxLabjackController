@@ -45,4 +45,4 @@ private:
 // GLOBAL:
 std::unique_ptr<WApplication> createApplication(const WEnvironment& env, BoxControllerWebDataServer& server);
 
-int labjackControllerApplicationWebServer(int argc, char** argv, BehavioralBoxControllersManager manager);
+int labjackControllerApplicationWebServer(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr);

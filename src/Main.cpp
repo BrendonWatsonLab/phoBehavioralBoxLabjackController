@@ -47,7 +47,7 @@ Bosma::Scheduler s(max_n_threads);
 // FUNCTION PROTOTYPES:
 //bool waitForFoundLabjacks();
 #if LAUNCH_WEB_SERVER
-bool startWebserver(int argc, char** argv, BehavioralBoxControllersManager manager);
+bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr);
 #endif // LAUNCH_WEB_SERVER
 int shutdownApplication(int shutdownCode);
 
@@ -63,12 +63,12 @@ int main(int argc, char** argv)
 	//TODO: this doesn't currently matter because the webserver reloads everything in TimeSeriesChart::buildHistoricDataModel() by calling the static BehavioralBoxControllersManager::loadAllHistoricalData() function.
 	// Eventually we weant to implement it in a singleton-like fashion.
 #if LOAD_HISTORICAL_DATA
-	//controller.reloadHistoricalData();
+	//controller->reloadHistoricalData();
 #endif // LOAD_HISTORICAL_DATA
 
 #if LAUNCH_WEB_SERVER
 	// Run the webserver:
-	startWebserver(argc, argv, controller);
+	startWebserver(argc, argv, &controller);
 #endif // LAUNCH_WEB_SERVER
 
 	cout << endl << "Scanning for attached Labjacks..." << endl;
@@ -113,8 +113,8 @@ int main(int argc, char** argv)
 			cout << "Showing current log files..." << endl;
 			// Iterate through all found Labjacks
 			
-			for (int i = 0; i < controller.getActiveLabjacks().size(); i++) {
-				std::string foundRelativeFilePathString = controller.getActiveLabjacks()[i]->getFullFilePath();
+			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+				std::string foundRelativeFilePathString = controller->getActiveLabjacks()[i]->getFullFilePath();
 				std::string fullFilePathString = LabjackHelpers::getFullPath(foundRelativeFilePathString);
 
 				cout << "\t Showing log file at " << fullFilePathString << endl;
@@ -126,14 +126,14 @@ int main(int argc, char** argv)
 			// Prints the current data
 			cout << "Printing current data..." << endl;
 			// Iterate through all found Labjacks
-			for (int i = 0; i < controller.getActiveLabjacks().size(); i++) {
-				controller.getActiveLabjacks()[i]->diagnosticPrintLastValues();
+			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+				controller->getActiveLabjacks()[i]->diagnosticPrintLastValues();
 			}
 			cout << "\t done." << endl;
 		}
 		else if (character == 'R') {
 			cout << "Refreshing Labjacks..." << endl;
-			controller.scanForNewLabjacks();
+			controller->scanForNewLabjacks();
 #if LAUNCH_WEB_SERVER
 			// Refresh the webserver
 			WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
@@ -144,16 +144,16 @@ int main(int argc, char** argv)
 		else if (character == 'L') {
 			cout << "Toggling visible LED Light mode on all labjacks..." << endl;
 			// Iterate through all found Labjacks
-			for (int i = 0; i < controller.getActiveLabjacks().size(); i++) {
-				controller.getActiveLabjacks()[i]->toggleOverrideMode_VisibleLED();
+			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+				controller->getActiveLabjacks()[i]->toggleOverrideMode_VisibleLED();
 			}
 			cout << "\t done." << endl;
 		}
 		else if (character == 'A') {
 			cout << "Toggling attract mode on all Labjacks..." << endl;
 			// Iterate through all found Labjacks
-			for (int i = 0; i < controller.getActiveLabjacks().size(); i++) {
-				controller.getActiveLabjacks()[i]->toggleOverrideMode_AttractModeLEDs();
+			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+				controller->getActiveLabjacks()[i]->toggleOverrideMode_AttractModeLEDs();
 			}
 			cout << "\t done." << endl;
 		}
@@ -170,11 +170,11 @@ int main(int argc, char** argv)
 
 #if LAUNCH_WEB_SERVER
 
-bool startWebserver(int argc, char** argv, BehavioralBoxControllersManager manager)
+bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr)
 {
 	cout << "Starting the web server." << endl;
 	web_server_thread = std::move(std::thread([=]() {
-		labjackControllerApplicationWebServer(argc, argv, manager);
+		labjackControllerApplicationWebServer(argc, argv, managerPtr);
 		return true;
 	}));
 	//runServer(argc, argv);
@@ -187,7 +187,7 @@ bool startWebserver(int argc, char** argv, BehavioralBoxControllersManager manag
 int shutdownApplication(int shutdownCode)
 {
 	cout << "Shutting down the application..." << endl;
-	//controller.shutdown();
+	//controller->shutdown();
 #if LAUNCH_WEB_SERVER
 	cout << "Waiting on web server thread to quit..." << endl;
 	// As the thread is using members from this object

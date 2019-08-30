@@ -31,7 +31,7 @@ public:
 
 	/*! \brief Create a new chat server.
 	 */
-	BoxControllerWebDataServer(Wt::WServer& server, BehavioralBoxControllersManager& manager);
+	BoxControllerWebDataServer(Wt::WServer& server, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr);
 
 	BoxControllerWebDataServer(const BoxControllerWebDataServer&) = delete;
 	BoxControllerWebDataServer& operator=(const BoxControllerWebDataServer&) = delete;
