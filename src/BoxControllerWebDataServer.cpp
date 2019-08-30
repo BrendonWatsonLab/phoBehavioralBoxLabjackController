@@ -2,10 +2,10 @@
 #include <Wt/WServer.h>
 #include <iostream>
 
-BoxControllerWebDataServer::BoxControllerWebDataServer(Wt::WServer& server): server_(server), manager_(BehavioralBoxControllersManager())
+BoxControllerWebDataServer::BoxControllerWebDataServer(Wt::WServer& server, BehavioralBoxControllersManager& manager): server_(server), manager_(manager)
 {
 	// Ask the manager to load the historical data and then callback when complete.
-	this->manager_.serverLoadAllHistoricalData(std::bind(&BoxControllerWebDataServer::processHistoricalDataUpdateEvent, this, std::placeholders::_1));
+	this->requestHistoricalDataReload();
 }
 
 bool BoxControllerWebDataServer::connect(Client* client, const DataServerEventCallback& handleEvent)
@@ -35,7 +35,7 @@ bool BoxControllerWebDataServer::disconnect(Client* client)
 
 void BoxControllerWebDataServer::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
 {
-	cout << "processHistoricalDataUpdateEvent!" << endl;
+	cout << "BoxControllerWebDataServer::processHistoricalDataUpdateEvent(...)!" << endl;
 	if (event.type() == HistoricalDataLoadingEvent::Complete) {
 		// Post a server event wrapping the historical event.
 		this->postDataServerEvent(DataServerEvent(event));
@@ -44,6 +44,18 @@ void BoxControllerWebDataServer::processHistoricalDataUpdateEvent(const Historic
 		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
 	}
 
+}
+
+void BoxControllerWebDataServer::requestHistoricalData()
+{
+	// Ask the manager to get all the cached historical data and then callback when complete.
+	this->manager_.serverGetAllHistoricalData(std::bind(&BoxControllerWebDataServer::processHistoricalDataUpdateEvent, this, std::placeholders::_1));
+}
+
+void BoxControllerWebDataServer::requestHistoricalDataReload()
+{
+	// Ask the manager to load the historical data and then callback when complete.
+	this->manager_.serverLoadAllHistoricalData(std::bind(&BoxControllerWebDataServer::processHistoricalDataUpdateEvent, this, std::placeholders::_1));
 }
 
 

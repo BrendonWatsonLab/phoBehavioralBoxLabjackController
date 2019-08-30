@@ -26,6 +26,10 @@ LabjackControllerOuterWidget::LabjackControllerOuterWidget(BoxControllerWebDataS
 
 	this->connect();
 	loggedIn_ = true;
+
+	// Request an update
+	//this->requestServerHistoricalDataReload();
+	this->requestServerHistoricalData();
 }
 
 LabjackControllerOuterWidget::~LabjackControllerOuterWidget()
@@ -53,6 +57,16 @@ void LabjackControllerOuterWidget::setActiveLabjacks(std::vector<BehavioralBoxLa
 #if ENABLE_WEB_SERVER_LIVE_WIDGET
 	this->labjackExampleWidget->updateLabjacks(activeLabjacks);
 #endif // ENABLE_WEB_SERVER_LIVE_WIDGET	
+}
+
+void LabjackControllerOuterWidget::requestServerHistoricalData()
+{
+	this->server_.requestHistoricalData();
+}
+
+void LabjackControllerOuterWidget::requestServerHistoricalDataReload()
+{
+	this->server_.requestHistoricalDataReload();
 }
 
 bool LabjackControllerOuterWidget::loggedIn() const

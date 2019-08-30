@@ -31,7 +31,7 @@ public:
 
 	/*! \brief Create a new chat server.
 	 */
-	BoxControllerWebDataServer(Wt::WServer& server);
+	BoxControllerWebDataServer(Wt::WServer& server, BehavioralBoxControllersManager& manager);
 
 	BoxControllerWebDataServer(const BoxControllerWebDataServer&) = delete;
 	BoxControllerWebDataServer& operator=(const BoxControllerWebDataServer&) = delete;
@@ -59,6 +59,10 @@ public:
 
 	void processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event);
 
+	//requestHistoricalData(): requests the most recent version of the historical data (without reloading)
+	void requestHistoricalData();
+	//requestHistoricalDataReload(): requests a reload of historical data.
+	void requestHistoricalDataReload();
 
 private:
 	struct ClientInfo {
@@ -69,10 +73,11 @@ private:
 	typedef std::map<Client*, ClientInfo> ClientMap;
 
 	Wt::WServer& server_;
-	std::recursive_mutex    mutex_;
-	ClientMap               clients_;
+	std::recursive_mutex mutex_;
+	ClientMap clients_;
 
-	BehavioralBoxControllersManager& manager_;
+	std::shared_ptr<BehavioralBoxControllersManager> manager_;
+	//BehavioralBoxControllersManager& manager_;
 
 	void postDataServerEvent(const DataServerEvent& event);
 };

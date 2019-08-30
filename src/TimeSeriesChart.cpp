@@ -35,8 +35,11 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 {
 	this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Historic Labjack Data:")));
 
-	std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadAllHistoricalData();
-	this->reload(historicalData);
+	//std::vector<BehavioralBoxHistoricalData> historicalData = BehavioralBoxControllersManager::loadAllHistoricalData();
+	//std::vector<BehavioralBoxHistoricalData> historicalData;
+	//this->reload(historicalData);
+
+	this->setupLoadingIndicator();
 	
 }
 
@@ -152,7 +155,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 
 void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
 {
-	cout << "processHistoricalDataUpdateEvent!" << endl;
+	cout << "TimeSeriesChart::processHistoricalDataUpdateEvent(...):" << endl;
 	if (event.type() == HistoricalDataLoadingEvent::Complete) {
 		std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = event.dataLoadedHistoricalDataVector();
 		cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << endl;
@@ -165,11 +168,19 @@ void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadi
 	}
 }
 
+void TimeSeriesChart::setupLoadingIndicator()
+{
+	this->loadingContainerWidget = this->addWidget(cpp14::make_unique<WContainerWidget>());
+	this->loadingContainerWidget->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
+	this->loadingContainerWidget->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Loading Labjack Data...")));
+
+}
+
 void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model)
 {
 	// Show a view that allows editing of the model.
-	auto* w = this->addWidget(cpp14::make_unique<Wt::WContainerWidget>());
-	auto* table = w->addWidget(cpp14::make_unique<Wt::WTableView>());
+	this->tableContainerWidget = this->addWidget(cpp14::make_unique<Wt::WContainerWidget>());
+	auto* table = this->tableContainerWidget->addWidget(cpp14::make_unique<Wt::WTableView>());
 
 	table->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);
 	table->setMargin(10, Wt::Side::Left | Wt::Side::Right);
@@ -212,6 +223,7 @@ void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model
 
 void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> model)
 {
+	this->chartsContainerWidget = this->addWidget(cpp14::make_unique<WContainerWidget>());
 	// Build the data series
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> dataSeries = this->buildDataSeries(model);
 	
@@ -221,7 +233,7 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 	// Iterate through and create each desired subplot
 	for (int subplotIndex = 0; subplotIndex < this->getNumSubplots(); subplotIndex++) {
 		// Make a container to hold the subplot and its related controls
-		auto currSubplotContainer = this->addWidget(cpp14::make_unique<WContainerWidget>());
+		auto currSubplotContainer = this->chartsContainerWidget->addWidget(cpp14::make_unique<WContainerWidget>());
 		currSubplotContainer->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
 
 		Wt::Chart::WCartesianChart* currChart = currSubplotContainer->addWidget(cpp14::make_unique<Wt::Chart::WCartesianChart>());
@@ -322,7 +334,8 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 	/*
   * Add first two columns as line series
   */
-	for (int colIndex = 1; colIndex < model->columnCount(); ++colIndex) {
+	int columnCount = this->getNumVariables() + 1; // Add one for the 0th column, the timestamp
+	for (int colIndex = 1; colIndex < columnCount; ++colIndex) {
 		int currVariableIndex = colIndex - 1;
 		std::unique_ptr<Wt::Chart::WDataSeries> s = cpp14::make_unique<Wt::Chart::WDataSeries>(colIndex, Wt::Chart::SeriesType::Bar);
 		s->setMarker(Wt::Chart::MarkerType::InvertedTriangle); // Make the series display upsidown triangles on top of the impulse plot bars

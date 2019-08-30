@@ -35,7 +35,8 @@
 std::thread web_server_thread;
 #endif // LAUNCH_WEB_SERVER
 
-BehavioralBoxControllersManager controller;
+//BehavioralBoxControllersManager controller;
+std::shared_ptr<BehavioralBoxControllersManager> controller = make_shared<BehavioralBoxControllersManager>();
 
 //// Scheduler
 #include "External/Scheduler/Scheduler.h"
@@ -46,7 +47,7 @@ Bosma::Scheduler s(max_n_threads);
 // FUNCTION PROTOTYPES:
 //bool waitForFoundLabjacks();
 #if LAUNCH_WEB_SERVER
-bool startWebserver(int argc, char** argv);
+bool startWebserver(int argc, char** argv, BehavioralBoxControllersManager manager);
 #endif // LAUNCH_WEB_SERVER
 int shutdownApplication(int shutdownCode);
 
@@ -67,11 +68,11 @@ int main(int argc, char** argv)
 
 #if LAUNCH_WEB_SERVER
 	// Run the webserver:
-	startWebserver(argc, argv);
+	startWebserver(argc, argv, controller);
 #endif // LAUNCH_WEB_SERVER
 
 	cout << endl << "Scanning for attached Labjacks..." << endl;
-	if (!controller.waitForFoundLabjacks()) {
+	if (!controller->waitForFoundLabjacks()) {
 		// User wants to quit.
 		cout << "User chose to quit. Done." << endl;
 		return shutdownApplication(LJME_NO_DEVICES_FOUND);
@@ -169,11 +170,11 @@ int main(int argc, char** argv)
 
 #if LAUNCH_WEB_SERVER
 
-bool startWebserver(int argc, char** argv)
+bool startWebserver(int argc, char** argv, BehavioralBoxControllersManager manager)
 {
 	cout << "Starting the web server." << endl;
 	web_server_thread = std::move(std::thread([=]() {
-		labjackControllerApplicationWebServer(argc, argv);
+		labjackControllerApplicationWebServer(argc, argv, manager);
 		return true;
 	}));
 	//runServer(argc, argv);

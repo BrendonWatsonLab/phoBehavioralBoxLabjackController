@@ -31,6 +31,14 @@ public:
 	void processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event);
 
 private:
+	// UI Elements
+	WContainerWidget* loadingContainerWidget;
+	WContainerWidget* tableContainerWidget;
+	WContainerWidget* chartsContainerWidget;
+
+
+
+	void setupLoadingIndicator();
 	void setupTable(const std::shared_ptr<Wt::WAbstractItemModel> model);
 	void setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> model);
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> buildDataSeries(const std::shared_ptr<Wt::WAbstractItemModel> model);

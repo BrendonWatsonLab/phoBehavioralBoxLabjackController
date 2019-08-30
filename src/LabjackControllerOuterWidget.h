@@ -26,6 +26,10 @@ public:
 
 	void setActiveLabjacks(std::vector<BehavioralBoxLabjack*> activeLabjacks);
 
+	//requestServerHistoricalData(): requests the most recent version of the historical data (without reloading)
+	void requestServerHistoricalData();
+	//requestServerHistoricalDataReload(): requests a reload of historical data.
+	void requestServerHistoricalDataReload();
 
 protected:
 	bool loggedIn() const;

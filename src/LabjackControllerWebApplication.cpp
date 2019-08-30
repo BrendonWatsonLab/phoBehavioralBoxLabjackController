@@ -98,10 +98,10 @@ std::unique_ptr<WApplication> createApplication(const WEnvironment& env, BoxCont
 	return cpp14::make_unique<LabjackControllerWebApplication>(env, server);
 }
 
-int labjackControllerApplicationWebServer(int argc, char** argv)
+int labjackControllerApplicationWebServer(int argc, char** argv, BehavioralBoxControllersManager manager)
 {
 	Wt::WServer server(argc, argv, WTHTTP_CONFIGURATION);
-	BoxControllerWebDataServer dataServer(server);
+	BoxControllerWebDataServer dataServer(server, manager);
 
 	/*
    * We add two entry points: one for the full-window application,

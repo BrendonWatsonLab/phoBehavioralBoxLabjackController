@@ -43,6 +43,9 @@
     <Filter Include="WtWebServer\WebComponents\Charts">
       <UniqueIdentifier>{504fad54-f3e9-4297-a59f-33b881c198d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Singletons">
+      <UniqueIdentifier>{6b725436-265e-4eda-b620-006b5d13b945}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BehavioralBoxLabjack.cpp">
@@ -53,9 +56,6 @@
     </ClCompile>
     <ClCompile Include="src\CsvUtil.cpp">
       <Filter>WtWebServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Main.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ConfigurationFile.cpp">
       <Filter>Source Files</Filter>
@@ -81,9 +81,6 @@
     <ClCompile Include="src\LabjackControllerWebApplication.cpp">
       <Filter>WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\BehavioralBoxControllersManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\LabjackDataFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -105,11 +102,17 @@
     <ClCompile Include="src\HistoricalDataLoadingEvent.cpp">
       <Filter>WtWebServer\Events</Filter>
     </ClCompile>
-    <ClCompile Include="src\BoxControllerWebDataServer.cpp">
-      <Filter>WtWebServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\BehavioralBoxHistoricalData.cpp">
       <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BehavioralBoxControllersManager.cpp">
+      <Filter>Singletons</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Main.cpp">
+      <Filter>Singletons</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BoxControllerWebDataServer.cpp">
+      <Filter>Singletons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,9 +176,6 @@
     <ClInclude Include="src\LabjackDataFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\BehavioralBoxControllersManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\TimeSeriesChart.h">
       <Filter>WtWebServer\WebComponents\Charts</Filter>
     </ClInclude>
@@ -194,11 +194,14 @@
     <ClInclude Include="src\HistoricalDataLoadingEvent.h">
       <Filter>WtWebServer\Events</Filter>
     </ClInclude>
-    <ClInclude Include="src\BoxControllerWebDataServer.h">
-      <Filter>WtWebServer</Filter>
-    </ClInclude>
     <ClInclude Include="src\BehavioralBoxHistoricalData.h">
       <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BehavioralBoxControllersManager.h">
+      <Filter>Singletons</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BoxControllerWebDataServer.h">
+      <Filter>Singletons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

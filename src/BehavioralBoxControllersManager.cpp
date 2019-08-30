@@ -215,7 +215,6 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	// Clear the old historical data
 	this->historicalData_.clear();
 
-	// AHAH! Should correspond to the size of the map!
 	if (this->getActiveLabjacks().size() > 0) {
 		// Loop through the active labjacks and get the historical data corresponding to them.
 		for (int i = 0; i < this->getActiveLabjacks().size(); i++) {
@@ -233,6 +232,12 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	}
 }
 
+
+void BehavioralBoxControllersManager::serverGetAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback)
+{
+	auto updatedData = HistoricalDataLoadingEvent(this->historicalData_);
+	completionCallback(updatedData);
+}
 
 void BehavioralBoxControllersManager::serverLoadAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback)
 {

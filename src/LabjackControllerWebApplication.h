@@ -11,6 +11,8 @@
 #include "BoxControllerWebDataServer.h"
 #include "LabjackControllerOuterWidget.h"
 
+class BehavioralBoxControllersManager;
+
 using namespace Wt;
 
 class LabjackControllerWebApplication : public WApplication
@@ -43,4 +45,4 @@ private:
 // GLOBAL:
 std::unique_ptr<WApplication> createApplication(const WEnvironment& env, BoxControllerWebDataServer& server);
 
-int labjackControllerApplicationWebServer(int argc, char** argv);
+int labjackControllerApplicationWebServer(int argc, char** argv, BehavioralBoxControllersManager manager);

@@ -54,6 +54,9 @@ public:
 
 	// Server/Manager:
 	//void postHistoricalDataUpdatedEvent(const HistoricalDataLoadingEvent& event);
+	//serverGetAllHistoricalData(...): gets the latest version of the historical data
+	void serverGetAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback);
+	//serverLoadAllHistoricalData(...): reloads all historical data and then gets it
 	void serverLoadAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback);
 	static std::vector<BehavioralBoxHistoricalData> loadAllHistoricalData();
 
