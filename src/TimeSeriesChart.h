@@ -7,7 +7,7 @@
 
 #include "BoxPortInformation.h"
 
-#define TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS true
+#define TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS false
 #define TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN 8
 #define TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT 20
 #define TIME_SERIES_CHART_SUBPLOT_HEIGHT 130
@@ -89,7 +89,7 @@ BoxPortInformation::BehavioralEventKind::Dispense, BoxPortInformation::Behaviora
 BoxPortInformation::BehavioralEventKind::Dispense, BoxPortInformation::BehavioralEventKind::Dispense,
 BoxPortInformation::BehavioralEventKind::Other };
 	std::vector<Wt::WColor> colorVect_ = { Wt::WColor(0, 255, 255, 255), Wt::WColor(127, 255, 212, 255), Wt::WColor(255, 127, 80, 255), Wt::WColor(255, 0, 255, 255), Wt::WColor(0, 0, 255, 255), Wt::WColor(0, 0, 139, 255), Wt::WColor(220, 20, 60, 255), Wt::WColor(128, 0, 0, 255), Wt::WColor(200, 200, 200, 255) };
-	std::vector<bool> isAggregate_ = { false, false, false, false, false, false, false, false, false };
+	std::vector<bool> isVariableAggregate_ = { false, false, false, false, false, false, false, false, false };
 #endif // TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS
 
 
