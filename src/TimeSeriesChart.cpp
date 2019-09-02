@@ -406,39 +406,6 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		rowIndex++;
 	}
 
-	//OLD:
-	//for (int statsVariableIndex = 0; statsVariableIndex < numStatisticsVariables; statsVariableIndex++)
-	//{
-	//	int absoluteColumnIndex = (variableIndex + 1) + statsVariableIndex;
-	//	EventStatistics::VariableStatistics currVariableStats = activeEventStatistics.variableStatsVectors[statsVariableIndex];
-	//	std::map<Clock::time_point, int>  currDaysMap = currVariableStats.eventsPerDay;
-	//	int currVarNumDays = currVariableStats.numOfDays;
-
-	//	// Sort the events by ascending timestamp
-	//	//unsigned long long earliest_event_timestamp = 0;
-	//	//if (!this->shouldUseDateXAxis) {
-	//	//	sort(historicalEvents.begin(), historicalEvents.end());
-	//	//	// Compute earliest timestamp if we're in relative (not absolute date axis) mode.
-	//	//	earliest_event_timestamp = historicalEvents[0].milliseconds_since_epoch;
-	//	//}
-	//	std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
-	//	model->setItemPrototype(std::move(prototype));
-
-	//	// Iterate through the events for the given variable
-	//	int rowIndex = 0;
-	//	for (const auto& anAggregateStatsPair : currDaysMap) {
-	//		double currItemHeight = double(anAggregateStatsPair.second);
-
-	//		// Build the datetimes
-	//		Wt::WDateTime currTimestampDateTime = TimeSeriesChart::convertGMTTimePointToLocalDatetime(anAggregateStatsPair.first);
-	//		currTimestampDateTime = TimeSeriesChart::convertDateTimeToBarCenteredDatetime(currTimestampDateTime);
-	//		model->setData(rowIndex, 0, currTimestampDateTime); //TODO: this line is problematic. It's being set multiple times
-
-	//		model->setData(rowIndex, absoluteColumnIndex, currItemHeight);
-	//		rowIndex++;
-	//	}
-	//}
-
 	// Setup headers:
 	for (int headerIndex = 0; headerIndex < headerLabels.size(); headerIndex++) {
 		model->setHeaderData(headerIndex, WString(headerLabels[headerIndex]));
