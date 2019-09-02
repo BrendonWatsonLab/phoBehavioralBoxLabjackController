@@ -167,19 +167,6 @@ struct EventStatistics {
 		} // end for each variable
 	}
 
-	//std::map<Clock::time_point, std::vector<int>> getEventsPerDay() {
-	//	std::map<Clock::time_point, std::vector<int>> dayEventsIndiciesVect;
-	//	int numVariables = this->variableStatsVectors.size();
-	//	for (size_t variableIndex = 0; variableIndex < numVariables; variableIndex++)
-	//	{
-	//		VariableStatistics currVariableStats = this->variableStatsVectors[variableIndex];
-	//		
-	//	}
-
-	//	return dayEventsIndiciesVect;
-	//}
-
-
 };
 
 
