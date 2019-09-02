@@ -94,12 +94,18 @@ std::map<int, std::vector<LabjackDataFile>> FilesystemHelpers::findDataFiles(std
 		}
 
 		std::vector<LabjackDataFile> currLabjackAssociatedFilesVector;
-		try {
-			// Try to find a previously existing vector of LabjackDataFiles in the map by indexing with the parsed serial number.
+		// Try to find a previously existing vector of LabjackDataFiles in the map by indexing with the parsed serial number.
+		if (labjackDataFilesMap.count(activeLabjackSerialNumber) > 0) {
 			// "at(...)" is used instead of the traditional index notation ("[...]") because it throws an exception if it doesn't exist instead of adding it silently so we can create the vector if needed.
-			currLabjackAssociatedFilesVector = labjackDataFilesMap.at(activeLabjackSerialNumber);
+			try {
+				currLabjackAssociatedFilesVector = labjackDataFilesMap.at(activeLabjackSerialNumber);
+			}
+			catch (...) {
+				// Map entry doesn't already exist. Create a new vector to add to the map
+				currLabjackAssociatedFilesVector = std::vector<LabjackDataFile>();
+			}
 		}
-		catch (...) {
+		else {
 			// Map entry doesn't already exist. Create a new vector to add to the map
 			currLabjackAssociatedFilesVector = std::vector<LabjackDataFile>();
 		}
