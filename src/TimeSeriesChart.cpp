@@ -400,13 +400,11 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		int rowIndex = 0;
 		for (const auto& anAggregateStatsPair : currDaysMap) {
 			double currItemHeight = double(anAggregateStatsPair.second);
-			// Check to set the max:
-			//this->shared_y_axis_max = max(this->shared_y_axis_max, currItemHeight);
 
 			// Build the datetimes
 			Wt::WDateTime currTimestampDateTime = TimeSeriesChart::convertGMTTimePointToLocalDatetime(anAggregateStatsPair.first);
 			currTimestampDateTime = TimeSeriesChart::convertDateTimeToBarCenteredDatetime(currTimestampDateTime);
-			model->setData(rowIndex, 0, currTimestampDateTime);
+			model->setData(rowIndex, 0, currTimestampDateTime); //TODO: this line is problematic. It's being set multiple times
 
 			model->setData(rowIndex, absoluteColumnIndex, currItemHeight);
 			rowIndex++;
@@ -448,9 +446,8 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 			//s->setType(Wt::Chart::SeriesType::Point); // Make the series display tall skinny bars, like an impulse plot
 			//s->setLegendEnabled(true); // Disable the legend
 			//s->setOffset(double(currVariableIndex) * 5.0); //isn't doing anything
-			const double desiredWidth = 86400.0;
 			//const double desiredWidth = TimeSeriesChart::millisPerDay;
-			s->setBarWidth(desiredWidth);
+			s->setBarWidth(this->desiredAggregateBarWidth);
 
 			//s->setScale()
 			
