@@ -69,7 +69,7 @@ public:
 private:
 	// Config:
 	bool shouldEnableAggregateStatistics_ = TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS;
-	int numDaysToDisplay_ = 7;
+	int numDaysToDisplay_ = 14;
 	bool shouldUseDateXAxis = true;
 
 	// UI Elements
@@ -122,9 +122,10 @@ BoxPortInformation::BehavioralEventKind::Other };
 	static Wt::WColor make_translucent(Wt::WColor originalColor, int opacity) { return Wt::WColor(originalColor.red(), originalColor.green(), originalColor.blue(), opacity); };
 	static const unsigned long long millisPerDay = 86400000;
 	static const unsigned long long secondsPerDay = 86400;
+	static const unsigned long long secondsPerHour = 3600;
 
 	// gets the Wt::WDateTime corresponding to a given millisSinceEpoch in our current timezone
-	static const int currentTimezoneHoursOffsetFromGMT = -4;
+	static const int currentTimezoneHoursOffsetFromGMT = -4; //TODO: this changes with Daylight Savings Time (DST)
 	static const Wt::WDateTime getCurrentLocalDateTimeFromMillis(unsigned long long millisSinceEpoch);
 
 	

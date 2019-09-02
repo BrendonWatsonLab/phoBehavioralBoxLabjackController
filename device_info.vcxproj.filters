@@ -46,6 +46,9 @@
     <Filter Include="Singletons">
       <UniqueIdentifier>{6b725436-265e-4eda-b620-006b5d13b945}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Helpers">
+      <UniqueIdentifier>{1db05638-ae93-4b96-b7ee-fb6631713525}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BehavioralBoxLabjack.cpp">
@@ -53,9 +56,6 @@
     </ClCompile>
     <ClCompile Include="src\LabjackHelpers.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CsvUtil.cpp">
-      <Filter>WtWebServer</Filter>
     </ClCompile>
     <ClCompile Include="src\ConfigurationFile.cpp">
       <Filter>Source Files</Filter>
@@ -114,26 +114,11 @@
     <ClCompile Include="src\BoxControllerWebDataServer.cpp">
       <Filter>Singletons</Filter>
     </ClCompile>
+    <ClCompile Include="src\CsvUtil.cpp">
+      <Filter>WtWebServer\Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\BehavioralBoxLabjack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\External\px_sched.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\External\Scheduler\Scheduler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LabjackHelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\External\CSVWriter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CsvUtil.h">
-      <Filter>WtWebServer</Filter>
-    </ClInclude>
     <ClInclude Include="src\NumericItem.h">
       <Filter>WtWebServer\Model</Filter>
     </ClInclude>
@@ -164,17 +149,11 @@
     <ClInclude Include="src\ChartConfig.h">
       <Filter>WtWebServer\Obsolite</Filter>
     </ClInclude>
-    <ClInclude Include="src\FilesystemHelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\LabjackControllerOuterWidget.h">
       <Filter>WtWebServer\WebComponents\OuterWidget</Filter>
     </ClInclude>
     <ClInclude Include="src\LabjackControllerWebApplication.h">
       <Filter>WtWebServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LabjackDataFile.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\TimeSeriesChart.h">
       <Filter>WtWebServer\WebComponents\Charts</Filter>
@@ -201,6 +180,30 @@
       <Filter>Singletons</Filter>
     </ClInclude>
     <ClInclude Include="src\BoxPortInformation.h">
+      <Filter>WtWebServer\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\CSVWriter.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FilesystemHelpers.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackHelpers.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackDataFile.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BehavioralBoxLabjack.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\px_sched.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\Scheduler\Scheduler.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CsvUtil.h">
       <Filter>WtWebServer\Model</Filter>
     </ClInclude>
   </ItemGroup>

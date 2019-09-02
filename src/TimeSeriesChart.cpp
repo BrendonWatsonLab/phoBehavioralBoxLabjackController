@@ -540,12 +540,12 @@ const Wt::WDateTime TimeSeriesChart::convertGMTTimePointToLocalDatetime(std::chr
 
 const Wt::WDateTime TimeSeriesChart::convertGMTDateTimeToLocalDatetime(Wt::WDateTime GMTDatetime)
 {
-	return GMTDatetime.addSecs(3600 * TimeSeriesChart::currentTimezoneHoursOffsetFromGMT);
+	return GMTDatetime.addSecs(TimeSeriesChart::secondsPerHour * TimeSeriesChart::currentTimezoneHoursOffsetFromGMT);
 }
 
 const Wt::WDateTime TimeSeriesChart::convertDateTimeToBarCenteredDatetime(Wt::WDateTime unshiftedLocalDatetime)
 {
-	return unshiftedLocalDatetime.addSecs(3600 * 12);
+	return unshiftedLocalDatetime.addSecs(TimeSeriesChart::secondsPerHour * 12);
 }
 
 TimeSeriesChart::CurrentDateTimeRange TimeSeriesChart::getCurrentDesiredRangeMillis()
