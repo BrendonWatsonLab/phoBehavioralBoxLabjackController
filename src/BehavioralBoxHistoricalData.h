@@ -76,6 +76,7 @@ struct EventStatistics {
 	struct VariableStatistics {
 		int numOfEvents = 0;
 		int numOfDays = 0;
+		int maxNumEventsPerDay = 0;
 		std::map<Clock::time_point, int> eventsPerDay;
 
 		VariableStatistics() {
@@ -107,10 +108,18 @@ struct EventStatistics {
 
 				// Add one for the current event
 				currAccumulatedValue += 1;
+				if (currAccumulatedValue > this->maxNumEventsPerDay) {
+					this->maxNumEventsPerDay = currAccumulatedValue;
+				}
 				this->eventsPerDay[currDayDatetime] = currAccumulatedValue;
 			}
 		}
 	};
+	// A vector (corresponding to an entry for each variable) of vectors (corresponding to an entry for each event for a given variable) of type ParsedVariableEventType.
+	// The ParsedVariableEventType contains the timestamp and the new value at that timestamp
+	std::vector<VariableStatistics> variableStatsVectors;
+	// globalMaxNumEventsPerDay: global max number of events per day shared across all variables
+	int globalMaxNumEventsPerDay = 0;
 
 	EventStatistics() {
 
@@ -122,11 +131,10 @@ struct EventStatistics {
 		{
 			VariableStatistics currStats = VariableStatistics(varEventVector);
 			this->variableStatsVectors.push_back(currStats);
+			this->globalMaxNumEventsPerDay = max(this->globalMaxNumEventsPerDay, currStats.maxNumEventsPerDay);
 		}
 	}
-	// A vector (corresponding to an entry for each variable) of vectors (corresponding to an entry for each event for a given variable) of type ParsedVariableEventType.
-	// The ParsedVariableEventType contains the timestamp and the new value at that timestamp
-	std::vector<VariableStatistics> variableStatsVectors;
+
 
 };
 
