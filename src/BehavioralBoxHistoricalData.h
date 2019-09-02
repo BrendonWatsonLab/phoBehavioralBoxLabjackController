@@ -187,6 +187,10 @@ public:
 	int getNumberVariables() { return this->variableEventVectors.size(); };
 	std::vector< ParsedVariableEventType > getEvents(int forVariableIndex) { return this->variableEventVectors[forVariableIndex]; };
 
+
+	int getIndexForTimepoint(std::chrono::time_point<Clock> timePoint) { return this->timestampToIndexMap_[timePoint]; };
+	int getNumberOfUniqueTimepoints() { return this->timestampToIndexMap_.size(); };
+
 	// returns the number of events in each variable
 	std::vector<int> getNumberEvents();
 	// get the maximum number of events any variable has
@@ -214,6 +218,9 @@ private:
 	std::vector<std::string> headerLabels_;
 
 	// Variable event outputs: built by getHistoricalDataEvents()
+
+	// timestampToIndexMap_: a map to ensure that each timestamp is only given one index row in the data model.
+	std::map<std::chrono::time_point<Clock>, int> timestampToIndexMap_;
 	// A vector (corresponding to an entry for each variable) of vectors (corresponding to an entry for each event for a given variable) of type ParsedVariableEventType.
 	// The ParsedVariableEventType contains the timestamp and the new value at that timestamp
 	std::vector< std::vector< ParsedVariableEventType > > variableEventVectors;

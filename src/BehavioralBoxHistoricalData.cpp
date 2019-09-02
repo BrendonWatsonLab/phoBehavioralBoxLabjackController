@@ -67,6 +67,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 	this->output_values.clear();
 	this->variableEventVectors.clear();
 	this->headerLabels_.clear();
+	this->timestampToIndexMap_.clear();
 
 	int numVariables = 0;
 	int maxNumVariables = -1;
@@ -128,7 +129,6 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 		this->variableEventVectors.push_back(newVariableVect);
 	}
 
-
 	// Compute Differences and such
 	int numSamples = this->milliseconds_since_epoch.size();
 	if (numSamples < 2) { return; }
@@ -140,6 +140,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 	std::vector<double> curr_values;
 	std::vector<double> temp_output_values;
 
+	int uniqueLineTimestampIndex = 0;
 	bool shouldIncludeCurrentLine = false;
 	// Loop through all the samples (lines)
 	for (int i = 0; i < numSamples; i++)
@@ -177,6 +178,8 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 		if (shouldIncludeCurrentLine) {
 			this->output_milliseconds_since_epoch.push_back(curr_time);
 			this->output_values.push_back(temp_output_values);
+			this->timestampToIndexMap_[curr_timepoint] = uniqueLineTimestampIndex;
+			uniqueLineTimestampIndex++;
 		}
 
 		prev_time = curr_time;

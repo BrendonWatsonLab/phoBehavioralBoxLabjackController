@@ -315,6 +315,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	//TODO: get the number of distinct timestamps and then use those as the number of events instead of just using the max number of events. Each row must have a distinct timestamp, and there are no other requirements.
 	//TODO: this is really inefficient because this is the format it starts out in and then I parse them into vectors of events for each variable.
 	int maxNumEvents = activeHistoricalData.getMaxNumberEvents();
+	int maxNumEventTimepoints = activeHistoricalData.getNumberOfUniqueTimepoints();
 
 	std::vector<std::string> headerLabels = globalLabjackInputPortPurpose;
 
@@ -341,8 +342,8 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	headerLabels.insert(headerLabels.begin(), "time");
 
 
-	int totalNumEvents = maxNumEvents + numAggregateEvents;
-	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(totalNumEvents, numColumns);
+	int totalNumRows = maxNumEventTimepoints + numAggregateEvents;
+	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(totalNumRows, numColumns);
 
 	// variables for loop
 	int variableIndex = 0;
@@ -367,19 +368,21 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		// Iterate through the events for the given variable
 		for (unsigned i = 0; i < currVarNumEvents; ++i) {
 			ParsedVariableEventType currEvent = historicalEvents[i];
+			int activeTimestampRowIndex = activeHistoricalData.getIndexForTimepoint(currEvent.datetime);
+
 			unsigned long long x;
 			if (this->shouldUseDateXAxis) {
 				x = currEvent.milliseconds_since_epoch;
 				Wt::WDateTime currTimestampDateTime = TimeSeriesChart::getCurrentLocalDateTimeFromMillis(x);
-				model->setData(i, 0, currTimestampDateTime);
+				model->setData(activeTimestampRowIndex, 0, currTimestampDateTime);
 			}
 			else {
 				// Compute the relative (from the first timestamp) if we aren't using the date axis
 				x = currEvent.milliseconds_since_epoch - earliest_event_timestamp;
-				model->setData(i, 0, x); //TODO: i is being overwritten for different variables
+				model->setData(activeTimestampRowIndex, 0, x); //TODO: i is being overwritten for different variables
 			}
 
-			model->setData(i, (variableIndex + 1), currItemHeight);
+			model->setData(activeTimestampRowIndex, (variableIndex + 1), currItemHeight);
 		}
 	}
 
@@ -423,7 +426,7 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
   * Add first two columns as line series
   */
 	//int columnCount = this->getNumVariables() + 1; // Add one for the 0th column, the timestamp
-	int columnCount = model->columnCount(); 
+	int columnCount = model->columnCount();
 	for (int colIndex = 1; colIndex < columnCount; ++colIndex) {
 		int currVariableIndex = colIndex - 1; // Subtract one to step back down to the variable indexing
 		std::unique_ptr<Wt::Chart::WDataSeries> s = cpp14::make_unique<Wt::Chart::WDataSeries>(colIndex, Wt::Chart::SeriesType::Bar);
