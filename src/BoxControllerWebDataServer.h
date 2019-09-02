@@ -19,6 +19,9 @@ namespace Wt {
 }
 
 //BoxControllerWebDataServer
+/*! \brief Hosts webserver, holds reference to a manager.
+ *
+ */
 class BoxControllerWebDataServer
 {
 public:
@@ -29,7 +32,7 @@ public:
 	{
 	};
 
-	/*! \brief Create a new chat server.
+	/*! \brief Create a new web data server.
 	 */
 	BoxControllerWebDataServer(Wt::WServer& server, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr);
 
@@ -46,16 +49,13 @@ public:
 	 */
 	bool connect(Client* client, const DataServerEventCallback& handleEvent);
 
-	/*! \brief Disconnect from the chat server.
+	/*! \brief Disconnect from the data server.
 	 *
 	 * Returns whether the client has been disconnected (or false if the client
 	 * was not connected).
 	 */
 	bool disconnect(Client* client);
 
-	///*! \brief Send a message on behalve of a user.
-	// */
-	//void sendMessage(const Wt::WString& user, const Wt::WString& message);
 
 	void processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event);
 
@@ -77,7 +77,6 @@ private:
 	ClientMap clients_;
 
 	std::shared_ptr<BehavioralBoxControllersManager> manager_;
-	//BehavioralBoxControllersManager& manager_;
 
 	void postDataServerEvent(const DataServerEvent& event);
 };

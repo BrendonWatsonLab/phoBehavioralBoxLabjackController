@@ -4,7 +4,6 @@
 #include "ChartConfig.h"
 #include "CsvUtil.h"
 
-
 #include <Wt/WTime.h>
 #include <Wt/WDate.h>
 #include <Wt/WDateTime.h>
@@ -259,7 +258,23 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 }
 
 
+// Update function
+void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
+{
+	cout << "TimeSeriesChart::processHistoricalDataUpdateEvent(...):" << endl;
+	if (event.type() == HistoricalDataLoadingEvent::Complete) {
+		std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = event.dataLoadedHistoricalDataVector();
+		cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << endl;
+		cout << "reloading.... " << endl;
+		this->reload(loadedHistoricalDataVect);
+		cout << "done." << endl;
+	}
+	else {
+		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
+	}
+}
 
+// Builds a model from a vector of historical data
 std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData)
 {
 	if (historicalData.empty()) {
@@ -281,20 +296,19 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		numStatisticsVariables = activeEventStatistics.variableStatsVectors.size();
 		numColumns += numStatisticsVariables;
 		std::vector<std::string> statsAggLabels;
-		for(int i = 0; i < headerLabels.size(); i++)
+		for (int i = 0; i < headerLabels.size(); i++)
 		{
 			std::string statsAggLabel = headerLabels[i] + "_DayCount";
 			statsAggLabels.push_back(statsAggLabel);
 
 		}
+		// Append the stats header labels to the end of the header labels array
 		headerLabels.insert(std::end(headerLabels), std::begin(statsAggLabels), std::end(statsAggLabels));
 	}
-
-	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(maxNumEvents, numColumns); 
-
-	
 	// Add "time" variable to front of list
 	headerLabels.insert(headerLabels.begin(), "time");
+
+	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(maxNumEvents, numColumns);
 
 	// variables for loop
 	int variableIndex = 0;
@@ -315,7 +329,6 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 
 		// Get the height of the data bar
 		double currItemHeight = double(to_underlying(this->variableKindVect_[variableIndex]));
-		
 
 		// Iterate through the events for the given variable
 		for (unsigned i = 0; i < currVarNumEvents; ++i) {
@@ -334,7 +347,6 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		}
 	}
 
-
 	// Stats (aggregate) variables for loop
 	for (int statsVariableIndex = 0; statsVariableIndex < numStatisticsVariables; statsVariableIndex++)
 	{
@@ -342,7 +354,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		EventStatistics::VariableStatistics currVariableStats = activeEventStatistics.variableStatsVectors[statsVariableIndex];
 		std::map<Clock::time_point, int>  currDaysMap = currVariableStats.eventsPerDay;
 		int currVarNumDays = currVariableStats.numOfDays;
-		
+
 		// Sort the events by ascending timestamp
 		//unsigned long long earliest_event_timestamp = 0;
 		//if (!this->shouldUseDateXAxis) {
@@ -360,7 +372,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 			ParsedVariableEventType currEvent = ParsedVariableEventType(anAggregateStatsPair.first, currItemHeight);
 			unsigned long long x;
 			//if (this->shouldUseDateXAxis) {
-				x = currEvent.milliseconds_since_epoch;
+			x = currEvent.milliseconds_since_epoch;
 			//}
 			//else {
 			//	// Compute the relative (from the first timestamp) if we aren't using the date axis
@@ -378,22 +390,6 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	}
 
 	return model;
-}
-
-
-void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
-{
-	cout << "TimeSeriesChart::processHistoricalDataUpdateEvent(...):" << endl;
-	if (event.type() == HistoricalDataLoadingEvent::Complete) {
-		std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = event.dataLoadedHistoricalDataVector();
-		cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << endl;
-		cout << "reloading.... " << endl;
-		this->reload(loadedHistoricalDataVect);
-		cout << "done." << endl;
-	}
-	else {
-		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
-	}
 }
 
 // Build vector of line series objects

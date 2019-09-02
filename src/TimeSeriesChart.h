@@ -7,7 +7,7 @@
 
 #include "BoxPortInformation.h"
 
-#define TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS false
+#define TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS true
 #define TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN 8
 #define TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT 20
 #define TIME_SERIES_CHART_SUBPLOT_HEIGHT 130
@@ -92,13 +92,11 @@ BoxPortInformation::BehavioralEventKind::Other };
 	std::vector<bool> isVariableAggregate_ = { false, false, false, false, false, false, false, false, false };
 #endif // TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS
 
-
-	
 	Wt::WColor otherColor_ = Wt::WColor(200, 200, 200, 255);
 
 	static Wt::WColor make_translucent(Wt::WColor originalColor, int opacity) { return Wt::WColor(originalColor.red(), originalColor.green(), originalColor.blue(), opacity); };
 	static const unsigned long long millisPerDay = 86400000;
-
+	static const unsigned long long secondsPerDay = 86400;
 
 };
 

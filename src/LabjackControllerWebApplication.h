@@ -15,6 +15,9 @@ class BehavioralBoxControllersManager;
 
 using namespace Wt;
 
+/* 
+
+*/
 class LabjackControllerWebApplication : public WApplication
 {
 public:
@@ -31,8 +34,6 @@ private:
 	Wt::WText* javaScriptError_;
 	const Wt::WEnvironment& env_;
 	std::unique_ptr<Wt::WTimer> timer_;
-	/*! \brief Add another chat client.
-   */
 	void addOuterWidget();
 	void javaScriptTest();
 	void emptyFunc();
