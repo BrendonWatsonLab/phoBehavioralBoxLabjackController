@@ -22,7 +22,7 @@ class TimeSeriesChart : public Wt::WContainerWidget
 public:
 	TimeSeriesChart();
 
-	bool shouldUseDateXAxis = true;
+	
 
 	void reload(std::vector<BehavioralBoxHistoricalData> historicalData);
 
@@ -44,16 +44,25 @@ public:
 
 	CurrentDateTimeRange getCurrentDesiredRangeMillis();
 
+	// Axis Synchronization:
+	double shared_y_axis_max = 0.0;
+	double shared_y_axis_min = 0.0;
+	// shouldEnableSynchronize_Y_Axis: if true, the Y-Axis scale is sychronized across all subplots.
+	bool shouldEnableSynchronize_Y_Axis = true;
+
+
 private:
 	// Config:
 	bool shouldEnableAggregateStatistics_ = TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS;
 	int numDaysToDisplay_ = 7;
+	bool shouldUseDateXAxis = true;
 
 	// UI Elements
 	WContainerWidget* loadingContainerWidget;
 	WContainerWidget* tableContainerWidget;
 	WContainerWidget* chartsContainerWidget;
 
+	// GUI Setup Functions:
 	void setupLoadingIndicator();
 	void setupTable(const std::shared_ptr<Wt::WAbstractItemModel> model);
 	void setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> model);
@@ -64,9 +73,10 @@ private:
 	// Data Series:
 	const int getNumSubplots() { return this->subplotDataSeriesIndicies_.size(); }; // 4 food/water signals + 1 for running wheel
 	const int getNumVariables() { return this->colorVect_.size(); };
-	// subplotDataSeriesIndicies_: the data series to include on a given subplot
+	
 
 #if TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS
+	// subplotDataSeriesIndicies_: the data series to include on a given subplot
 	std::vector<std::vector<int>> subplotDataSeriesIndicies_ = { {0, 4, 9, 13}, {1, 5, 10, 14}, {2, 6, 11, 15}, {3, 7, 12, 16}, {8, 17} };
 	std::vector<std::vector<double>> subplotDataSeriesHeights_ = { {2.5, 7.5, 10.0, 10.0}, {2.5, 7.5, 10.0, 10.0}, {2.5, 7.5, 10.0, 10.0}, {2.5, 7.5, 10.0, 10.0}, {5.5, 10.0} };
 	std::vector<BoxPortInformation::BehavioralEventKind> variableKindVect_ = { BoxPortInformation::BehavioralEventKind::BeamBreak, BoxPortInformation::BehavioralEventKind::BeamBreak,

@@ -197,7 +197,15 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 		currChart->axis(Wt::Chart::Axis::Y).setLocation(Chart::AxisValue::Zero);
 		currChart->axis(Wt::Chart::Axis::Y).setMinimum(0.0);
 		if (this->shouldEnableAggregateStatistics_) {
-			currChart->axis(Wt::Chart::Axis::Y).setAutoLimits(Chart::AxisValue::Maximum);
+			if (this->shouldEnableSynchronize_Y_Axis) {
+				// Set the current chart maximum to the global y-axis maximum so they're on a common scale.
+				currChart->axis(Wt::Chart::Axis::Y).setMaximum(this->shared_y_axis_max);
+			}
+			else {
+				// Otherwise set the current chart maximum to the maximum of it's displayed series
+				currChart->axis(Wt::Chart::Axis::Y).setAutoLimits(Chart::AxisValue::Maximum);
+			}
+			
 			currChart->axis(Wt::Chart::Axis::Y).setVisible(true);
 		}
 		else {
@@ -277,6 +285,8 @@ void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadi
 // Builds a model from a vector of historical data
 std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData)
 {
+	this->shared_y_axis_max = 0.0;
+
 	if (historicalData.empty()) {
 		cout << "WARNING: Data model empty!" << endl;
 		return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
@@ -369,6 +379,8 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		int rowIndex = 0;
 		for (const auto& anAggregateStatsPair : currDaysMap) {
 			double currItemHeight = double(anAggregateStatsPair.second);
+			// Check to set the max:
+			this->shared_y_axis_max = max(this->shared_y_axis_max, currItemHeight);
 			ParsedVariableEventType currEvent = ParsedVariableEventType(anAggregateStatsPair.first, currItemHeight);
 			unsigned long long x;
 			//if (this->shouldUseDateXAxis) {
