@@ -312,14 +312,17 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 
 	BehavioralBoxHistoricalData activeHistoricalData = historicalData[0];
 	int numVariables = activeHistoricalData.getNumberVariables();
+	//TODO: get the number of distinct timestamps and then use those as the number of events instead of just using the max number of events. Each row must have a distinct timestamp, and there are no other requirements.
+	//TODO: this is really inefficient because this is the format it starts out in and then I parse them into vectors of events for each variable.
 	int maxNumEvents = activeHistoricalData.getMaxNumberEvents();
+
 	std::vector<std::string> headerLabels = globalLabjackInputPortPurpose;
 
 	// Aggregate functions and stuff
-	//TODO: use it, plot a graph of the events per day.
 	EventStatistics activeEventStatistics = activeHistoricalData.getEventStatistics();
 	this->shared_y_axis_max = activeEventStatistics.globalMaxNumEventsPerDay;
 	int numStatisticsVariables = 0;
+	int numAggregateEvents = activeEventStatistics.globalNumOfDays;
 	int numColumns = (1 + numVariables); // Add one to numVariables to account for the timestamp column
 	if (this->shouldEnableAggregateStatistics_) {
 		numStatisticsVariables = activeEventStatistics.variableStatsVectors.size();
@@ -337,7 +340,9 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	// Add "time" variable to front of list
 	headerLabels.insert(headerLabels.begin(), "time");
 
-	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(maxNumEvents, numColumns);
+
+	int totalNumEvents = maxNumEvents + numAggregateEvents;
+	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(totalNumEvents, numColumns);
 
 	// variables for loop
 	int variableIndex = 0;
@@ -371,7 +376,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 			else {
 				// Compute the relative (from the first timestamp) if we aren't using the date axis
 				x = currEvent.milliseconds_since_epoch - earliest_event_timestamp;
-				model->setData(i, 0, x);
+				model->setData(i, 0, x); //TODO: i is being overwritten for different variables
 			}
 
 			model->setData(i, (variableIndex + 1), currItemHeight);
