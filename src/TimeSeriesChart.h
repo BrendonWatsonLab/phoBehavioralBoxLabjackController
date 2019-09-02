@@ -69,7 +69,7 @@ public:
 private:
 	// Config:
 	bool shouldEnableAggregateStatistics_ = TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS;
-	int numDaysToDisplay_ = 7;
+	int numDaysToDisplay_ = 12;
 	bool shouldUseDateXAxis = true;
 
 	// UI Elements
