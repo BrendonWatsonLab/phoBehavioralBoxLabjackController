@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <chrono>
 #include <Wt/WApplication.h>
 #include <Wt/WContainerWidget.h>
 #include <Wt/WAbstractItemModel.h>
@@ -10,7 +11,8 @@
 #define TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS true
 #define TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN 8
 #define TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT 20
-#define TIME_SERIES_CHART_SUBPLOT_HEIGHT 130
+//#define TIME_SERIES_CHART_SUBPLOT_HEIGHT 130
+#define TIME_SERIES_CHART_SUBPLOT_HEIGHT 230
 #define TIME_SERIES_CHART_SUBPLOT_WIDTH 1080
 #define TIME_SERIES_CHART_RANGE_SLIDER_HEIGHT 80
 
@@ -32,7 +34,7 @@ public:
 		DataDisplayOptions(bool showEvents, bool showAggregate) : shouldShowEventData(showEvents), shouldShowAggregateData(showAggregate) {};
 	};
 
-	DataDisplayOptions tableDisplayOptions = DataDisplayOptions(false, true);
+	DataDisplayOptions tableDisplayOptions = DataDisplayOptions(false, false);
 	DataDisplayOptions plotDisplayOptions = DataDisplayOptions(true, true);
 
 	
@@ -120,6 +122,16 @@ BoxPortInformation::BehavioralEventKind::Other };
 	static Wt::WColor make_translucent(Wt::WColor originalColor, int opacity) { return Wt::WColor(originalColor.red(), originalColor.green(), originalColor.blue(), opacity); };
 	static const unsigned long long millisPerDay = 86400000;
 	static const unsigned long long secondsPerDay = 86400;
+
+	// gets the Wt::WDateTime corresponding to a given millisSinceEpoch in our current timezone
+	static const int currentTimezoneHoursOffsetFromGMT = -4;
+	static const Wt::WDateTime getCurrentLocalDateTimeFromMillis(unsigned long long millisSinceEpoch);
+
+	
+	static const Wt::WDateTime convertGMTTimePointToLocalDatetime(std::chrono::system_clock::time_point GMTTimePoint);
+	static const Wt::WDateTime convertGMTDateTimeToLocalDatetime(Wt::WDateTime GMTDatetime);
+	// the day-aggregate events should be plotted at 12noon instead of 12midnight so that they are centered on their apporpriate day. This converts datetimes from 12midnight representation to 12noon.
+	static const Wt::WDateTime convertDateTimeToBarCenteredDatetime(Wt::WDateTime unshiftedLocalDatetime);
 
 };
 

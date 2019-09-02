@@ -48,22 +48,26 @@ void TimeSeriesChart::reload(std::vector<BehavioralBoxHistoricalData> historical
 		return;
 	}
 
+	//this->loadingContainerWidget->propagateSetVisible(false);
+
 	/*
 	 * Parses the first column as dates, to be able to use a date scale
 	 */
-	if (this->shouldUseDateXAxis) {
-		for (int i = 0; i < this->model->rowCount(); ++i) {
-			cpp17::any currData = model->data(i, 0);
-			Wt::WString s = Wt::asString(currData);
-			std::string::size_type sz = 0;   // alias of size_t
-			unsigned long long currTimestampData = stoull(s, &sz);
-			std::chrono::time_point<Clock> currDataTimepoint = LabjackHelpers::date_from_milliseconds_since_epoch(currTimestampData);
-			//TODO: I think I need to use WLocalDateTime instead of WDateTime, as WDateTime assumes UTC
-			Wt::WDateTime currTimestampDateTime = Wt::WDateTime(currDataTimepoint);
-			//Wt::WLocalDateTime currTimestampDateTime = Wt::WLocalDateTime(currDataTimepoint);
-			model->setData(i, 0, currTimestampDateTime);
-		}
-	}
+	//if (this->shouldUseDateXAxis) {
+	//	for (int i = 0; i < this->model->rowCount(); ++i) {			
+	//		cpp17::any currData = model->data(i, 0);
+	//		Wt::WString s = Wt::asString(currData);
+	//		std::string::size_type sz = 0;   // alias of size_t
+	//		unsigned long long currTimestampData = stoull(s, &sz);
+	//		std::chrono::time_point<Clock> currDataTimepoint = LabjackHelpers::date_from_milliseconds_since_epoch(currTimestampData);
+	//		//TODO: I think I need to use WLocalDateTime instead of WDateTime, as WDateTime assumes UTC
+	//		Wt::WDateTime currTimestampDateTime = Wt::WDateTime(currDataTimepoint + std::chrono::hours(-4)); // Places the absolute center of the bar here:
+	//		// Need to shift foward by 12 hours
+	//		//Wt::WLocalDateTime currLocalTimestampDateTime = currTimestampDateTime.toLocalTime();
+	//		model->setData(i, 0, currTimestampDateTime);
+	//		//model->setData(i, 0, currLocalTimestampDateTime);
+	//	}
+	//}
 
 	/*
 	 * Build the data table.
@@ -135,10 +139,10 @@ void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model
 			// if it is an aggregate variable and we're not supposed to show aggregate variables, it's hidden
 			isColumnHidden = true;
 		}
-		else if (!isVariableAggregate && (!this->tableDisplayOptions.shouldShowEventData)) {
-			// if it's not an aggregate variable (meaning it's an event variable) and we're not supposed to show event data, it's hidden
-			isColumnHidden = true;
-		}
+		//else if (!isVariableAggregate && (!this->tableDisplayOptions.shouldShowEventData)) {
+		//	// if it's not an aggregate variable (meaning it's an event variable) and we're not supposed to show event data, it's hidden
+		//	isColumnHidden = true;
+		//}
 		table->setColumnHidden(i, isColumnHidden);
 
 		//table->setColumnWidth(i, Wt::WLength::Auto);
@@ -360,13 +364,15 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 			unsigned long long x;
 			if (this->shouldUseDateXAxis) {
 				x = currEvent.milliseconds_since_epoch;
+				Wt::WDateTime currTimestampDateTime = TimeSeriesChart::getCurrentLocalDateTimeFromMillis(x);
+				model->setData(i, 0, currTimestampDateTime);
 			}
 			else {
 				// Compute the relative (from the first timestamp) if we aren't using the date axis
 				x = currEvent.milliseconds_since_epoch - earliest_event_timestamp;
+				model->setData(i, 0, x);
 			}
 
-			model->setData(i, 0, x);
 			model->setData(i, (variableIndex + 1), currItemHeight);
 		}
 	}
@@ -395,16 +401,12 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 			double currItemHeight = double(anAggregateStatsPair.second);
 			// Check to set the max:
 			this->shared_y_axis_max = max(this->shared_y_axis_max, currItemHeight);
-			ParsedVariableEventType currEvent = ParsedVariableEventType(anAggregateStatsPair.first, currItemHeight);
-			unsigned long long x;
-			//if (this->shouldUseDateXAxis) {
-			x = currEvent.milliseconds_since_epoch;
-			//}
-			//else {
-			//	// Compute the relative (from the first timestamp) if we aren't using the date axis
-			//	x = currEvent.milliseconds_since_epoch - earliest_event_timestamp;
-			//}
-			model->setData(rowIndex, 0, x);
+
+			// Build the datetimes
+			Wt::WDateTime currTimestampDateTime = TimeSeriesChart::convertGMTTimePointToLocalDatetime(anAggregateStatsPair.first);
+			currTimestampDateTime = TimeSeriesChart::convertDateTimeToBarCenteredDatetime(currTimestampDateTime);
+			model->setData(rowIndex, 0, currTimestampDateTime);
+
 			model->setData(rowIndex, absoluteColumnIndex, currItemHeight);
 			rowIndex++;
 		}
@@ -522,6 +524,28 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 		outputVector.push_back(std::move(s));
 	}
 	return outputVector;
+}
+
+const Wt::WDateTime TimeSeriesChart::getCurrentLocalDateTimeFromMillis(unsigned long long millisSinceEpoch)
+{
+	std::chrono::time_point<Clock> currDataTimepoint = LabjackHelpers::date_from_milliseconds_since_epoch(millisSinceEpoch);
+	Wt::WDateTime currTimestampDateTime = TimeSeriesChart::convertGMTTimePointToLocalDatetime(currDataTimepoint);
+	return currTimestampDateTime;
+}
+
+const Wt::WDateTime TimeSeriesChart::convertGMTTimePointToLocalDatetime(std::chrono::system_clock::time_point GMTTimePoint)
+{
+	return Wt::WDateTime(GMTTimePoint + std::chrono::hours(TimeSeriesChart::currentTimezoneHoursOffsetFromGMT));
+}
+
+const Wt::WDateTime TimeSeriesChart::convertGMTDateTimeToLocalDatetime(Wt::WDateTime GMTDatetime)
+{
+	return GMTDatetime.addSecs(3600 * TimeSeriesChart::currentTimezoneHoursOffsetFromGMT);
+}
+
+const Wt::WDateTime TimeSeriesChart::convertDateTimeToBarCenteredDatetime(Wt::WDateTime unshiftedLocalDatetime)
+{
+	return unshiftedLocalDatetime.addSecs(3600 * 12);
 }
 
 TimeSeriesChart::CurrentDateTimeRange TimeSeriesChart::getCurrentDesiredRangeMillis()
