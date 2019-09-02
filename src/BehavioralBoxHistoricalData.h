@@ -3,6 +3,7 @@
 #include <chrono>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 #include "LabjackDataFile.h"
 
@@ -131,7 +132,7 @@ struct EventStatistics {
 		{
 			VariableStatistics currStats = VariableStatistics(varEventVector);
 			this->variableStatsVectors.push_back(currStats);
-			this->globalMaxNumEventsPerDay = max(this->globalMaxNumEventsPerDay, currStats.maxNumEventsPerDay);
+			this->globalMaxNumEventsPerDay = std::max(this->globalMaxNumEventsPerDay, currStats.maxNumEventsPerDay);
 		}
 	}
 

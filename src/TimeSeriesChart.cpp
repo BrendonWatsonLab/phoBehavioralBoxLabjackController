@@ -318,6 +318,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	// Aggregate functions and stuff
 	//TODO: use it, plot a graph of the events per day.
 	EventStatistics activeEventStatistics = activeHistoricalData.getEventStatistics();
+	this->shared_y_axis_max = activeEventStatistics.globalMaxNumEventsPerDay;
 	int numStatisticsVariables = 0;
 	int numColumns = (1 + numVariables); // Add one to numVariables to account for the timestamp column
 	if (this->shouldEnableAggregateStatistics_) {
@@ -400,7 +401,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 		for (const auto& anAggregateStatsPair : currDaysMap) {
 			double currItemHeight = double(anAggregateStatsPair.second);
 			// Check to set the max:
-			this->shared_y_axis_max = max(this->shared_y_axis_max, currItemHeight);
+			//this->shared_y_axis_max = max(this->shared_y_axis_max, currItemHeight);
 
 			// Build the datetimes
 			Wt::WDateTime currTimestampDateTime = TimeSeriesChart::convertGMTTimePointToLocalDatetime(anAggregateStatsPair.first);
