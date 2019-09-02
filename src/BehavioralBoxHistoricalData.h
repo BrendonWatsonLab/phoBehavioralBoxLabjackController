@@ -88,16 +88,23 @@ struct EventStatistics {
 			{
 				Clock::time_point currDayDatetime = aVarEvent.getDateDayDatetime();
 				int currAccumulatedValue = 0;
-				try {
-					// Try to find a previously existing vector of LabjackDataFiles in the map by indexing with the parsed serial number.
+				if (this->eventsPerDay.count(currDayDatetime) > 0) {
 					// "at(...)" is used instead of the traditional index notation ("[...]") because it throws an exception if it doesn't exist instead of adding it silently so we can create the vector if needed.
-					currAccumulatedValue = this->eventsPerDay.at(currDayDatetime);
+					try {
+						currAccumulatedValue = this->eventsPerDay.at(currDayDatetime);
+					}
+					catch (...) {
+						// Map entry doesn't already exist.
+						currAccumulatedValue = 0;
+						numOfDays += 1;
+					}
 				}
-				catch (...) {
-					// Map entry doesn't already exist. Create an empty vector (could also rescan for files and regenerate the map).
+				else {
+					// Map entry doesn't already exist.
 					currAccumulatedValue = 0;
 					numOfDays += 1;
 				}
+
 				// Add one for the current event
 				currAccumulatedValue += 1;
 				this->eventsPerDay[currDayDatetime] = currAccumulatedValue;
