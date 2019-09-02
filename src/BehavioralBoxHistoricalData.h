@@ -84,7 +84,7 @@ struct EventStatistics {
 
 		}
 
-		VariableStatistics(std::vector< ParsedVariableEventType > variableEventsVector) : eventsPerDay(std::map<Clock::time_point, int>()) {
+		VariableStatistics(std::vector<ParsedVariableEventType> variableEventsVector) : eventsPerDay(std::map<Clock::time_point, int>()) {
 			numOfEvents = variableEventsVector.size();
 			for each (auto aVarEvent in variableEventsVector)
 			{
@@ -121,20 +121,63 @@ struct EventStatistics {
 	std::vector<VariableStatistics> variableStatsVectors;
 	// globalMaxNumEventsPerDay: global max number of events per day shared across all variables
 	int globalMaxNumEventsPerDay = 0;
+	//int globalNumOfEvents = 0;
+	int globalNumOfDays = 0;
+	std::map<Clock::time_point, std::vector<int>> dayEventsCountsVect;
+
 
 	EventStatistics() {
 
 	}
 
-	EventStatistics(std::vector< std::vector< ParsedVariableEventType > > variableEventVectors) {
-		variableStatsVectors = std::vector<VariableStatistics>();
+	EventStatistics(std::vector<std::vector<ParsedVariableEventType>> variableEventVectors) {
+		this->variableStatsVectors = std::vector<VariableStatistics>();
+		this->dayEventsCountsVect = std::map<Clock::time_point, std::vector<int>>();
+		int numOfVariables = variableEventVectors.size();
+		int currVariableIndex = 0;
 		for each (auto varEventVector in variableEventVectors)
 		{
 			VariableStatistics currStats = VariableStatistics(varEventVector);
 			this->variableStatsVectors.push_back(currStats);
 			this->globalMaxNumEventsPerDay = std::max(this->globalMaxNumEventsPerDay, currStats.maxNumEventsPerDay);
-		}
+			//TODO: this is slow and inefficient
+			for (const auto& anAggregateStatsPair : currStats.eventsPerDay) {
+				std::vector<int> currDaySizesArray;
+				if (this->dayEventsCountsVect.count(anAggregateStatsPair.first) > 0) {
+					// "at(...)" is used instead of the traditional index notation ("[...]") because it throws an exception if it doesn't exist instead of adding it silently so we can create the vector if needed.
+					try {
+						currDaySizesArray = this->dayEventsCountsVect.at(anAggregateStatsPair.first);
+					}
+					catch (...) {
+						// Map entry doesn't already exist.
+						currDaySizesArray = std::vector<int>(numOfVariables, 0);
+						globalNumOfDays += 1;
+					}
+				}
+				else {
+					// Map entry doesn't already exist.
+					currDaySizesArray = std::vector<int>(numOfVariables, 0);
+					globalNumOfDays += 1;
+				}
+				currDaySizesArray[currVariableIndex] = anAggregateStatsPair.second;
+				//currIndexArray.push_back(currVariableIndex); // push back the current variable index to indicate that the current variable has a value at this timepoint/day.
+				this->dayEventsCountsVect[anAggregateStatsPair.first] = currDaySizesArray; // update the index array for the current day
+			} // end for each stats pair
+			currVariableIndex++;
+		} // end for each variable
 	}
+
+	//std::map<Clock::time_point, std::vector<int>> getEventsPerDay() {
+	//	std::map<Clock::time_point, std::vector<int>> dayEventsIndiciesVect;
+	//	int numVariables = this->variableStatsVectors.size();
+	//	for (size_t variableIndex = 0; variableIndex < numVariables; variableIndex++)
+	//	{
+	//		VariableStatistics currVariableStats = this->variableStatsVectors[variableIndex];
+	//		
+	//	}
+
+	//	return dayEventsIndiciesVect;
+	//}
 
 
 };
