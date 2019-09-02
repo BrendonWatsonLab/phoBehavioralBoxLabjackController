@@ -17,10 +17,23 @@
 class BehavioralBoxHistoricalData;
 class HistoricalDataLoadingEvent;
 
+
+/*
+* Shows raw "event" data as well as "aggregate" (summed) data.
+*/
 class TimeSeriesChart : public Wt::WContainerWidget
 {
 public:
 	TimeSeriesChart();
+
+	struct DataDisplayOptions {
+		bool shouldShowEventData = false;
+		bool shouldShowAggregateData = false;
+		DataDisplayOptions(bool showEvents, bool showAggregate) : shouldShowEventData(showEvents), shouldShowAggregateData(showAggregate) {};
+	};
+
+	DataDisplayOptions tableDisplayOptions = DataDisplayOptions(false, true);
+	DataDisplayOptions plotDisplayOptions = DataDisplayOptions(true, true);
 
 	
 

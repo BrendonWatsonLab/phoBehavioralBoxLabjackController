@@ -127,6 +127,20 @@ void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model
 	table->setColumnAlignment(0, Wt::AlignmentFlag::Left);
 	table->setHeaderAlignment(0, Wt::AlignmentFlag::Left);
 	for (int i = 1; i < model->columnCount(); ++i) {
+		int variableIndex = i - 1; // Subtract the time index
+		bool isVariableAggregate = this->isVariableAggregate_[variableIndex];
+		bool isColumnHidden = false;
+
+		if (isVariableAggregate && (!this->tableDisplayOptions.shouldShowAggregateData)) {
+			// if it is an aggregate variable and we're not supposed to show aggregate variables, it's hidden
+			isColumnHidden = true;
+		}
+		else if (!isVariableAggregate && (!this->tableDisplayOptions.shouldShowEventData)) {
+			// if it's not an aggregate variable (meaning it's an event variable) and we're not supposed to show event data, it's hidden
+			isColumnHidden = true;
+		}
+		table->setColumnHidden(i, isColumnHidden);
+
 		//table->setColumnWidth(i, Wt::WLength::Auto);
 		table->setColumnWidth(i, 90);
 		table->setColumnAlignment(i, Wt::AlignmentFlag::Center);
