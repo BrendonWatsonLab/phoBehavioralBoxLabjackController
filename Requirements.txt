@@ -1,5 +1,19 @@
-http://redmine.emweb.be/projects/wt/wiki/Installing_Wt_on_MS_Windows
+Windows SDK version 10.0.17763.0
 
+
+
+
+
+// BOOST:
+Run boost_1_71_0-msvc-14.2-64.exe:
+  Install with defaults ( to "C:\local\boost_1_71_0")
+
+
+// WT webserver:
+Run Wt-4.1.0-msvs2019-Windows-x64-SDK.exe:
+  Install with defaults (to "C:\Program Files\Wt 4.1.0 msvs2019 x64")
+
+http://redmine.emweb.be/projects/wt/wiki/Installing_Wt_on_MS_Windows
 
 In C/C++ -> General, Additional Include Directories: C:\Program Files\Wt 4.1.0 msvs2019 x64\include
 In C/C++ -> Preprocessor, ensure that WIN32 is defined. Also define HPDF_DLL, which will allow you to generate pdf files.
@@ -9,5 +23,39 @@ Go to Linker->Input. In the Additional Dependencies, fill out the Wt libraries y
 If you want to run your fresh application, set these options:
 In the Debugging tab, set Command Arguments to --docroot . --http-address 0.0.0.0 --http-port 8080
 In the Debugging tab, set Environment to PATH=C:/Program Files/Wt 4.1.0 msvs2019 x64/bin
+
+
+// CMAKE:
+Run cmake-3.15.2-win64-x64.msi:
+	- Accept the agreement
+	- Change Install Options to "Add CMake to the system path for all users". Click next.
+	- Install to the default location ("C:\Program Files\CMake\").
+
+
+// Open Visual Studio 2019:
+	phoBehavioralBoxLabjackController.sln
+	- Up at the top of the window, there are two drop-down menus to the left of a button that looks like a green play button.
+	- Change the first one to "Debug"
+	- Change the second one to "x64".
+	- Click on the "Build > Build Solution" menu up at the top.
+
+
+
+
+// LABJACK Software:
+Run LabJack-2019-05-20.exe:
+	Install with defaults
+
+
+// LABJACK API:
+https://labjack.com/support/software/examples/ljm/c
+Download the latest version. 
+Extract the contents of the folder within the .zip (for example in "C_C++_LJM_2019-05-20-beta.zip" there is a folder called "C_C++_LJM_2019-05-20")
+to the "src/External/C_C++_LJM" folder.
+
+
+
+
+
 
 

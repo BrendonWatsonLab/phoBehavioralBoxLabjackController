@@ -17,6 +17,10 @@
 #include <codecvt>
 #define BUFSIZE 4096
 
+#include <time.h>
+#include <chrono>
+typedef std::chrono::system_clock Clock;
+
 LabjackHelpers::LabjackHelpers()
 {
 }
@@ -302,3 +306,26 @@ bool LabjackHelpers::showInExplorer(const std::string path)
 	ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWDEFAULT);
 	return true;
 }
+
+std::vector<double> LabjackHelpers::computeDelta(std::vector<double> V1, std::vector<double> V2)
+{
+	std::vector<double> result;
+	std::transform(V1.begin(), V1.end(), V2.begin(),
+		std::back_inserter(result),
+		std::minus<int>());
+	return result;
+}
+
+std::chrono::time_point<Clock> LabjackHelpers::date_from_milliseconds_since_epoch(unsigned long long milliseconds_since_epoch)
+{
+	std::chrono::milliseconds dur(milliseconds_since_epoch);
+	std::chrono::time_point<std::chrono::system_clock> dt(dur);
+	return dt;
+}
+
+unsigned long long LabjackHelpers::milliseconds_since_epoch_from_date(std::chrono::time_point<Clock> datetime)
+{
+	return std::chrono::duration_cast<std::chrono::milliseconds>(datetime.time_since_epoch()).count();
+}
+
+

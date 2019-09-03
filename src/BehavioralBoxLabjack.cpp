@@ -20,7 +20,8 @@
 #include <fstream>
 #include <string>
 
-#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
+#include "External/C_C++_LJM/LJM_Utilities.h"
+//#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, int serialNumber) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), serialNumber) {}
 
@@ -56,9 +57,6 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	// File Management
 	// Build the file name
 	this->lastCaptureComputerTime = Clock::now();
-	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(this->lastCaptureComputerTime);
-	auto fraction = this->lastCaptureComputerTime - seconds;
-	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
 
 	// Builds the filename in the form "out_file_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}"
@@ -118,13 +116,10 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 
 	// Create the object's thread at the very end of its constructor
 	// wallTime-based event scheduling:
-	this->scheduler = new Bosma::Scheduler(max_n_threads);
-
-	// Ran at the top of every hour
-	this->scheduler->cron("0 * * * *", [this]() { this->runTopOfHourUpdate(); });
+	this->scheduler = new Bosma::Scheduler(MAX_NUM_THREAD_PER_LABJACK);
 
 	// Start a 20Hz (50[ms]) loop to read data.
-	this->scheduler->every(std::chrono::milliseconds(50), [this]() { this->runPollingLoop(); });
+	this->scheduler->every(std::chrono::milliseconds(LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC), [this]() { this->runPollingLoop(); });
 }
 
 // Destructor (Called when object is about to be destroyed
@@ -251,7 +246,7 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 	// Iterate through the output ports
 	for (int i = 0; i < outputPorts.size(); i++)
 	{
-		// Get the appropriate value for the current port (calculateing from the saved lambda function).
+		// Get the appropriate value for the current port (calculating from the saved lambda function).
 		double outputValue = outputPorts[i]->getValue();
 
 		// Check to see if the value changed, and if it did, write it.
@@ -268,11 +263,16 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 			if (isVisibleLightRelayPort) {
 				if (outputValue == 0.0) {
 					// a value of 0.0 means that the light should be on, so it should be in output mode.
+					
+					// Lock the mutex to prevent concurrent labjack interaction
+					std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
 					this->err = LJM_eWriteName(this->handle, portName, outputValue);
 					ErrorCheck(this->err, "LJM_eWriteName");
 				}
 				else {
 					// a value greater than 0.0 means that the light should be off, so it should be set to input mode. This is accomplished by reading from the port (instead of writing).
+					// Lock the mutex to prevent concurrent labjack interaction
+					std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
 					double tempReadValue = 0.0;
 					this->err = LJM_eReadName(this->handle, portName, &tempReadValue);
 					ErrorCheck(this->err, "LJM_eReadName");
@@ -281,25 +281,34 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 			}
 			else {
 				// Not the visible light relay and can be handled in the usual way.
+				// Lock the mutex to prevent concurrent labjack interaction
+				std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
 				this->err = LJM_eWriteName(this->handle, portName, outputValue);
 				ErrorCheck(this->err, "LJM_eWriteName");
 			}
-			printf("\t Set %s state : %f\n", portName, outputValue);
-		}
-	}
-
+			if (PRINT_OUTPUT_VALUES_TO_CONSOLE) {
+				printf("\t Set %s state : %f\n", portName, outputValue);
+			}
+			
+		} // end if didChange
+	} // end for
 }
 
 void BehavioralBoxLabjack::readSensorValues()
 {
-	//time(&this->lastCaptureComputerTime);  /* get current time; same as: timer = time(NULL)  */
 	this->lastCaptureComputerTime = Clock::now();
 
 	//Read the sensor values from the labjack DIO Inputs
-	this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char **)this->inputPortNames, this->lastReadInputPortValues, &this->errorAddress);
-	ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
+	{
+		// Lock the mutex to prevent concurrent labjack interaction
+		std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
+		this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char**)this->inputPortNames, this->lastReadInputPortValues, &this->errorAddress);
+		ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
+	}
+
 	// Only persist the values if the state has changed.
 	if (this->monitor->refreshState(this->lastCaptureComputerTime, this->lastReadInputPortValues)) {
+		//TODO: should this be asynchronous? This would require passing in the capture time and read values
 		this->persistReadValues(true);
 	}
 }
@@ -331,8 +340,10 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 				}
 			} // end if greater than zero
 
+#if LAUNCH_WEB_SERVER
 			// Emit the "valueChanged" signal for the web server
 			this->valueChanged_.emit(this->serialNumber, i, this->lastReadInputPortValues[i]);
+#endif // LAUNCH_WEB_SERVER
 
 		} // end if input port values changed
 		newCSVLine << this->lastReadInputPortValues[i];
@@ -341,11 +352,12 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 		}
 		// After capturing the change, replace the old value
 		this->previousReadInputPortValues[i] = this->lastReadInputPortValues[i];
-		
-	}
+	} //end for num channels
 	if (enableConsoleLogging) {
 		cout << std::endl;
 	}
+	// Lock the mutex to prevent concurrent persisting
+	std::lock_guard<std::mutex> csvLock(this->logMutex);
 	newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
 }
 
@@ -459,15 +471,6 @@ void BehavioralBoxLabjack::toggleOverrideMode_AttractModeLEDs()
 		this->isOverrideActive_AttractModeLEDs = true;
 		cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 1: LEDs Forced OFF" << endl;
 	}
-}
-
-// Executed every hour, on the hour
-void BehavioralBoxLabjack::runTopOfHourUpdate()
-{
-	time_t computerTime;
-	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-	printf("runTopOfHourUpdate: running at %s for labjack %i\n", ctime(&computerTime), this->serialNumber);
-	this->updateVisibleLightRelayIfNeeded();
 }
 
 bool BehavioralBoxLabjack::isArtificialDaylightHours()

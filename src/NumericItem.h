@@ -25,10 +25,18 @@ namespace {
 				std::string s = asString(data).toUTF8();
 				char* endptr;
 				double d = strtod(s.c_str(), &endptr);
-				if (*endptr == 0)
+				if (*endptr == 0) {
 					dt = cpp17::any(d);
-				else
-					dt = data;
+				}
+				else {
+					unsigned long long ullV = strtoull(s.c_str(), &endptr, 10);
+					if (*endptr == 0) {
+						dt = cpp17::any(ullV);
+					}
+					else {
+						dt = data;
+					}
+				}
 			}
 
 			WStandardItem::setData(data, role);

@@ -108,7 +108,7 @@ class CSVWriter
         }
 
         bool writeToFile(string filename){
-            return writeToFile(filename,false);
+            return writeToFile(filename, false);
         }
 
         bool writeToFile(string filename, bool append){

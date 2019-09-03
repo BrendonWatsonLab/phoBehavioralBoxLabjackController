@@ -10,7 +10,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <mutex>
+#if LAUNCH_WEB_SERVER
 #include <Wt/WSignal.h> // Signals support for the web server
+#endif // LAUNCH_WEB_SERVER
 #include "External/CSVWriter.h"
 #include "StateMonitor.h"
 #include "OutputState.h"
@@ -68,8 +71,11 @@ public:
 	vector<std::string> getInputPortNames();
 	vector<std::string> getInputPortPurpose();
 	vector<double> getLastReadValues();
+	string getOutputDirectory() { return this->outputDirectory; }
 
+#if LAUNCH_WEB_SERVER
 	Wt::Signal<int, int, double>& valueChanged() { return this->valueChanged_; }
+#endif // LAUNCH_WEB_SERVER
 
 	// Override Functions
 	void toggleOverrideMode_VisibleLED();
@@ -121,15 +127,20 @@ private:
 
 
 	// Scheduled tasks
-	void runTopOfHourUpdate(); // Runs at the top of every hour (exactly on the hour, according to system time).
-	//void runTopOfMinuteUpdate();
+
+
+	// Mutex/Synchronization:
+	std::mutex logMutex;
+	std::mutex labjackMutex;
 
 	// Visible Light Relay Control
 	//void setVisibleLightRelayState(bool isOn);
 
+#if LAUNCH_WEB_SERVER
 	// Signals
 	// <int: serialNumber, int: portIndex, double: newValue>
 	Wt::Signal<int, int, double> valueChanged_;
+#endif // LAUNCH_WEB_SERVER
 
 };
 

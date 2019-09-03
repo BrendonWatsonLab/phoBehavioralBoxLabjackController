@@ -22,37 +22,30 @@
 #include <thread>
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
+#include "BehavioralBoxControllersManager.h"
 #include "BehavioralBoxLabjack.h"
-
 #include "LabjackHelpers.h"
 
 // Webserver functionality:
-#include "WebServer.h"
-#include "ChartsApplication.h"
+#if LAUNCH_WEB_SERVER
+#include "LabjackControllerWebApplication.h"
+
 #include <Wt/WServer.h>
 // 1 Make the member a real variable not a pointer.
 std::thread web_server_thread;
+#endif // LAUNCH_WEB_SERVER
 
-// Vector of Labjack Objects
-std::vector<BehavioralBoxLabjack*> foundLabjacks;
-
-
-//// Scheduler
-#include "External/Scheduler/Scheduler.h"
-// Make a new scheduling object.
-  // Note: s cannot be moved or copied
-Bosma::Scheduler s(max_n_threads);
+//BehavioralBoxControllersManager controller;
+std::shared_ptr<BehavioralBoxControllersManager> controller = make_shared<BehavioralBoxControllersManager>();
 
 // FUNCTION PROTOTYPES:
-bool waitForFoundLabjacks();
-bool startWebserver(int argc, char** argv);
+//bool waitForFoundLabjacks();
+#if LAUNCH_WEB_SERVER
+bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr);
+#endif // LAUNCH_WEB_SERVER
 int shutdownApplication(int shutdownCode);
 
-void runTopOfHourUpdate();
-void runTopOfMinuteUpdate();
-void runTopOfSecondUpdate();
-void runPollingLoopUpdate();
-
+// Interface:
 void printCommandsMenu();
 
 
@@ -61,17 +54,27 @@ int main(int argc, char** argv)
 	cout << "BehavioralBoxLabjackController:" << endl;
 	cout << "\t Pho Hale 2019" << endl << endl;
 
+	//TODO: this doesn't currently matter because the webserver reloads everything in TimeSeriesChart::buildHistoricDataModel() by calling the static BehavioralBoxControllersManager::loadAllHistoricalData() function.
+	// Eventually we weant to implement it in a singleton-like fashion.
+#if LOAD_HISTORICAL_DATA
+	//controller->reloadHistoricalData();
+#endif // LOAD_HISTORICAL_DATA
+
+#if LAUNCH_WEB_SERVER
 	// Run the webserver:
-	startWebserver(argc, argv);
+	startWebserver(argc, argv, &controller);
+#endif // LAUNCH_WEB_SERVER
 
 	cout << endl << "Scanning for attached Labjacks..." << endl;
-	if (!waitForFoundLabjacks()) {
+	if (!controller->waitForFoundLabjacks()) {
 		// User wants to quit.
 		cout << "User chose to quit. Done." << endl;
 		return shutdownApplication(LJME_NO_DEVICES_FOUND);
 	}
 
-	WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
+#if LAUNCH_WEB_SERVER
+	WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
+#endif // LAUNCH_WEB_SERVER
 
 	// TODO - READ ME: main run loop
 		// The LJM_StartInterval, LJM_WaitForNextInterval, and LJM_CleanInterval functions are used to efficiently execute the loop every so many milliseconds
@@ -83,7 +86,8 @@ int main(int argc, char** argv)
 		// Main should have perhaps an array of things?
 
 	printCommandsMenu();
-	printf("Collecting data at 20Hz....\n");
+	cout << "Collecting data at " << (1000.0 / double(LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC)) << "Hz...." << endl;
+	
 	//WaitForUserIfWindows();
 	// Main run loop:
 	int terminateExecution = 0;
@@ -103,10 +107,9 @@ int main(int argc, char** argv)
 			// Show the data files:
 			cout << "Showing current log files..." << endl;
 			// Iterate through all found Labjacks
-			for (int i = 0; i < foundLabjacks.size(); i++) {
-				//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-				//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-				std::string foundRelativeFilePathString = foundLabjacks[i]->getFullFilePath();
+			
+			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+				std::string foundRelativeFilePathString = controller->getActiveLabjacks()[i]->getFullFilePath();
 				std::string fullFilePathString = LabjackHelpers::getFullPath(foundRelativeFilePathString);
 
 				cout << "\t Showing log file at " << fullFilePathString << endl;
@@ -118,51 +121,34 @@ int main(int argc, char** argv)
 			// Prints the current data
 			cout << "Printing current data..." << endl;
 			// Iterate through all found Labjacks
-			for (int i = 0; i < foundLabjacks.size(); i++) {
-				//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-				//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-				foundLabjacks[i]->diagnosticPrintLastValues();
+			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+				controller->getActiveLabjacks()[i]->diagnosticPrintLastValues();
 			}
 			cout << "\t done." << endl;
 		}
 		else if (character == 'R') {
 			cout << "Refreshing Labjacks..." << endl;
-			int previouslyFoundLabjackSerialNumbers[max_number_labjacks] = {};
-			int numberPreviouslyFoundLabjacks = foundLabjacks.size();
-			for (int i = 0; i < numberPreviouslyFoundLabjacks; i++) {
-				previouslyFoundLabjackSerialNumbers[i] = foundLabjacks[i]->getSerialNumber();
-			}
-
-			// Find the labjacks
-			std::vector<BehavioralBoxLabjack*> newlyFoundAdditionalLabjacks = LabjackHelpers::findAllLabjacks(previouslyFoundLabjackSerialNumbers, numberPreviouslyFoundLabjacks);
-
-			if (newlyFoundAdditionalLabjacks.size() > 0) {
-				cout << "Found " << newlyFoundAdditionalLabjacks.size() << " new labjacks!" << endl;
-				// Iterate through all newly found labjacks and append them to the list of found labjacks
-				for (int i = 0; i < newlyFoundAdditionalLabjacks.size(); i++) {
-					foundLabjacks.push_back(newlyFoundAdditionalLabjacks[i]);
-				}
-			}
-			else {
-				cout << "Found no new labjacks." << endl;
-			}
+			controller->scanForNewLabjacks();
+#if LAUNCH_WEB_SERVER
 			// Refresh the webserver
-			WServer::instance()->postAll(&ChartsApplication::staticUpdateActiveLabjacks);
+			WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
+#endif // LAUNCH_WEB_SERVER
+
 			cout << "\t done." << endl;
 		}
 		else if (character == 'L') {
 			cout << "Toggling visible LED Light mode on all labjacks..." << endl;
 			// Iterate through all found Labjacks
-			for (int i = 0; i < foundLabjacks.size(); i++) {
-				foundLabjacks[i]->toggleOverrideMode_VisibleLED();
+			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+				controller->getActiveLabjacks()[i]->toggleOverrideMode_VisibleLED();
 			}
 			cout << "\t done." << endl;
 		}
 		else if (character == 'A') {
 			cout << "Toggling attract mode on all Labjacks..." << endl;
 			// Iterate through all found Labjacks
-			for (int i = 0; i < foundLabjacks.size(); i++) {
-				foundLabjacks[i]->toggleOverrideMode_AttractModeLEDs();
+			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+				controller->getActiveLabjacks()[i]->toggleOverrideMode_AttractModeLEDs();
 			}
 			cout << "\t done." << endl;
 		}
@@ -175,68 +161,35 @@ int main(int argc, char** argv)
 	return shutdownApplication(LJME_NOERROR);
 }
 
-// Idles and waits for a labjack to be found.
-bool waitForFoundLabjacks()
-{
-	bool stillWaitingToFindLabjacks = true;
-	int character;
-	do {
-		// Find the labjacks
-		foundLabjacks = LabjackHelpers::findAllLabjacks();
 
-		if (foundLabjacks.size() == 0) {
-			printf("No labjacks found!!\n");
-			printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.\n");
-			cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
-			// Read a character from the keyboard
-			character = _getch();
-			character = toupper(character);
-			if (character == 'Q') {
-				// Returns false to indicate that the user gave up.
-				cout << "\t Quitting..." << endl;
-				return false;
-			}
-			else {
-				//std::this_thread::sleep_for(std::chrono::seconds(1));
-				cout << "\t Refreshing Labjacks..." << endl;
-				continue;
-			}
-		}
-		else {
-			// Otherwise labjacks have found, move forward with the program.
-			// Iterate through all found Labjacks
-			for (int i = 0; i < foundLabjacks.size(); i++) {
-				foundLabjacks[i]->syncDeviceTimes();
-				foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
-			}
-			stillWaitingToFindLabjacks = false;
-		}
 
-	} while (stillWaitingToFindLabjacks == true);
-	// Returns true to indicate that labjacks have been found and we should move forward with the program.
-	return true;
-}
+#if LAUNCH_WEB_SERVER
 
-bool startWebserver(int argc, char** argv)
+bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr)
 {
 	cout << "Starting the web server." << endl;
 	web_server_thread = std::move(std::thread([=]() {
-		chartsApplicationWebServer(argc, argv);
+		labjackControllerApplicationWebServer(argc, argv, managerPtr);
 		return true;
 	}));
 	//runServer(argc, argv);
 	return true;
 }
 
+#endif // LAUNCH_WEB_SERVER
+
 // Called when the application is being quit
 int shutdownApplication(int shutdownCode)
 {
 	cout << "Shutting down the application..." << endl;
+	//controller->shutdown();
+#if LAUNCH_WEB_SERVER
 	cout << "Waiting on web server thread to quit..." << endl;
 	// As the thread is using members from this object
 	  // We can not let this obect be destroyed until
 	  // the thread finishes executing.
 	web_server_thread.join();
+#endif // LAUNCH_WEB_SERVER
 	printf("Done.");
 	// At this point the thread has finished.
 	// Destructor can now complete.
@@ -254,55 +207,6 @@ void printCommandsMenu() {
 	cout << "\t Press [a] at any time to toggle Attract mode for all labjacks." << endl;
 	cout << "\t Press [q] at any time to quit." << endl;
 	cout << "\t Press any other key at any time to show this list of commands." << endl;
-}
-
-// Ran at the top of every hour
-void runTopOfHourUpdate() {
-	time_t computerTime;
-	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-	printf("runHourlyLightsUpdate: running at %s\n", ctime(&computerTime));
-		// Iterate through all found Labjacks
-	for (int i = 0; i < foundLabjacks.size(); i++) {
-		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-		printf("runTopOfHourUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-		foundLabjacks[i]->updateVisibleLightRelayIfNeeded();
-	}
-}
-
-// Ran at the top of every minute
-void runTopOfMinuteUpdate() {
-	time_t computerTime;
-	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-	printf("runTopOfMinuteUpdate: running at %s\n", ctime(&computerTime));
-	// Iterate through all found Labjacks
-	for (int i = 0; i < foundLabjacks.size(); i++) {
-		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-		printf("runTopOfMinuteUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-		//foundLabjacks[i]->readSensorValues();
-	}
-	
-}
-
-// Ran at the top of every second
-void runTopOfSecondUpdate() {
-	time_t computerTime;
-	// Iterate through all found Labjacks
-	for (int i = 0; i < foundLabjacks.size(); i++) {
-		time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-		printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-		foundLabjacks[i]->readSensorValues();
-	}
-}
-
-// Ran at a custom interval
-void runPollingLoopUpdate() {
-	//time_t computerTime;
-	// Iterate through all found Labjacks
-	for (int i = 0; i < foundLabjacks.size(); i++) {
-		//time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-		//printf("runTopOfSecondUpdate: running at %s for labjack %i\n", ctime(&computerTime), i);
-		foundLabjacks[i]->readSensorValues();
-	}
 }
 
 

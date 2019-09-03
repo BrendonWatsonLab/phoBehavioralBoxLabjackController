@@ -19,44 +19,59 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\BehavioralBoxHistoricalData.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
-    <ClCompile Include="src\BehavioralBoxLajbackController.cpp" />
+    <ClCompile Include="src\BehavioralBoxControllersManager.cpp" />
+    <ClCompile Include="src\BoxControllerWebDataServer.cpp" />
     <ClCompile Include="src\ConfigurationFile.cpp" />
+    <ClCompile Include="src\DataServerEvent.cpp" />
+    <ClCompile Include="src\FilesystemHelpers.cpp" />
+    <ClCompile Include="src\HistoricalDataLoadingEvent.cpp" />
     <ClCompile Include="src\InputState.cpp" />
-    <ClCompile Include="src\LabjackExample.cpp" />
+    <ClCompile Include="src\LabjackControllerOuterWidget.cpp" />
+    <ClCompile Include="src\LabjackControllerWebApplication.cpp" />
+    <ClCompile Include="src\LabjackDataFile.cpp" />
+    <ClCompile Include="src\LabjackLiveStateWidget.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\ChartConfig.cpp" />
-    <ClCompile Include="src\ChartsApplication.cpp" />
-    <ClCompile Include="src\ChartsExample.cpp" />
     <ClCompile Include="src\CsvUtil.cpp" />
     <ClCompile Include="src\LabjackHelpers.cpp" />
     <ClCompile Include="src\OutputState.cpp" />
     <ClCompile Include="src\PanelList.cpp" />
     <ClCompile Include="src\StateMonitor.cpp" />
-    <ClCompile Include="src\WebServer.cpp" />
+    <ClCompile Include="src\TimeSeriesChart.cpp" />
+    <ClCompile Include="src\WebAppHelpWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConfigFiles\config-DownstairsBox.h" />
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h" />
+    <ClInclude Include="src\BehavioralBoxHistoricalData.h" />
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
-    <ClInclude Include="src\BehavioralBoxLajbackController.h" />
+    <ClInclude Include="src\BehavioralBoxControllersManager.h" />
+    <ClInclude Include="src\BoxControllerWebDataServer.h" />
     <ClInclude Include="src\ChartConfig.h" />
-    <ClInclude Include="src\ChartsApplication.h" />
-    <ClInclude Include="src\ChartsExample.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\ConfigurationFile.h" />
     <ClInclude Include="src\CsvUtil.h" />
+    <ClInclude Include="src\DataServerEvent.h" />
     <ClInclude Include="src\External\CSVWriter.h" />
     <ClInclude Include="src\External\px_sched.h" />
     <ClInclude Include="src\External\Scheduler\Scheduler.h" />
+    <ClInclude Include="src\FilesystemHelpers.h" />
+    <ClInclude Include="src\HistoricalDataLoadingEvent.h" />
     <ClInclude Include="src\InputState.h" />
-    <ClInclude Include="src\LabjackExample.h" />
+    <ClInclude Include="src\LabjackControllerOuterWidget.h" />
+    <ClInclude Include="src\LabjackControllerWebApplication.h" />
+    <ClInclude Include="src\LabjackDataFile.h" />
+    <ClInclude Include="src\LabjackLiveStateWidget.h" />
     <ClInclude Include="src\LabjackHelpers.h" />
+    <ClInclude Include="src\BoxPortInformation.h" />
     <ClInclude Include="src\NumericItem.h" />
     <ClInclude Include="src\OutputState.h" />
     <ClInclude Include="src\PanelList.h" />
     <ClInclude Include="src\StateMonitor.h" />
-    <ClInclude Include="src\WebServer.h" />
+    <ClInclude Include="src\TimeSeriesChart.h" />
+    <ClInclude Include="src\WebAppHelpWidget.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml" />
