@@ -287,8 +287,7 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 			}
 			
 		}
-	}
-
+	} // end for
 }
 
 void BehavioralBoxLabjack::readSensorValues()
