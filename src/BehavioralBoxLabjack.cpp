@@ -122,7 +122,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	this->scheduler->cron("0 * * * *", [this]() { this->runTopOfHourUpdate(); });
 
 	// Start a 20Hz (50[ms]) loop to read data.
-	this->scheduler->every(std::chrono::milliseconds(50), [this]() { this->runPollingLoop(); });
+	this->scheduler->every(std::chrono::milliseconds(LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC), [this]() { this->runPollingLoop(); });
 }
 
 // Destructor (Called when object is about to be destroyed
