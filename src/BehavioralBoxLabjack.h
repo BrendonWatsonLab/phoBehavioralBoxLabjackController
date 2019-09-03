@@ -131,7 +131,7 @@ private:
 
 	// Mutex/Synchronization:
 	std::mutex logMutex;
-
+	std::mutex labjackMutex;
 
 	// Visible Light Relay Control
 	//void setVisibleLightRelayState(bool isOn);

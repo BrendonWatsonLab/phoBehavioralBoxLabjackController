@@ -263,11 +263,16 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 			if (isVisibleLightRelayPort) {
 				if (outputValue == 0.0) {
 					// a value of 0.0 means that the light should be on, so it should be in output mode.
+					
+					// Lock the mutex to prevent concurrent labjack interaction
+					std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
 					this->err = LJM_eWriteName(this->handle, portName, outputValue);
 					ErrorCheck(this->err, "LJM_eWriteName");
 				}
 				else {
 					// a value greater than 0.0 means that the light should be off, so it should be set to input mode. This is accomplished by reading from the port (instead of writing).
+					// Lock the mutex to prevent concurrent labjack interaction
+					std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
 					double tempReadValue = 0.0;
 					this->err = LJM_eReadName(this->handle, portName, &tempReadValue);
 					ErrorCheck(this->err, "LJM_eReadName");
@@ -276,6 +281,8 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 			}
 			else {
 				// Not the visible light relay and can be handled in the usual way.
+				// Lock the mutex to prevent concurrent labjack interaction
+				std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
 				this->err = LJM_eWriteName(this->handle, portName, outputValue);
 				ErrorCheck(this->err, "LJM_eWriteName");
 			}
@@ -283,7 +290,7 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 				printf("\t Set %s state : %f\n", portName, outputValue);
 			}
 			
-		}
+		} // end if didChange
 	} // end for
 }
 
@@ -292,8 +299,13 @@ void BehavioralBoxLabjack::readSensorValues()
 	this->lastCaptureComputerTime = Clock::now();
 
 	//Read the sensor values from the labjack DIO Inputs
-	this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char **)this->inputPortNames, this->lastReadInputPortValues, &this->errorAddress);
-	ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
+	{
+		// Lock the mutex to prevent concurrent labjack interaction
+		std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
+		this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char**)this->inputPortNames, this->lastReadInputPortValues, &this->errorAddress);
+		ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
+	}
+
 	// Only persist the values if the state has changed.
 	if (this->monitor->refreshState(this->lastCaptureComputerTime, this->lastReadInputPortValues)) {
 		//TODO: should this be asynchronous? This would require passing in the capture time and read values
@@ -305,8 +317,6 @@ void BehavioralBoxLabjack::readSensorValues()
 void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 {
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
-	// Lock the mutex to prevent concurrent persisting
-	std::lock_guard<std::mutex> csvLock(this->logMutex);
 	CSVWriter newCSVLine(",");
 
 	if (enableConsoleLogging) {
@@ -346,6 +356,8 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 	if (enableConsoleLogging) {
 		cout << std::endl;
 	}
+	// Lock the mutex to prevent concurrent persisting
+	std::lock_guard<std::mutex> csvLock(this->logMutex);
 	newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
 }
 
