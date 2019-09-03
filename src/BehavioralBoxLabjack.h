@@ -127,8 +127,7 @@ private:
 
 
 	// Scheduled tasks
-	void runTopOfHourUpdate(); // Runs at the top of every hour (exactly on the hour, according to system time).
-	//void runTopOfMinuteUpdate();
+
 
 	// Mutex/Synchronization:
 	std::mutex logMutex;

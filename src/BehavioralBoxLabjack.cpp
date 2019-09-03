@@ -116,10 +116,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 
 	// Create the object's thread at the very end of its constructor
 	// wallTime-based event scheduling:
-	this->scheduler = new Bosma::Scheduler(max_n_threads);
-
-	// Ran at the top of every hour
-	this->scheduler->cron("0 * * * *", [this]() { this->runTopOfHourUpdate(); });
+	this->scheduler = new Bosma::Scheduler(MAX_NUM_THREAD_PER_LABJACK);
 
 	// Start a 20Hz (50[ms]) loop to read data.
 	this->scheduler->every(std::chrono::milliseconds(LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC), [this]() { this->runPollingLoop(); });
@@ -462,15 +459,6 @@ void BehavioralBoxLabjack::toggleOverrideMode_AttractModeLEDs()
 		this->isOverrideActive_AttractModeLEDs = true;
 		cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 1: LEDs Forced OFF" << endl;
 	}
-}
-
-// Executed every hour, on the hour
-void BehavioralBoxLabjack::runTopOfHourUpdate()
-{
-	time_t computerTime;
-	time(&computerTime);  /* get current time; same as: timer = time(NULL)  */
-	printf("runTopOfHourUpdate: running at %s for labjack %i\n", ctime(&computerTime), this->serialNumber);
-	this->updateVisibleLightRelayIfNeeded();
 }
 
 bool BehavioralBoxLabjack::isArtificialDaylightHours()
