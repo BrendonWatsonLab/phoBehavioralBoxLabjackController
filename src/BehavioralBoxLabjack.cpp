@@ -249,7 +249,7 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 	// Iterate through the output ports
 	for (int i = 0; i < outputPorts.size(); i++)
 	{
-		// Get the appropriate value for the current port (calculateing from the saved lambda function).
+		// Get the appropriate value for the current port (calculating from the saved lambda function).
 		double outputValue = outputPorts[i]->getValue();
 
 		// Check to see if the value changed, and if it did, write it.
@@ -300,6 +300,7 @@ void BehavioralBoxLabjack::readSensorValues()
 	ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
 	// Only persist the values if the state has changed.
 	if (this->monitor->refreshState(this->lastCaptureComputerTime, this->lastReadInputPortValues)) {
+		//TODO: should this be asynchronous? This would require passing in the capture time and read values
 		this->persistReadValues(true);
 	}
 }
@@ -308,6 +309,8 @@ void BehavioralBoxLabjack::readSensorValues()
 void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 {
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
+	// Lock the mutex to prevent concurrent persisting
+	std::lock_guard<std::mutex> csvLock(this->logMutex);
 	CSVWriter newCSVLine(",");
 
 	if (enableConsoleLogging) {
@@ -343,7 +346,6 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 		}
 		// After capturing the change, replace the old value
 		this->previousReadInputPortValues[i] = this->lastReadInputPortValues[i];
-		
 	} //end for num channels
 	if (enableConsoleLogging) {
 		cout << std::endl;

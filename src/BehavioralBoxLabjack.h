@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <mutex>
 #if LAUNCH_WEB_SERVER
 #include <Wt/WSignal.h> // Signals support for the web server
 #endif // LAUNCH_WEB_SERVER
@@ -128,6 +129,10 @@ private:
 	// Scheduled tasks
 	void runTopOfHourUpdate(); // Runs at the top of every hour (exactly on the hour, according to system time).
 	//void runTopOfMinuteUpdate();
+
+	// Mutex/Synchronization:
+	std::mutex logMutex;
+
 
 	// Visible Light Relay Control
 	//void setVisibleLightRelayState(bool isOn);
