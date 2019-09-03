@@ -42,14 +42,25 @@ protected:
 
 private:
 	std::string appName = "";
+	Wt::WVBoxLayout* mainLayout_;
 
 	// Server Stuff:
 	BoxControllerWebDataServer& server_;
 	bool loggedIn_;
 	/* called from another session */
 	void processDataServerEvent(const DataServerEvent& event);
+	std::vector<std::string> loadedHistoricalDataVectIDs_;
+	int currActiveLabjackIndex_ = 0;
 
-	//void header();
+	// Header:
+	void setupHeader();
+	Wt::WContainerWidget* headerRootContainer_;
+	Wt::WNavigationBar* navigation_;
+	Wt::WStackedWidget* contentsStack_;
+	Wt::WText* activeLabjackName_;
+
+	void updateActiveLabjackInfo();
+
 	//void home();
 	//void sidebar();
 	//void footer();
