@@ -174,7 +174,6 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 		currChart->setLegendEnabled(true); // enable the legend
 		currChart->setZoomEnabled(true);
 		currChart->setPanEnabled(true);
-		currChart->setCrosshairEnabled(true);
 		
 		//chart->axis(Wt::Chart::Axis::X).setVisible(false);
 		//type: Bar
