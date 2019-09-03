@@ -5,7 +5,7 @@ Specifies what ports to open
 */
 
 // number of tasks that can run simultaneously
-#define MAX_NUM_THREAD_PER_LABJACK 3
+#define MAX_NUM_THREAD_PER_LABJACK 1
 
 #define LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC 50
 
