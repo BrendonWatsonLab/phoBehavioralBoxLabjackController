@@ -48,6 +48,8 @@ void TimeSeriesChart::reload(std::vector<BehavioralBoxHistoricalData> historical
 		return;
 	}
 
+	this->changeLoadingIndicatorVisibility(!this->isLoadingIndicatorVisible);
+
 	//this->loadingContainerWidget->propagateSetVisible(false);
 
 	/*
@@ -298,6 +300,12 @@ void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadi
 	else {
 		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
 	}
+}
+
+void TimeSeriesChart::changeLoadingIndicatorVisibility(bool shouldLoadingIndicatorBeVisible)
+{
+	this->loadingContainerWidget->setHidden(!shouldLoadingIndicatorBeVisible);
+	this->isLoadingIndicatorVisible = shouldLoadingIndicatorBeVisible;
 }
 
 // Builds a model from a vector of historical data

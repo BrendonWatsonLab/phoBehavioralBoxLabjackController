@@ -82,6 +82,9 @@ private:
 	void setupTable(const std::shared_ptr<Wt::WAbstractItemModel> model);
 	void setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> model);
 
+	bool isLoadingIndicatorVisible = true;
+	void changeLoadingIndicatorVisibility(bool shouldLoadingIndicatorBeVisible);
+
 	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData);
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> buildDataSeries(const std::shared_ptr<Wt::WAbstractItemModel> model);
 
