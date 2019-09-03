@@ -92,7 +92,8 @@ int main(int argc, char** argv)
 		// Main should have perhaps an array of things?
 
 	printCommandsMenu();
-	printf("Collecting data at 20Hz....\n");
+	cout << "Collecting data at " << (1000.0 / double(LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC)) << "Hz...." << endl;
+	
 	//WaitForUserIfWindows();
 	// Main run loop:
 	int terminateExecution = 0;
