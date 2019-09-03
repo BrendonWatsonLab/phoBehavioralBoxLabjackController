@@ -57,9 +57,6 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	// File Management
 	// Build the file name
 	this->lastCaptureComputerTime = Clock::now();
-	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(this->lastCaptureComputerTime);
-	auto fraction = this->lastCaptureComputerTime - seconds;
-	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
 
 	// Builds the filename in the form "out_file_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}"
@@ -296,7 +293,6 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 
 void BehavioralBoxLabjack::readSensorValues()
 {
-	//time(&this->lastCaptureComputerTime);  /* get current time; same as: timer = time(NULL)  */
 	this->lastCaptureComputerTime = Clock::now();
 
 	//Read the sensor values from the labjack DIO Inputs
@@ -348,7 +344,7 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 		// After capturing the change, replace the old value
 		this->previousReadInputPortValues[i] = this->lastReadInputPortValues[i];
 		
-	}
+	} //end for num channels
 	if (enableConsoleLogging) {
 		cout << std::endl;
 	}
