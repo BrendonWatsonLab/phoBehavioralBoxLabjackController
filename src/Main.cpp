@@ -38,12 +38,6 @@ std::thread web_server_thread;
 //BehavioralBoxControllersManager controller;
 std::shared_ptr<BehavioralBoxControllersManager> controller = make_shared<BehavioralBoxControllersManager>();
 
-//// Scheduler
-#include "External/Scheduler/Scheduler.h"
-// Make a new scheduling object.
-  // Note: s cannot be moved or copied
-Bosma::Scheduler s(max_n_threads);
-
 // FUNCTION PROTOTYPES:
 //bool waitForFoundLabjacks();
 #if LAUNCH_WEB_SERVER
