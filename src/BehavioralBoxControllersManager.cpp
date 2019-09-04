@@ -3,10 +3,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include <conio.h>
-#if LAUNCH_WEB_SERVER
 #include <Wt/WApplication.h>
 #include <Wt/WServer.h>
-#endif // LAUNCH_WEB_SERVER
 #include "BehavioralBoxControllersManager.h"
 #include "LabjackHelpers.h"
 
