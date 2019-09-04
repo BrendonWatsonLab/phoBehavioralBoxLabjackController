@@ -25,6 +25,7 @@
 #include "BehavioralBoxControllersManager.h"
 #include "BehavioralBoxLabjack.h"
 #include "LabjackHelpers.h"
+#include "ConfigurationManager.h"
 
 // Webserver functionality:
 #if LAUNCH_WEB_SERVER
@@ -37,6 +38,8 @@ std::thread web_server_thread;
 
 //BehavioralBoxControllersManager controller;
 std::shared_ptr<BehavioralBoxControllersManager> controller = make_shared<BehavioralBoxControllersManager>();
+std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+
 
 // FUNCTION PROTOTYPES:
 //bool waitForFoundLabjacks();
@@ -53,6 +56,8 @@ int main(int argc, char** argv)
 {
 	cout << "BehavioralBoxLabjackController:" << endl;
 	cout << "\t Pho Hale 2019" << endl << endl;
+
+	configMan->getEnvironmentVariables();
 
 	//TODO: this doesn't currently matter because the webserver reloads everything in TimeSeriesChart::buildHistoricDataModel() by calling the static BehavioralBoxControllersManager::loadAllHistoricalData() function.
 	// Eventually we weant to implement it in a singleton-like fashion.
