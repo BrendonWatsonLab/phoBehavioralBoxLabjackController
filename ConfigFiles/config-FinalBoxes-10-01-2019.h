@@ -12,9 +12,9 @@ enum { NUM_CHANNELS = 9 };
 #define globalLabjackInputPortPurpose { "Water1_BeamBreak","Water2_BeamBreak","Food1_BeamBreak","Food2_BeamBreak","Water1_Dispense","Water2_Dispense","Food1_Dispense","Food2_Dispense","RunningWheel_Beambreak"}
 
 //// Outputs:
-enum { NUM_OUTPUT_CHANNELS = 3 };
-#define globalLabjackOutputPortNames { "CIO1","CIO2","CIO2" }
-#define globalLabjackOutputPortPurpose { "VisibleLedRelay","WaterPortAttractModeLED","WaterPortAttractModeLED"}
+enum { NUM_OUTPUT_CHANNELS = 1 };
+#define globalLabjackOutputPortNames { "CIO1" }
+#define globalLabjackOutputPortPurpose { "VisibleLedRelay" }
 
-
+// File Locations:
 #define globalOutputFileDirectory "C:/Common/data/"

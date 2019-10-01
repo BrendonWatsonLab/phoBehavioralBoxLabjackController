@@ -101,8 +101,8 @@ private:
 	// File Output:
 	CSVWriter csv;
 	string filename = "outputFile.csv";
-	string outputDirectory = "output_data/"; // should end in a slash if it's not empty
-	string fileFullPath = "output_data/outputFile.csv";
+	string outputDirectory = globalOutputFileDirectory; // should end in a slash if it's not empty
+	string fileFullPath = "C:/Common/data/outputFile.csv";
 
 	// Variables for holding the last read values
 	StateMonitor* monitor;

@@ -227,6 +227,9 @@
     <ClInclude Include="src\WindowsHelpers.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="ConfigFiles\config-FinalBoxes-10-01-2019.h">
+      <Filter>Header Files\Configuration Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml">

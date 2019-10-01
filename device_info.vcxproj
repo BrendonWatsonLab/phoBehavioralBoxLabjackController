@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConfigFiles\config-DownstairsBox.h" />
+    <ClInclude Include="ConfigFiles\config-FinalBoxes-10-01-2019.h" />
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h" />
     <ClInclude Include="src\BehavioralBoxHistoricalData.h" />
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
