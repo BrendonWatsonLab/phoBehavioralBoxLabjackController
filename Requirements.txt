@@ -28,8 +28,18 @@ In Linker->General, Additional Library Directories: C:\Program Files\Wt 4.1.0 ms
 Go to Linker->Input. In the Additional Dependencies, fill out the Wt libraries you want to link to. At the topleft of the dialog, check the active Configuration. If it's Debug, link to wtd.lib, wthttpd.lib (and optionally wtdbod.lib, wtdbobackendXXXd.lib, ...). If it's release, link to wt.lib, wthttp.lib (and optionally wtdbo.lib, wtdbobackendXXX.lib). Notice that the debug libraries have a 'd' suffix. Be carefull. You need different libraries depending on the Release/Debug configuration, since it's not possible to mix different versions of the MSVC runtime libraries in one application.
 
 If you want to run your fresh application, set these options:
-In the Debugging tab, set Command Arguments to --docroot . --http-address 0.0.0.0 --http-port 8080
+In the Debugging tab, set Command Arguments to --docroot . --config "$(ProjectDir)/ConfigFiles/wt_config.xml" --http-address 0.0.0.0 --http-port 8080 -accesslog="$(ProjectDir)/logs/webServerAccessLog.log"
 In the Debugging tab, set Environment to PATH=C:/Program Files/Wt 4.1.0 msvs2019 x64/bin
+$(LocalDebuggerEnvironment)
+
+
+
+// Additional Fixes:
+1. If you encounter "wtd.dll not found", "wthttpd.dll not found", or a similar ".dll not found" problem:
+	Copy relevant files from "C:\Program Files\Wt 4.1.0 msvs2019 x64\bin" to program executable directory
+
+2. If you encounter "MSVCP140D.dll", "VCRUNTIME140D.dll", "ucrtbased.dll" errors:
+	See https://stackoverflow.com/questions/32998902/msvcp140-dll-missing
 
 
 // CMAKE:
@@ -47,7 +57,7 @@ Run cmake-3.15.2-win64-x64.msi:
 	- Click on the "Build > Build Solution" menu up at the top.
 
 
-
+MSVCP140D.dll
 
 // LABJACK Software:
 Run LabJack-2019-05-20.exe:
