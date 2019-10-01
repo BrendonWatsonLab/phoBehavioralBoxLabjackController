@@ -26,6 +26,7 @@
 #include "BehavioralBoxLabjack.h"
 #include "LabjackHelpers.h"
 #include "ConfigurationManager.h"
+#include "WindowsHelpers.h"
 
 // Webserver functionality:
 #if LAUNCH_WEB_SERVER
