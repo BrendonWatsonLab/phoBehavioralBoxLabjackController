@@ -26,7 +26,6 @@
 #include "BehavioralBoxLabjack.h"
 #include "LabjackHelpers.h"
 #include "ConfigurationManager.h"
-#include "WindowsHelpers.h"
 
 // Webserver functionality:
 #if LAUNCH_WEB_SERVER
@@ -57,6 +56,12 @@ int main(int argc, char** argv)
 {
 	cout << "BehavioralBoxLabjackController:" << endl;
 	cout << "\t Pho Hale 2019" << endl << endl;
+
+	// Get the hostname
+	std::string foundHostName = configMan->getHostName();
+	cout << "Found host name: " << foundHostName << endl;
+	int computerIdentifierNumber = configMan->getNumericComputerIdentifier();
+	cout << "Computer Identifier ID: " << computerIdentifierNumber << endl;
 
 	configMan->getEnvironmentVariables();
 

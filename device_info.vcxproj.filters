@@ -49,6 +49,9 @@
     <Filter Include="Header Files\Helpers">
       <UniqueIdentifier>{1db05638-ae93-4b96-b7ee-fb6631713525}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Required DLLs">
+      <UniqueIdentifier>{e79d97b3-7d8d-4b08-8717-61e653d9dd37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BehavioralBoxLabjack.cpp">
@@ -235,5 +238,20 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wtd.dll">
+      <Filter>Required DLLs</Filter>
+    </None>
+    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wthttpd.dll">
+      <Filter>Required DLLs</Filter>
+    </None>
+    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libssl-1_1d.dll">
+      <Filter>Required DLLs</Filter>
+    </None>
+    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libcrypto-1_1d.dll">
+      <Filter>Required DLLs</Filter>
+    </None>
+    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libhpdfd.dll">
+      <Filter>Required DLLs</Filter>
+    </None>
   </ItemGroup>
 </Project>

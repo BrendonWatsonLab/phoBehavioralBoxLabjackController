@@ -12,6 +12,10 @@ public:
 	void getEnvironmentVariables();
 	void setEnvironmentVariables();
 
+	std::string getHostName();
+	int getNumericComputerIdentifier(); // Gets the 2-digit integer identifier for the current computer (and box, if there is a 1-to-1 mapping). Like the "02" in "WATSON-BB-02"
+
+
 private:
 	std::string output_path_ = "";
 };

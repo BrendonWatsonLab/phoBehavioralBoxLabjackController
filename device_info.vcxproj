@@ -81,6 +81,21 @@
     <Xml Include="resources\charts.xml" />
   </ItemGroup>
   <ItemGroup>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wtd.dll">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wthttpd.dll">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libssl-1_1d.dll">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libcrypto-1_1d.dll">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libhpdfd.dll">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
     <None Include="packages.config" />
     <None Include="resources\category.csv" />
     <None Include="resources\charts.css" />

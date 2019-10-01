@@ -121,14 +121,3 @@ std::map<int, std::vector<LabjackDataFile>> FilesystemHelpers::findDataFiles(std
 	return labjackDataFilesMap;
 }
 
-//std::string FilesystemHelpers::getExePath()
-//{
-//#ifdef _WIN32
-//	char result[MAX_PATH];
-//	return std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
-//#else
-//	char result[PATH_MAX];
-//	ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-//	return std::string(result, (count > 0) ? count : 0);
-//#endif
-//}
