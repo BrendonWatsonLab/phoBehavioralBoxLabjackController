@@ -1,6 +1,12 @@
 Windows SDK version 10.0.17763.0
 
 
+// Submodules:
+CTPL: Thread Pool Library - Version 0.0.2
+	https://github.com/vit-vit/CTPL
+	ctpl_v.0.0.2
+	https://github.com/vit-vit/CTPL/releases/tag/v.0.0.2
+
 
 
 
