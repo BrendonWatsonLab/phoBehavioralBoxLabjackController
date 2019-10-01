@@ -117,6 +117,9 @@
     <ClCompile Include="src\CsvUtil.cpp">
       <Filter>WtWebServer\Model</Filter>
     </ClCompile>
+    <ClCompile Include="src\ConfigurationManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\NumericItem.h">
@@ -205,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="src\CsvUtil.h">
       <Filter>WtWebServer\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConfigurationManager.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

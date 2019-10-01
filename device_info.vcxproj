@@ -24,6 +24,7 @@
     <ClCompile Include="src\BehavioralBoxControllersManager.cpp" />
     <ClCompile Include="src\BoxControllerWebDataServer.cpp" />
     <ClCompile Include="src\ConfigurationFile.cpp" />
+    <ClCompile Include="src\ConfigurationManager.cpp" />
     <ClCompile Include="src\DataServerEvent.cpp" />
     <ClCompile Include="src\FilesystemHelpers.cpp" />
     <ClCompile Include="src\HistoricalDataLoadingEvent.cpp" />
@@ -52,6 +53,7 @@
     <ClInclude Include="src\ChartConfig.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\ConfigurationFile.h" />
+    <ClInclude Include="src\ConfigurationManager.h" />
     <ClInclude Include="src\CsvUtil.h" />
     <ClInclude Include="src\DataServerEvent.h" />
     <ClInclude Include="src\External\CSVWriter.h" />

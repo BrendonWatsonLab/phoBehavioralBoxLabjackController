@@ -1,0 +1,27 @@
+Run the following in an *ADMINISTRATOR* command prompt:
+
+robocopy "C:\Users\Paul Fitzgerald\bin\phoBehavioralBoxLabjackController\x64\Release\output_data" \\RDE20007.umhs.med.umich.edu\Share\output_data /Z /ZB /R:1024 /W:60 /TBD /NP /V /MT:2
+
+robocopy "R:\output_data" \\RDE20007.umhs.med.umich.edu\Share\output_data /Z /ZB /R:1024 /W:60 /TBD /NP /V /MT:2
+
+command switches: /Z /ZB /R:1024 /W:60 /TBD 
+optional: /NP /V /MT:2
+
+
+
+
+TROUBLESHOOTING:
+
+If you don't run in an administrator command prompt you'll receive the following error: 
+"""
+ERROR : You do not have the Backup and Restore Files user rights.
+*****  You need these to perform Backup copies (/B or /ZB).
+
+ERROR : Robocopy ran out of memory, exiting.
+ERROR : Invalid Parameter #%d : "%s"
+
+ERROR : Invalid Job File, Line #%d :"%s"
+"""
+
+Open an admin command prompt and run the command there. See https://seankilleen.com/2011/10/robocopy-you-do-not-have-the-backup-and-restore-files-user-rights-field-notes/ for more info.
+

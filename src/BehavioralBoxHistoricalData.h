@@ -199,6 +199,9 @@ public:
 	std::vector<std::string> getHeaderLabels() { return this->headerLabels_; };
 	EventStatistics getEventStatistics() { return this->eventStatistics_; };
 
+	const int getLabjackSerialNumber() { return this->labjackSerialNumber_; };
+	const std::string getBoxIdentifier() { return this->boxID_; };
+
 
 private:
 	std::string boxID_;

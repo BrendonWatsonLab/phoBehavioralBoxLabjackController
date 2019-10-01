@@ -1,4 +1,13 @@
 #include <Wt/WApplication.h>
+#include <Wt/WAnimation.h>
+#include <Wt/WPanel.h>
+#include <Wt/WText.h>
+#include <Wt/WHBoxLayout.h>
+#include <Wt/WMenu.h>
+#include <Wt/WNavigationBar.h>
+#include <Wt/WStackedWidget.h>
+#include <Wt/WText.h>
+#include <Wt/WVBoxLayout.h>
 #include "LabjackControllerOuterWidget.h"
 #include "TimeSeriesChart.h"
 #include "WebAppHelpWidget.h"
@@ -9,7 +18,7 @@ using namespace Wt;
 LabjackControllerOuterWidget::LabjackControllerOuterWidget(BoxControllerWebDataServer& server) : WContainerWidget(), server_(server), loggedIn_(false)
 {
 	this->appName = "Labjack Manager Overview:";
-	this->addWidget(cpp14::make_unique<WText>(this->appName));
+	
 
 #if ENABLE_WEB_SERVER_LIVE_WIDGET
 	this->labjackExampleWidget = this->addWidget(cpp14::make_unique<LabjackLiveStateWidget>());
@@ -18,11 +27,27 @@ LabjackControllerOuterWidget::LabjackControllerOuterWidget(BoxControllerWebDataS
 	this->setPadding(10);
 	this->resize(WLength::Auto, WLength::Auto);
 
+	// Setup main layout
+	mainLayout_ = this->setLayout(Wt::cpp14::make_unique<Wt::WVBoxLayout>());
+
+
+	auto contentsStack = Wt::cpp14::make_unique<Wt::WStackedWidget>();
+	contentsStack_ = contentsStack.get();
+
 	// Timeseries Charts:
-	this->timeSeriesChartWidget = this->addWidget(cpp14::make_unique<TimeSeriesChart>());
+	this->timeSeriesChartWidget = this->contentsStack_->addWidget(cpp14::make_unique<TimeSeriesChart>());
 
 	// Help Panel:
-	this->webAppHelpWidget = this->addWidget(cpp14::make_unique<WebAppHelpWidget>());
+	this->webAppHelpWidget = this->contentsStack_->addWidget(cpp14::make_unique<WebAppHelpWidget>());
+
+	// Build Header:
+	this->setupHeader();
+
+	/*
+	 * Add it all inside a layout
+	 */
+	this->mainLayout_->addWidget(std::move(contentsStack), 2);
+	this->mainLayout_->setContentsMargins(0, 0, 0, 0);
 
 	this->connect();
 	loggedIn_ = true;
@@ -85,6 +110,17 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 	if (event.type() == DataServerEvent::Type::HistoricalDataRefreshed) {
 		cout << "LabjackControllerOuterWidget::processDataServerEvent(...): Historical data refreshed." << endl;
 		auto historicalEvent = event.historicalDataLoadingEvent();
+		if (historicalEvent.type() == HistoricalDataLoadingEvent::Type::Complete) {
+			this->loadedHistoricalDataVectIDs_.clear();
+			std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = historicalEvent.dataLoadedHistoricalDataVector();
+			for (size_t i = 0; i < loadedHistoricalDataVect.size(); i++)
+			{
+				std::string currBoxIdentifier = loadedHistoricalDataVect[i].getBoxIdentifier();
+				this->loadedHistoricalDataVectIDs_.push_back(currBoxIdentifier);
+			}
+			this->updateActiveLabjackInfo();
+			
+		}
 		// Update the time series chart widget
 		this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
 	}
@@ -142,5 +178,65 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 	//	if (event.user() != user_ && messageReceived_)
 	//		messageReceived_->play();
 	//}
+}
+
+void LabjackControllerOuterWidget::setupHeader()
+{
+	setOverflow(Wt::Overflow::Hidden);
+
+	auto headerRootContainer = Wt::cpp14::make_unique<Wt::WContainerWidget>();
+	headerRootContainer_ = headerRootContainer.get();
+
+	auto navigation = Wt::cpp14::make_unique<Wt::WNavigationBar>();
+	navigation_ = navigation.get();
+
+	navigation_->addStyleClass("main-nav");
+	navigation_->setTitle(this->appName, "http://127.0.0.1:8080");
+	//navigation_->setResponsive(true);
+
+	//Wt::WAnimation animation(Wt::AnimationEffect::Fade,	Wt::TimingFunction::Linear,	200);
+	//contentsStack_->setTransitionAnimation(animation, true);
+
+	/*
+	 * Setup the top-level menu
+	 */
+	//auto menu = Wt::cpp14::make_unique<Wt::WMenu>(contentsStack_);
+	//menu->setInternalPathEnabled();
+	//menu->setInternalBasePath("/");
+
+	//addToMenu(menu.get(), "Layout", Wt::cpp14::make_unique<Layout>());
+	//addToMenu(menu.get(), "Forms", Wt::cpp14::make_unique<FormWidgets>());
+	//addToMenu(menu.get(), "Navigation", Wt::cpp14::make_unique<Navigation>());
+	//addToMenu(menu.get(), "Trees & Tables", Wt::cpp14::make_unique<TreesTables>())->setPathComponent("trees-tables");
+	//addToMenu(menu.get(), "Graphics & Charts", Wt::cpp14::make_unique<GraphicsWidgets>())->setPathComponent("graphics-charts");
+	////addToMenu(menu.get(), "Events", Wt::cpp14::make_unique<EventsDemo>());
+	//addToMenu(menu.get(), "Media", Wt::cpp14::make_unique<Media>());
+
+	//auto item = Wt::cpp14::make_unique<Wt::WMenuItem>("TEST");
+	//auto item_ = menu->addItem(std::move(item));
+
+	//item = Wt::cpp14::make_unique<Wt::WMenuItem>("TEST 2");
+	//item_ = menu->addItem(std::move(item));
+
+	//navigation_->addMenu(std::move(menu));
+
+	auto inactiveActiveLabjackLabel = this->headerRootContainer_->addWidget(cpp14::make_unique<WText>("Active Labjack: "));
+	this->activeLabjackName_ = this->headerRootContainer_->addWidget(cpp14::make_unique<WText>("None"));
+
+
+	// Add it to the layout
+	this->mainLayout_->addWidget(std::move(navigation), 0);
+	this->mainLayout_->addWidget(std::move(headerRootContainer), 1);
+
+}
+
+void LabjackControllerOuterWidget::updateActiveLabjackInfo()
+{
+	if (this->loadedHistoricalDataVectIDs_.size() > 0) {
+		this->activeLabjackName_->setText(this->loadedHistoricalDataVectIDs_[this->currActiveLabjackIndex_]);
+	}
+	else {
+		this->activeLabjackName_->setText("None");
+	}
 }
 

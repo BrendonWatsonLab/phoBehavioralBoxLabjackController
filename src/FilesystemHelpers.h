@@ -8,6 +8,16 @@
 #include <map>
 #include "LabjackDataFile.h"
 
+// If Windows (32 or 64 bit)
+//#ifdef _WIN32
+//#include <string>
+//#include <windows.h>
+//#else
+//#include <string>
+//#include <limits.h>
+//#include <unistd.h>
+//#endif
+
 namespace fs = std::experimental::filesystem;
 
 // literal '.' followed by one of "cpp", "cc", "cxx", "h", "hh", "hpp" or "hxx"
@@ -36,6 +46,8 @@ public:
 
 	////TODO: concatenate CSV Files needs to be implemented.
 	//static void concatenateCsvFiles(std::vector<LabjackDataFile> dataFiles_);
+
+	//static std::string getExePath();
 
 };
 
