@@ -23,11 +23,17 @@ std::string ConfigurationManager::getHostName()
 int ConfigurationManager::getNumericComputerIdentifier()
 {
 	std::string hostname = ConfigurationManager::getHostName();
-	if (hostname == "") { return -1; }
+	if (hostname == "") { 
+		std::cout << "Hostname empty!" << std::endl;
+		return -1; 
+	}
 	std::smatch stringMatch;    // same as std::match_results<string::const_iterator> sm;
 	std::regex_match(hostname, stringMatch, behavioral_box_computer_hostname_regex);
-	if (stringMatch.size() <= 0) { return -1; }
-	std::string numbersMatchString = stringMatch[0];
+	if (stringMatch.size() <= 1) { 
+		std::cout << "Couldn't parse number from " << hostname << std::endl;
+		return -1; 
+	}
+	std::string numbersMatchString = stringMatch[1];
 	int numberOutResult = std::stoi(numbersMatchString);
 	return numberOutResult;
 }

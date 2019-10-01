@@ -52,6 +52,12 @@
     <Filter Include="Required DLLs">
       <UniqueIdentifier>{e79d97b3-7d8d-4b08-8717-61e653d9dd37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Required DLLs\Debug">
+      <UniqueIdentifier>{f76ed54f-e382-4ead-8a01-42deac818b56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Required DLLs\Release">
+      <UniqueIdentifier>{3b1f1fd9-17d5-4573-88b3-0f8ba0556918}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BehavioralBoxLabjack.cpp">
@@ -238,20 +244,43 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="packages.config" />
-    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wtd.dll">
-      <Filter>Required DLLs</Filter>
+    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wttest.dll">
+      <Filter>Required DLLs\Release</Filter>
     </None>
-    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wthttpd.dll">
-      <Filter>Required DLLs</Filter>
+    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wttestd.dll">
+      <Filter>Required DLLs\Debug</Filter>
     </None>
-    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libssl-1_1d.dll">
-      <Filter>Required DLLs</Filter>
+    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libhpdf.dll">
+      <Filter>Required DLLs\Release</Filter>
     </None>
-    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libcrypto-1_1d.dll">
-      <Filter>Required DLLs</Filter>
+    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libcrypto-1_1.dll">
+      <Filter>Required DLLs\Release</Filter>
     </None>
-    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libhpdfd.dll">
-      <Filter>Required DLLs</Filter>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libcrypto-1_1d.dll">
+      <Filter>Required DLLs\Debug</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libhpdfd.dll">
+      <Filter>Required DLLs\Debug</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libssl-1_1d.dll">
+      <Filter>Required DLLs\Debug</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wtd.dll">
+      <Filter>Required DLLs\Debug</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wthttpd.dll">
+      <Filter>Required DLLs\Debug</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wt.dll">
+      <Filter>Required DLLs\Release</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wthttp.dll">
+      <Filter>Required DLLs\Release</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libssl-1_1.dll">
+      <Filter>Required DLLs\Release</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>
