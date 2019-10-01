@@ -15,3 +15,7 @@ enum { NUM_CHANNELS = 9 };
 enum { NUM_OUTPUT_CHANNELS = 3 };
 #define globalLabjackOutputPortNames { "MIO2","MIO1","MIO1" }
 #define globalLabjackOutputPortPurpose { "VisibleLedRelay","WaterPortAttractModeLED","WaterPortAttractModeLED"}
+
+// File Locations:
+#define globalOutputFileDirectory "output_data/"
+#define globalHistoricalFileSearchDirectory globalOutputFileDirectory

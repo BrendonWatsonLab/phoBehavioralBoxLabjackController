@@ -96,7 +96,7 @@ private:
 	void run();
 
 	//Historical Labjack Data loading:
-	std::string dataFilesSearchDirectory_ = "output_data/";
+	std::string dataFilesSearchDirectory_ = globalHistoricalFileSearchDirectory;
 	std::map<int, std::vector<LabjackDataFile>> labjackDataFilesMap_;
 	std::vector<BehavioralBoxHistoricalData> historicalData_;
 

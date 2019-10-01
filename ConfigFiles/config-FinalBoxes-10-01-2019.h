@@ -18,3 +18,4 @@ enum { NUM_OUTPUT_CHANNELS = 1 };
 
 // File Locations:
 #define globalOutputFileDirectory "C:/Common/data/"
+#define globalHistoricalFileSearchDirectory globalOutputFileDirectory
