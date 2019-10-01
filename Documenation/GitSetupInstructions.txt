@@ -1,0 +1,4 @@
+ 
+ git push
+ eval $(ssh-agent -s)
+ ssh-add.exe /c/Users/halechr/.ssh/pho_fork_ssh_key
