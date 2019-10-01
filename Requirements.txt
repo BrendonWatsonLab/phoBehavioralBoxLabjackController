@@ -10,6 +10,7 @@ Run boost_1_71_0-msvc-14.2-64.exe:
 
 
 // WT webserver:
+https://github.com/emweb/wt/releases/download/4.1.0/Wt-4.1.0-msvs2019-Windows-x64-SDK.exe
 Run Wt-4.1.0-msvs2019-Windows-x64-SDK.exe:
   Install with defaults (to "C:\Program Files\Wt 4.1.0 msvs2019 x64")
 
