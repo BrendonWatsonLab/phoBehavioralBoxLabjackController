@@ -247,18 +247,6 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="packages.config" />
-    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wttest.dll">
-      <Filter>Required DLLs\Release</Filter>
-    </None>
-    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wttestd.dll">
-      <Filter>Required DLLs\Debug</Filter>
-    </None>
-    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libhpdf.dll">
-      <Filter>Required DLLs\Release</Filter>
-    </None>
-    <None Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libcrypto-1_1.dll">
-      <Filter>Required DLLs\Release</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libcrypto-1_1d.dll">
@@ -284,6 +272,18 @@
     </CopyFileToFolders>
     <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libssl-1_1.dll">
       <Filter>Required DLLs\Release</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libcrypto-1_1.dll">
+      <Filter>Required DLLs\Release</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\libhpdf.dll">
+      <Filter>Required DLLs\Release</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wttest.dll">
+      <Filter>Required DLLs\Release</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wttestd.dll">
+      <Filter>Required DLLs\Debug</Filter>
     </CopyFileToFolders>
   </ItemGroup>
 </Project>

@@ -30,8 +30,8 @@ int ConfigurationManager::getNumericComputerIdentifier()
 	std::smatch stringMatch;    // same as std::match_results<string::const_iterator> sm;
 	std::regex_match(hostname, stringMatch, behavioral_box_computer_hostname_regex);
 	if (stringMatch.size() <= 1) { 
-		std::cout << "Couldn't parse number from " << hostname << std::endl;
-		return -1; 
+		std::cout << "Couldn't parse number from " << hostname << ". It's not of the expected format \"WATSON-BB-XX\"." << std::endl;
+		return -1;
 	}
 	std::string numbersMatchString = stringMatch[1];
 	int numberOutResult = std::stoi(numbersMatchString);

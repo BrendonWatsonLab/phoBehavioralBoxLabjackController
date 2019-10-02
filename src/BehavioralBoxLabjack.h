@@ -11,17 +11,23 @@
 #include <fstream>
 #include <vector>
 #include <mutex>
+#include <regex>
 #if LAUNCH_WEB_SERVER
 #include <Wt/WSignal.h> // Signals support for the web server
 #endif // LAUNCH_WEB_SERVER
 #include "External/CSVWriter.h"
 #include "StateMonitor.h"
 #include "OutputState.h"
+#include "ConfigurationManager.h"
+
 
 typedef std::chrono::system_clock Clock;
 
 //// Scheduler
 #include "External/Scheduler/Scheduler.h"
+
+// REGEX:
+static const std::regex behavioral_box_labjack_deviceName_regex("WATSON-LJ-(\\d{2})");
 
 class BehavioralBoxLabjack
 {
@@ -64,6 +70,7 @@ public:
 
 	// Getters:
 	int getSerialNumber() { return this->serialNumber; }
+	std::string getDeviceName() { return this->deviceName; }
 	bool isVisibleLEDLit();
 	string getFullFilePath() { return this->fileFullPath; }
 	int getNumberInputChannels() { return NUM_CHANNELS; }
@@ -84,6 +91,7 @@ public:
 private:
 	int serialNumber;
 	int uniqueIdentifier;
+	std::string deviceName = "";
 	int portOrPipe, ipAddress, packetMaxBytes;
 	int deviceType;
 	int connectionType;
@@ -99,6 +107,7 @@ private:
 	bool overrideValue_areAttractModeLEDsLit = false;
 
 	// File Output:
+	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
 	CSVWriter csv;
 	string filename = "outputFile.csv";
 	string outputDirectory = globalOutputFileDirectory; // should end in a slash if it's not empty
@@ -116,6 +125,11 @@ private:
 	// Vector of Output Port Objects
 	char* outputPortNames[NUM_OUTPUT_CHANNELS] = globalLabjackOutputPortNames;
 	std::vector<OutputState*> outputPorts = {};
+
+	std::string readDeviceName();
+	bool writeDeviceName(std::string newDeviceName);
+
+	void initializeLabjackConfigurationIfNeeded(); // Configures Labjack's name and input/output port mappings if it hasn't already been done.
 
 	// Time Keeping
 	std::chrono::time_point<Clock> lastCaptureComputerTime;

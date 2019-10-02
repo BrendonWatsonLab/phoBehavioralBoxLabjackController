@@ -40,12 +40,10 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 
 	char string[LJM_STRING_ALLOCATION_SIZE];
 
-	// Get device name
-	this->err = LJM_eReadNameString(this->handle, "DEVICE_NAME_DEFAULT", string);
-	if (this->err == LJME_NOERROR)
-		printf("\t DEVICE_NAME_DEFAULT: %s\n", string);
-	else
-		printf("\t This device does not have a name\n");
+	this->initializeLabjackConfigurationIfNeeded();
+
+	
+
 
 	// Get device info
 	this->err = LJM_GetHandleInfo(this->handle, &deviceType, &connectionType, &this->serialNumber, &ipAddress,
@@ -471,6 +469,104 @@ void BehavioralBoxLabjack::toggleOverrideMode_AttractModeLEDs()
 		this->isOverrideActive_AttractModeLEDs = true;
 		cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 1: LEDs Forced OFF" << endl;
 	}
+}
+
+// Reads the device name and updates its value
+std::string BehavioralBoxLabjack::readDeviceName()
+{
+	char nameString[LJM_STRING_ALLOCATION_SIZE];
+	// Get device name
+	this->err = LJM_eReadNameString(this->handle, "DEVICE_NAME_DEFAULT", nameString);
+	if (this->err == LJME_NOERROR) {
+		//printf("\t DEVICE_NAME_DEFAULT: %s\n", nameString);
+		return std::string(nameString);
+	}
+	else
+	{
+		printf("\t This device does not have a name\n");
+		return "";
+	}
+}
+
+bool BehavioralBoxLabjack::writeDeviceName(std::string newDeviceName)
+{
+	if (newDeviceName.empty()) {
+		return false;
+	}
+	const char* cNewNameString = newDeviceName.c_str();
+
+	this->err = LJM_eWriteNameString(this->handle, "DEVICE_NAME_DEFAULT", cNewNameString);
+	if (this->err == LJME_NOERROR) {
+		// Verify the name has changed by reading it
+		this->deviceName = this->readDeviceName();
+		bool nameChangeSucceeded = (this->deviceName == newDeviceName);
+		if (nameChangeSucceeded) {
+			cout << "SUCCESS: Changed device name to " << newDeviceName << endl;
+		}
+		else {
+			cout << "Failed to set device name to " << newDeviceName << endl;
+			cout << "Current device name: " << this->deviceName << endl;
+		}
+		return nameChangeSucceeded;
+	}
+	else
+	{
+		cout << "Failed to set device name to " << newDeviceName << endl;
+		this->deviceName = this->readDeviceName();
+		cout << "Current device name: " << this->deviceName << endl;
+		return false;
+	}
+}
+
+// Configures Labjack's name and input/output port mappings if it hasn't already been done.
+void BehavioralBoxLabjack::initializeLabjackConfigurationIfNeeded()
+{
+	// Get device name
+	this->deviceName = this->readDeviceName();
+	//printf("\t DEVICE_NAME_DEFAULT: %s\n", this->deviceName);
+
+	// Make sure name is of the right format:
+	bool needsRename = false;
+	if (this->deviceName == "") {
+		std::cout << "Hostname empty!" << std::endl;
+		needsRename = true;
+	}
+	else {
+		std::smatch stringMatch;    // same as std::match_results<string::const_iterator> sm;
+		std::regex_match(this->deviceName, stringMatch, behavioral_box_labjack_deviceName_regex);
+		if (stringMatch.size() <= 1) {
+			std::cout << "Couldn't parse number from " << this->deviceName << ". It's not of the expected format \"WATSON-LJ-XX\"." << std::endl;
+			needsRename = true;
+		}
+		else {
+			std::string numbersMatchString = stringMatch[1];
+			int numberOutResult = std::stoi(numbersMatchString);
+			cout << "Labjack has appropriate name: " << this->deviceName << endl;
+			needsRename = false;
+		}
+	}
+	// Prompt for the rename if needed:
+	if (needsRename == true) {
+		cout << "Labjack needs to be renamed..." << endl;
+		std::ostringstream ostr;
+		int computerIdentifierNumber = this->configMan->getNumericComputerIdentifier();
+		if (computerIdentifierNumber == -1) {
+			// Computer ID is bad.
+			//TODO: prompt user for ID
+			cout << "Please enter a new labjack ID number: ";
+			cin >> computerIdentifierNumber;			
+		}
+		// Build new Labjack Name
+		ostr << "WATSON-LJ-";
+		ostr << std::dec << std::setw(2) << std::setfill('0') << computerIdentifierNumber;
+		std::string new_proposed_labjack_name_string = ostr.str(); //the str() function of the stream returns the string
+		cout << "New Proposed Labjack Name: " << new_proposed_labjack_name_string << endl;
+
+		cout << "Trying to change device name...." << endl;
+		this->writeDeviceName(new_proposed_labjack_name_string);
+		cout << "done." << endl;
+	}
+
 }
 
 bool BehavioralBoxLabjack::isArtificialDaylightHours()
