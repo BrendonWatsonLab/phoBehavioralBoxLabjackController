@@ -51,7 +51,8 @@ public:
 	std::vector<BehavioralBoxHistoricalData> getLoadedHistoricalData() { return this->historicalData_; }
 	void reloadHistoricalData();
 
-	void exportHistoricalDataAsCSV(std::string path, std::string base_filename);
+	// exports the historical data to individual .CSV files and returns the output paths.
+	std::vector<std::string> exportHistoricalDataAsCSV(std::string path, std::string base_filename);
 
 	// Server/Manager:
 	//void postHistoricalDataUpdatedEvent(const HistoricalDataLoadingEvent& event);

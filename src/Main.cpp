@@ -97,7 +97,9 @@ int main(int argc, char** argv)
 		// Main should have perhaps an array of things?
 
 	printCommandsMenu();
-	cout << "Collecting data at " << (1000.0 / double(LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC)) << "Hz...." << endl;
+	if (controller->getActiveLabjacks().size() > 0) {
+		cout << "Collecting data at " << (1000.0 / double(LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC)) << "Hz...." << endl;
+	}
 	
 	//WaitForUserIfWindows();
 	// Main run loop:
@@ -167,7 +169,18 @@ int main(int argc, char** argv)
 			cout << "Utility mode:" << endl;
 			//TODO: utility mode.
 			// Export data as CSV
-			controller->exportHistoricalDataAsCSV("C:/Common/data/", "export-HistoricalData_");
+			std::vector<std::string> exportPaths = controller->exportHistoricalDataAsCSV("C:/Common/data/", "export-HistoricalData");
+			if (exportPaths.empty()) {
+				cout << "Tried to export CSV files but had no historical data." << endl;
+			}
+			else {
+				int numExportPaths = exportPaths.size();
+				cout << "Export " << numExportPaths << " historical data .CSV files:" << endl;
+				for (size_t i = 0; i < numExportPaths; i++)
+				{
+					cout << "\t" << exportPaths[i] << endl;
+				}
+			}
 			cout << "\t done." << endl;
 		}
 		else {
