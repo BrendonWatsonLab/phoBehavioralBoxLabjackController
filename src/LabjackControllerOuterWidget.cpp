@@ -67,14 +67,16 @@ LabjackControllerOuterWidget::~LabjackControllerOuterWidget()
 
 void LabjackControllerOuterWidget::connect()
 {
-	if (server_.connect(this, std::bind(&LabjackControllerOuterWidget::processDataServerEvent, this, std::placeholders::_1)))
+	if (server_.connect(this, std::bind(&LabjackControllerOuterWidget::processDataServerEvent, this, std::placeholders::_1))) {
 		Wt::WApplication::instance()->enableUpdates(true);
+	}
 }
 
 void LabjackControllerOuterWidget::disconnect()
 {
-	if (server_.disconnect(this))
+	if (server_.disconnect(this)) {
 		Wt::WApplication::instance()->enableUpdates(false);
+	}
 }
 
 void LabjackControllerOuterWidget::setActiveLabjacks(std::vector<BehavioralBoxLabjack*> activeLabjacks)
