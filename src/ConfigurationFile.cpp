@@ -5,40 +5,34 @@
 
 //using json = nlohmann::json;
 
-ConfigurationFile::ConfigurationFile(): ConfigurationFile("DefaultConfig.json")
+ConfigurationFile::ConfigurationFile(): ConfigurationFile("DefaultConfig.ini")
 {
 }
 
-ConfigurationFile::ConfigurationFile(std::string filePath)
+ConfigurationFile::ConfigurationFile(std::string filePath): iniReader(filePath)
 {
 	this->filePath = filePath;
+	this->reloadFromFile();
 }
 
-std::string ConfigurationFile::toString()
-{
-	//json configData = json::Parse(this->serializedConfigJsonData);
-	//return configData->dump(4);
-	return this->serializedConfigJsonData;
-}
 
-bool ConfigurationFile::fromString(std::string sourceString)
-{
-	this->serializedConfigJsonData = sourceString;
-	//json newJson = json::parse(sourceString);
-	//nlohmann::json newJson;
-	//newJson  = nlohmann::json this->serializedConfigJsonData._json;
-	//this->configData = json::parse(sourceString.c_str());
-	//this->configData = &newJson;
-	return true;
-}
 
 bool ConfigurationFile::reloadFromFile()
 {
-	// read a JSON file
-	std::ifstream inputFileStream(this->filePath);
-	inputFileStream >> this->serializedConfigJsonData;
-	//nlohmann::json j;
-	//inputFileStream >> j;
+	if (this->iniReader.ParseError() != 0) {
+		std::cout << "Can't load 'test.ini'\n";
+		return false;
+	}
+
+	this->loadedConfig.daylightStartHour = this->iniReader.GetInteger("DEFAULT", "globalDaylightStartHour", 6);
+	this->loadedConfig.daylightOffHour = this->iniReader.GetInteger("DEFAULT", "globalDaylightOffHour", 18);
+
+	this->loadedConfig.launch_web_server = this->iniReader.GetBoolean("WebServer", "LAUNCH_WEB_SERVER", true);
+
+	this->loadedConfig.shouldEnableSynchronize_Y_Axis = this->iniReader.GetBoolean("TimeSeriesChart", "shouldEnableSynchronize_Y_Axis", true);
+	this->loadedConfig.numDaysToDisplay = this->iniReader.GetInteger("TimeSeriesChart", "numDaysToDisplay", 60);
+
+
 	return true;
 }
 
@@ -53,10 +47,11 @@ bool ConfigurationFile::saveToFile(std::string overrideFilename)
 		this->filePath = overrideFilename;
 	}
 
-	// write prettified JSON to another file
-	std::ofstream outputStream(this->filePath);
-	//outputStream << std::setw(4) << this->serializedConfigJsonData << std::endl;
-	nlohmann::json j = this->serializedConfigJsonData;
-	outputStream << std::setw(4) << &j << std::endl;
+	//// write prettified JSON to another file
+	//std::ofstream outputStream(this->filePath);
+	////outputStream << std::setw(4) << this->serializedConfigJsonData << std::endl;
+	//nlohmann::json j = this->serializedConfigJsonData;
+	//outputStream << std::setw(4) << &j << std::endl;
 	return false;
 }
+

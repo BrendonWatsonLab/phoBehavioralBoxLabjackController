@@ -19,6 +19,10 @@
 class BehavioralBoxHistoricalData;
 class HistoricalDataLoadingEvent;
 
+/* Config:
+shouldEnableSynchronize_Y_Axis
+numDaysToDisplay
+*/
 
 /*
 * Shows raw "event" data as well as "aggregate" (summed) data.
@@ -63,13 +67,13 @@ public:
 	double shared_y_axis_max = 0.0;
 	double shared_y_axis_min = 0.0;
 	// shouldEnableSynchronize_Y_Axis: if true, the Y-Axis scale is sychronized across all subplots.
-	bool shouldEnableSynchronize_Y_Axis = true;
+	bool shouldEnableSynchronize_Y_Axis = false;
 
 
 private:
 	// Config:
 	bool shouldEnableAggregateStatistics_ = TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS;
-	int numDaysToDisplay_ = 12;
+	int numDaysToDisplay_ = 60;
 	bool shouldUseDateXAxis = true;
 
 	// UI Elements
@@ -91,6 +95,8 @@ private:
 	// Data Series:
 	const int getNumSubplots() { return this->subplotDataSeriesIndicies_.size(); }; // 4 food/water signals + 1 for running wheel
 	const int getNumVariables() { return this->colorVect_.size(); };
+
+	void loadFromConfig();
 	
 
 #if TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS

@@ -37,3 +37,8 @@ int ConfigurationManager::getNumericComputerIdentifier()
 	int numberOutResult = std::stoi(numbersMatchString);
 	return numberOutResult;
 }
+
+bool ConfigurationManager::reloadFromConfigFile()
+{
+	return this->configFile.reloadFromFile();
+}

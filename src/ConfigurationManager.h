@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "ConfigurationFile.h"
 
 /* Serves to hold the program runtime configuration. Singleton.
 Holds the settings such as the Labjack port config, timings, etc.
@@ -15,8 +16,11 @@ public:
 	std::string getHostName();
 	int getNumericComputerIdentifier(); // Gets the 2-digit integer identifier for the current computer (and box, if there is a 1-to-1 mapping). Like the "02" in "WATSON-BB-02"
 
+	LoadedConfiguration getLoadedConfig() { return this->configFile.getLoadedConfig(); }
+	bool reloadFromConfigFile();
 
 private:
 	std::string output_path_ = "";
+	ConfigurationFile configFile;
 };
 

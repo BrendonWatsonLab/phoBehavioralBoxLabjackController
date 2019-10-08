@@ -1,12 +1,13 @@
 #pragma once
-#include <nlohmann/json.hpp>
 //#include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <fstream>
 
-// for convenience
-using json = nlohmann::json;
+#include "LoadedConfiguration.h"
+#include "External/INIReader.h"
+
+
 
 class ConfigurationFile
 {
@@ -14,9 +15,7 @@ public:
 	ConfigurationFile();
 	ConfigurationFile(std::string filePath);
 
-	// String Serialization
-	std::string toString();
-	bool fromString(std::string sourceString);
+	INIReader iniReader;
 
 	bool reloadFromFile();
 	bool saveToFile();
@@ -24,7 +23,9 @@ public:
 
 	std::string filePath;
 
+	LoadedConfiguration getLoadedConfig() { return this->loadedConfig; }
+
 private:
-	std::string serializedConfigJsonData = "";
+	LoadedConfiguration loadedConfig;
 };
 

@@ -28,13 +28,15 @@
 #include "NumericItem.h"
 #include "BehavioralBoxHistoricalData.h"
 
-
+#include "ConfigurationManager.h"
 
 
 TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 {
 	this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Historic Labjack Data:")));
 	this->setupLoadingIndicator();
+	//Load from config
+	this->loadFromConfig();
 }
 
 void TimeSeriesChart::reload(std::vector<BehavioralBoxHistoricalData> historicalData)
@@ -528,6 +530,13 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 		outputVector.push_back(std::move(s));
 	}
 	return outputVector;
+}
+
+void TimeSeriesChart::loadFromConfig()
+{
+	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	this->numDaysToDisplay_ = configMan->getLoadedConfig().numDaysToDisplay;
+	this->shouldEnableSynchronize_Y_Axis = configMan->getLoadedConfig().shouldEnableSynchronize_Y_Axis;
 }
 
 const Wt::WDateTime TimeSeriesChart::getCurrentLocalDateTimeFromMillis(unsigned long long millisSinceEpoch)
