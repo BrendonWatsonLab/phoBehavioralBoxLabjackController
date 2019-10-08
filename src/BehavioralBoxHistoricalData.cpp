@@ -7,6 +7,9 @@
 #include "FilesystemHelpers.h"
 #include "LabjackHelpers.h"
 
+// For exporting CSVs
+#include "External/CSVWriter.h"
+
 
 
 BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID, std::vector<LabjackDataFile> dataFiles): labjackSerialNumber_(labjackSerialNumber), dataFilesSearchDirectory_(searchDirectory), boxID_(boxID), dataFiles_(dataFiles)
@@ -45,6 +48,29 @@ int BehavioralBoxHistoricalData::getMaxNumberEvents()
 	return max_count;
 }
 
+const void BehavioralBoxHistoricalData::exportAsCSV(std::string path)
+{
+	//TODO: path currently ignored
+	CSVWriter csvOutput = CSVWriter(",");
+	// Write the header to the .csv file:
+	std::vector<std::string> headerLabels = this->headerLabels_;
+	csvOutput.newRow();
+	for (int i = 0; i < headerLabels.size(); i++) {
+		csvOutput << headerLabels[i];
+	}
+	//csvOutput.writeToFile(path, false);
+
+	for (int j = 0; j < this->output_milliseconds_since_epoch.size(); j++) {
+		csvOutput.newRow() << this->output_milliseconds_since_epoch[j];
+		for (int i = 0; i < this->output_values[j].size(); i++) {
+			csvOutput << this->output_values[j][i];
+		}
+	}
+	
+	// Close the open output file:
+	csvOutput.writeToFile(path, true);
+}
+
 
 //reloadDataFilesContents(): called after dataFiles_ is set and sorted.
 void BehavioralBoxHistoricalData::reloadDataFilesContents()
@@ -58,6 +84,7 @@ void BehavioralBoxHistoricalData::reloadDataFilesContents()
 //getHistoricalDataEvents(): called after reloadDataFilesContents()
 /*
 Populates the this->milliseconds_since_epoch and this->values variables with the parsed results of the lines
+this->output_values and this->output_milliseconds_since_epoch contain only the values corresponding to events.
 */
 void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 {
@@ -157,6 +184,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 		//TODO: deal with the first sample. 
 		std::vector<double> currDiffVect = LabjackHelpers::computeDelta(curr_values, prev_values);
 
+		// EVENT DETECTION by falling_edge thresholding:
 		// Loop through the variables
 		for (int j = 0; j < maxNumVariables; j++) {
 			//double currDiff = curr_values[j] - prev_values[j];

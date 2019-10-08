@@ -202,6 +202,9 @@ public:
 	const int getLabjackSerialNumber() { return this->labjackSerialNumber_; };
 	const std::string getBoxIdentifier() { return this->boxID_; };
 
+	const void exportAsCSV(std::string path);
+
+
 
 private:
 	std::string boxID_;

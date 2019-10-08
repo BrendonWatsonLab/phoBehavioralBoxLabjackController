@@ -241,6 +241,23 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 			this->historicalData_.push_back(currHistoryData);
 		}
 	}
+
+	//Exports to CSV. This is inefficient to do each time, just for testing.
+	if (this->wants_export_to_csv_on_reload) {
+		this->exportHistoricalDataAsCSV(this->csvExportPath);
+		cout << "Export historical data to " << this->csvExportPath << endl;
+	}
+}
+
+void BehavioralBoxControllersManager::exportHistoricalDataAsCSV(std::string path, std::string base_filename)
+{
+	std::string fullPrefixPath = path + base_filename + "_";
+		for (int i = 0; i < this->historicalData_.size(); i++)
+		{
+			//TODO: this exports all historical data to the same file... is this okay?
+			std::string currFullOutputPath = fullPrefixPath + to_string(i) + ".csv";
+			this->historicalData_[i].exportAsCSV(currFullOutputPath);
+		}
 }
 
 

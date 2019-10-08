@@ -51,6 +51,7 @@ public:
 	std::vector<BehavioralBoxHistoricalData> getLoadedHistoricalData() { return this->historicalData_; }
 	void reloadHistoricalData();
 
+	void exportHistoricalDataAsCSV(std::string path, std::string base_filename);
 
 	// Server/Manager:
 	//void postHistoricalDataUpdatedEvent(const HistoricalDataLoadingEvent& event);
@@ -90,6 +91,9 @@ private:
 	int numberActiveLabjacks_ = 0;
 	bool addLabjack(BehavioralBoxLabjack* newLabjack);
 	
+	// CSV Export testing variables
+	const bool wants_export_to_csv_on_reload = true;
+	std::string csvExportPath = "C:/Common/data/export-HistoricalData.csv";
 	
 	std::vector<Connection> connections_;
 

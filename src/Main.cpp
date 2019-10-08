@@ -163,6 +163,13 @@ int main(int argc, char** argv)
 			}
 			cout << "\t done." << endl;
 		}
+		else if (character == 'U') {
+			cout << "Utility mode:" << endl;
+			//TODO: utility mode.
+			// Export data as CSV
+			controller->exportHistoricalDataAsCSV("C:/Common/data/", "export-HistoricalData_");
+			cout << "\t done." << endl;
+		}
 		else {
 			printCommandsMenu();
 		}
@@ -216,6 +223,7 @@ void printCommandsMenu() {
 	cout << "\t Press [r] at any time to refresh and scan for more labjacks." << endl;
 	cout << "\t Press [l] at any time to toggle visible LED Light mode for all labjacks." << endl;
 	cout << "\t Press [a] at any time to toggle Attract mode for all labjacks." << endl;
+	cout << "\t Press [u] at any time to display utility options." << endl;
 	cout << "\t Press [q] at any time to quit." << endl;
 	cout << "\t Press any other key at any time to show this list of commands." << endl;
 }
