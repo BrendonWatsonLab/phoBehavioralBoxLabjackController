@@ -230,6 +230,9 @@
     <ClInclude Include="ConfigFiles\config-FinalBoxes-10-01-2019.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml">
@@ -285,5 +288,15 @@
     <CopyFileToFolders Include="..\..\..\Program Files\Wt 4.1.0 msvs2019 x64\bin\wttestd.dll">
       <Filter>Required DLLs\Debug</Filter>
     </CopyFileToFolders>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="phoBehavioralBoxLabjackController.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\phoBehavioralBoxController Icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -48,6 +48,7 @@
     <ClInclude Include="ConfigFiles\config-DownstairsBox.h" />
     <ClInclude Include="ConfigFiles\config-FinalBoxes-10-01-2019.h" />
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="src\BehavioralBoxHistoricalData.h" />
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
     <ClInclude Include="src\BehavioralBoxControllersManager.h" />
@@ -170,6 +171,12 @@
     <None Include="resources\category.csv" />
     <None Include="resources\charts.css" />
     <None Include="resources\timeseries.csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="phoBehavioralBoxLabjackController.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\phoBehavioralBoxController Icon.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CA30395F-5251-40D8-8C39-297793F13B1E}</ProjectGuid>
