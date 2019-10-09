@@ -15,8 +15,9 @@ struct LoadedConfiguration
 	bool enableOverrideDefaultHistoricalFileSearchDirectory = false;
 	std::string historicalFileSearchRootDirectory = "C:/Common/data/";
 
-	//WebServer:
+	//Features:
 	bool launch_web_server = true;
+	bool enableHistoricalDataLoading = true;
 
 	//TimeSeriesChart:
 	bool shouldEnableSynchronize_Y_Axis = false;

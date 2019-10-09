@@ -219,6 +219,11 @@ BehavioralBoxHistoricalData BehavioralBoxControllersManager::getHistoricalData(i
 //TODO: currently doesn't make use of the individual Labjack object's output directory, and instead uses this class' member variable dataFilesSearchDirectory_
 void BehavioralBoxControllersManager::reloadHistoricalData()
 {
+	if (!this->configMan->getLoadedConfig().enableHistoricalDataLoading) {
+		// Historical Data loading is disabled, just return.
+		//TODO: validate that this is acceptable.
+		return;
+	}
 	//TODO: do on background thread
 	labjackDataFilesMap_ = FilesystemHelpers::findDataFiles(this->dataFilesSearchDirectory_);
 
@@ -251,14 +256,14 @@ std::vector<std::string> BehavioralBoxControllersManager::exportHistoricalDataAs
 {
 	std::string fullPrefixPath = path + base_filename + "_";
 	std::vector<std::string> outputPaths;
-			for (int i = 0; i < this->historicalData_.size(); i++)
-			{
-				//TODO: this exports all historical data to the same file... is this okay?
-				std::string currFullOutputPath = fullPrefixPath + to_string(i) + ".csv";
-				outputPaths.push_back(currFullOutputPath);
-				this->historicalData_[i].exportAsCSV(currFullOutputPath);
-			}
-			return outputPaths;
+	for (int i = 0; i < this->historicalData_.size(); i++)
+	{
+		//TODO: this exports all historical data to the same file... is this okay?
+		std::string currFullOutputPath = fullPrefixPath + to_string(i) + ".csv";
+		outputPaths.push_back(currFullOutputPath);
+		this->historicalData_[i].exportAsCSV(currFullOutputPath);
+	}
+	return outputPaths;
 }
 
 

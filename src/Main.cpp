@@ -43,12 +43,15 @@ std::shared_ptr<BehavioralBoxControllersManager> controller = make_shared<Behavi
 
 // FUNCTION PROTOTYPES:
 //bool waitForFoundLabjacks();
-#if LAUNCH_WEB_SERVER
+
 bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr);
-#endif // LAUNCH_WEB_SERVER
+
 int shutdownApplication(int shutdownCode);
 
 // Interface:
+void printComputerInformation();
+void printFilesystemPaths();
+void printConfiguration();
 void printCommandsMenu();
 
 
@@ -59,23 +62,20 @@ int main(int argc, char** argv)
 	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
 
 	// Get the hostname
-	std::string foundHostName = configMan->getHostName();
-	cout << "Found host name: " << foundHostName << endl;
-	int computerIdentifierNumber = configMan->getNumericComputerIdentifier();
-	cout << "Computer Identifier ID: " << computerIdentifierNumber << endl;
+	//std::string foundHostName = configMan->getHostName();
+	//cout << "Found host name: " << foundHostName << endl;
+	//int computerIdentifierNumber = configMan->getNumericComputerIdentifier();
+	//cout << "Computer Identifier ID: " << computerIdentifierNumber << endl;
 
-	configMan->getEnvironmentVariables();
+	printConfiguration();
 
 	//TODO: this doesn't currently matter because the webserver reloads everything in TimeSeriesChart::buildHistoricDataModel() by calling the static BehavioralBoxControllersManager::loadAllHistoricalData() function.
 	// Eventually we weant to implement it in a singleton-like fashion.
-#if LOAD_HISTORICAL_DATA
-	//controller->reloadHistoricalData();
-#endif // LOAD_HISTORICAL_DATA
-
-#if LAUNCH_WEB_SERVER
-	// Run the webserver:
-	startWebserver(argc, argv, &controller);
-#endif // LAUNCH_WEB_SERVER
+	const bool shouldStartWebServer = configMan->getLoadedConfig().launch_web_server;
+	if (shouldStartWebServer) {
+		// Run the webserver:
+		startWebserver(argc, argv, &controller);
+	}
 
 	cout << endl << "Scanning for attached Labjacks..." << endl;
 	if (!controller->waitForFoundLabjacks()) {
@@ -84,9 +84,9 @@ int main(int argc, char** argv)
 		return shutdownApplication(LJME_NO_DEVICES_FOUND);
 	}
 
-#if LAUNCH_WEB_SERVER
-	WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
-#endif // LAUNCH_WEB_SERVER
+	if (shouldStartWebServer) {
+		WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
+	}
 
 	// TODO - READ ME: main run loop
 		// The LJM_StartInterval, LJM_WaitForNextInterval, and LJM_CleanInterval functions are used to efficiently execute the loop every so many milliseconds
@@ -143,11 +143,10 @@ int main(int argc, char** argv)
 		else if (character == 'R') {
 			cout << "Refreshing Labjacks..." << endl;
 			controller->scanForNewLabjacks();
-#if LAUNCH_WEB_SERVER
-			// Refresh the webserver
-			WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
-#endif // LAUNCH_WEB_SERVER
-
+			if (shouldStartWebServer) {
+				// Refresh the webserver
+				WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
+			}
 			cout << "\t done." << endl;
 		}
 		else if (character == 'L') {
@@ -194,9 +193,6 @@ int main(int argc, char** argv)
 }
 
 
-
-#if LAUNCH_WEB_SERVER
-
 bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr)
 {
 	cout << "Starting the web server." << endl;
@@ -208,20 +204,19 @@ bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxCo
 	return true;
 }
 
-#endif // LAUNCH_WEB_SERVER
-
 // Called when the application is being quit
 int shutdownApplication(int shutdownCode)
 {
 	cout << "Shutting down the application..." << endl;
 	//controller->shutdown();
-#if LAUNCH_WEB_SERVER
-	cout << "Waiting on web server thread to quit..." << endl;
-	// As the thread is using members from this object
-	  // We can not let this obect be destroyed until
-	  // the thread finishes executing.
-	web_server_thread.join();
-#endif // LAUNCH_WEB_SERVER
+	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	const bool shouldStartWebServer = configMan->getLoadedConfig().launch_web_server;
+	if (shouldStartWebServer) {
+		cout << "Waiting on web server thread to quit..." << endl;
+		// As the thread is using members from this object
+		// We can not let this object be destroyed until the thread finishes executing.
+		web_server_thread.join();
+	}
 	printf("Done.");
 	// At this point the thread has finished.
 	// Destructor can now complete.
@@ -240,6 +235,46 @@ void printCommandsMenu() {
 	cout << "\t Press [u] at any time to display utility options." << endl;
 	cout << "\t Press [q] at any time to quit." << endl;
 	cout << "\t Press any other key at any time to show this list of commands." << endl;
+}
+
+
+void printFilesystemPaths() {
+	cout << "Filesystem: " << endl;
+	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	auto loaded_config = configMan->getLoadedConfig();
+	cout << "\t Output Directory: " << configMan->getGeneratedActiveOutputDirectory() << endl;
+	if (loaded_config.enableHistoricalDataLoading) {
+		cout << "\t Historical data loading is enabled and the output directory is " << configMan->getGeneratedActiveHistoricalSearchDirectory() << endl;
+	}
+	else {
+		cout << "\t Historical data loading is disabled." << endl;
+	}
+}
+
+void printComputerInformation() {
+	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	cout << "Computer Hostname: " << configMan->getHostName() << endl;
+	cout << "Parsed BB Identifier Number: " << configMan->getNumericComputerIdentifier() << endl;
+	configMan->getEnvironmentVariables();
+}
+
+void printConfiguration() {
+	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	auto loaded_config = configMan->getLoadedConfig();
+	cout << "CURRENT CONFIGURATION: ==============================" << endl;
+	printComputerInformation();
+	cout << "\t Experiment Name: " << loaded_config.experimentName << endl;
+	cout << "\t Cohort Name: " << loaded_config.cohortName << endl;
+	cout << "\t Animal Name: " << loaded_config.animalName << endl;
+	printFilesystemPaths();
+	cout << "Webserver is ";
+	if (loaded_config.launch_web_server) {
+		cout << "enabled. It can be accessed via a web browser at URL http://127.0.0.1:8080" << endl;
+	}
+	else {
+		cout << "disabled." << endl;
+	}
+	cout << "==========================  END CURRENT CONFIGURATION" << endl;
 }
 
 
