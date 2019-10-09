@@ -5,13 +5,12 @@
 
 //using json = nlohmann::json;
 
-ConfigurationFile::ConfigurationFile(): ConfigurationFile("DefaultConfig.ini")
+ConfigurationFile::ConfigurationFile(): ConfigurationFile("C:/Common/config/phoBehavioralBoxLabjackController-Config.ini")
 {
 }
 
-ConfigurationFile::ConfigurationFile(std::string filePath): iniReader(filePath)
+ConfigurationFile::ConfigurationFile(std::string filePath): filePath(filePath), iniReader(INIReader(filePath))
 {
-	this->filePath = filePath;
 	this->reloadFromFile();
 }
 
@@ -20,7 +19,7 @@ ConfigurationFile::ConfigurationFile(std::string filePath): iniReader(filePath)
 bool ConfigurationFile::reloadFromFile()
 {
 	if (this->iniReader.ParseError() != 0) {
-		std::cout << "Can't load 'test.ini'\n";
+		std::cout << "\t ERROR: Can't load '" << this->filePath << "'\n";
 		return false;
 	}
 
