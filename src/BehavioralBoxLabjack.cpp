@@ -23,9 +23,6 @@
 #include "External/C_C++_LJM/LJM_Utilities.h"
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 
-//#include "ConfigurationManager.h"
-//std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
-
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, int serialNumber) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), serialNumber) {}
 
 // Constructor: Called when an instance of the object is about to be created

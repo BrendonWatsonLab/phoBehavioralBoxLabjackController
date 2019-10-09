@@ -24,11 +24,24 @@ bool ConfigurationFile::reloadFromFile()
 		return false;
 	}
 
+	//DEFAULT:
 	this->loadedConfig.daylightStartHour = this->iniReader.GetInteger("DEFAULT", "globalDaylightStartHour", 6);
 	this->loadedConfig.daylightOffHour = this->iniReader.GetInteger("DEFAULT", "globalDaylightOffHour", 18);
+	this->loadedConfig.continue_without_labjacks = this->iniReader.GetBoolean("DEFAULT", "CONTINUE_WITHOUT_LABJACKS", true);
+	this->loadedConfig.experimentName = this->iniReader.Get("DEFAULT", "experimentName", "experiment_00");
+	this->loadedConfig.cohortName = this->iniReader.Get("DEFAULT", "cohortName", "cohort_00");
+	this->loadedConfig.animalName = this->iniReader.Get("DEFAULT", "animalName", "animal_00");
 
+	//Filesystem:
+	this->loadedConfig.outputFileRootDirectory = this->iniReader.Get("Filesystem", "globalOutputFileDirectory", "C:/Common/data/");
+	this->loadedConfig.enableOverrideDefaultHistoricalFileSearchDirectory = this->iniReader.GetBoolean("Filesystem", "globalEnableOverrideDefaultHistoricalFileSearchDirectory", false);
+	this->loadedConfig.historicalFileSearchRootDirectory = this->iniReader.Get("Filesystem", "globalHistoricalFileSearchDirectory", "C:/Common/data/");
+
+	
+	//WebServer:
 	this->loadedConfig.launch_web_server = this->iniReader.GetBoolean("WebServer", "LAUNCH_WEB_SERVER", true);
 
+	//TimeSeriesChart:
 	this->loadedConfig.shouldEnableSynchronize_Y_Axis = this->iniReader.GetBoolean("TimeSeriesChart", "shouldEnableSynchronize_Y_Axis", true);
 	this->loadedConfig.numDaysToDisplay = this->iniReader.GetInteger("TimeSeriesChart", "numDaysToDisplay", 60);
 

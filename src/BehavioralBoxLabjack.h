@@ -110,7 +110,7 @@ private:
 	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
 	CSVWriter csv;
 	string filename = "outputFile.csv";
-	string outputDirectory = globalOutputFileDirectory; // should end in a slash if it's not empty
+	string outputDirectory = configMan->getGeneratedActiveOutputDirectory(); // should end in a slash if it's not empty
 	string fileFullPath = "C:/Common/data/outputFile.csv";
 
 	// Variables for holding the last read values

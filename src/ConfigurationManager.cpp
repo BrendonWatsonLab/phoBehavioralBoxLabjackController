@@ -42,3 +42,23 @@ bool ConfigurationManager::reloadFromConfigFile()
 {
 	return this->configFile.reloadFromFile();
 }
+
+
+std::string ConfigurationManager::getGeneratedActiveOutputDirectory()
+{
+	std::string outputPath = this->configFile.getLoadedConfig().outputFileRootDirectory;
+	outputPath += this->configFile.getLoadedConfig().experimentName + "/";
+	outputPath += this->configFile.getLoadedConfig().cohortName + "/";
+	outputPath += this->configFile.getLoadedConfig().animalName + "/";
+	return outputPath;
+}
+
+std::string ConfigurationManager::getGeneratedActiveHistoricalSearchDirectory()
+{
+	if (!this->configFile.getLoadedConfig().enableOverrideDefaultHistoricalFileSearchDirectory) {
+		return this->getGeneratedActiveOutputDirectory(); // Return the standard output dir as the historical dir (default case)
+	}
+	else {
+		return this->configFile.getLoadedConfig().historicalFileSearchRootDirectory;
+	}
+}

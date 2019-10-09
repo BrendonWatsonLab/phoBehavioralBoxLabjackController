@@ -10,6 +10,8 @@
 #include "BehavioralBoxHistoricalData.h"
 #include "HistoricalDataLoadingEvent.h"
 
+#include "ConfigurationManager.h"
+
 
 /*
  * Simple interface to uniquely identify a client
@@ -101,7 +103,8 @@ private:
 	void run();
 
 	//Historical Labjack Data loading:
-	std::string dataFilesSearchDirectory_ = globalHistoricalFileSearchDirectory;
+	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	std::string dataFilesSearchDirectory_ = configMan->getGeneratedActiveHistoricalSearchDirectory();
 	std::map<int, std::vector<LabjackDataFile>> labjackDataFilesMap_;
 	std::vector<BehavioralBoxHistoricalData> historicalData_;
 

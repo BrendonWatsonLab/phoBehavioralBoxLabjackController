@@ -42,7 +42,7 @@ Specifies what ports to open
 
 ////// DEBUGGING ONLY:
 //CONTINUE_WITHOUT_LABJACKS: if false, it waits on at least one labjack hardware to be detected before moving forward.
-#define CONTINUE_WITHOUT_LABJACKS true
+//#define CONTINUE_WITHOUT_LABJACKS true
 
 ////// Labjack Port Configurations:
 // Only one of these should be un-commented at a time.

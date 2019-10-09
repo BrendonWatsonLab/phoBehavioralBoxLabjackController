@@ -19,6 +19,11 @@ public:
 	LoadedConfiguration getLoadedConfig() { return this->configFile.getLoadedConfig(); }
 	bool reloadFromConfigFile();
 
+	// getGeneratedActiveOutputDirectory(): Returns an output path of the form "basePath/experimentName/cohortName/animalName" as requested by Brendon.
+	std::string getGeneratedActiveOutputDirectory();
+	std::string getGeneratedActiveHistoricalSearchDirectory();
+
+
 private:
 	std::string output_path_ = "";
 	ConfigurationFile configFile;

@@ -72,6 +72,7 @@ bool BehavioralBoxControllersManager::scanForNewLabjacks()
 
 bool BehavioralBoxControllersManager::waitForFoundLabjacks()
 {
+
 	this->stillWaitingToFindLabjacks_ = true;
 	int character;
 	do {
@@ -83,24 +84,25 @@ bool BehavioralBoxControllersManager::waitForFoundLabjacks()
 			printf("No labjacks found!!\n");
 			printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.\n");
 
-#if CONTINUE_WITHOUT_LABJACKS
-			this->stillWaitingToFindLabjacks_ = false;
-#else
-			cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
-			// Read a character from the keyboard
-			character = _getch();
-			character = toupper(character);
-			if (character == 'Q') {
-				// Returns false to indicate that the user gave up.
-				cout << "\t Quitting..." << endl;
-				return false;
+			if (this->configMan->getLoadedConfig().continue_without_labjacks) {
+				this->stillWaitingToFindLabjacks_ = false;
 			}
 			else {
-				//std::this_thread::sleep_for(std::chrono::seconds(1));
-				cout << "\t Refreshing Labjacks..." << endl;
-				continue;
-			}
-#endif // CONTINUE_WITHOUT_LABJACKS
+				cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
+				// Read a character from the keyboard
+				character = _getch();
+				character = toupper(character);
+				if (character == 'Q') {
+					// Returns false to indicate that the user gave up.
+					cout << "\t Quitting..." << endl;
+					return false;
+				}
+				else {
+					//std::this_thread::sleep_for(std::chrono::seconds(1));
+					cout << "\t Refreshing Labjacks..." << endl;
+					continue;
+				}
+			} // CONTINUE_WITHOUT_LABJACKS
 		}
 		else {
 			// Otherwise labjacks have found, move forward with the program.
@@ -126,6 +128,7 @@ bool BehavioralBoxControllersManager::isReady()
 		return true;
 	}
 }
+
 
 bool BehavioralBoxControllersManager::addLabjack(BehavioralBoxLabjack* newLabjack)
 {

@@ -126,11 +126,11 @@
     <ClCompile Include="src\CsvUtil.cpp">
       <Filter>WtWebServer\Model</Filter>
     </ClCompile>
-    <ClCompile Include="src\ConfigurationManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\WindowsHelpers.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ConfigurationManager.cpp">
+      <Filter>Singletons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,9 +221,6 @@
     <ClInclude Include="src\CsvUtil.h">
       <Filter>WtWebServer\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\ConfigurationManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\WindowsHelpers.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
@@ -238,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="src\LoadedConfiguration.h">
       <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConfigurationManager.h">
+      <Filter>Singletons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
