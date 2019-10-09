@@ -69,7 +69,10 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	}
 	else {
 		// Create the output directories if they don't exist.
-		FilesystemHelpers::createDirectory(this->outputDirectory);
+		bool wasDirectoryCreated = FilesystemHelpers::createDirectory(this->outputDirectory);
+		if (wasDirectoryCreated) {
+			cout << "Directory " << this->outputDirectory << " did not exist. It was created." << endl;
+		}
 		this->fileFullPath = this->outputDirectory + this->filename;
 	}
 	std::cout << "\t New file path: " << this->fileFullPath << std::endl;
