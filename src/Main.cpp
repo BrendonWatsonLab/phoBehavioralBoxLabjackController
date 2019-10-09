@@ -195,9 +195,41 @@ int main(int argc, char** argv)
 
 bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr)
 {
+
 	cout << "Starting the web server." << endl;
+	//// Debug only, output the input args
+	//cout << "Input arguments: ";
+	//cout << "{";
+	//for (size_t i = 0; i < argc; i++)
+	//{
+	//	std::string currArgument = argv[i];
+	//	cout << "\"" << currArgument << "\", ";
+	//}
+	//cout << "}" << endl;
+	//cout << "end input arguments.";
+
 	web_server_thread = std::move(std::thread([=]() {
-		labjackControllerApplicationWebServer(argc, argv, managerPtr);
+		// Build the input arguments for the webserver
+		// Converted using https://stackoverflow.com/questions/26032039/convert-vectorstring-into-char-c
+		// Only works within the thread's block, when placed before it, it failed.
+//std::vector<std::string> strings{ "C:\\Common\\repo\\phoBehavioralBoxLabjackController\\x64\\Release\\phoBehavioralBoxLabjackController.exe", "--docroot", ".", "--config", "C:\\Common\\repo\\phoBehavioralBoxLabjackController\\/ConfigFiles/wt_config.xml", "--http-address", "0.0.0.0", "--http-port", "8080", "-accesslog=C:\\Common\\repo\\phoBehavioralBoxLabjackController\\/logs/webServerAccessLog.log" };
+		std::vector<std::string> stringsWebserverArguments{ argv[0], "--docroot", ".", "--config", "C:/Common/config/phoBehavioralBoxLabjackController-WT_config.xml", "--http-address", "0.0.0.0", "--http-port", "8080", "-accesslog=C:/Common/info/webServerAccessLog.log" };
+
+		std::vector<char*> cstringsWebserverArguments{};
+		//cstringsWebserverArguments.reserve(stringsWebserverArguments.size());
+
+		for (auto& currStr : stringsWebserverArguments) {
+			cstringsWebserverArguments.push_back(&currStr.front());
+		}
+
+		/*std::vector<const char*> cstringsWebserverArguments{};
+
+		for (const auto& currStr : stringsWebserverArguments) {
+			cstringsWebserverArguments.push_back(currStr.c_str());
+		}*/
+		char** finalArgs = (char**)cstringsWebserverArguments.data();
+		labjackControllerApplicationWebServer(cstringsWebserverArguments.size(), finalArgs, managerPtr);
+		
 		return true;
 	}));
 	//runServer(argc, argv);
