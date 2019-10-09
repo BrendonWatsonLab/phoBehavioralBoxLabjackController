@@ -49,6 +49,8 @@ public:
 
 	//static std::string getExePath();
 
+	static bool createDirectory(std::string path);
+
 };
 
 

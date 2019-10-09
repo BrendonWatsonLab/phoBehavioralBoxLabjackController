@@ -23,6 +23,8 @@
 #include "External/C_C++_LJM/LJM_Utilities.h"
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
 
+#include "FilesystemHelpers.h"
+
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, int serialNumber) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), serialNumber) {}
 
 // Constructor: Called when an instance of the object is about to be created
@@ -66,6 +68,8 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 		this->fileFullPath = this->filename;
 	}
 	else {
+		// Create the output directories if they don't exist.
+		FilesystemHelpers::createDirectory(this->outputDirectory);
 		this->fileFullPath = this->outputDirectory + this->filename;
 	}
 	std::cout << "\t New file path: " << this->fileFullPath << std::endl;

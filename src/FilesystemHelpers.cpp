@@ -121,3 +121,18 @@ std::map<int, std::vector<LabjackDataFile>> FilesystemHelpers::findDataFiles(std
 	return labjackDataFilesMap;
 }
 
+// Creates a directory only if needed
+bool FilesystemHelpers::createDirectory(std::string path)
+{
+	if (path.empty()) {
+		return false;
+	}
+	if (fs::exists(path)) {
+		//Directory already exists
+		return false;
+	}
+	else {
+		return fs::create_directories(path);
+	}
+}
+
