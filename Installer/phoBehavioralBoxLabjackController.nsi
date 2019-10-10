@@ -17,6 +17,11 @@
   ;!define PHO_BUILD_PATH "../x64/Release"
   !define PHO_BUILD_PATH "C:\Common\repo\phoBehavioralBoxLabjackController\x64\Release"
   CRCCheck On
+
+  ; Installer silent by default:
+  SilentInstall silent
+  ; Prevent skipping files that are in use. Fails instead.
+  AllowSkipFiles off
  
   ; We should test if we must use an absolute path 
   ; !include "${NSISDIR}\Contrib\Modern UI\System.nsh"
@@ -156,11 +161,11 @@ SectionEnd
  
 ;Function that calls a messagebox when installation finished correctly
 Function .onInstSuccess
-  MessageBox MB_OK "You have successfully installed ${MUI_PRODUCT}. Use the desktop icon to start the program."
+  MessageBox MB_OK "You have successfully installed ${MUI_PRODUCT}. Use the desktop icon to start the program." /SD IDOK
 FunctionEnd
  
 Function un.onUninstSuccess
-  MessageBox MB_OK "You have successfully uninstalled ${MUI_PRODUCT}."
+  MessageBox MB_OK "You have successfully uninstalled ${MUI_PRODUCT}." /SD IDOK
 FunctionEnd
  
  

@@ -212,7 +212,7 @@ bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxCo
 		// Build the input arguments for the webserver
 		// Converted using https://stackoverflow.com/questions/26032039/convert-vectorstring-into-char-c
 		// Only works within the thread's block, when placed before it, it failed.
-//std::vector<std::string> strings{ "C:\\Common\\repo\\phoBehavioralBoxLabjackController\\x64\\Release\\phoBehavioralBoxLabjackController.exe", "--docroot", ".", "--config", "C:\\Common\\repo\\phoBehavioralBoxLabjackController\\/ConfigFiles/wt_config.xml", "--http-address", "0.0.0.0", "--http-port", "8080", "-accesslog=C:\\Common\\repo\\phoBehavioralBoxLabjackController\\/logs/webServerAccessLog.log" };
+		//std::vector<std::string> strings{ "C:\\Common\\repo\\phoBehavioralBoxLabjackController\\x64\\Release\\phoBehavioralBoxLabjackController.exe", "--docroot", ".", "--config", "C:\\Common\\repo\\phoBehavioralBoxLabjackController\\/ConfigFiles/wt_config.xml", "--http-address", "0.0.0.0", "--http-port", "8080", "-accesslog=C:\\Common\\repo\\phoBehavioralBoxLabjackController\\/logs/webServerAccessLog.log" };
 		std::vector<std::string> stringsWebserverArguments{ argv[0], "--docroot", ".", "--config", "C:/Common/config/phoBehavioralBoxLabjackController-WT_config.xml", "--http-address", "0.0.0.0", "--http-port", "8080", "-accesslog=C:/Common/info/webServerAccessLog.log" };
 
 		std::vector<char*> cstringsWebserverArguments{};
