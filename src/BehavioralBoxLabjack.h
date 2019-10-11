@@ -27,7 +27,7 @@ typedef std::chrono::system_clock Clock;
 #include "External/Scheduler/Scheduler.h"
 
 // REGEX:
-static const std::regex behavioral_box_labjack_deviceName_regex("WATSON-LJ-(\\d{2})");
+static const std::regex behavioral_box_labjack_deviceName_regex("LJ-(\\d{2})");
 
 class BehavioralBoxLabjack
 {

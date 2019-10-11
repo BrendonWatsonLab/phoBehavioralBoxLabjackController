@@ -542,7 +542,7 @@ void BehavioralBoxLabjack::initializeLabjackConfigurationIfNeeded()
 		std::smatch stringMatch;    // same as std::match_results<string::const_iterator> sm;
 		std::regex_match(this->deviceName, stringMatch, behavioral_box_labjack_deviceName_regex);
 		if (stringMatch.size() <= 1) {
-			std::cout << "Couldn't parse number from " << this->deviceName << ". It's not of the expected format \"WATSON-LJ-XX\"." << std::endl;
+			std::cout << "Couldn't parse number from " << this->deviceName << ". It's not of the expected format \"LJ-XX\"." << std::endl;
 			needsRename = true;
 		}
 		else {
@@ -564,7 +564,7 @@ void BehavioralBoxLabjack::initializeLabjackConfigurationIfNeeded()
 			cin >> computerIdentifierNumber;			
 		}
 		// Build new Labjack Name
-		ostr << "WATSON-LJ-";
+		ostr << "LJ-";
 		ostr << std::dec << std::setw(2) << std::setfill('0') << computerIdentifierNumber;
 		std::string new_proposed_labjack_name_string = ostr.str(); //the str() function of the stream returns the string
 		cout << "New Proposed Labjack Name: " << new_proposed_labjack_name_string << endl;
