@@ -8,7 +8,7 @@
   !define MUI_PRODUCT "phoBehavioralBoxLabjackController"
   !define MUI_FILE "phoBehavioralBoxLabjackController"
   !define MUI_VERSION ""
-  !define MUI_BRANDINGTEXT "phoBehavioralBoxLabjackController Ver. 0.1"
+  !define MUI_BRANDINGTEXT "phoBehavioralBoxLabjackController Ver. 0.2"
   !define PHO_COMMONDIR "C:\Common"
   !define PHO_COMMON_NAME_BIN "bin"
   !define PHO_COMMON_DIR_BIN "C:\Common\bin"
