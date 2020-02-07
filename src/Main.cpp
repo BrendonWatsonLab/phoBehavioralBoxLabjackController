@@ -286,8 +286,17 @@ void printFilesystemPaths() {
 void printComputerInformation() {
 	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
 	cout << "Computer Hostname: " << configMan->getHostName() << endl;
-	cout << "Parsed BB Identifier Number: " << configMan->getNumericComputerIdentifier() << endl;
-	configMan->getEnvironmentVariables();
+
+	auto numeric_client_identifier = configMan->getNumericComputerIdentifier();
+	if (numeric_client_identifier == -1)
+	{
+		cout << "WARNING: Client's BB Identifier Number could not be found. Is this software running on a Behavioral Box Client computer?" << endl;
+	}
+	else {
+		// Computer is a BB Client
+		cout << "Parsed BB Identifier Number: " << numeric_client_identifier << endl;
+	}
+	// configMan->getEnvironmentVariables();
 }
 
 void printConfiguration() {

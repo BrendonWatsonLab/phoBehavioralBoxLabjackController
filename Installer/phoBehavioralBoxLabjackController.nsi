@@ -4,11 +4,21 @@
  
 ; -------------------------------
 ; Start
- 
+  !define PRODUCT_VERSION "1.0.0.1"
+  !define VERSION "1.0.0.1"
+
   !define MUI_PRODUCT "phoBehavioralBoxLabjackController"
   !define MUI_FILE "phoBehavioralBoxLabjackController"
   !define MUI_VERSION ""
-  !define MUI_BRANDINGTEXT "phoBehavioralBoxLabjackController Ver. 0.2"
+  !define MUI_BRANDINGTEXT "phoBehavioralBoxLabjackController Ver. ${PRODUCT_VERSION}"
+
+  VIProductVersion "${PRODUCT_VERSION}"
+  VIFileVersion "${VERSION}"
+  VIAddVersionKey "FileVersion" "${VERSION}"
+  VIAddVersionKey "LegalCopyright" "(C) Pho Hale, Brendon Watson Lab, 2020"
+  VIAddVersionKey "FileDescription" "Controller for the Brendon Watson lab's behavioral box hardware."
+
+
   !define PHO_COMMONDIR "C:\Common"
   !define PHO_COMMON_NAME_BIN "bin"
   !define PHO_COMMON_DIR_BIN "C:\Common\bin"
