@@ -74,6 +74,7 @@ bool BehavioralBoxControllersManager::waitForFoundLabjacks()
 {
 
 	this->stillWaitingToFindLabjacks_ = true;
+	bool is_interactive_mode = false; // Whether the program waits for the user's input, or whether it continues retrying automatically.
 	int character;
 	do {
 		// Find the labjacks
@@ -85,23 +86,35 @@ bool BehavioralBoxControllersManager::waitForFoundLabjacks()
 			printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.\n");
 
 			if (this->configMan->getLoadedConfig().continue_without_labjacks) {
+				cout << "\t Continuing without a Labjack..." << endl;
 				this->stillWaitingToFindLabjacks_ = false;
 			}
 			else {
-				cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
-				// Read a character from the keyboard
-				character = _getch();
-				character = toupper(character);
-				if (character == 'Q') {
-					// Returns false to indicate that the user gave up.
-					cout << "\t Quitting..." << endl;
-					return false;
+				if (is_interactive_mode)
+				{
+					// Interactive Mode
+					cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
+					// Read a character from the keyboard
+					character = _getch();
+					character = toupper(character);
+					if (character == 'Q') {
+						// Returns false to indicate that the user gave up.
+						cout << "\t Quitting..." << endl;
+						return false;
+					}
+					else {
+						//std::this_thread::sleep_for(std::chrono::seconds(1));
+						cout << "\t Refreshing Labjacks..." << endl;
+						continue;
+					}
 				}
 				else {
-					//std::this_thread::sleep_for(std::chrono::seconds(1));
+					cout << "\t Searching again for Labjacks in 5 seconds..." << endl;
+					std::this_thread::sleep_for(std::chrono::seconds(5));
 					cout << "\t Refreshing Labjacks..." << endl;
 					continue;
 				}
+				
 			} // CONTINUE_WITHOUT_LABJACKS
 		}
 		else {
