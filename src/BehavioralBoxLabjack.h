@@ -73,11 +73,11 @@ public:
 	std::string getDeviceName() { return this->deviceName; }
 	bool isVisibleLEDLit();
 	string getFullFilePath() { return this->fileFullPath; }
-	int getNumberInputChannels() { return NUM_CHANNELS; }
+	int getNumberInputChannels(bool include_digital_ports = true, bool include_analog_ports = false);
 	int getNumberOutputChannels() { return NUM_OUTPUT_CHANNELS; }
-	vector<std::string> getInputPortNames();
-	vector<std::string> getInputPortPurpose();
-	vector<double> getLastReadValues();
+	vector<std::string> getInputPortNames(bool include_digital_ports = true, bool include_analog_ports = false);
+	vector<std::string> getInputPortPurpose(bool include_digital_ports = true, bool include_analog_ports = false);
+	vector<double> getLastReadValues(bool include_digital_ports = true, bool include_analog_ports = false);
 	string getOutputDirectory() { return this->outputDirectory; }
 
 #if LAUNCH_WEB_SERVER
@@ -113,13 +113,31 @@ private:
 	string outputDirectory = configMan->getGeneratedActiveOutputDirectory(); // should end in a slash if it's not empty
 	string fileFullPath = "C:/Common/data/outputFile.csv";
 
+	CSVWriter csv_analog;
+	string filename_analog = "outputFile_analog.csv";
+	string fileFullPath_analog = "C:/Common/data/outputFile_analog.csv";
+
+
 	// Variables for holding the last read values
 	StateMonitor* monitor;
-	char * inputPortNames[NUM_CHANNELS] = globalLabjackInputPortNames;
-	char * inputPortPurpose[NUM_CHANNELS] = globalLabjackInputPortPurpose;
-	double previousReadInputPortValues[NUM_CHANNELS] = {0.0};
+	// All Values:
+	char * inputPortNames_all[NUM_CHANNELS] = globalLabjackInputPortNames;
+	char * inputPortPurpose_all[NUM_CHANNELS] = globalLabjackInputPortPurpose;
+	bool inputPortIsAnalog[NUM_CHANNELS] = globalLabjackInputPortIsAnalog;
+	double previousReadInputPortValues_all[NUM_CHANNELS] = {0.0};
 	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
 	bool inputPortValuesChanged[NUM_CHANNELS] = {false};
+
+	// Digital values:
+	char* inputPortNames_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortNames;
+	char* inputPortPurpose_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortPurpose;
+
+	// Analog Values:
+	//TODO: Check if we need a separate StateMonitor
+	//TODO: Check how CSVWriter is initialized
+	char* inputPortNames_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortNames;
+	char* inputPortPurpose_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortPurpose;
+
 	int errorAddress;
 
 	// Vector of Output Port Objects

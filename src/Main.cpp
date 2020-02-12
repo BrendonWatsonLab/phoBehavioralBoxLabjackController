@@ -58,6 +58,7 @@ void printCommandsMenu();
 int main(int argc, char** argv)
 {
 	cout << "BehavioralBoxLabjackController:" << endl;
+	cout << "\t Version " << SOFTWARE_VERSION << endl;
 	cout << "\t Pho Hale 2019" << endl << endl;
 	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
 
@@ -129,6 +130,16 @@ int main(int argc, char** argv)
 				cout << "\t Showing log file at " << fullFilePathString << endl;
 				LabjackHelpers::showInExplorer(fullFilePathString);
 			}
+			cout << "\t done." << endl;
+		}
+		else if (character == 'F') {
+			// Show the data files:
+			cout << "Showing current output directory..." << endl;
+			// Iterate through all found Labjacks
+			auto loaded_config = configMan->getLoadedConfig();
+			std::string fullOutputDirectoryPathString = configMan->getGeneratedActiveOutputDirectory();
+			cout << "\t Showing output file directory at " << fullOutputDirectoryPathString << endl;
+			LabjackHelpers::showInExplorer(fullOutputDirectoryPathString);
 			cout << "\t done." << endl;
 		}
 		else if (character == 'P') {
@@ -260,6 +271,7 @@ int shutdownApplication(int shutdownCode)
 void printCommandsMenu() {
 	cout << "Commands: " << endl;
 	cout << "\t Press [p] at any time to print the most recently read values for all labjacks." << endl;
+	cout << "\t Press [f] at any time to show the current output file directory." << endl;
 	cout << "\t Press [s] at any time to show the current log files for all labjacks." << endl;
 	cout << "\t Press [r] at any time to refresh and scan for more labjacks." << endl;
 	cout << "\t Press [l] at any time to toggle visible LED Light mode for all labjacks." << endl;
