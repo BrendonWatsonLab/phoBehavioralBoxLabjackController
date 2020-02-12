@@ -454,34 +454,110 @@ bool BehavioralBoxLabjack::isVisibleLEDLit()
 	}
 }
 
+int BehavioralBoxLabjack::getNumberInputChannels(bool include_digital_ports, bool include_analog_ports) {
+	if (include_digital_ports && include_analog_ports)
+	{
+		return NUM_CHANNELS;
+	}
+	if (include_digital_ports)
+	{
+		return NUM_CHANNELS_DIGITAL;
+	}
+	if (include_analog_ports)
+	{
+		return NUM_CHANNELS_ANALOG;
+	}
+}
 
-vector<std::string> BehavioralBoxLabjack::getInputPortNames()
+vector<std::string> BehavioralBoxLabjack::getInputPortNames(bool include_digital_ports, bool include_analog_ports)
 {
 	vector<std::string> outputStrings = vector<std::string>();
 	std::string currString = "";
-	for (int i = 0; i < this->getNumberInputChannels(); i++) {
-		currString = std::string(this->inputPortNames[i]);
-		outputStrings.push_back(currString);
+	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
+		if (this->inputPortIsAnalog[i])
+		{
+			// It's analog:
+			if (include_analog_ports)
+			{
+				currString = std::string(this->inputPortNames[i]);
+				outputStrings.push_back(currString);
+			}
+			else {
+				continue;
+			}
+		}
+		else {
+			// It's digital:
+			if (include_digital_ports)
+			{
+				currString = std::string(this->inputPortNames[i]);
+				outputStrings.push_back(currString);
+			}
+			else {
+				continue;
+			}
+		}
 	}
 	return outputStrings;
 }
 
-vector<std::string> BehavioralBoxLabjack::getInputPortPurpose()
+vector<std::string> BehavioralBoxLabjack::getInputPortPurpose(bool include_digital_ports, bool include_analog_ports)
 {
 	vector<std::string> outputStrings = vector<std::string>();
 	std::string currString = "";
-	for (int i = 0; i < this->getNumberInputChannels(); i++) {
-		currString = std::string(this->inputPortPurpose[i]);
-		outputStrings.push_back(currString);
+	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
+		if (this->inputPortIsAnalog[i])
+		{
+			// It's analog:
+			if (include_analog_ports)
+			{
+				currString = std::string(this->inputPortPurpose[i]);
+				outputStrings.push_back(currString);
+			}
+			else {
+				continue;
+			}
+		}
+		else {
+			// It's digital:
+			if (include_digital_ports)
+			{
+				currString = std::string(this->inputPortPurpose[i]);
+				outputStrings.push_back(currString);
+			}
+			else {
+				continue;
+			}
+		}
 	}
 	return outputStrings;
 }
 
-vector<double> BehavioralBoxLabjack::getLastReadValues()
+vector<double> BehavioralBoxLabjack::getLastReadValues(bool include_digital_ports, bool include_analog_ports)
 {
 	vector<double> outputValues = vector<double>();
-	for (int i = 0; i < this->getNumberInputChannels(); i++) {
-		outputValues.push_back(this->lastReadInputPortValues[i]);
+	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
+		if (this->inputPortIsAnalog[i])
+		{
+			// It's analog:
+			if (include_analog_ports)
+			{
+				outputValues.push_back(this->lastReadInputPortValues[i]);
+			}
+			else {
+				continue;
+			}
+		}
+		else {
+			// It's digital:
+			if (include_digital_ports)
+			{
+				outputValues.push_back(this->lastReadInputPortValues[i]);
+			}
+			else {
+				continue;
+			}
+		}
 	}
 	return outputValues;
 }

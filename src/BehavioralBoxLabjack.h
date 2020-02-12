@@ -73,11 +73,11 @@ public:
 	std::string getDeviceName() { return this->deviceName; }
 	bool isVisibleLEDLit();
 	string getFullFilePath() { return this->fileFullPath; }
-	int getNumberInputChannels() { return NUM_CHANNELS; }
+	int getNumberInputChannels(bool include_digital_ports = true, bool include_analog_ports = false);
 	int getNumberOutputChannels() { return NUM_OUTPUT_CHANNELS; }
-	vector<std::string> getInputPortNames();
-	vector<std::string> getInputPortPurpose();
-	vector<double> getLastReadValues();
+	vector<std::string> getInputPortNames(bool include_digital_ports = true, bool include_analog_ports = false);
+	vector<std::string> getInputPortPurpose(bool include_digital_ports = true, bool include_analog_ports = false);
+	vector<double> getLastReadValues(bool include_digital_ports = true, bool include_analog_ports = false);
 	string getOutputDirectory() { return this->outputDirectory; }
 
 #if LAUNCH_WEB_SERVER
