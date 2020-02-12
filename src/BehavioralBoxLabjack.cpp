@@ -323,7 +323,7 @@ void BehavioralBoxLabjack::readSensorValues()
 	{
 		// Lock the mutex to prevent concurrent labjack interaction
 		std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
-		this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char**)this->inputPortNames, this->lastReadInputPortValues, &this->errorAddress);
+		this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char**)this->inputPortNames_all, this->lastReadInputPortValues, &this->errorAddress);
 		ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
 	}
 
@@ -356,7 +356,7 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 	newCSVLine_digitalOnly.newRow() << milliseconds_since_epoch;
 	newCSVLine_analogOnly.newRow() << milliseconds_since_epoch;
 	for (int i = 0; i < NUM_CHANNELS; i++) {
-		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues[i]);
+		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues_all[i]);
 		if (inputPortValuesChanged[i] == true) {
 			// The input port changed from the previous value
 			if (this->inputPortIsAnalog[i])
@@ -372,11 +372,11 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 			// Special handling for the water ports. If the port is a water port that has transitioned from off to on, set the appropriate "this->water*PortEndIlluminationTime" variable so the port is illuminated for a second after dispense.
 			if (this->lastReadInputPortValues[i] > 0.0) {
 				// If the port transitioned from off to on:
-				if (strcmp(this->inputPortPurpose[i], "Water1_BeamBreak") == 0) {
+				if (strcmp(this->inputPortPurpose_all[i], "Water1_BeamBreak") == 0) {
 					auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(this->lastCaptureComputerTime);
 					this->water1PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
 				}
-				else if (strcmp(this->inputPortPurpose[i], "Water2_BeamBreak") == 0) {
+				else if (strcmp(this->inputPortPurpose_all[i], "Water2_BeamBreak") == 0) {
 					this->water2PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
 				}
 			} // end if greater than zero
@@ -407,7 +407,7 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 			cout << this->lastReadInputPortValues[i] << ", ";
 		}
 		// After capturing the change, replace the old value
-		this->previousReadInputPortValues[i] = this->lastReadInputPortValues[i];
+		this->previousReadInputPortValues_all[i] = this->lastReadInputPortValues[i];
 	} //end for num channels
 	if (enableConsoleLogging) {
 		cout << std::endl;
@@ -479,7 +479,7 @@ vector<std::string> BehavioralBoxLabjack::getInputPortNames(bool include_digital
 			// It's analog:
 			if (include_analog_ports)
 			{
-				currString = std::string(this->inputPortNames[i]);
+				currString = std::string(this->inputPortNames_all[i]);
 				outputStrings.push_back(currString);
 			}
 			else {
@@ -490,7 +490,7 @@ vector<std::string> BehavioralBoxLabjack::getInputPortNames(bool include_digital
 			// It's digital:
 			if (include_digital_ports)
 			{
-				currString = std::string(this->inputPortNames[i]);
+				currString = std::string(this->inputPortNames_all[i]);
 				outputStrings.push_back(currString);
 			}
 			else {
@@ -511,7 +511,7 @@ vector<std::string> BehavioralBoxLabjack::getInputPortPurpose(bool include_digit
 			// It's analog:
 			if (include_analog_ports)
 			{
-				currString = std::string(this->inputPortPurpose[i]);
+				currString = std::string(this->inputPortPurpose_all[i]);
 				outputStrings.push_back(currString);
 			}
 			else {
@@ -522,7 +522,7 @@ vector<std::string> BehavioralBoxLabjack::getInputPortPurpose(bool include_digit
 			// It's digital:
 			if (include_digital_ports)
 			{
-				currString = std::string(this->inputPortPurpose[i]);
+				currString = std::string(this->inputPortPurpose_all[i]);
 				outputStrings.push_back(currString);
 			}
 			else {
