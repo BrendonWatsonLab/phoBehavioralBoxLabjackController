@@ -59,17 +59,17 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	this->lastCaptureComputerTime = Clock::now();
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
 
-	// Builds the filename in the form "out_file_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}"
+	// Builds the digital filename in the form "out_file_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}"
 	std::ostringstream os;
 	os << "out_file_s" << this->serialNumber << "_" << milliseconds_since_epoch << ".csv";
+	this->filename = os.str();
 
+	// Builds the analog filename in the form "out_file_analog_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}"
 	std::ostringstream os_analog;
 	os_analog << "out_file_analog_s" << this->serialNumber << "_" << milliseconds_since_epoch << ".csv";
-
-	this->filename = os.str();
 	this->filename_analog = os_analog.str();
 
-	// Build the full file path
+	// Build the full file paths
 	if (this->outputDirectory.empty()) {
 		this->fileFullPath = this->filename;
 		this->fileFullPath_analog = this->filename_analog;
@@ -83,12 +83,12 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 		this->fileFullPath = this->outputDirectory + this->filename;
 		this->fileFullPath_analog = this->outputDirectory + this->filename_analog;
 	}
-	std::cout << "\t New file path: " << this->fileFullPath << std::endl;
+	std::cout << "\t New file paths: " << std::endl << "\t Digital Inputs: " << this->fileFullPath << std::endl << "\t Analog Inputs: " << this->fileFullPath_analog << std::endl;
 	
-	// Write the header to the .csv file:
+	// Write the header to the digital .csv file:
 	this->csv.newRow() << "computerTime";
-	for (int i = 0; i < NUM_CHANNELS; i++) {
-		this->csv << this->inputPortNames[i];
+	for (int i = 0; i < NUM_CHANNELS_DIGITAL; i++) {
+		this->csv << this->inputPortNames_digital[i];
 	}
 	this->csv.writeToFile(this->fileFullPath, false);
 
@@ -162,6 +162,7 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	// Close the open output file:
 	//this->outputFile.close();
 	this->csv.writeToFile(this->fileFullPath, true);
+	this->csv_analog.writeToFile(this->fileFullPath_analog, true);
 
 	// Close the connection to the labjack
 	this->err = LJM_Close(this->handle);
@@ -318,7 +319,7 @@ void BehavioralBoxLabjack::readSensorValues()
 {
 	this->lastCaptureComputerTime = Clock::now();
 
-	//Read the sensor values from the labjack DIO Inputs
+	//Read the sensor values from the labjack DIO and AIO Inputs
 	{
 		// Lock the mutex to prevent concurrent labjack interaction
 		std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
@@ -337,17 +338,37 @@ void BehavioralBoxLabjack::readSensorValues()
 void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 {
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
-	CSVWriter newCSVLine(",");
+
+	// Determine if the change occured in the analog ports, digital ports, or both
+
+	//CSVWriter newCSVLine(",");
+	CSVWriter newCSVLine_digitalOnly(",");
+	CSVWriter newCSVLine_analogOnly(",");
+
+	bool did_anyAnalogPortChange = false;
+	bool did_anyDigitalPortChange = false;
 
 	if (enableConsoleLogging) {
 		this->printIdentifierLine();
 		cout << "\t " << milliseconds_since_epoch << ": ";
 	}
-	newCSVLine.newRow() << milliseconds_since_epoch;
+	//newCSVLine.newRow() << milliseconds_since_epoch;
+	newCSVLine_digitalOnly.newRow() << milliseconds_since_epoch;
+	newCSVLine_analogOnly.newRow() << milliseconds_since_epoch;
 	for (int i = 0; i < NUM_CHANNELS; i++) {
 		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues[i]);
 		if (inputPortValuesChanged[i] == true) {
 			// The input port changed from the previous value
+			if (this->inputPortIsAnalog[i])
+			{
+				// If it's an analog port:
+				did_anyAnalogPortChange = true;
+			}
+			else {
+				// Otherwise, it's a digital port
+				did_anyDigitalPortChange = true;
+			}
+			
 			// Special handling for the water ports. If the port is a water port that has transitioned from off to on, set the appropriate "this->water*PortEndIlluminationTime" variable so the port is illuminated for a second after dispense.
 			if (this->lastReadInputPortValues[i] > 0.0) {
 				// If the port transitioned from off to on:
@@ -362,11 +383,26 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 
 #if LAUNCH_WEB_SERVER
 			// Emit the "valueChanged" signal for the web server
-			this->valueChanged_.emit(this->serialNumber, i, this->lastReadInputPortValues[i]);
+			// Only send signals to the webserver for digital ports:
+			if (!this->inputPortIsAnalog[i])
+			{
+				this->valueChanged_.emit(this->serialNumber, i, this->lastReadInputPortValues[i]);
+			}
 #endif // LAUNCH_WEB_SERVER
 
 		} // end if input port values changed
-		newCSVLine << this->lastReadInputPortValues[i];
+
+		//newCSVLine << this->lastReadInputPortValues[i];
+		if (this->inputPortIsAnalog[i])
+		{
+			// If it's an analog port:
+			newCSVLine_analogOnly << this->lastReadInputPortValues[i];
+		}
+		else {
+			// Otherwise, it's a digital port
+			newCSVLine_digitalOnly << this->lastReadInputPortValues[i];
+		}
+
 		if (enableConsoleLogging) {
 			cout << this->lastReadInputPortValues[i] << ", ";
 		}
@@ -378,7 +414,20 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 	}
 	// Lock the mutex to prevent concurrent persisting
 	std::lock_guard<std::mutex> csvLock(this->logMutex);
-	newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+	{
+		//newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		if (did_anyAnalogPortChange)
+		{
+			// If an analog port changed, write out to the digital line
+			newCSVLine_analogOnly.writeToFile(this->fileFullPath_analog, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		}
+		if (did_anyDigitalPortChange)
+		{
+			// If a digital port changed, write out to the digital line
+			newCSVLine_digitalOnly.writeToFile(this->fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		}
+	}
+
 }
 
 

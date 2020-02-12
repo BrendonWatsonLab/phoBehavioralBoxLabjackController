@@ -120,18 +120,24 @@ private:
 
 	// Variables for holding the last read values
 	StateMonitor* monitor;
-	// Digital values:
+	// All Values:
 	char * inputPortNames[NUM_CHANNELS] = globalLabjackInputPortNames;
 	char * inputPortPurpose[NUM_CHANNELS] = globalLabjackInputPortPurpose;
+	bool inputPortIsAnalog[NUM_CHANNELS] = globalLabjackInputPortIsAnalog;
 	double previousReadInputPortValues[NUM_CHANNELS] = {0.0};
 	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
 	bool inputPortValuesChanged[NUM_CHANNELS] = {false};
+
+	// Digital values:
+	char* inputPortNames_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortNames;
+	char* inputPortPurpose_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortPurpose;
 
 	// Analog Values:
 	//TODO: Check if we need a separate StateMonitor
 	//TODO: Check how CSVWriter is initialized
 	char* inputPortNames_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortNames;
 	char* inputPortPurpose_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortPurpose;
+	//Not sure if below are needed since the StateMonitor is working for both digital and analog values, will see in the persisting of the CSV
 	double previousReadInputPortValues_analog[NUM_CHANNELS_ANALOG] = { 0.0 };
 	double lastReadInputPortValues_analog[NUM_CHANNELS_ANALOG] = { 0.0 };
 	bool inputPortValuesChanged_analog[NUM_CHANNELS_ANALOG] = { false };
