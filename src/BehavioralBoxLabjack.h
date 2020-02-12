@@ -113,13 +113,30 @@ private:
 	string outputDirectory = configMan->getGeneratedActiveOutputDirectory(); // should end in a slash if it's not empty
 	string fileFullPath = "C:/Common/data/outputFile.csv";
 
+	CSVWriter csv_analog;
+	string filename_analog = "outputFile_analog.csv";
+	string fileFullPath_analog = "C:/Common/data/outputFile_analog.csv";
+
+
 	// Variables for holding the last read values
 	StateMonitor* monitor;
+	// Digital values:
 	char * inputPortNames[NUM_CHANNELS] = globalLabjackInputPortNames;
 	char * inputPortPurpose[NUM_CHANNELS] = globalLabjackInputPortPurpose;
 	double previousReadInputPortValues[NUM_CHANNELS] = {0.0};
 	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
 	bool inputPortValuesChanged[NUM_CHANNELS] = {false};
+
+	// Analog Values:
+	//TODO: Check if we need a separate StateMonitor
+	//TODO: Check how CSVWriter is initialized
+	char* inputPortNames_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortNames;
+	char* inputPortPurpose_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortPurpose;
+	double previousReadInputPortValues_analog[NUM_CHANNELS_ANALOG] = { 0.0 };
+	double lastReadInputPortValues_analog[NUM_CHANNELS_ANALOG] = { 0.0 };
+	bool inputPortValuesChanged_analog[NUM_CHANNELS_ANALOG] = { false };
+
+
 	int errorAddress;
 
 	// Vector of Output Port Objects

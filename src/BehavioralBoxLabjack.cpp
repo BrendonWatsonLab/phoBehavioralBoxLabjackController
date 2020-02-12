@@ -62,10 +62,17 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	// Builds the filename in the form "out_file_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}"
 	std::ostringstream os;
 	os << "out_file_s" << this->serialNumber << "_" << milliseconds_since_epoch << ".csv";
+
+	std::ostringstream os_analog;
+	os_analog << "out_file_analog_s" << this->serialNumber << "_" << milliseconds_since_epoch << ".csv";
+
 	this->filename = os.str();
+	this->filename_analog = os_analog.str();
+
 	// Build the full file path
 	if (this->outputDirectory.empty()) {
 		this->fileFullPath = this->filename;
+		this->fileFullPath_analog = this->filename_analog;
 	}
 	else {
 		// Create the output directories if they don't exist.
@@ -74,6 +81,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 			cout << "Directory " << this->outputDirectory << " did not exist. It was created." << endl;
 		}
 		this->fileFullPath = this->outputDirectory + this->filename;
+		this->fileFullPath_analog = this->outputDirectory + this->filename_analog;
 	}
 	std::cout << "\t New file path: " << this->fileFullPath << std::endl;
 	
@@ -82,7 +90,14 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	for (int i = 0; i < NUM_CHANNELS; i++) {
 		this->csv << this->inputPortNames[i];
 	}
-	this->csv.writeToFile(fileFullPath, false);
+	this->csv.writeToFile(this->fileFullPath, false);
+
+	// Write the header to the analog .csv file:
+	this->csv_analog.newRow() << "computerTime";
+	for (int i = 0; i < NUM_CHANNELS_ANALOG; i++) {
+		this->csv_analog << this->inputPortNames_analog[i];
+	}
+	this->csv_analog.writeToFile(this->fileFullPath_analog, false);
 
 	// Setup output ports states:
 	this->water1PortEndIlluminationTime = Clock::now();
