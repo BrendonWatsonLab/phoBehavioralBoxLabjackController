@@ -58,6 +58,7 @@ void printCommandsMenu();
 int main(int argc, char** argv)
 {
 	cout << "BehavioralBoxLabjackController:" << endl;
+	cout << "\t Version " << SOFTWARE_VERSION << endl;
 	cout << "\t Pho Hale 2019" << endl << endl;
 	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
 

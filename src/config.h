@@ -4,6 +4,8 @@
 Specifies what ports to open
 */
 
+#include "..\ProgramVersion.h"
+
 // number of tasks that can run simultaneously
 #define MAX_NUM_THREAD_PER_LABJACK 1
 
@@ -26,17 +28,6 @@ Specifies what ports to open
 
 #define LAUNCH_WEB_SERVER true
 #define ENABLE_WEB_SERVER_LIVE_WIDGET false
-
-//(0.0, 1.0, 1.0, 1.0)
-//(0.4980392156862745, 1.0, 0.8313725490196079, 1.0)
-//(1.0, 0.4980392156862745, 0.3137254901960784, 1.0)
-//(1.0, 0.0, 1.0, 1.0)
-//(0.0, 0.0, 1.0, 1.0)
-//(0.0, 0.0, 0.5450980392156862, 1.0)
-//(0.8627450980392157, 0.0784313725490196, 0.23529411764705882, 1.0)
-//(0.5019607843137255, 0.0, 0.0, 1.0)
-
-
 
 ////// DEBUGGING ONLY:
 //CONTINUE_WITHOUT_LABJACKS: if false, it waits on at least one labjack hardware to be detected before moving forward.
