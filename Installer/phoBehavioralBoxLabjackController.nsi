@@ -4,8 +4,8 @@
  
 ; -------------------------------
 ; Start
-  !define PRODUCT_VERSION "1.0.0.2"
-  !define VERSION "1.0.0.2"
+  !define PRODUCT_VERSION "1.0.0.3"
+  !define VERSION "1.0.0.3"
 
   !define MUI_PRODUCT "phoBehavioralBoxLabjackController"
   !define MUI_FILE "phoBehavioralBoxLabjackController"
@@ -91,10 +91,17 @@
  Section "install"
 
 ;Add files
-  SetOutPath "${PHO_COMMON_DIR_CONFIG}"
-  File "${PHO_COMMON_DIR_CONFIG}\phoBehavioralBoxLabjackController-WT_config.xml"
-  File "${PHO_COMMON_DIR_CONFIG}\phoBehavioralBoxLabjackController-Config.ini"
+  ; SetOutPath "${PHO_COMMON_DIR_CONFIG}"
+  
+  ; IfFileExists "${PHO_COMMON_DIR_CONFIG}\phoBehavioralBoxLabjackController-WT_config.xml" CopyWtConfigScript skip
+  ; CopyWtConfigScript:
+  ; File "${PHO_COMMON_DIR_CONFIG}\phoBehavioralBoxLabjackController-WT_config.xml"
+  ; Skip:
 
+  ; IfFileExists "${PHO_COMMON_DIR_CONFIG}\phoBehavioralBoxLabjackController-Config.ini" CopyMainConfigScript SkipMainConfigCopy
+  ; CopyMainConfigScript:
+  ; File "${PHO_COMMON_DIR_CONFIG}\phoBehavioralBoxLabjackController-Config.ini"
+  ; SkipMainConfigCopy:
 
   SetOutPath "$INSTDIR"
  
