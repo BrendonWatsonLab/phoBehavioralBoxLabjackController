@@ -11,6 +11,7 @@ LabjackControllerWebApplication::LabjackControllerWebApplication(const WEnvironm
 	WApplication::instance()->enableUpdates(true);
 
 	setTitle("Labjack Controller Web App");
+	// TODO: Change to include BBID
 
 	setCssTheme("polished");
 	messageResourceBundle().use(appRoot() + "resources/" + "charts");
