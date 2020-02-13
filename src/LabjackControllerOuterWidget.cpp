@@ -18,7 +18,9 @@ using namespace Wt;
 LabjackControllerOuterWidget::LabjackControllerOuterWidget(BoxControllerWebDataServer& server) : WContainerWidget(), server_(server), loggedIn_(false)
 {
 	// TODO: Set appName to BBID
-	this->appName = "Labjack Manager Overview:";
+	// Gets the computer's hostname
+	this->hostName = this->server_.getHostName();
+	this->appName = "Labjack Manager Overview: " + this->hostName;
 	
 #if ENABLE_WEB_SERVER_LIVE_WIDGET
 	this->labjackExampleWidget = this->addWidget(cpp14::make_unique<LabjackLiveStateWidget>());
@@ -150,8 +152,10 @@ void LabjackControllerOuterWidget::setupHeader()
 	auto navigation = Wt::cpp14::make_unique<Wt::WNavigationBar>();
 	navigation_ = navigation.get();
 
+	std::string access_url = "http://" + this->hostName + ":8080";
 	navigation_->addStyleClass("main-nav");
-	navigation_->setTitle(this->appName, "http://127.0.0.1:8080");
+	//navigation_->setTitle(this->appName, "http://127.0.0.1:8080");
+	navigation_->setTitle(this->appName, access_url);
 	//navigation_->setResponsive(true);
 
 	//Wt::WAnimation animation(Wt::AnimationEffect::Fade,	Wt::TimingFunction::Linear,	200);
