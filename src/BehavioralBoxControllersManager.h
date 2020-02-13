@@ -65,6 +65,12 @@ public:
 
 	// Getters:
 	bool isReady();
+	// Gets the computer's hostname
+	std::string getHostName() { return this->hostName_; }
+	// Gets the 2-digit integer identifier for the current computer (and box, if there is a 1-to-1 mapping). Like the "02" in "WATSON-BB-02"
+	int getNumericComputerIdentifier() { return this->numeric_computer_identifer_; }
+	
+
 
 private:
 	struct Connection {
@@ -104,6 +110,8 @@ private:
 
 	//Historical Labjack Data loading:
 	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	std::string hostName_ = configMan->getHostName();
+	int numeric_computer_identifer_ = configMan->getNumericComputerIdentifier();
 	std::string dataFilesSearchDirectory_ = configMan->getGeneratedActiveHistoricalSearchDirectory();
 	std::map<int, std::vector<LabjackDataFile>> labjackDataFilesMap_;
 	std::vector<BehavioralBoxHistoricalData> historicalData_;

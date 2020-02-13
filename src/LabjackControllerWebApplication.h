@@ -28,6 +28,10 @@ public:
 	// Called to refresh the data for existing labjacks
 	static void staticRefreshLabjacksData();
 
+	// Gets the computer's hostname
+	std::string getHostName() { return this->server_.getHostName(); }
+	// Gets the 2-digit integer identifier for the current computer (and box, if there is a 1-to-1 mapping). Like the "02" in "WATSON-BB-02"
+	int getNumericComputerIdentifier() { return this->server_.getNumericComputerIdentifier(); }
 
 private:
 	BoxControllerWebDataServer& server_;

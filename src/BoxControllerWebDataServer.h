@@ -64,6 +64,12 @@ public:
 	//requestHistoricalDataReload(): requests a reload of historical data.
 	void requestHistoricalDataReload();
 
+	// Gets the computer's hostname
+	std::string getHostName() { return this->manager_->getHostName(); }
+	// Gets the 2-digit integer identifier for the current computer (and box, if there is a 1-to-1 mapping). Like the "02" in "WATSON-BB-02"
+	int getNumericComputerIdentifier() { return this->manager_->getNumericComputerIdentifier(); }
+
+
 private:
 	struct ClientInfo {
 		std::string       sessionId;
