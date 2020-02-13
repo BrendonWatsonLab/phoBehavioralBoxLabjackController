@@ -17,9 +17,9 @@ using namespace Wt;
 
 LabjackControllerOuterWidget::LabjackControllerOuterWidget(BoxControllerWebDataServer& server) : WContainerWidget(), server_(server), loggedIn_(false)
 {
+	// TODO: Set appName to BBID
 	this->appName = "Labjack Manager Overview:";
 	
-
 #if ENABLE_WEB_SERVER_LIVE_WIDGET
 	this->labjackExampleWidget = this->addWidget(cpp14::make_unique<LabjackLiveStateWidget>());
 #endif // ENABLE_WEB_SERVER_LIVE_WIDGET
@@ -138,48 +138,6 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 	// */
 	app->triggerUpdate();
 
-	//newMessage();
-
-	///*
-	// * Anything else doesn't matter if we are not logged in.
-	// */
-	//if (!loggedIn())
-	//	return;
-
-	//bool display = event.type() != DataServerEvent::Message
-	//	|| !userList_
-	//	|| (users_.find(event.user()) != users_.end() && users_[event.user()]);
-
-	//if (display) {
-	//	Wt::WText* w = messages_->addWidget(Wt::cpp14::make_unique<Wt::WText>());
-
-	//	/*
-	//	 * If it fails, it is because the content wasn't valid XHTML
-	//	 */
-	//	if (!w->setText(event.formattedHTML(user_, Wt::TextFormat::XHTML))) {
-	//		w->setText(event.formattedHTML(user_, Wt::TextFormat::Plain));
-	//		w->setTextFormat(Wt::TextFormat::XHTML);
-	//	}
-
-	//	w->setInline(false);
-	//	w->setStyleClass("chat-msg");
-
-	//	/*
-	//	 * Leave no more than 100 messages in the back-log
-	//	 */
-	//	if (messages_->count() > 100)
-	//		messages_->removeChild(messages_->children()[0]);
-
-	//	/*
-	//	 * Little javascript trick to make sure we scroll along with new content
-	//	 */
-	//	app->doJavaScript(messages_->jsRef() + ".scrollTop += "
-	//		+ messages_->jsRef() + ".scrollHeight;");
-
-	//	/* If this message belongs to another user, play a received sound */
-	//	if (event.user() != user_ && messageReceived_)
-	//		messageReceived_->play();
-	//}
 }
 
 void LabjackControllerOuterWidget::setupHeader()
