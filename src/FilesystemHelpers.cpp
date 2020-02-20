@@ -102,6 +102,7 @@ std::map<int, std::vector<LabjackDataFile>> FilesystemHelpers::findDataFiles(std
 			}
 			catch (...) {
 				// Map entry doesn't already exist. Create a new vector to add to the map
+				//TODO: DO I need "New" here?
 				currLabjackAssociatedFilesVector = std::vector<LabjackDataFile>();
 			}
 		}
