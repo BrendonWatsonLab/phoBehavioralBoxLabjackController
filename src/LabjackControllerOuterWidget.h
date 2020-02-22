@@ -42,6 +42,7 @@ protected:
 
 private:
 	std::string appName = "";
+	std::string hostName = "";
 	Wt::WVBoxLayout* mainLayout_;
 
 	// Server Stuff:

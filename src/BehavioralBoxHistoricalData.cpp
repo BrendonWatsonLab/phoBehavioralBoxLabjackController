@@ -96,6 +96,8 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 	this->headerLabels_.clear();
 	this->timestampToIndexMap_.clear();
 
+	//TODO: Do something special for analog (continuous) values?
+
 	int numVariables = 0;
 	int maxNumVariables = -1;
 	std::vector<std::string> headerLabels;

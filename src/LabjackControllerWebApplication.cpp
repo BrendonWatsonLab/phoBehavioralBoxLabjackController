@@ -7,10 +7,17 @@ using namespace Wt;
 
 LabjackControllerWebApplication::LabjackControllerWebApplication(const WEnvironment& env, BoxControllerWebDataServer& server) : WApplication(env), server_(server), env_(env)
 {
+	//std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	// Gets the computer's hostname
+	std::string hostName = this->getHostName();
+	// Gets the 2-digit integer identifier for the current computer (and box, if there is a 1-to-1 mapping). Like the "02" in "WATSON-BB-02"
+	int numericComputerIdentifier = this->getNumericComputerIdentifier();
+
 	this->enableUpdates(true);
 	WApplication::instance()->enableUpdates(true);
 
-	setTitle("Labjack Controller Web App");
+	setTitle(hostName + "BB Ctrl Web App");
+	// TODO: Change to include BBID
 
 	setCssTheme("polished");
 	messageResourceBundle().use(appRoot() + "resources/" + "charts");
@@ -102,6 +109,8 @@ int labjackControllerApplicationWebServer(int argc, char** argv, const std::shar
 {
 	Wt::WServer server(argc, argv, WTHTTP_CONFIGURATION);
 	BoxControllerWebDataServer dataServer(server, managerPtr);
+
+
 
 	/*
    * We add two entry points: one for the full-window application,

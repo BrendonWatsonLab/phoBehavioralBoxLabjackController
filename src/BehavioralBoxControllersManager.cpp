@@ -255,7 +255,7 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 		}
 	}
 	else {
-		// No actual labjacks, load everything:
+		// No actual labjacks, load **everything**:
 		//this->historicalData_ = BehavioralBoxControllersManager::loadAllHistoricalData();
 		for (const auto& labjackFilesPair : this->labjackDataFilesMap_) {
 			BehavioralBoxHistoricalData currHistoryData = BehavioralBoxHistoricalData(this->dataFilesSearchDirectory_, labjackFilesPair.first, labjackFilesPair.second);

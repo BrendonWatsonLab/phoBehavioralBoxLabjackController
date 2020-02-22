@@ -326,8 +326,8 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	//TODO: this is really inefficient because this is the format it starts out in and then I parse them into vectors of events for each variable.
 	int maxNumEvents = activeHistoricalData.getMaxNumberEvents();
 	int maxNumEventTimepoints = activeHistoricalData.getNumberOfUniqueTimepoints();
-
-	std::vector<std::string> headerLabels = globalLabjackInputPortPurpose;
+	// TODO: Change to only digital port Purposes!
+	std::vector<std::string> headerLabels = globalLabjackDigitalInputPortPurpose;
 
 	// Aggregate functions and stuff
 	EventStatistics activeEventStatistics = activeHistoricalData.getEventStatistics();
