@@ -26,8 +26,6 @@ Specifies what ports to open
 ////// GUI Config:
 #define PRINT_OUTPUT_VALUES_TO_CONSOLE false
 
-#define LAUNCH_WEB_SERVER true
-#define ENABLE_WEB_SERVER_LIVE_WIDGET false
 
 ////// DEBUGGING ONLY:
 //CONTINUE_WITHOUT_LABJACKS: if false, it waits on at least one labjack hardware to be detected before moving forward.

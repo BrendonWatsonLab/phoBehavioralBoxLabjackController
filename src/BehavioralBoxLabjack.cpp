@@ -381,15 +381,6 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 				}
 			} // end if greater than zero
 
-#if LAUNCH_WEB_SERVER
-			// Emit the "valueChanged" signal for the web server
-			// Only send signals to the webserver for digital ports:
-			if (!this->inputPortIsAnalog[i])
-			{
-				this->valueChanged_.emit(this->serialNumber, i, this->lastReadInputPortValues[i]);
-			}
-#endif // LAUNCH_WEB_SERVER
-
 		} // end if input port values changed
 
 		//newCSVLine << this->lastReadInputPortValues[i];

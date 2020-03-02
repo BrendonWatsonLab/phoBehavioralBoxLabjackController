@@ -27,9 +27,6 @@ BehavioralBoxControllersManager::~BehavioralBoxControllersManager()
 void BehavioralBoxControllersManager::connect(Client* client, const std::function<void()>& function)
 {
 	std::unique_lock<std::mutex> lock(mutex_);
-#if LAUNCH_WEB_SERVER
-	connections_.push_back(Connection(Wt::WApplication::instance()->sessionId(), client, function));
-#endif // LAUNCH_WEB_SERVER
 }
 
 void BehavioralBoxControllersManager::disconnect(Client* client)
@@ -176,9 +173,6 @@ void BehavioralBoxControllersManager::run()
 			/* This is where we notify all connected clients. */
 			for (unsigned i = 0; i < connections_.size(); ++i) {
 				Connection& c = connections_[i];
-#if LAUNCH_WEB_SERVER
-				Wt::WServer::instance()->post(c.sessionId, c.function);
-#endif // LAUNCH_WEB_SERVER
 
 				
 			}
