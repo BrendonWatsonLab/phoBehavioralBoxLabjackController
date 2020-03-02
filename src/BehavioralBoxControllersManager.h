@@ -8,7 +8,7 @@
 #include "FilesystemHelpers.h"
 #include "BehavioralBoxLabjack.h"
 #include "BehavioralBoxHistoricalData.h"
-#include "HistoricalDataLoadingEvent.h"
+
 
 #include "ConfigurationManager.h"
 
@@ -49,19 +49,6 @@ public:
 	// Idles and waits for a labjack to be found.
 	bool waitForFoundLabjacks();
 	//int shutdownApplication(int shutdownCode);
-
-	std::vector<BehavioralBoxHistoricalData> getLoadedHistoricalData() { return this->historicalData_; }
-	void reloadHistoricalData();
-
-	// exports the historical data to individual .CSV files and returns the output paths.
-	std::vector<std::string> exportHistoricalDataAsCSV(std::string path, std::string base_filename);
-
-	// Server/Manager:
-	//void postHistoricalDataUpdatedEvent(const HistoricalDataLoadingEvent& event);
-	//serverGetAllHistoricalData(...): gets the latest version of the historical data
-	void serverGetAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback);
-	//serverLoadAllHistoricalData(...): reloads all historical data and then gets it
-	void serverLoadAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback);
 
 	// Getters:
 	bool isReady();

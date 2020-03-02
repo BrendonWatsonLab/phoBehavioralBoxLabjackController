@@ -153,7 +153,7 @@ int main(int argc, char** argv)
 			cout << "Utility mode:" << endl;
 			//TODO: utility mode.
 			// Export data as CSV
-			std::vector<std::string> exportPaths = controller->exportHistoricalDataAsCSV("C:/Common/data/", "export-HistoricalData");
+			/*std::vector<std::string> exportPaths = controller->exportHistoricalDataAsCSV("C:/Common/data/", "export-HistoricalData");
 			if (exportPaths.empty()) {
 				cout << "Tried to export CSV files but had no historical data." << endl;
 			}
@@ -165,7 +165,7 @@ int main(int argc, char** argv)
 					cout << "\t" << exportPaths[i] << endl;
 				}
 			}
-			cout << "\t done." << endl;
+			cout << "\t done." << endl;*/
 		}
 		else {
 			printCommandsMenu();
