@@ -27,18 +27,7 @@
 #include "LabjackHelpers.h"
 #include "ConfigurationManager.h"
 
-// Webserver functionality:
-#if LAUNCH_WEB_SERVER
-#include "LabjackControllerWebApplication.h"
-
-#include <Wt/WServer.h>
-// 1 Make the member a real variable not a pointer.
-std::thread web_server_thread;
-#endif // LAUNCH_WEB_SERVER
-
-//BehavioralBoxControllersManager controller;
 std::shared_ptr<BehavioralBoxControllersManager> controller = make_shared<BehavioralBoxControllersManager>();
-
 
 
 // FUNCTION PROTOTYPES:
@@ -70,23 +59,11 @@ int main(int argc, char** argv)
 
 	printConfiguration();
 
-	//TODO: this doesn't currently matter because the webserver reloads everything in TimeSeriesChart::buildHistoricDataModel() by calling the static BehavioralBoxControllersManager::loadAllHistoricalData() function.
-	// Eventually we weant to implement it in a singleton-like fashion.
-	const bool shouldStartWebServer = configMan->getLoadedConfig().launch_web_server;
-	if (shouldStartWebServer) {
-		// Run the webserver:
-		startWebserver(argc, argv, &controller);
-	}
-
 	cout << endl << "Scanning for attached Labjacks..." << endl;
 	if (!controller->waitForFoundLabjacks()) {
 		// User wants to quit.
 		cout << "User chose to quit. Done." << endl;
 		return shutdownApplication(LJME_NO_DEVICES_FOUND);
-	}
-
-	if (shouldStartWebServer) {
-		WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
 	}
 
 	// TODO - READ ME: main run loop
@@ -154,10 +131,6 @@ int main(int argc, char** argv)
 		else if (character == 'R') {
 			cout << "Refreshing Labjacks..." << endl;
 			controller->scanForNewLabjacks();
-			if (shouldStartWebServer) {
-				// Refresh the webserver
-				WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
-			}
 			cout << "\t done." << endl;
 		}
 		else if (character == 'L') {
@@ -204,62 +177,12 @@ int main(int argc, char** argv)
 }
 
 
-bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr)
-{
-
-	cout << "Starting the web server." << endl;
-	//// Debug only, output the input args
-	//cout << "Input arguments: ";
-	//cout << "{";
-	//for (size_t i = 0; i < argc; i++)
-	//{
-	//	std::string currArgument = argv[i];
-	//	cout << "\"" << currArgument << "\", ";
-	//}
-	//cout << "}" << endl;
-	//cout << "end input arguments.";
-
-	web_server_thread = std::move(std::thread([=]() {
-		// Build the input arguments for the webserver
-		// Converted using https://stackoverflow.com/questions/26032039/convert-vectorstring-into-char-c
-		// Only works within the thread's block, when placed before it, it failed.
-		//std::vector<std::string> strings{ "C:\\Common\\repo\\phoBehavioralBoxLabjackController\\x64\\Release\\phoBehavioralBoxLabjackController.exe", "--docroot", ".", "--config", "C:\\Common\\repo\\phoBehavioralBoxLabjackController\\/ConfigFiles/wt_config.xml", "--http-address", "0.0.0.0", "--http-port", "8080", "-accesslog=C:\\Common\\repo\\phoBehavioralBoxLabjackController\\/logs/webServerAccessLog.log" };
-		std::vector<std::string> stringsWebserverArguments{ argv[0], "--docroot", ".", "--config", "C:/Common/config/phoBehavioralBoxLabjackController-WT_config.xml", "--http-address", "0.0.0.0", "--http-port", "8080", "-accesslog=C:/Common/info/webServerAccessLog.log" };
-
-		std::vector<char*> cstringsWebserverArguments{};
-		//cstringsWebserverArguments.reserve(stringsWebserverArguments.size());
-
-		for (auto& currStr : stringsWebserverArguments) {
-			cstringsWebserverArguments.push_back(&currStr.front());
-		}
-
-		/*std::vector<const char*> cstringsWebserverArguments{};
-
-		for (const auto& currStr : stringsWebserverArguments) {
-			cstringsWebserverArguments.push_back(currStr.c_str());
-		}*/
-		char** finalArgs = (char**)cstringsWebserverArguments.data();
-		labjackControllerApplicationWebServer(cstringsWebserverArguments.size(), finalArgs, managerPtr);
-		
-		return true;
-	}));
-	//runServer(argc, argv);
-	return true;
-}
-
 // Called when the application is being quit
 int shutdownApplication(int shutdownCode)
 {
 	cout << "Shutting down the application..." << endl;
 	//controller->shutdown();
 	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
-	const bool shouldStartWebServer = configMan->getLoadedConfig().launch_web_server;
-	if (shouldStartWebServer) {
-		cout << "Waiting on web server thread to quit..." << endl;
-		// As the thread is using members from this object
-		// We can not let this object be destroyed until the thread finishes executing.
-		web_server_thread.join();
-	}
 	printf("Done.");
 	// At this point the thread has finished.
 	// Destructor can now complete.
@@ -320,13 +243,6 @@ void printConfiguration() {
 	cout << "\t Cohort Name: " << loaded_config.cohortName << endl;
 	cout << "\t Animal Name: " << loaded_config.animalName << endl;
 	printFilesystemPaths();
-	cout << "Webserver is ";
-	if (loaded_config.launch_web_server) {
-		cout << "enabled. It can be accessed via a web browser at URL http://127.0.0.1:8080" << endl;
-	}
-	else {
-		cout << "disabled." << endl;
-	}
 	cout << "==========================  END CURRENT CONFIGURATION" << endl;
 }
 

@@ -35,7 +35,7 @@ bool ConfigurationFile::reloadFromFile()
 
 	//Features:
 	this->loadedConfig.enableHistoricalDataLoading = this->iniReader.GetBoolean("Features", "enableHistoricalDataLoading", true);
-	this->loadedConfig.launch_web_server = this->iniReader.GetBoolean("Features", "LAUNCH_WEB_SERVER", true);
+	this->loadedConfig.launch_web_server = this->iniReader.GetBoolean("Features", "LAUNCH_WEB_SERVER", false);
 
 	//Filesystem:
 	this->loadedConfig.outputFileRootDirectory = this->iniReader.Get("Filesystem", "globalOutputFileDirectory", "C:/Common/data/");
