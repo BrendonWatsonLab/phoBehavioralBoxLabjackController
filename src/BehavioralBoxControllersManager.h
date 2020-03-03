@@ -117,13 +117,13 @@ private:
 	// behavioralBoxEventDataFilesMap_: indexed by the BBID (1-indexed)
 	std::map<int, std::vector<LabjackDataFile>> behavioralBoxEventDataFilesMap_;
 	// TODO: replace labjackDataFilesMap_
-	std::map<int, std::vector<LabjackDataFile>> labjackDataFilesMap_;
+	//std::map<int, std::vector<LabjackDataFile>> labjackDataFilesMap_;
 	
 	std::vector<BehavioralBoxHistoricalData> historicalData_;
 
 	//TODO: currently doesn't make use of the individual Labjack object's output directory, and instead uses this class' member variable dataFilesSearchDirectory_
-	BehavioralBoxHistoricalData getHistoricalData(int labjackSerialNumber, unsigned long long startMillisecondsSinceEpoch, unsigned long long endMillisecondsSinceEpoch);
-	BehavioralBoxHistoricalData getHistoricalData(int labjackSerialNumber);
+	//BehavioralBoxHistoricalData getHistoricalData(int labjackSerialNumber, unsigned long long startMillisecondsSinceEpoch, unsigned long long endMillisecondsSinceEpoch);
+	//BehavioralBoxHistoricalData getHistoricalData(int labjackSerialNumber);
 	
 	
 };

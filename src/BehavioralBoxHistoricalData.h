@@ -6,6 +6,7 @@
 #include <algorithm>
 
 #include "LabjackDataFile.h"
+#include "FormattingHelper.h"
 
 typedef std::chrono::system_clock Clock;
 

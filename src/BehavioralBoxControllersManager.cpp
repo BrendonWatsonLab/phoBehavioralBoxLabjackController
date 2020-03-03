@@ -2,11 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <algorithm>    // std::min_element, std::max_element
 #include <conio.h>
 #include <Wt/WApplication.h>
 #include <Wt/WServer.h>
 #include "BehavioralBoxControllersManager.h"
 #include "LabjackHelpers.h"
+#include "FormattingHelper.h"
 
 BehavioralBoxControllersManager::BehavioralBoxControllersManager()
 {
@@ -186,48 +188,48 @@ void BehavioralBoxControllersManager::run()
 	}
 }
 
-BehavioralBoxHistoricalData BehavioralBoxControllersManager::getHistoricalData(int labjackSerialNumber, unsigned long long startMillisecondsSinceEpoch, unsigned long long endMillisecondsSinceEpoch)
-{
-	std::vector<LabjackDataFile> currLabjackAssociatedFilesVector;
-	try {
-		// Try to find a previously existing vector of LabjackDataFiles in the map by indexing with the parsed serial number.
-		// "at(...)" is used instead of the traditional index notation ("[...]") because it throws an exception if it doesn't exist instead of adding it silently so we can create the vector if needed.
-		currLabjackAssociatedFilesVector = this->labjackDataFilesMap_.at(labjackSerialNumber);
-	}
-	catch (...) {
-		// Map entry doesn't already exist. Create an empty vector (could also rescan for files and regenerate the map).
-		currLabjackAssociatedFilesVector = std::vector<LabjackDataFile>();
-	}
-
-	// Filter the files to be within the range if needed
-	if ((startMillisecondsSinceEpoch > 0) || (endMillisecondsSinceEpoch < std::numeric_limits<unsigned long long>::max())) {
-		// Loop through the data files and filter based on whether their timestamp is within the range
-		std::vector<LabjackDataFile> outputVector;
-		for each (auto aDataFile in currLabjackAssociatedFilesVector)
-		{
-			// Check whether it's within the time range the user provided
-			if ((aDataFile.millisecondsSinceEpoch < startMillisecondsSinceEpoch) || (aDataFile.millisecondsSinceEpoch > endMillisecondsSinceEpoch)) {
-				// It's outisde the available range
-				continue;
-			}
-			else {
-				// Otherwise it's in the range and should be added
-				outputVector.push_back(aDataFile);
-			}
-		}
-		// return the filtered range
-		return BehavioralBoxHistoricalData(this->dataFilesSearchDirectory_, labjackSerialNumber, outputVector);
-	}
-	else {
-		// return the unfiltered range (all time).
-		return BehavioralBoxHistoricalData(this->dataFilesSearchDirectory_, labjackSerialNumber, currLabjackAssociatedFilesVector);
-	}
-}
-
-BehavioralBoxHistoricalData BehavioralBoxControllersManager::getHistoricalData(int labjackSerialNumber)
-{
-	return this->getHistoricalData(labjackSerialNumber, 0, std::numeric_limits<unsigned long long>::max());
-}
+//BehavioralBoxHistoricalData BehavioralBoxControllersManager::getHistoricalData(int labjackSerialNumber, unsigned long long startMillisecondsSinceEpoch, unsigned long long endMillisecondsSinceEpoch)
+//{
+//	std::vector<LabjackDataFile> currLabjackAssociatedFilesVector;
+//	try {
+//		// Try to find a previously existing vector of LabjackDataFiles in the map by indexing with the parsed serial number.
+//		// "at(...)" is used instead of the traditional index notation ("[...]") because it throws an exception if it doesn't exist instead of adding it silently so we can create the vector if needed.
+//		currLabjackAssociatedFilesVector = this->labjackDataFilesMap_.at(labjackSerialNumber);
+//	}
+//	catch (...) {
+//		// Map entry doesn't already exist. Create an empty vector (could also rescan for files and regenerate the map).
+//		currLabjackAssociatedFilesVector = std::vector<LabjackDataFile>();
+//	}
+//
+//	// Filter the files to be within the range if needed
+//	if ((startMillisecondsSinceEpoch > 0) || (endMillisecondsSinceEpoch < std::numeric_limits<unsigned long long>::max())) {
+//		// Loop through the data files and filter based on whether their timestamp is within the range
+//		std::vector<LabjackDataFile> outputVector;
+//		for each (auto aDataFile in currLabjackAssociatedFilesVector)
+//		{
+//			// Check whether it's within the time range the user provided
+//			if ((aDataFile.millisecondsSinceEpoch < startMillisecondsSinceEpoch) || (aDataFile.millisecondsSinceEpoch > endMillisecondsSinceEpoch)) {
+//				// It's outisde the available range
+//				continue;
+//			}
+//			else {
+//				// Otherwise it's in the range and should be added
+//				outputVector.push_back(aDataFile);
+//			}
+//		}
+//		// return the filtered range
+//		return BehavioralBoxHistoricalData(this->dataFilesSearchDirectory_, labjackSerialNumber, outputVector);
+//	}
+//	else {
+//		// return the unfiltered range (all time).
+//		return BehavioralBoxHistoricalData(this->dataFilesSearchDirectory_, labjackSerialNumber, currLabjackAssociatedFilesVector);
+//	}
+//}
+//
+//BehavioralBoxHistoricalData BehavioralBoxControllersManager::getHistoricalData(int labjackSerialNumber)
+//{
+//	return this->getHistoricalData(labjackSerialNumber, 0, std::numeric_limits<unsigned long long>::max());
+//}
 
 //TODO: currently doesn't make use of the individual Labjack object's output directory, and instead uses this class' member variable dataFilesSearchDirectory_
 void BehavioralBoxControllersManager::reloadHistoricalData()
@@ -242,18 +244,36 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 
 	fs::path curr_search_dir = this->dataFilesSearchDirectory_;
 	// Get the children search dirs:
+	std::map<int, fs::path> foundBoxPaths = FilesystemHelpers::findBehavioralBoxDataFolders(curr_search_dir);
+	//std::vector<int> found_box_ids;
+	int maximum_found_box_id = -1;
+	for (map<int, fs::path>::iterator it = foundBoxPaths.begin(); it != foundBoxPaths.end(); ++it) {
+		maximum_found_box_id = max(maximum_found_box_id, it->first);
+		//found_box_ids.push_back(it->first);
+		//cout << it->first << "\n";
+	}
+	std::cout << "Maximum found box id is " << maximum_found_box_id << "." << std::endl;
+
+	//maximum_found_box_id
 	this->behavioralBoxEventDataFilesMap_ = std::map<int, std::vector<LabjackDataFile>>();
+
+	for (size_t i = 0; i < maximum_found_box_id; i++)
+	{
+		int curr_box_id = i + 1;
+		this->behavioralBoxEventDataFilesMap_[curr_box_id] = std::vector<LabjackDataFile>();
+	}
 
 	std::map<int, fs::path> foundSearchPaths = FilesystemHelpers::findActiveExperimentAnimalFolders(curr_search_dir);
 	for (const auto& activeBoxSearchPathPair : foundSearchPaths) {
 		int curr_bbID = activeBoxSearchPathPair.first;
 		fs::path curr_search_path = activeBoxSearchPathPair.second;
+		// Search that path for files:
+		this->behavioralBoxEventDataFilesMap_[curr_bbID] = FilesystemHelpers::findAllDataFiles(curr_search_path.string());
 
 	}
 
-
 	//TODO: change to sort by search paths, not labjack serials
-	labjackDataFilesMap_ = FilesystemHelpers::findDataFiles(this->dataFilesSearchDirectory_);
+	//labjackDataFilesMap_ = FilesystemHelpers::findDataFiles(this->dataFilesSearchDirectory_);
 
 	if (this->shouldStop_) {
 		// Not ready.
@@ -262,21 +282,33 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	// Clear the old historical data
 	this->historicalData_.clear();
 
-	if (this->getActiveLabjacks().size() > 0) {
-		// Loop through the active labjacks and get the historical data corresponding to them.
-		for (int i = 0; i < this->getActiveLabjacks().size(); i++) {
-			BehavioralBoxHistoricalData currHistoryData = this->getHistoricalData(this->getActiveLabjacks()[i]->getSerialNumber());
-			this->historicalData_.push_back(currHistoryData);
-		}
+	for (const auto& activeBoxSearchPathPair : foundSearchPaths) {
+		int curr_bbID = activeBoxSearchPathPair.first;
+		std::string curr_bbID_String = FormattingHelper::format_two_digit_string(curr_bbID);
+		fs::path curr_search_path = activeBoxSearchPathPair.second;
+		BehavioralBoxHistoricalData currHistoryData = BehavioralBoxHistoricalData(curr_search_path.string(), -1, this->behavioralBoxEventDataFilesMap_[curr_bbID]);
+		this->historicalData_.push_back(currHistoryData);
 	}
-	else {
-		// No actual labjacks, load **everything**:
-		//this->historicalData_ = BehavioralBoxControllersManager::loadAllHistoricalData();
-		for (const auto& labjackFilesPair : this->labjackDataFilesMap_) {
-			BehavioralBoxHistoricalData currHistoryData = BehavioralBoxHistoricalData(this->dataFilesSearchDirectory_, labjackFilesPair.first, labjackFilesPair.second);
-			this->historicalData_.push_back(currHistoryData);
-		}
-	}
+
+	//if (this->getActiveLabjacks().size() > 0) {
+	//	// Loop through the active labjacks and get the historical data corresponding to them.
+	//	for (int i = 0; i < this->getActiveLabjacks().size(); i++) {
+	//		BehavioralBoxHistoricalData currHistoryData = this->getHistoricalData(this->getActiveLabjacks()[i]->getSerialNumber());
+	//		this->historicalData_.push_back(currHistoryData);
+	//	}
+	//}
+	//else {
+	//	// No actual labjacks, load **everything**:
+	//	//this->historicalData_ = BehavioralBoxControllersManager::loadAllHistoricalData();
+	//	for (const auto& bbFilesPair : this->behavioralBoxEventDataFilesMap_) {
+	//		int curr_bbID = bbFilesPair.first;
+	//		std::string curr_bbID_String = FormattingHelper::format_two_digit_string(curr_bbID);
+
+
+	//		BehavioralBoxHistoricalData currHistoryData = BehavioralBoxHistoricalData(this->dataFilesSearchDirectory_, labjackFilesPair.first, labjackFilesPair.second);
+	//		this->historicalData_.push_back(currHistoryData);
+	//	}
+	//}
 
 }
 

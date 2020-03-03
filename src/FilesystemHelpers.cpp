@@ -143,6 +143,20 @@ std::map<int, std::vector<LabjackDataFile>> FilesystemHelpers::findDataFiles(std
 	return labjackDataFilesMap;
 }
 
+
+// get the labjack-serial-split map of files and then just combine them into a vector
+std::vector<LabjackDataFile> FilesystemHelpers::findAllDataFiles(std::string searchDirectory)
+{
+	std::vector<LabjackDataFile> resultFiles;
+	std::map<int, std::vector<LabjackDataFile>> labjackSerialSplitFiles = findDataFiles(searchDirectory);
+	for (const auto& activeFilePathPair : labjackSerialSplitFiles) {
+		int curr_labjackSerialNumber = activeFilePathPair.first;
+		std::vector<LabjackDataFile> curr_found_files = activeFilePathPair.second;
+		resultFiles.insert(std::end(resultFiles), std::begin(curr_found_files), std::end(curr_found_files));
+	}
+	return resultFiles;
+}
+
 // Creates a directory only if needed
 bool FilesystemHelpers::createDirectory(std::string path)
 {

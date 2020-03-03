@@ -97,7 +97,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 	this->timestampToIndexMap_.clear();
 
 	//TODO: Do something special for analog (continuous) values?
-
+	bool areHeaderLabelsSameForAllFiles = true;
 	int numVariables = 0;
 	int maxNumVariables = -1;
 	std::vector<std::string> headerLabels;
@@ -112,8 +112,16 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 		std::vector<std::string> fileHeaderLabels = this->dataFiles_[i].getParsedHeaderLabels();
 		// If it's not the first file found and we already have a set of header labels
 		if (i > 0) {
-			bool areHeaderLabelsSame = std::equal(headerLabels.begin(), headerLabels.end(), fileHeaderLabels.begin());
+			bool areHeaderLabelsSame = true;
+			if (headerLabels.size() == fileHeaderLabels.size()) {
+				areHeaderLabelsSame = std::equal(headerLabels.begin(), headerLabels.end(), fileHeaderLabels.begin());
+			}
+			else {
+				// If they aren't the same size, they aren't the same
+				areHeaderLabelsSame = false;
+			}
 			if (!areHeaderLabelsSame) {
+				areHeaderLabelsSameForAllFiles = false;
 				// Generate a string from the headers to print the debug string if they're different
 				std::string fileHeadersDebugString = "";
 				for each (std::string aFileHeaderLabel in fileHeaderLabels)
@@ -130,6 +138,8 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 				std::cout << "WARNING: dataFile[" << currDataFileName << "] has <" << fileHeadersDebugString << "> while the previous headers were <" << allHeadersDebugString << ">." << std::endl;
 			}
 		}
+
+		// TODO: we may not want to do this!
 		// Update the header labels
 		headerLabels = fileHeaderLabels;
 

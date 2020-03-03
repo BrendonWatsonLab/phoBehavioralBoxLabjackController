@@ -57,6 +57,10 @@ public:
 	// Finds all the Labjack data files in the searchDirectory and returns a map indexed by the labjack serial number
 	static std::map<int, std::vector<LabjackDataFile>> findDataFiles(std::string searchDirectory);
 
+	// Finds all the Labjack data files in the searchDirectory (independent of labjack serial number)
+	static std::vector<LabjackDataFile> findAllDataFiles(std::string searchDirectory);
+
+
 	////TODO: concatenate CSV Files needs to be implemented.
 	//static void concatenateCsvFiles(std::vector<LabjackDataFile> dataFiles_);
 

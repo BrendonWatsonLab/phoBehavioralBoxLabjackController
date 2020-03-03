@@ -248,6 +248,9 @@
     <ClInclude Include="ConfigFiles\config-AnalogRunningWheel-12-17-2019.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\FormattingHelper.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml">

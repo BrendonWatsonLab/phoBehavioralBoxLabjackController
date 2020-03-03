@@ -67,6 +67,7 @@
     <ClInclude Include="src\External\px_sched.h" />
     <ClInclude Include="src\External\Scheduler\Scheduler.h" />
     <ClInclude Include="src\FilesystemHelpers.h" />
+    <ClInclude Include="src\FormattingHelper.h" />
     <ClInclude Include="src\HistoricalDataLoadingEvent.h" />
     <ClInclude Include="src\InputState.h" />
     <ClInclude Include="src\LabjackControllerOuterWidget.h" />
