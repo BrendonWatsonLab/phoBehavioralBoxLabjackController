@@ -64,8 +64,12 @@ public:
 
 	static bool createDirectory(std::string path);
 
+
 	// Given a root EventDataFolder, finds a list of paths for each boxes that correspond to the current experiment/cohort/animal
-	static std::vector<fs::path> findActiveExperimentAnimalFolder(fs::path dir);
+	static std::map<int, fs::path> findBehavioralBoxDataFolders(fs::path dir);
+
+	// Given a root EventDataFolder, finds a list of paths for each boxes that correspond to the current experiment/cohort/animal
+	static std::map<int, fs::path> findActiveExperimentAnimalFolders(fs::path dir);
 
 };
 

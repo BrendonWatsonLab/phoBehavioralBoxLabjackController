@@ -241,7 +241,16 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	// Find the folders to search:
 
 	fs::path curr_search_dir = this->dataFilesSearchDirectory_;
-	std::vector<fs::path> foundSearchPaths = FilesystemHelpers::findActiveExperimentAnimalFolder(curr_search_dir);
+	// Get the children search dirs:
+	this->behavioralBoxEventDataFilesMap_ = std::map<int, std::vector<LabjackDataFile>>();
+
+	std::map<int, fs::path> foundSearchPaths = FilesystemHelpers::findActiveExperimentAnimalFolders(curr_search_dir);
+	for (const auto& activeBoxSearchPathPair : foundSearchPaths) {
+		int curr_bbID = activeBoxSearchPathPair.first;
+		fs::path curr_search_path = activeBoxSearchPathPair.second;
+
+	}
+
 
 	//TODO: change to sort by search paths, not labjack serials
 	labjackDataFilesMap_ = FilesystemHelpers::findDataFiles(this->dataFilesSearchDirectory_);

@@ -113,7 +113,12 @@ private:
 	std::string hostName_ = configMan->getHostName();
 	int numeric_computer_identifer_ = configMan->getNumericComputerIdentifier();
 	std::string dataFilesSearchDirectory_ = configMan->getGeneratedActiveHistoricalSearchDirectory();
+
+	// behavioralBoxEventDataFilesMap_: indexed by the BBID (1-indexed)
+	std::map<int, std::vector<LabjackDataFile>> behavioralBoxEventDataFilesMap_;
+	// TODO: replace labjackDataFilesMap_
 	std::map<int, std::vector<LabjackDataFile>> labjackDataFilesMap_;
+	
 	std::vector<BehavioralBoxHistoricalData> historicalData_;
 
 	//TODO: currently doesn't make use of the individual Labjack object's output directory, and instead uses this class' member variable dataFilesSearchDirectory_

@@ -158,10 +158,9 @@ bool FilesystemHelpers::createDirectory(std::string path)
 	}
 }
 
-//TODO: This currently returns the first matching animal folder found per box folder, regardless of experiment or cohort. 
-std::vector<fs::path> FilesystemHelpers::findActiveExperimentAnimalFolder(fs::path dir)
+std::map<int, fs::path> FilesystemHelpers::findBehavioralBoxDataFolders(fs::path dir)
 {
-	std::vector<fs::path> full_path_results;
+	std::map<int, fs::path> full_path_result_map;
 
 	std::vector<fs::path> box_folders = dir_list<false>(dir, folder_bb_folder_regex);
 	for each (fs::path a_box_folder in box_folders)
@@ -176,6 +175,35 @@ std::vector<fs::path> FilesystemHelpers::findActiveExperimentAnimalFolder(fs::pa
 		else {
 			// numbersMatchString should be a string like "06". Try to find the animal folder with this same number
 			std::string numbersMatchString = stringMatch[1];
+			int currBBID = std::stoi(numbersMatchString);
+			full_path_result_map[currBBID] = a_box_folder;
+		}
+	} // end for box folders
+
+	return full_path_result_map;
+}
+
+//TODO: This currently returns the first matching animal folder found per box folder, regardless of experiment or cohort. 
+std::map<int, fs::path> FilesystemHelpers::findActiveExperimentAnimalFolders(fs::path dir)
+{
+	//std::vector<fs::path> full_path_results;
+	std::map<int, fs::path> full_path_result_map;
+
+	std::vector<fs::path> box_folders = dir_list<false>(dir, folder_bb_folder_regex);
+	for each (fs::path a_box_folder in box_folders)
+	{
+		const std::string curr_box_folder_name = a_box_folder.filename().string();
+		std::smatch stringMatch;    // same as std::match_results<string::const_iterator> sm;
+		std::regex_match(curr_box_folder_name, stringMatch, folder_bb_folder_regex);
+		if (stringMatch.size() <= 1) {
+			std::cout << "Couldn't parse number from " << curr_box_folder_name << ". It's not of the expected format \"BBXX\"." << std::endl;
+			continue;
+		}
+		else {
+			// numbersMatchString should be a string like "06". Try to find the animal folder with this same number
+			std::string numbersMatchString = stringMatch[1];
+			int currBBID = std::stoi(numbersMatchString);
+
 			// Search recurrsively for the animal folders (TODO: this ignores experiment/cohort for now)
 			std::vector<fs::path> found_animal_folders = dir_list<true>(a_box_folder, folder_animal_folder_regex);
 			if (found_animal_folders.size() < 1)
@@ -200,7 +228,9 @@ std::vector<fs::path> FilesystemHelpers::findActiveExperimentAnimalFolder(fs::pa
 						std::string animalNumbersMatchString = stringMatch[1];
 						if (animalNumbersMatchString == numbersMatchString) {
 							// Found the final desired path:
-							full_path_results.push_back(an_animal_folder);
+							//full_path_results.push_back(an_animal_folder);
+							full_path_result_map[currBBID] = an_animal_folder;
+
 							found_matching_animal_folder = true;
 							std::cout << "FOUND: " << an_animal_folder << "." << std::endl;
 							break; // exit the loop, we found the one. TODO: this needs to be changed to support multiple experiments/cohorts
@@ -222,6 +252,7 @@ std::vector<fs::path> FilesystemHelpers::findActiveExperimentAnimalFolder(fs::pa
 		}
 	} // end for box folders
 
-	return full_path_results;
+	//return full_path_results;
+	return full_path_result_map;
 }
 
