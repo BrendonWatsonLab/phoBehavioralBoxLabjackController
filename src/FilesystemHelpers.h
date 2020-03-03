@@ -24,6 +24,17 @@ namespace fs = std::experimental::filesystem;
 // note: ?: indicates that it is a non-capturing group
 static const std::regex csv_files("\\.(?:csv|CSV)");
 
+
+// "BB01"
+static const std::regex folder_bb_folder_regex("BB(\\d{2})");
+// "experiment_00"
+static const std::regex folder_experiment_folder_regex("experiment_(\\d{2})");
+// "cohort_00"
+static const std::regex folder_cohort_folder_regex("cohort_(\\d{2})");
+// "animal_01"
+static const std::regex folder_animal_folder_regex("animal_(\\d{2})");
+
+
 class FilesystemHelpers
 {
 public:
@@ -33,6 +44,8 @@ public:
 	// list of paths of all files under the directory 'dir' when the extenstion matches the regex
 	// file_list<true> searches recursively into sub-directories; file_list<false> searches only the specified directory
 	template < bool RECURSIVE > static std::vector<fs::path> file_list(fs::path dir, std::regex ext_pattern);
+
+	template < bool RECURSIVE > static std::vector<fs::path> dir_list(fs::path dir, std::regex folder_name_pattern);
 
 	// non-recursive scan for c++ files: if dir is omitted, current directory is scanned 
 	std::vector<fs::path> static scan_csv_files(fs::path dir = ".");
@@ -50,6 +63,9 @@ public:
 	//static std::string getExePath();
 
 	static bool createDirectory(std::string path);
+
+	// Given a root EventDataFolder, finds a list of paths for each boxes that correspond to the current experiment/cohort/animal
+	static std::vector<fs::path> findActiveExperimentAnimalFolder(fs::path dir);
 
 };
 

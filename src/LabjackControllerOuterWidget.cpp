@@ -32,7 +32,6 @@ LabjackControllerOuterWidget::LabjackControllerOuterWidget(BoxControllerWebDataS
 	// Setup main layout
 	mainLayout_ = this->setLayout(Wt::cpp14::make_unique<Wt::WVBoxLayout>());
 
-
 	auto contentsStack = Wt::cpp14::make_unique<Wt::WStackedWidget>();
 	contentsStack_ = contentsStack.get();
 

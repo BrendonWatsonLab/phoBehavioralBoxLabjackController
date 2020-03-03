@@ -23,6 +23,27 @@ inline std::vector<fs::path> FilesystemHelpers::file_list(fs::path dir, std::reg
 	return result;
 }
 
+template<bool RECURSIVE>
+inline std::vector<fs::path> FilesystemHelpers::dir_list(fs::path dir, std::regex folder_name_pattern)
+{
+	std::vector<fs::path> result;
+	using iterator = std::conditional< RECURSIVE,
+		fs::recursive_directory_iterator, fs::directory_iterator >::type;
+
+	const iterator end;
+	for (iterator iter{ dir }; iter != end; ++iter)
+	{
+		if (!fs::is_directory(*iter)) {
+			continue;
+		}
+		const std::string folder_name = iter->path().filename().string();
+		if (std::regex_match(folder_name, folder_name_pattern)) {
+			result.push_back(*iter);
+		}
+	}
+	return result;
+}
+
 std::vector<fs::path> FilesystemHelpers::scan_csv_files(fs::path dir)
 {
 	return FilesystemHelpers::file_list<false>(dir, csv_files);
@@ -135,5 +156,72 @@ bool FilesystemHelpers::createDirectory(std::string path)
 	else {
 		return fs::create_directories(path);
 	}
+}
+
+//TODO: This currently returns the first matching animal folder found per box folder, regardless of experiment or cohort. 
+std::vector<fs::path> FilesystemHelpers::findActiveExperimentAnimalFolder(fs::path dir)
+{
+	std::vector<fs::path> full_path_results;
+
+	std::vector<fs::path> box_folders = dir_list<false>(dir, folder_bb_folder_regex);
+	for each (fs::path a_box_folder in box_folders)
+	{
+		const std::string curr_box_folder_name = a_box_folder.filename().string();
+		std::smatch stringMatch;    // same as std::match_results<string::const_iterator> sm;
+		std::regex_match(curr_box_folder_name, stringMatch, folder_bb_folder_regex);
+		if (stringMatch.size() <= 1) {
+			std::cout << "Couldn't parse number from " << curr_box_folder_name << ". It's not of the expected format \"BBXX\"." << std::endl;
+			continue;
+		}
+		else {
+			// numbersMatchString should be a string like "06". Try to find the animal folder with this same number
+			std::string numbersMatchString = stringMatch[1];
+			// Search recurrsively for the animal folders (TODO: this ignores experiment/cohort for now)
+			std::vector<fs::path> found_animal_folders = dir_list<true>(a_box_folder, folder_animal_folder_regex);
+			if (found_animal_folders.size() < 1)
+			{
+				// No animal folder found for this dir!
+				std::cout << "WARNING: no animal folders in " << curr_box_folder_name << ". Skipping." << std::endl;
+				continue;
+			}
+			else {
+				// More than one animal folder found, try to find the one that matches the BB number!
+				// TODO: in the future I should check if multiple found animal folders match the BB number (corresponding to the same animal in multiple experiments/cohorts).
+				bool found_matching_animal_folder = false;
+				for each (fs::path an_animal_folder in found_animal_folders)
+				{
+					const std::string curr_animal_folder_name = an_animal_folder.filename().string();
+					std::regex_match(curr_animal_folder_name, stringMatch, folder_animal_folder_regex);
+					if (stringMatch.size() <= 1) {
+						std::cout << "Couldn't parse number from " << curr_animal_folder_name << ". It's not of the expected format \"animal_XX\"." << std::endl;
+						continue;
+					}
+					else {
+						std::string animalNumbersMatchString = stringMatch[1];
+						if (animalNumbersMatchString == numbersMatchString) {
+							// Found the final desired path:
+							full_path_results.push_back(an_animal_folder);
+							found_matching_animal_folder = true;
+							std::cout << "FOUND: " << an_animal_folder << "." << std::endl;
+							break; // exit the loop, we found the one. TODO: this needs to be changed to support multiple experiments/cohorts
+						}
+					}
+
+				}
+				if (!found_matching_animal_folder) {
+					std::cout << "WARNING: no matching animal folder in " << curr_box_folder_name << ". Skipping." << std::endl;
+					continue;
+				}
+				else {
+					// found the single animal folder we're looking for: TODO: support multiple experiment/cohort in future.
+					continue;
+				}
+				
+			}
+
+		}
+	} // end for box folders
+
+	return full_path_results;
 }
 

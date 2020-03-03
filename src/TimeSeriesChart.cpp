@@ -39,6 +39,7 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 	this->loadFromConfig();
 }
 
+// This is called with a vector of BehavioralBoxHistoricalData, one for each found labjackSerial.
 void TimeSeriesChart::reload(std::vector<BehavioralBoxHistoricalData> historicalData)
 {
 	// Update the model

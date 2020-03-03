@@ -238,6 +238,12 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 		return;
 	}
 	//TODO: do on background thread
+	// Find the folders to search:
+
+	fs::path curr_search_dir = this->dataFilesSearchDirectory_;
+	std::vector<fs::path> foundSearchPaths = FilesystemHelpers::findActiveExperimentAnimalFolder(curr_search_dir);
+
+	//TODO: change to sort by search paths, not labjack serials
 	labjackDataFilesMap_ = FilesystemHelpers::findDataFiles(this->dataFilesSearchDirectory_);
 
 	if (this->shouldStop_) {
@@ -286,6 +292,7 @@ void BehavioralBoxControllersManager::serverGetAllHistoricalData(HistoricalDataL
 	completionCallback(updatedData);
 }
 
+// called by the BoxControllerWebDataServer to request updated historical data
 void BehavioralBoxControllersManager::serverLoadAllHistoricalData(HistoricalDataLoadingEventCallback completionCallback)
 {
 	// std::lock_guard

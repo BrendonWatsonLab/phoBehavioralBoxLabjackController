@@ -78,15 +78,15 @@ int main(int argc, char** argv)
 		startWebserver(argc, argv, &controller);
 	}
 
-	cout << endl << "Scanning for attached Labjacks..." << endl;
-	if (!controller->waitForFoundLabjacks()) {
-		// User wants to quit.
-		cout << "User chose to quit. Done." << endl;
-		return shutdownApplication(LJME_NO_DEVICES_FOUND);
-	}
+	//cout << endl << "Scanning for attached Labjacks..." << endl;
+	//if (!controller->waitForFoundLabjacks()) {
+	//	// User wants to quit.
+	//	cout << "User chose to quit. Done." << endl;
+	//	return shutdownApplication(LJME_NO_DEVICES_FOUND);
+	//}
 
 	if (shouldStartWebServer) {
-		WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
+		/*WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);*/
 	}
 
 	// TODO - READ ME: main run loop
@@ -132,68 +132,68 @@ int main(int argc, char** argv)
 			}
 			cout << "\t done." << endl;
 		}
-		else if (character == 'F') {
-			// Show the data files:
-			cout << "Showing current output directory..." << endl;
-			// Iterate through all found Labjacks
-			auto loaded_config = configMan->getLoadedConfig();
-			std::string fullOutputDirectoryPathString = configMan->getGeneratedActiveOutputDirectory();
-			cout << "\t Showing output file directory at " << fullOutputDirectoryPathString << endl;
-			LabjackHelpers::showInExplorer(fullOutputDirectoryPathString);
-			cout << "\t done." << endl;
-		}
-		else if (character == 'P') {
-			// Prints the current data
-			cout << "Printing current data..." << endl;
-			// Iterate through all found Labjacks
-			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
-				controller->getActiveLabjacks()[i]->diagnosticPrintLastValues();
-			}
-			cout << "\t done." << endl;
-		}
-		else if (character == 'R') {
-			cout << "Refreshing Labjacks..." << endl;
-			controller->scanForNewLabjacks();
-			if (shouldStartWebServer) {
-				// Refresh the webserver
-				WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
-			}
-			cout << "\t done." << endl;
-		}
-		else if (character == 'L') {
-			cout << "Toggling visible LED Light mode on all labjacks..." << endl;
-			// Iterate through all found Labjacks
-			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
-				controller->getActiveLabjacks()[i]->toggleOverrideMode_VisibleLED();
-			}
-			cout << "\t done." << endl;
-		}
-		else if (character == 'A') {
-			cout << "Toggling attract mode on all Labjacks..." << endl;
-			// Iterate through all found Labjacks
-			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
-				controller->getActiveLabjacks()[i]->toggleOverrideMode_AttractModeLEDs();
-			}
-			cout << "\t done." << endl;
-		}
-		else if (character == 'U') {
-			cout << "Utility mode:" << endl;
-			//TODO: utility mode.
-			// Export data as CSV
-			std::vector<std::string> exportPaths = controller->exportHistoricalDataAsCSV("C:/Common/data/", "export-HistoricalData");
-			if (exportPaths.empty()) {
-				cout << "Tried to export CSV files but had no historical data." << endl;
-			}
-			else {
-				int numExportPaths = exportPaths.size();
-				cout << "Export " << numExportPaths << " historical data .CSV files:" << endl;
-				for (size_t i = 0; i < numExportPaths; i++)
-				{
-					cout << "\t" << exportPaths[i] << endl;
-				}
-			}
-			cout << "\t done." << endl;
-		}
+		//else if (character == 'F') {
+		//	// Show the data files:
+		//	cout << "Showing current output directory..." << endl;
+		//	// Iterate through all found Labjacks
+		//	auto loaded_config = configMan->getLoadedConfig();
+		//	std::string fullOutputDirectoryPathString = configMan->getGeneratedActiveOutputDirectory();
+		//	cout << "\t Showing output file directory at " << fullOutputDirectoryPathString << endl;
+		//	LabjackHelpers::showInExplorer(fullOutputDirectoryPathString);
+		//	cout << "\t done." << endl;
+		//}
+		//else if (character == 'P') {
+		//	// Prints the current data
+		//	cout << "Printing current data..." << endl;
+		//	// Iterate through all found Labjacks
+		//	for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+		//		controller->getActiveLabjacks()[i]->diagnosticPrintLastValues();
+		//	}
+		//	cout << "\t done." << endl;
+		//}
+		//else if (character == 'R') {
+		//	cout << "Refreshing Labjacks..." << endl;
+		//	controller->scanForNewLabjacks();
+		//	if (shouldStartWebServer) {
+		//		// Refresh the webserver
+		//		WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
+		//	}
+		//	cout << "\t done." << endl;
+		//}
+		//else if (character == 'L') {
+		//	cout << "Toggling visible LED Light mode on all labjacks..." << endl;
+		//	// Iterate through all found Labjacks
+		//	for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+		//		controller->getActiveLabjacks()[i]->toggleOverrideMode_VisibleLED();
+		//	}
+		//	cout << "\t done." << endl;
+		//}
+		//else if (character == 'A') {
+		//	cout << "Toggling attract mode on all Labjacks..." << endl;
+		//	// Iterate through all found Labjacks
+		//	for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+		//		controller->getActiveLabjacks()[i]->toggleOverrideMode_AttractModeLEDs();
+		//	}
+		//	cout << "\t done." << endl;
+		//}
+		//else if (character == 'U') {
+		//	cout << "Utility mode:" << endl;
+		//	//TODO: utility mode.
+		//	// Export data as CSV
+		//	std::vector<std::string> exportPaths = controller->exportHistoricalDataAsCSV("C:/Common/data/", "export-HistoricalData");
+		//	if (exportPaths.empty()) {
+		//		cout << "Tried to export CSV files but had no historical data." << endl;
+		//	}
+		//	else {
+		//		int numExportPaths = exportPaths.size();
+		//		cout << "Export " << numExportPaths << " historical data .CSV files:" << endl;
+		//		for (size_t i = 0; i < numExportPaths; i++)
+		//		{
+		//			cout << "\t" << exportPaths[i] << endl;
+		//		}
+		//	}
+		//	cout << "\t done." << endl;
+		//}
 		else {
 			printCommandsMenu();
 		}
@@ -241,6 +241,8 @@ bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxCo
 		char** finalArgs = (char**)cstringsWebserverArguments.data();
 		labjackControllerApplicationWebServer(cstringsWebserverArguments.size(), finalArgs, managerPtr);
 		
+		WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
+
 		return true;
 	}));
 	//runServer(argc, argv);
@@ -273,10 +275,10 @@ void printCommandsMenu() {
 	cout << "\t Press [p] at any time to print the most recently read values for all labjacks." << endl;
 	cout << "\t Press [f] at any time to show the current output file directory." << endl;
 	cout << "\t Press [s] at any time to show the current log files for all labjacks." << endl;
-	cout << "\t Press [r] at any time to refresh and scan for more labjacks." << endl;
+	/*cout << "\t Press [r] at any time to refresh and scan for more labjacks." << endl;
 	cout << "\t Press [l] at any time to toggle visible LED Light mode for all labjacks." << endl;
 	cout << "\t Press [a] at any time to toggle Attract mode for all labjacks." << endl;
-	cout << "\t Press [u] at any time to display utility options." << endl;
+	cout << "\t Press [u] at any time to display utility options." << endl;*/
 	cout << "\t Press [q] at any time to quit." << endl;
 	cout << "\t Press any other key at any time to show this list of commands." << endl;
 }
@@ -298,17 +300,6 @@ void printFilesystemPaths() {
 void printComputerInformation() {
 	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
 	cout << "Computer Hostname: " << configMan->getHostName() << endl;
-
-	auto numeric_client_identifier = configMan->getNumericComputerIdentifier();
-	if (numeric_client_identifier == -1)
-	{
-		cout << "WARNING: Client's BB Identifier Number could not be found. Is this software running on a Behavioral Box Client computer?" << endl;
-	}
-	else {
-		// Computer is a BB Client
-		cout << "Parsed BB Identifier Number: " << numeric_client_identifier << endl;
-	}
-	// configMan->getEnvironmentVariables();
 }
 
 void printConfiguration() {

@@ -42,10 +42,19 @@ LabjackControllerWebApplication::LabjackControllerWebApplication(const WEnvironm
 void LabjackControllerWebApplication::staticUpdateActiveLabjacks()
 {
 	LabjackControllerWebApplication* app = dynamic_cast<LabjackControllerWebApplication*>(WApplication::instance());
+
 	assert(app != nullptr);
 	// Find the labjacks again.
+#if ENABLE_LIVE_LABJACK_CONNECTIONS
 	std::vector<BehavioralBoxLabjack*> activeLabjacks = LabjackHelpers::findAllLabjacks();
 	app->updateActiveLabjacks(activeLabjacks);
+#else
+	//TODO: Not loading live labjacks
+	//activeLabjacks = std::vector<BehavioralBoxLabjack*>();
+#endif // ENABLE_LIVE_LABJACK_CONNECTIONS
+
+	
+	
 }
 
 void LabjackControllerWebApplication::staticRefreshLabjacksData()
@@ -87,6 +96,7 @@ void LabjackControllerWebApplication::updateActiveLabjacks(std::vector<Behaviora
 
 
 	if (this->labjackControllerOuterWidget != NULL) {
+		// this setActiveLabjacks function does nothing is live labjack display isn't on.
 		this->labjackControllerOuterWidget->setActiveLabjacks(updatedLabjacks);
 		WApplication::instance()->triggerUpdate();
 		this->triggerUpdate();
