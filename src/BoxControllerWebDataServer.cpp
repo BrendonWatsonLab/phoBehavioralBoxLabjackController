@@ -35,13 +35,13 @@ bool BoxControllerWebDataServer::disconnect(Client* client)
 
 void BoxControllerWebDataServer::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
 {
-	cout << "BoxControllerWebDataServer::processHistoricalDataUpdateEvent(...)!" << endl;
+	std::cout << "BoxControllerWebDataServer::processHistoricalDataUpdateEvent(...)!" << std::endl;
 	if (event.type() == HistoricalDataLoadingEvent::Complete) {
 		// Post a server event wrapping the historical event.
 		this->postDataServerEvent(DataServerEvent(event));
 	}
 	else {
-		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
+		std::cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << std::endl;
 	}
 
 }

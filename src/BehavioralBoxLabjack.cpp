@@ -78,7 +78,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 		// Create the output directories if they don't exist.
 		bool wasDirectoryCreated = FilesystemHelpers::createDirectory(this->outputDirectory);
 		if (wasDirectoryCreated) {
-			cout << "Directory " << this->outputDirectory << " did not exist. It was created." << endl;
+			std::cout << "Directory " << this->outputDirectory << " did not exist. It was created." << std::endl;
 		}
 		this->fileFullPath = this->outputDirectory + this->filename;
 		this->fileFullPath_analog = this->outputDirectory + this->filename_analog;
@@ -184,7 +184,7 @@ void BehavioralBoxLabjack::diagnosticPrint()
 // Prints the line that uniquely identifies this labjack
 void BehavioralBoxLabjack::printIdentifierLine()
 {
-	cout << ">> Labjack [" << this->serialNumber << "] :" << endl;
+	std::cout << ">> Labjack [" << this->serialNumber << "] :" << std::endl;
 }
 
 void BehavioralBoxLabjack::diagnosticPrintLastValues()
@@ -297,7 +297,7 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 					double tempReadValue = 0.0;
 					this->err = LJM_eReadName(this->handle, portName, &tempReadValue);
 					ErrorCheck(this->err, "LJM_eReadName");
-					//cout << "\t Visible LED Override: read from port. " << tempReadValue << endl;
+					//std::cout << "\t Visible LED Override: read from port. " << tempReadValue << std::endl;
 				}
 			}
 			else {
@@ -350,7 +350,7 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 
 	if (enableConsoleLogging) {
 		this->printIdentifierLine();
-		cout << "\t " << milliseconds_since_epoch << ": ";
+		std::cout << "\t " << milliseconds_since_epoch << ": ";
 	}
 	//newCSVLine.newRow() << milliseconds_since_epoch;
 	newCSVLine_digitalOnly.newRow() << milliseconds_since_epoch;
@@ -404,13 +404,13 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 		}
 
 		if (enableConsoleLogging) {
-			cout << this->lastReadInputPortValues[i] << ", ";
+			std::cout << this->lastReadInputPortValues[i] << ", ";
 		}
 		// After capturing the change, replace the old value
 		this->previousReadInputPortValues_all[i] = this->lastReadInputPortValues[i];
 	} //end for num channels
 	if (enableConsoleLogging) {
-		cout << std::endl;
+		std::cout << std::endl;
 	}
 	// Lock the mutex to prevent concurrent persisting
 	std::lock_guard<std::mutex> csvLock(this->logMutex);
@@ -469,9 +469,9 @@ int BehavioralBoxLabjack::getNumberInputChannels(bool include_digital_ports, boo
 	}
 }
 
-vector<std::string> BehavioralBoxLabjack::getInputPortNames(bool include_digital_ports, bool include_analog_ports)
+std::vector<std::string> BehavioralBoxLabjack::getInputPortNames(bool include_digital_ports, bool include_analog_ports)
 {
-	vector<std::string> outputStrings = vector<std::string>();
+	std::vector<std::string> outputStrings = std::vector<std::string>();
 	std::string currString = "";
 	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
 		if (this->inputPortIsAnalog[i])
@@ -501,9 +501,9 @@ vector<std::string> BehavioralBoxLabjack::getInputPortNames(bool include_digital
 	return outputStrings;
 }
 
-vector<std::string> BehavioralBoxLabjack::getInputPortPurpose(bool include_digital_ports, bool include_analog_ports)
+std::vector<std::string> BehavioralBoxLabjack::getInputPortPurpose(bool include_digital_ports, bool include_analog_ports)
 {
-	vector<std::string> outputStrings = vector<std::string>();
+	std::vector<std::string> outputStrings = std::vector<std::string>();
 	std::string currString = "";
 	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
 		if (this->inputPortIsAnalog[i])
@@ -533,9 +533,9 @@ vector<std::string> BehavioralBoxLabjack::getInputPortPurpose(bool include_digit
 	return outputStrings;
 }
 
-vector<double> BehavioralBoxLabjack::getLastReadValues(bool include_digital_ports, bool include_analog_ports)
+std::vector<double> BehavioralBoxLabjack::getLastReadValues(bool include_digital_ports, bool include_analog_ports)
 {
-	vector<double> outputValues = vector<double>();
+	std::vector<double> outputValues = std::vector<double>();
 	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
 		if (this->inputPortIsAnalog[i])
 		{
@@ -573,20 +573,20 @@ void BehavioralBoxLabjack::toggleOverrideMode_VisibleLED()
 			// If the LED is already lit (mode 2), transition to (mode 0)
 			this->isOverrideActive_VisibleLED = false;
 			this->overrideValue_isVisibleLEDLit = false;
-			cout << "\t Override<" << "Visible LED" << ">" << "Mode 0: Light Default Behavior" << endl;
+			std::cout << "\t Override<" << "Visible LED" << ">" << "Mode 0: Light Default Behavior" << std::endl;
 		}
 		else {
 			// Otherwise if the LED is in (mode 1), transition to (mode 2)
 			this->overrideValue_isVisibleLEDLit = true;
 			this->isOverrideActive_VisibleLED = true;
-			cout << "\t Override<" << "Visible LED" << ">" << "Mode 2: Light Forced ON" << endl;
+			std::cout << "\t Override<" << "Visible LED" << ">" << "Mode 2: Light Forced ON" << std::endl;
 		}
 	}
 	else {
 		// Override mode isn't active (mode 0), transition to (mode 1)
 		this->overrideValue_isVisibleLEDLit = false;
 		this->isOverrideActive_VisibleLED = true;
-		cout << "\t Override<" << "Visible LED" << ">" << "Mode 1: Light Forced OFF" << endl;
+		std::cout << "\t Override<" << "Visible LED" << ">" << "Mode 1: Light Forced OFF" << std::endl;
 	}
 }
 
@@ -601,20 +601,20 @@ void BehavioralBoxLabjack::toggleOverrideMode_AttractModeLEDs()
 			// If the LED is already lit (mode 2), transition to (mode 0)
 			this->isOverrideActive_AttractModeLEDs = false;
 			this->overrideValue_areAttractModeLEDsLit = false;
-			cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 0: LEDs Default Behavior" << endl;
+			std::cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 0: LEDs Default Behavior" << std::endl;
 		}
 		else {
 			// Otherwise if the LED is in (mode 1), transition to (mode 2)
 			this->overrideValue_areAttractModeLEDsLit = true;
 			this->isOverrideActive_AttractModeLEDs = true;
-			cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 2: LEDs Forced ON" << endl;
+			std::cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 2: LEDs Forced ON" << std::endl;
 		}
 	}
 	else {
 		// Override mode isn't active (mode 0), transition to (mode 1)
 		this->overrideValue_areAttractModeLEDsLit = false;
 		this->isOverrideActive_AttractModeLEDs = true;
-		cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 1: LEDs Forced OFF" << endl;
+		std::cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 1: LEDs Forced OFF" << std::endl;
 	}
 }
 
@@ -648,19 +648,19 @@ bool BehavioralBoxLabjack::writeDeviceName(std::string newDeviceName)
 		this->deviceName = this->readDeviceName();
 		bool nameChangeSucceeded = (this->deviceName == newDeviceName);
 		if (nameChangeSucceeded) {
-			cout << "SUCCESS: Changed device name to " << newDeviceName << endl;
+			std::cout << "SUCCESS: Changed device name to " << newDeviceName << std::endl;
 		}
 		else {
-			cout << "Failed to set device name to " << newDeviceName << endl;
-			cout << "Current device name: " << this->deviceName << endl;
+			std::cout << "Failed to set device name to " << newDeviceName << std::endl;
+			std::cout << "Current device name: " << this->deviceName << std::endl;
 		}
 		return nameChangeSucceeded;
 	}
 	else
 	{
-		cout << "Failed to set device name to " << newDeviceName << endl;
+		std::cout << "Failed to set device name to " << newDeviceName << std::endl;
 		this->deviceName = this->readDeviceName();
-		cout << "Current device name: " << this->deviceName << endl;
+		std::cout << "Current device name: " << this->deviceName << std::endl;
 		return false;
 	}
 }
@@ -688,30 +688,30 @@ void BehavioralBoxLabjack::initializeLabjackConfigurationIfNeeded()
 		else {
 			std::string numbersMatchString = stringMatch[1];
 			int numberOutResult = std::stoi(numbersMatchString);
-			cout << "Labjack has appropriate name: " << this->deviceName << endl;
+			std::cout << "Labjack has appropriate name: " << this->deviceName << std::endl;
 			needsRename = false;
 		}
 	}
 	// Prompt for the rename if needed:
 	if (needsRename == true) {
-		cout << "Labjack needs to be renamed..." << endl;
+		std::cout << "Labjack needs to be renamed..." << std::endl;
 		std::ostringstream ostr;
 		int computerIdentifierNumber = this->configMan->getNumericComputerIdentifier();
 		if (computerIdentifierNumber == -1) {
 			// Computer ID is bad.
 			//TODO: prompt user for ID
-			cout << "Please enter a new labjack ID number: ";
-			cin >> computerIdentifierNumber;			
+			std::cout << "Please enter a new labjack ID number: ";
+			std::cin >> computerIdentifierNumber;			
 		}
 		// Build new Labjack Name
 		ostr << "LJ-";
 		ostr << std::dec << std::setw(2) << std::setfill('0') << computerIdentifierNumber;
 		std::string new_proposed_labjack_name_string = ostr.str(); //the str() function of the stream returns the string
-		cout << "New Proposed Labjack Name: " << new_proposed_labjack_name_string << endl;
+		std::cout << "New Proposed Labjack Name: " << new_proposed_labjack_name_string << std::endl;
 
-		cout << "Trying to change device name...." << endl;
+		std::cout << "Trying to change device name...." << std::endl;
 		this->writeDeviceName(new_proposed_labjack_name_string);
-		cout << "done." << endl;
+		std::cout << "done." << std::endl;
 	}
 
 }

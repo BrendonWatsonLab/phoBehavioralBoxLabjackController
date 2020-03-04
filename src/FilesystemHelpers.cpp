@@ -71,7 +71,7 @@ std::map<int, std::vector<LabjackDataFile>> FilesystemHelpers::findDataFiles(std
 	// Loop through the found files
 	for (int i = 0; i < foundFiles.size(); i++) {
 		std::string currFileBasename = foundFiles[i].stem().string(); // Stem returns the filename without the extension.
-		// stringstream class check1 
+		// std::stringstream class check1 
 		std::stringstream currNameSplitterStream(currFileBasename);
 		// Clear the name parts for the next file
 		fileNameParts.clear();

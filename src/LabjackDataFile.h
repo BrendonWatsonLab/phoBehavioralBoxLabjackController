@@ -2,10 +2,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <experimental/filesystem>
+#include <filesystem>
 
 //using namespace std;
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 struct LabjackDataFileLine {
 	unsigned long long milliseconds_since_epoch;

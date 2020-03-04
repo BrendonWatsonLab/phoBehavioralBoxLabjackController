@@ -109,7 +109,7 @@ private:
 	void run();
 
 	//Historical Labjack Data loading:
-	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 	std::string hostName_ = configMan->getHostName();
 	int numeric_computer_identifer_ = configMan->getNumericComputerIdentifier();
 	std::string dataFilesSearchDirectory_ = configMan->getGeneratedActiveHistoricalSearchDirectory();

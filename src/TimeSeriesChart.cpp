@@ -291,16 +291,16 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 // Update function
 void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
 {
-	cout << "TimeSeriesChart::processHistoricalDataUpdateEvent(...):" << endl;
+	std::cout << "TimeSeriesChart::processHistoricalDataUpdateEvent(...):" << std::endl;
 	if (event.type() == HistoricalDataLoadingEvent::Complete) {
 		std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = event.dataLoadedHistoricalDataVector();
-		cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << endl;
-		cout << "reloading.... " << endl;
+		std::cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << std::endl;
+		std::cout << "reloading.... " << std::endl;
 		this->reload(loadedHistoricalDataVect);
-		cout << "done." << endl;
+		std::cout << "done." << std::endl;
 	}
 	else {
-		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
+		std::cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << std::endl;
 	}
 }
 
@@ -316,7 +316,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	this->shared_y_axis_max = 0.0;
 
 	if (historicalData.empty()) {
-		cout << "WARNING: Data model empty!" << endl;
+		std::cout << "WARNING: Data model empty!" << std::endl;
 		return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
 	}
 
@@ -535,7 +535,7 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 
 void TimeSeriesChart::loadFromConfig()
 {
-	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 	this->numDaysToDisplay_ = configMan->getLoadedConfig().numDaysToDisplay;
 	this->shouldEnableSynchronize_Y_Axis = configMan->getLoadedConfig().shouldEnableSynchronize_Y_Axis;
 }

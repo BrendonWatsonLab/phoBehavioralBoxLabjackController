@@ -111,7 +111,7 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 	 * event from other sessions, see SimpleChatServer::postChatEvent()
 	 */
 	if (event.type() == DataServerEvent::Type::HistoricalDataRefreshed) {
-		cout << "LabjackControllerOuterWidget::processDataServerEvent(...): Historical data refreshed." << endl;
+		std::cout << "LabjackControllerOuterWidget::processDataServerEvent(...): Historical data refreshed." << std::endl;
 		auto historicalEvent = event.historicalDataLoadingEvent();
 		if (historicalEvent.type() == HistoricalDataLoadingEvent::Type::Complete) {
 			this->loadedHistoricalDataVectIDs_.clear();
@@ -128,7 +128,7 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 		this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
 	}
 	else {
-		cout << "Warning: DataServerEvent Event recieved but not yet implemented!" << endl;
+		std::cout << "Warning: DataServerEvent Event recieved but not yet implemented!" << std::endl;
 	}
 	
 	///*

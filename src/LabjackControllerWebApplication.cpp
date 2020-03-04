@@ -7,7 +7,7 @@ using namespace Wt;
 
 LabjackControllerWebApplication::LabjackControllerWebApplication(const WEnvironment& env, BoxControllerWebDataServer& server) : WApplication(env), server_(server), env_(env)
 {
-	//std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	//std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 	// Gets the computer's hostname
 	//std::string hostName = this->getHostName();
 	// Gets the 2-digit integer identifier for the current computer (and box, if there is a 1-to-1 mapping). Like the "02" in "WATSON-BB-02"

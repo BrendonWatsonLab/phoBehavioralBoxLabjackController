@@ -59,14 +59,14 @@ bool BehavioralBoxControllersManager::scanForNewLabjacks()
 	std::vector<BehavioralBoxLabjack*> newlyFoundAdditionalLabjacks = LabjackHelpers::findAllLabjacks(previouslyFoundLabjackSerialNumbers, numberPreviouslyFoundLabjacks);
 
 	if (newlyFoundAdditionalLabjacks.size() > 0) {
-		cout << "Found " << newlyFoundAdditionalLabjacks.size() << " new labjacks!" << endl;
+		std::cout << "Found " << newlyFoundAdditionalLabjacks.size() << " new labjacks!" << std::endl;
 		// Iterate through all newly found labjacks and append them to the list of found labjacks
 		for (int i = 0; i < newlyFoundAdditionalLabjacks.size(); i++) {
 			this->addLabjack(newlyFoundAdditionalLabjacks[i]);
 		}
 	}
 	else {
-		cout << "Found no new labjacks." << endl;
+		std::cout << "Found no new labjacks." << std::endl;
 	}
 
 	return false;
@@ -88,32 +88,32 @@ bool BehavioralBoxControllersManager::waitForFoundLabjacks()
 			printf("Make sure Kipling and all other software using the Labjack is closed, and that the labjack is plugged in via USB.\n");
 
 			if (this->configMan->getLoadedConfig().continue_without_labjacks) {
-				cout << "\t Continuing without a Labjack..." << endl;
+				std::cout << "\t Continuing without a Labjack..." << std::endl;
 				this->stillWaitingToFindLabjacks_ = false;
 			}
 			else {
 				if (is_interactive_mode)
 				{
 					// Interactive Mode
-					cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << endl;
+					std::cout << "\t Press [Q] to quit or any other key to rescan for Labjacks." << std::endl;
 					// Read a character from the keyboard
 					character = _getch();
 					character = toupper(character);
 					if (character == 'Q') {
 						// Returns false to indicate that the user gave up.
-						cout << "\t Quitting..." << endl;
+						std::cout << "\t Quitting..." << std::endl;
 						return false;
 					}
 					else {
 						//std::this_thread::sleep_for(std::chrono::seconds(1));
-						cout << "\t Refreshing Labjacks..." << endl;
+						std::cout << "\t Refreshing Labjacks..." << std::endl;
 						continue;
 					}
 				}
 				else {
-					cout << "\t Searching again for Labjacks in 5 seconds..." << endl;
+					std::cout << "\t Searching again for Labjacks in 5 seconds..." << std::endl;
 					std::this_thread::sleep_for(std::chrono::seconds(5));
-					cout << "\t Refreshing Labjacks..." << endl;
+					std::cout << "\t Refreshing Labjacks..." << std::endl;
 					continue;
 				}
 				
@@ -247,10 +247,10 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	std::map<int, fs::path> foundBoxPaths = FilesystemHelpers::findBehavioralBoxDataFolders(curr_search_dir);
 	//std::vector<int> found_box_ids;
 	int maximum_found_box_id = -1;
-	for (map<int, fs::path>::iterator it = foundBoxPaths.begin(); it != foundBoxPaths.end(); ++it) {
-		maximum_found_box_id = max(maximum_found_box_id, it->first);
+	for (std::map<int, fs::path>::iterator it = foundBoxPaths.begin(); it != foundBoxPaths.end(); ++it) {
+		maximum_found_box_id = std::max(maximum_found_box_id, it->first);
 		//found_box_ids.push_back(it->first);
-		//cout << it->first << "\n";
+		//std::cout << it->first << "\n";
 	}
 	std::cout << "Maximum found box id is " << maximum_found_box_id << "." << std::endl;
 
@@ -319,7 +319,7 @@ std::vector<std::string> BehavioralBoxControllersManager::exportHistoricalDataAs
 	for (int i = 0; i < this->historicalData_.size(); i++)
 	{
 		//TODO: this exports all historical data to the same file... is this okay?
-		std::string currFullOutputPath = fullPrefixPath + to_string(i) + ".csv";
+		std::string currFullOutputPath = fullPrefixPath + std::to_string(i) + ".csv";
 		outputPaths.push_back(currFullOutputPath);
 		this->historicalData_[i].exportAsCSV(currFullOutputPath);
 	}

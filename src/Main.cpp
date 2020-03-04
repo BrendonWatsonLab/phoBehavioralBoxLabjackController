@@ -37,7 +37,7 @@ std::thread web_server_thread;
 #endif // LAUNCH_WEB_SERVER
 
 //BehavioralBoxControllersManager controller;
-std::shared_ptr<BehavioralBoxControllersManager> controller = make_shared<BehavioralBoxControllersManager>();
+std::shared_ptr<BehavioralBoxControllersManager> controller = std::make_shared<BehavioralBoxControllersManager>();
 
 
 
@@ -57,16 +57,16 @@ void printCommandsMenu();
 
 int main(int argc, char** argv)
 {
-	cout << "BehavioralBoxLabjackController:" << endl;
-	cout << "\t Version " << SOFTWARE_VERSION << endl;
-	cout << "\t Pho Hale 2019" << endl << endl;
-	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	std::cout << "BehavioralBoxLabjackController:" << std::endl;
+	std::cout << "\t Version " << SOFTWARE_VERSION << std::endl;
+	std::cout << "\t Pho Hale 2019" << std::endl << std::endl;
+	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 
 	// Get the hostname
 	//std::string foundHostName = configMan->getHostName();
-	//cout << "Found host name: " << foundHostName << endl;
+	//std::cout << "Found host name: " << foundHostName << std::endl;
 	//int computerIdentifierNumber = configMan->getNumericComputerIdentifier();
-	//cout << "Computer Identifier ID: " << computerIdentifierNumber << endl;
+	//std::cout << "Computer Identifier ID: " << computerIdentifierNumber << std::endl;
 
 	printConfiguration();
 
@@ -78,10 +78,10 @@ int main(int argc, char** argv)
 		startWebserver(argc, argv, &controller);
 	}
 
-	//cout << endl << "Scanning for attached Labjacks..." << endl;
+	//std::cout <<std::endl << "Scanning for attached Labjacks..." <<std::endl;
 	//if (!controller->waitForFoundLabjacks()) {
 	//	// User wants to quit.
-	//	cout << "User chose to quit. Done." << endl;
+	//	std::cout << "User chose to quit. Done." <<std::endl;
 	//	return shutdownApplication(LJME_NO_DEVICES_FOUND);
 	//}
 
@@ -100,7 +100,7 @@ int main(int argc, char** argv)
 
 	printCommandsMenu();
 	if (controller->getActiveLabjacks().size() > 0) {
-		cout << "Collecting data at " << (1000.0 / double(LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC)) << "Hz...." << endl;
+		std::cout << "Collecting data at " << (1000.0 / double(LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC)) << "Hz...." <<std::endl;
 	}
 	
 	//WaitForUserIfWindows();
@@ -115,84 +115,84 @@ int main(int argc, char** argv)
 		character = _getch();
 		character = toupper(character);
 		if (character == 'Q') {
-			cout << "Quitting..." << endl;
+			std::cout << "Quitting..." << std::endl;
 			terminateExecution = 1;
 		}
 		else if (character == 'S') {
 			// Show the data files:
-			cout << "Showing current log files..." << endl;
+			std::cout << "Showing current log files..." << std::endl;
 			// Iterate through all found Labjacks
 			
 			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
 				std::string foundRelativeFilePathString = controller->getActiveLabjacks()[i]->getFullFilePath();
 				std::string fullFilePathString = LabjackHelpers::getFullPath(foundRelativeFilePathString);
 
-				cout << "\t Showing log file at " << fullFilePathString << endl;
+				std::cout << "\t Showing log file at " << fullFilePathString << std::endl;
 				LabjackHelpers::showInExplorer(fullFilePathString);
 			}
-			cout << "\t done." << endl;
+			std::cout << "\t done." << std::endl;
 		}
 		//else if (character == 'F') {
 		//	// Show the data files:
-		//	cout << "Showing current output directory..." << endl;
+		//	std::cout << "Showing current output directory..." <<std::endl;
 		//	// Iterate through all found Labjacks
 		//	auto loaded_config = configMan->getLoadedConfig();
 		//	std::string fullOutputDirectoryPathString = configMan->getGeneratedActiveOutputDirectory();
-		//	cout << "\t Showing output file directory at " << fullOutputDirectoryPathString << endl;
+		//	std::cout << "\t Showing output file directory at " << fullOutputDirectoryPathString <<std::endl;
 		//	LabjackHelpers::showInExplorer(fullOutputDirectoryPathString);
-		//	cout << "\t done." << endl;
+		//	std::cout << "\t done." <<std::endl;
 		//}
 		//else if (character == 'P') {
 		//	// Prints the current data
-		//	cout << "Printing current data..." << endl;
+		//	std::cout << "Printing current data..." <<std::endl;
 		//	// Iterate through all found Labjacks
 		//	for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
 		//		controller->getActiveLabjacks()[i]->diagnosticPrintLastValues();
 		//	}
-		//	cout << "\t done." << endl;
+		//	std::cout << "\t done." <<std::endl;
 		//}
 		//else if (character == 'R') {
-		//	cout << "Refreshing Labjacks..." << endl;
+		//	std::cout << "Refreshing Labjacks..." << std::endl;
 		//	controller->scanForNewLabjacks();
 		//	if (shouldStartWebServer) {
 		//		// Refresh the webserver
 		//		WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
 		//	}
-		//	cout << "\t done." << endl;
+		//	std::cout << "\t done." << std::endl;
 		//}
 		//else if (character == 'L') {
-		//	cout << "Toggling visible LED Light mode on all labjacks..." << endl;
+		//	std::cout << "Toggling visible LED Light mode on all labjacks..." << std::endl;
 		//	// Iterate through all found Labjacks
 		//	for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
 		//		controller->getActiveLabjacks()[i]->toggleOverrideMode_VisibleLED();
 		//	}
-		//	cout << "\t done." << endl;
+		//	std::cout << "\t done." << std::endl;
 		//}
 		//else if (character == 'A') {
-		//	cout << "Toggling attract mode on all Labjacks..." << endl;
+		//	std::cout << "Toggling attract mode on all Labjacks..." << std::endl;
 		//	// Iterate through all found Labjacks
 		//	for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
 		//		controller->getActiveLabjacks()[i]->toggleOverrideMode_AttractModeLEDs();
 		//	}
-		//	cout << "\t done." << endl;
+		//	std::cout << "\t done." << std::endl;
 		//}
 		//else if (character == 'U') {
-		//	cout << "Utility mode:" << endl;
+		//	std::cout << "Utility mode:" << std::endl;
 		//	//TODO: utility mode.
 		//	// Export data as CSV
 		//	std::vector<std::string> exportPaths = controller->exportHistoricalDataAsCSV("C:/Common/data/", "export-HistoricalData");
 		//	if (exportPaths.empty()) {
-		//		cout << "Tried to export CSV files but had no historical data." << endl;
+		//		std::cout << "Tried to export CSV files but had no historical data." << std::endl;
 		//	}
 		//	else {
 		//		int numExportPaths = exportPaths.size();
-		//		cout << "Export " << numExportPaths << " historical data .CSV files:" << endl;
+		//		std::cout << "Export " << numExportPaths << " historical data .CSV files:" << std::endl;
 		//		for (size_t i = 0; i < numExportPaths; i++)
 		//		{
-		//			cout << "\t" << exportPaths[i] << endl;
+		//			std::cout << "\t" << exportPaths[i] << std::endl;
 		//		}
 		//	}
-		//	cout << "\t done." << endl;
+		//	std::cout << "\t done." << std::endl;
 		//}
 		else {
 			printCommandsMenu();
@@ -207,17 +207,17 @@ int main(int argc, char** argv)
 bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr)
 {
 
-	cout << "Starting the web server." << endl;
+	std::cout << "Starting the web server." << std::endl;
 	//// Debug only, output the input args
-	//cout << "Input arguments: ";
-	//cout << "{";
+	//std::cout << "Input arguments: ";
+	//std::cout << "{";
 	//for (size_t i = 0; i < argc; i++)
 	//{
 	//	std::string currArgument = argv[i];
-	//	cout << "\"" << currArgument << "\", ";
+	//	std::cout << "\"" << currArgument << "\", ";
 	//}
-	//cout << "}" << endl;
-	//cout << "end input arguments.";
+	//std::cout << "}" << std::endl;
+	//std::cout << "end input arguments.";
 
 	web_server_thread = std::move(std::thread([=]() {
 		// Build the input arguments for the webserver
@@ -252,12 +252,12 @@ bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxCo
 // Called when the application is being quit
 int shutdownApplication(int shutdownCode)
 {
-	cout << "Shutting down the application..." << endl;
+	std::cout << "Shutting down the application..." << std::endl;
 	//controller->shutdown();
-	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 	const bool shouldStartWebServer = configMan->getLoadedConfig().launch_web_server;
 	if (shouldStartWebServer) {
-		cout << "Waiting on web server thread to quit..." << endl;
+		std::cout << "Waiting on web server thread to quit..." << std::endl;
 		// As the thread is using members from this object
 		// We can not let this object be destroyed until the thread finishes executing.
 		web_server_thread.join();
@@ -271,54 +271,54 @@ int shutdownApplication(int shutdownCode)
 
 // Print the list of options to execute
 void printCommandsMenu() {
-	cout << "Commands: " << endl;
-	cout << "\t Press [p] at any time to print the most recently read values for all labjacks." << endl;
-	cout << "\t Press [f] at any time to show the current output file directory." << endl;
-	cout << "\t Press [s] at any time to show the current log files for all labjacks." << endl;
-	/*cout << "\t Press [r] at any time to refresh and scan for more labjacks." << endl;
-	cout << "\t Press [l] at any time to toggle visible LED Light mode for all labjacks." << endl;
-	cout << "\t Press [a] at any time to toggle Attract mode for all labjacks." << endl;
-	cout << "\t Press [u] at any time to display utility options." << endl;*/
-	cout << "\t Press [q] at any time to quit." << endl;
-	cout << "\t Press any other key at any time to show this list of commands." << endl;
+	std::cout << "Commands: " << std::endl;
+	std::cout << "\t Press [p] at any time to print the most recently read values for all labjacks." << std::endl;
+	std::cout << "\t Press [f] at any time to show the current output file directory." << std::endl;
+	std::cout << "\t Press [s] at any time to show the current log files for all labjacks." << std::endl;
+	/*std::cout << "\t Press [r] at any time to refresh and scan for more labjacks." << std::endl;
+	std::cout << "\t Press [l] at any time to toggle visible LED Light mode for all labjacks." << std::endl;
+	std::cout << "\t Press [a] at any time to toggle Attract mode for all labjacks." <<std::endl;
+	std::cout << "\t Press [u] at any time to display utility options." <<std::endl;*/
+	std::cout << "\t Press [q] at any time to quit." <<std::endl;
+	std::cout << "\t Press any other key at any time to show this list of commands." <<std::endl;
 }
 
 
 void printFilesystemPaths() {
-	cout << "Filesystem: " << endl;
-	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	std::cout << "Filesystem: " <<std::endl;
+	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 	auto loaded_config = configMan->getLoadedConfig();
-	cout << "\t Output Directory: " << configMan->getGeneratedActiveOutputDirectory() << endl;
+	std::cout << "\t Output Directory: " << configMan->getGeneratedActiveOutputDirectory() <<std::endl;
 	if (loaded_config.enableHistoricalDataLoading) {
-		cout << "\t Historical data loading is enabled and the output directory is " << configMan->getGeneratedActiveHistoricalSearchDirectory() << endl;
+		std::cout << "\t Historical data loading is enabled and the output directory is " << configMan->getGeneratedActiveHistoricalSearchDirectory() <<std::endl;
 	}
 	else {
-		cout << "\t Historical data loading is disabled." << endl;
+		std::cout << "\t Historical data loading is disabled." <<std::endl;
 	}
 }
 
 void printComputerInformation() {
-	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
-	cout << "Computer Hostname: " << configMan->getHostName() << endl;
+	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
+	std::cout << "Computer Hostname: " << configMan->getHostName() <<std::endl;
 }
 
 void printConfiguration() {
-	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 	auto loaded_config = configMan->getLoadedConfig();
-	cout << "CURRENT CONFIGURATION: ==============================" << endl;
+	std::cout << "CURRENT CONFIGURATION: ==============================" <<std::endl;
 	printComputerInformation();
-	cout << "\t Experiment Name: " << loaded_config.experimentName << endl;
-	cout << "\t Cohort Name: " << loaded_config.cohortName << endl;
-	cout << "\t Animal Name: " << loaded_config.animalName << endl;
+	std::cout << "\t Experiment Name: " << loaded_config.experimentName <<std::endl;
+	std::cout << "\t Cohort Name: " << loaded_config.cohortName <<std::endl;
+	std::cout << "\t Animal Name: " << loaded_config.animalName <<std::endl;
 	printFilesystemPaths();
-	cout << "Webserver is ";
+	std::cout << "Webserver is ";
 	if (loaded_config.launch_web_server) {
-		cout << "enabled. It can be accessed via a web browser at URL http://127.0.0.1:8080" << endl;
+		std::cout << "enabled. It can be accessed via a web browser at URL http://127.0.0.1:8080" <<std::endl;
 	}
 	else {
-		cout << "disabled." << endl;
+		std::cout << "disabled." <<std::endl;
 	}
-	cout << "==========================  END CURRENT CONFIGURATION" << endl;
+	std::cout << "==========================  END CURRENT CONFIGURATION" <<std::endl;
 }
 
 

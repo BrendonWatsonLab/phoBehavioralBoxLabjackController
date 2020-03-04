@@ -179,8 +179,8 @@ std::shared_ptr<WAbstractItemModel> LabjackLiveStateWidget::buildLiveLabjacksMod
 		int currColumnNumber = 0;
 
 		BehavioralBoxLabjack* currLabjack = this->activeLabjacks[rowIndex];
-		vector<std::string> portPurposeStrings = currLabjack->getInputPortPurpose();
-		vector<double> mostRecentValues = currLabjack->getLastReadValues();
+		std::vector<std::string> portPurposeStrings = currLabjack->getInputPortPurpose();
+		std::vector<double> mostRecentValues = currLabjack->getLastReadValues();
 
 		// Want a column for the serial number
 		int currSerialNumber = currLabjack->getSerialNumber();
