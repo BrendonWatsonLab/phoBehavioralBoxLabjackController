@@ -132,68 +132,6 @@ int main(int argc, char** argv)
 			}
 			std::cout << "\t done." << std::endl;
 		}
-		//else if (character == 'F') {
-		//	// Show the data files:
-		//	std::cout << "Showing current output directory..." <<std::endl;
-		//	// Iterate through all found Labjacks
-		//	auto loaded_config = configMan->getLoadedConfig();
-		//	std::string fullOutputDirectoryPathString = configMan->getGeneratedActiveOutputDirectory();
-		//	std::cout << "\t Showing output file directory at " << fullOutputDirectoryPathString <<std::endl;
-		//	LabjackHelpers::showInExplorer(fullOutputDirectoryPathString);
-		//	std::cout << "\t done." <<std::endl;
-		//}
-		//else if (character == 'P') {
-		//	// Prints the current data
-		//	std::cout << "Printing current data..." <<std::endl;
-		//	// Iterate through all found Labjacks
-		//	for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
-		//		controller->getActiveLabjacks()[i]->diagnosticPrintLastValues();
-		//	}
-		//	std::cout << "\t done." <<std::endl;
-		//}
-		//else if (character == 'R') {
-		//	std::cout << "Refreshing Labjacks..." << std::endl;
-		//	controller->scanForNewLabjacks();
-		//	if (shouldStartWebServer) {
-		//		// Refresh the webserver
-		//		WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
-		//	}
-		//	std::cout << "\t done." << std::endl;
-		//}
-		//else if (character == 'L') {
-		//	std::cout << "Toggling visible LED Light mode on all labjacks..." << std::endl;
-		//	// Iterate through all found Labjacks
-		//	for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
-		//		controller->getActiveLabjacks()[i]->toggleOverrideMode_VisibleLED();
-		//	}
-		//	std::cout << "\t done." << std::endl;
-		//}
-		//else if (character == 'A') {
-		//	std::cout << "Toggling attract mode on all Labjacks..." << std::endl;
-		//	// Iterate through all found Labjacks
-		//	for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
-		//		controller->getActiveLabjacks()[i]->toggleOverrideMode_AttractModeLEDs();
-		//	}
-		//	std::cout << "\t done." << std::endl;
-		//}
-		//else if (character == 'U') {
-		//	std::cout << "Utility mode:" << std::endl;
-		//	//TODO: utility mode.
-		//	// Export data as CSV
-		//	std::vector<std::string> exportPaths = controller->exportHistoricalDataAsCSV("C:/Common/data/", "export-HistoricalData");
-		//	if (exportPaths.empty()) {
-		//		std::cout << "Tried to export CSV files but had no historical data." << std::endl;
-		//	}
-		//	else {
-		//		int numExportPaths = exportPaths.size();
-		//		std::cout << "Export " << numExportPaths << " historical data .CSV files:" << std::endl;
-		//		for (size_t i = 0; i < numExportPaths; i++)
-		//		{
-		//			std::cout << "\t" << exportPaths[i] << std::endl;
-		//		}
-		//	}
-		//	std::cout << "\t done." << std::endl;
-		//}
 		else {
 			printCommandsMenu();
 		}
@@ -208,17 +146,8 @@ bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxCo
 {
 
 	std::cout << "Starting the web server." << std::endl;
-	//// Debug only, output the input args
-	//std::cout << "Input arguments: ";
-	//std::cout << "{";
-	//for (size_t i = 0; i < argc; i++)
-	//{
-	//	std::string currArgument = argv[i];
-	//	std::cout << "\"" << currArgument << "\", ";
-	//}
-	//std::cout << "}" << std::endl;
-	//std::cout << "end input arguments.";
 
+	// WEB SERVER THREAD BLOCK:
 	web_server_thread = std::move(std::thread([=]() {
 		// Build the input arguments for the webserver
 		// Converted using https://stackoverflow.com/questions/26032039/convert-vectorstring-into-char-c
@@ -241,10 +170,11 @@ bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxCo
 		char** finalArgs = (char**)cstringsWebserverArguments.data();
 		labjackControllerApplicationWebServer(cstringsWebserverArguments.size(), finalArgs, managerPtr);
 		
-		WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
+		//WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
 
 		return true;
 	}));
+
 	//runServer(argc, argv);
 	return true;
 }
