@@ -58,6 +58,8 @@ std::map<int, std::vector<LabjackDataFile>> FilesystemHelpers::findDataFiles(std
 {
 	// Looks for files of the form "out_file_s{SERIAL_NUMBER}_{MILLISECONDS_SINCE_EPOCH}.csv"
 	// activeLabjackSerialNumber: used to hold the parsed LabjackSerial Number
+	const bool should_warn_on_non_matching_file = false;
+
 	int activeLabjackSerialNumber = 0;
 	std::map<int, std::vector<LabjackDataFile>> labjackDataFilesMap;
 												
@@ -79,7 +81,9 @@ std::map<int, std::vector<LabjackDataFile>> FilesystemHelpers::findDataFiles(std
 			fileNameParts.push_back(intermediate);
 		}
 		if (fileNameParts.size() != 4) {
-			std::cout << "Warning: File " << currFileBasename << " does not match the expected format (out_file_s{ SERIAL_NUMBER }_{ MILLISECONDS_SINCE_EPOCH }). Skipping." << std::endl;
+			if (should_warn_on_non_matching_file) {
+				std::cout << "Warning: File " << currFileBasename << " does not match the expected format (out_file_s{ SERIAL_NUMBER }_{ MILLISECONDS_SINCE_EPOCH }). Skipping." << std::endl;
+			}
 			continue;
 		}
 
