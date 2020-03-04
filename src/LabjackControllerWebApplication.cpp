@@ -132,6 +132,7 @@ int labjackControllerApplicationWebServer(int argc, char** argv, const std::shar
 	//server.addEntryPoint(Wt::EntryPointType::WidgetSet, std::bind(createWidget, std::placeholders::_1, std::ref(dataServer)), "/chat.js");
 
 	if (server.start()) {
+		std::cout << "Web server started." << std::endl;
 		int sig = Wt::WServer::waitForShutdown();
 		std::cerr << "Shutting down: (signal = " << sig << ")" << std::endl;
 		server.stop();
