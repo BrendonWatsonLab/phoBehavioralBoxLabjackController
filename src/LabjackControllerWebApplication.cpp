@@ -66,7 +66,7 @@ void LabjackControllerWebApplication::staticRefreshLabjacksData()
 
 void LabjackControllerWebApplication::addOuterWidget()
 {
-	this->labjackControllerOuterWidget = root()->addWidget(cpp14::make_unique<LabjackControllerOuterWidget>(server_));
+	this->labjackControllerOuterWidget = root()->addWidget(std::make_unique<LabjackControllerOuterWidget>(server_));
 	//this->labjackControllerOuterWidget->setStyleClass("chat");
 }
 
@@ -74,11 +74,11 @@ void LabjackControllerWebApplication::javaScriptTest()
 {
 	if (!env_.javaScript()) {
 		javaScriptError_ =
-			root()->addWidget(Wt::cpp14::make_unique<Wt::WText>(Wt::WString::tr("serverpushwarning")));
+			root()->addWidget(std::make_unique<Wt::WText>(Wt::WString::tr("serverpushwarning")));
 
 		// The 5 second timer is a fallback for real server push. The updated
 		// server state will piggy back on the response to this timeout.
-		timer_ = Wt::cpp14::make_unique<Wt::WTimer>();
+		timer_ = std::make_unique<Wt::WTimer>();
 		timer_->setInterval(std::chrono::milliseconds{ 5000 });
 		timer_->timeout().connect(this, &LabjackControllerWebApplication::emptyFunc);
 		timer_->start();
@@ -94,7 +94,7 @@ void LabjackControllerWebApplication::updateActiveLabjacks(std::vector<Behaviora
 	// Loading Indicator
 	//auto loadingIndicatorWidget = root()->addWidget(cpp14::make_unique<WOverlayLoadingIndicator>());
 	//loadingIndicatorWidget->setMessage("Loading History, please wait...");
-	this->setLoadingIndicator(cpp14::make_unique<WOverlayLoadingIndicator>());
+	this->setLoadingIndicator(std::make_unique<WOverlayLoadingIndicator>());
 
 
 	if (this->labjackControllerOuterWidget != NULL) {
@@ -114,7 +114,7 @@ void LabjackControllerWebApplication::updateActiveLabjacks(std::vector<Behaviora
 //GLOBAL:
 std::unique_ptr<WApplication> createApplication(const WEnvironment& env, BoxControllerWebDataServer& server)
 {
-	return cpp14::make_unique<LabjackControllerWebApplication>(env, server);
+	return std::make_unique<LabjackControllerWebApplication>(env, server);
 }
 
 int labjackControllerApplicationWebServer(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr)
