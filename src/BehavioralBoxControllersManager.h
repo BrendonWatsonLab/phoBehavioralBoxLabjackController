@@ -90,7 +90,7 @@ private:
 	mutable std::mutex mutex_;
 	std::thread thread_;
 	std::thread thread_reloadHistoricalData_; // used for reloading the historical data
-	bool stillWaitingToFindLabjacks_ = true;
+	bool stillWaitingToFindLabjacks_ = false;
 	bool shouldStop_ = false;
 
 
@@ -101,7 +101,7 @@ private:
 	bool addLabjack(BehavioralBoxLabjack* newLabjack);
 	
 	// CSV Export testing variables
-	const bool wants_export_to_csv_on_reload = true;
+	const bool wants_export_to_csv_on_reload = false;
 	std::string csvExportPath = "C:/Common/data/export-HistoricalData.csv";
 	
 	std::vector<Connection> connections_;
