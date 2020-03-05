@@ -175,7 +175,6 @@ bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxCo
 		return true;
 	}));
 
-	//runServer(argc, argv);
 	return true;
 }
 

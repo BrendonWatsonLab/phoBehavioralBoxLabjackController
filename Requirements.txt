@@ -41,7 +41,7 @@ In the Debugging tab, set Command Arguments to --docroot . --config "$(ProjectDi
 In the Debugging tab, set Environment to PATH=C:/Program Files/Wt 4.1.0 msvs2019 x64/bin
 $(LocalDebuggerEnvironment)
 
-
+"C:\Common\config\phoBehavioralBoxLabjackController-WT_config.xml"
 
 // Additional Fixes:
 1. If you encounter "wtd.dll not found", "wthttpd.dll not found", or a similar ".dll not found" problem:
