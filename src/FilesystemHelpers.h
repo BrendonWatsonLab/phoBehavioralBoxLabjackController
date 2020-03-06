@@ -8,22 +8,11 @@
 #include <map>
 #include "LabjackDataFile.h"
 
-// If Windows (32 or 64 bit)
-//#ifdef _WIN32
-//#include <string>
-//#include <windows.h>
-//#else
-//#include <string>
-//#include <limits.h>
-//#include <unistd.h>
-//#endif
-
 namespace fs = std::filesystem;
 
 // literal '.' followed by one of "cpp", "cc", "cxx", "h", "hh", "hpp" or "hxx"
 // note: ?: indicates that it is a non-capturing group
 static const std::regex csv_files("\\.(?:csv|CSV)");
-
 
 // "BB01"
 static const std::regex folder_bb_folder_regex("BB(\\d{2})");

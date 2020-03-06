@@ -3,8 +3,6 @@
 #include <cstdio>
 
 
-
-
 class FormattingHelper
 {
 public:

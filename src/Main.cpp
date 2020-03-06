@@ -156,17 +156,11 @@ bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxCo
 		std::vector<std::string> stringsWebserverArguments{ argv[0], "--docroot", ".", "--config", "C:/Common/config/phoBehavioralBoxLabjackController-WT_config.xml", "--http-address", "0.0.0.0", "--http-port", "8080", "-accesslog=C:/Common/info/webServerAccessLog.log" };
 
 		std::vector<char*> cstringsWebserverArguments{};
-		//cstringsWebserverArguments.reserve(stringsWebserverArguments.size());
 
 		for (auto& currStr : stringsWebserverArguments) {
 			cstringsWebserverArguments.push_back(&currStr.front());
 		}
 
-		/*std::vector<const char*> cstringsWebserverArguments{};
-
-		for (const auto& currStr : stringsWebserverArguments) {
-			cstringsWebserverArguments.push_back(currStr.c_str());
-		}*/
 		char** finalArgs = (char**)cstringsWebserverArguments.data();
 		labjackControllerApplicationWebServer(cstringsWebserverArguments.size(), finalArgs, managerPtr);
 		
