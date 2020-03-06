@@ -78,15 +78,15 @@ int main(int argc, char** argv)
 		startWebserver(argc, argv, &controller);
 	}
 
-	//std::cout <<std::endl << "Scanning for attached Labjacks..." <<std::endl;
-	//if (!controller->waitForFoundLabjacks()) {
-	//	// User wants to quit.
-	//	std::cout << "User chose to quit. Done." <<std::endl;
-	//	return shutdownApplication(LJME_NO_DEVICES_FOUND);
-	//}
+	std::cout <<std::endl << "Scanning for attached Labjacks..." <<std::endl;
+	if (!controller->waitForFoundLabjacks()) {
+		// User wants to quit.
+		std::cout << "User chose to quit. Done." <<std::endl;
+		return shutdownApplication(LJME_NO_DEVICES_FOUND);
+	}
 
 	if (shouldStartWebServer) {
-		/*WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);*/
+		WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
 	}
 
 	// TODO - READ ME: main run loop
