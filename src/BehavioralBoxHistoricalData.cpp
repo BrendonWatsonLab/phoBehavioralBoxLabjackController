@@ -12,6 +12,10 @@
 
 
 
+BehavioralBoxHistoricalData::BehavioralBoxHistoricalData()
+{
+}
+
 BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID, std::vector<LabjackDataFile> dataFiles): labjackSerialNumber_(labjackSerialNumber), dataFilesSearchDirectory_(searchDirectory), boxID_(boxID), dataFiles_(dataFiles)
 {
 	// Sort the data files by decending recency:

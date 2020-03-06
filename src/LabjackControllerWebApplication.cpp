@@ -32,7 +32,7 @@ LabjackControllerWebApplication::LabjackControllerWebApplication(const WEnvironm
 	//loadingIndicatorWidget->setMessage("Loading History, please wait...");
 
 	// Main Widget
-	this->addOuterWidget();
+	this->addRootWidget();
 
 
 	/*
@@ -64,10 +64,15 @@ void LabjackControllerWebApplication::staticRefreshLabjacksData()
 	//TODO
 }
 
-void LabjackControllerWebApplication::addOuterWidget()
+//void LabjackControllerWebApplication::addOuterWidget()
+//{
+//	this->labjackControllerOuterWidget = root()->addWidget(std::make_unique<LabjackControllerOuterWidget>(server_));
+//	//this->labjackControllerOuterWidget->setStyleClass("chat");
+//}
+
+void LabjackControllerWebApplication::addRootWidget()
 {
-	this->labjackControllerOuterWidget = root()->addWidget(std::make_unique<LabjackControllerOuterWidget>(server_));
-	//this->labjackControllerOuterWidget->setStyleClass("chat");
+	this->rootWidget = root()->addWidget(std::make_unique<RootWidget>(server_));
 }
 
 void LabjackControllerWebApplication::javaScriptTest()
@@ -87,6 +92,7 @@ void LabjackControllerWebApplication::javaScriptTest()
 
 void LabjackControllerWebApplication::emptyFunc()
 {
+	
 }
 
 void LabjackControllerWebApplication::updateActiveLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks)
@@ -97,15 +103,17 @@ void LabjackControllerWebApplication::updateActiveLabjacks(std::vector<Behaviora
 	this->setLoadingIndicator(std::make_unique<WOverlayLoadingIndicator>());
 
 
-	if (this->labjackControllerOuterWidget != NULL) {
+	if (this->rootWidget != NULL) {
 		// this setActiveLabjacks function does nothing is live labjack display isn't on.
-		this->labjackControllerOuterWidget->setActiveLabjacks(updatedLabjacks);
+		//this->rootWidget->setActiveLabjacks(updatedLabjacks);
+		this->rootWidget->updateBehavioralBoxWidgets();
+
 		WApplication::instance()->triggerUpdate();
 		this->triggerUpdate();
 		return;
 	}
 	else {
-		printf("Error getting labjackControllerOuterWidget!!\n");
+		printf("Error getting rootWidget!!\n");
 		return;
 	}
 }

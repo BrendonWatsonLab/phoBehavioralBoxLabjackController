@@ -178,6 +178,7 @@ class BehavioralBoxHistoricalData
 {
 public:
 
+	BehavioralBoxHistoricalData();
 	BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID, std::vector<LabjackDataFile> dataFiles);
 	BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::vector<LabjackDataFile> dataFiles);
 
@@ -208,9 +209,9 @@ public:
 
 
 private:
-	std::string boxID_;
-	int labjackSerialNumber_;
-	std::string dataFilesSearchDirectory_;
+	std::string boxID_="";
+	int labjackSerialNumber_=-1;
+	std::string dataFilesSearchDirectory_ = "";
 
 	// A list of data files for that particular box
 	std::vector<LabjackDataFile> dataFiles_;

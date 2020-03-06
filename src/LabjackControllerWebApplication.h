@@ -9,7 +9,9 @@
 #include <iostream>
 
 #include "BoxControllerWebDataServer.h"
-#include "LabjackControllerOuterWidget.h"
+//#include "LabjackControllerOuterWidget.h"
+#include "RootWidget.h"
+
 
 class BehavioralBoxControllersManager;
 
@@ -38,11 +40,13 @@ private:
 	Wt::WText* javaScriptError_;
 	const Wt::WEnvironment& env_;
 	std::unique_ptr<Wt::WTimer> timer_;
-	void addOuterWidget();
+	//void addOuterWidget();
+	void addRootWidget();
 	void javaScriptTest();
 	void emptyFunc();
 
-	LabjackControllerOuterWidget* labjackControllerOuterWidget = nullptr;
+	//LabjackControllerOuterWidget* labjackControllerOuterWidget = nullptr;
+	RootWidget* rootWidget = nullptr;
 	void updateActiveLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks);
 };
 

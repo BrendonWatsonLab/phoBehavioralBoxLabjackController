@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\BehavioralBoxDataWidget.cpp" />
     <ClCompile Include="src\BehavioralBoxHistoricalData.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
     <ClCompile Include="src\BehavioralBoxControllersManager.cpp" />
@@ -39,6 +40,7 @@
     <ClCompile Include="src\LabjackHelpers.cpp" />
     <ClCompile Include="src\OutputState.cpp" />
     <ClCompile Include="src\PanelList.cpp" />
+    <ClCompile Include="src\RootWidget.cpp" />
     <ClCompile Include="src\StateMonitor.cpp" />
     <ClCompile Include="src\TimeSeriesChart.cpp" />
     <ClCompile Include="src\WebAppHelpWidget.cpp" />
@@ -52,6 +54,7 @@
     <ClInclude Include="ProgramVersion.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource1.h" />
+    <ClInclude Include="src\BehavioralBoxDataWidget.h" />
     <ClInclude Include="src\BehavioralBoxHistoricalData.h" />
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
     <ClInclude Include="src\BehavioralBoxControllersManager.h" />
@@ -80,6 +83,7 @@
     <ClInclude Include="src\NumericItem.h" />
     <ClInclude Include="src\OutputState.h" />
     <ClInclude Include="src\PanelList.h" />
+    <ClInclude Include="src\RootWidget.h" />
     <ClInclude Include="src\StateMonitor.h" />
     <ClInclude Include="src\TimeSeriesChart.h" />
     <ClInclude Include="src\WebAppHelpWidget.h" />

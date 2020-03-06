@@ -246,6 +246,8 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	// Get the children search dirs:
 	std::map<int, fs::path> foundBoxPaths = FilesystemHelpers::findBehavioralBoxDataFolders(curr_search_dir);
 	//std::vector<int> found_box_ids;
+
+	// Get the maximum found box ID from the found paths:
 	int maximum_found_box_id = -1;
 	for (std::map<int, fs::path>::iterator it = foundBoxPaths.begin(); it != foundBoxPaths.end(); ++it) {
 		maximum_found_box_id = std::max(maximum_found_box_id, it->first);
@@ -256,13 +258,14 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 
 	//maximum_found_box_id
 	this->behavioralBoxEventDataFilesMap_ = std::map<int, std::vector<LabjackDataFile>>();
-
+	// Iterate through the BBIDs to initialize the vectors
 	for (size_t i = 0; i < maximum_found_box_id; i++)
 	{
 		int curr_box_id = i + 1;
 		this->behavioralBoxEventDataFilesMap_[curr_box_id] = std::vector<LabjackDataFile>();
 	}
 
+	///Finds the correct animal folder within each found BB folder
 	std::map<int, fs::path> foundSearchPaths = FilesystemHelpers::findActiveExperimentAnimalFolders(curr_search_dir);
 	for (const auto& activeBoxSearchPathPair : foundSearchPaths) {
 		int curr_bbID = activeBoxSearchPathPair.first;
@@ -281,7 +284,7 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	}
 	// Clear the old historical data
 	this->historicalData_.clear();
-
+	// Iterate through the search paths one more time and build historical data objects (BehavioralBoxHistoricalData) from the found data files
 	for (const auto& activeBoxSearchPathPair : foundSearchPaths) {
 		int curr_bbID = activeBoxSearchPathPair.first;
 		std::string curr_bbID_String = FormattingHelper::format_two_digit_string(curr_bbID);
