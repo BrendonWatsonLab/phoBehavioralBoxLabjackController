@@ -61,6 +61,13 @@ void BehavioralBoxDataWidget::refresh()
 {
 	// Update the time series chart widget
 	//this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
+	this->lblActiveBBIDName_->setText(this->configuration.bbIDString);
+	// Make the string
+	std::string dataDescriptionString = std::to_string(this->configuration.numberOfFiles) + " files from " + this->configuration.oldestFileDate + " to " + this->configuration.newestFileDate;
+	this->lblActiveDataRangeDescription_->setText(this->configuration.bbIDString);
+	this->lblActiveFilePath_->setText(this->configuration.fileSearchPath);
+
+
 }
 
 void BehavioralBoxDataWidget::setupHeader()
@@ -70,8 +77,39 @@ void BehavioralBoxDataWidget::setupHeader()
 	auto headerRootContainer = Wt::cpp14::make_unique<Wt::WContainerWidget>();
 	headerRootContainer_ = headerRootContainer.get();
 
-	auto inactiveActiveLabjackLabel = this->headerRootContainer_->addWidget(std::make_unique<WText>("BBID: "));
-	this->activeBBIDName_ = this->headerRootContainer_->addWidget(std::make_unique<WText>("None"));
+	// Setup main layout
+	auto headerRootContainer_mainLayout = headerRootContainer_->setLayout(std::make_unique<Wt::WVBoxLayout>());
+
+	auto headerRootContainer_TopRow = Wt::cpp14::make_unique<Wt::WContainerWidget>();
+	auto headerRootContainer_TopRow_Layout = headerRootContainer_TopRow->setLayout(std::make_unique<Wt::WHBoxLayout>());
+	headerRootContainer_TopRow_Layout->setContentsMargins(2,2,2,2);
+
+	auto headerRootContainer_BottomRow = Wt::cpp14::make_unique<Wt::WContainerWidget>();
+	auto headerRootContainer_BottomRow_Layout = headerRootContainer_BottomRow->setLayout(std::make_unique<Wt::WHBoxLayout>());
+	headerRootContainer_BottomRow_Layout->setContentsMargins(2, 2, 2, 2);
+
+	auto inactiveActiveLabjackLabel = headerRootContainer_TopRow_Layout->addWidget(std::make_unique<WText>("BBID: "));
+	this->lblActiveBBIDName_ = headerRootContainer_TopRow_Layout->addWidget(std::make_unique<WText>("Loading..."));
+	this->lblActiveDataRangeDescription_ = headerRootContainer_TopRow_Layout->addWidget(std::make_unique<WText>(""));
+
+	this->lblActiveFilePath_ = headerRootContainer_BottomRow_Layout->addWidget(std::make_unique<WText>(""));
+
+
+
+	//auto inactiveActiveLabjackLabel = this->headerRootContainer_->addWidget(std::make_unique<WText>("BBID: "));
+	//this->lblActiveBBIDName_ = this->headerRootContainer_->addWidget(std::make_unique<WText>("Loading..."));
+	//this->lblActiveDataRangeDescription_ = this->headerRootContainer_->addWidget(std::make_unique<WText>(""));
+	//this->lblActiveFilePath_ = this->headerRootContainer_->addWidget(std::make_unique<WText>(""));
+
+
+
+	/*
+	 * Add it all inside a layout
+	 */
+	headerRootContainer_mainLayout->addWidget(std::move(headerRootContainer_TopRow), 2);
+	headerRootContainer_mainLayout->addWidget(std::move(headerRootContainer_BottomRow), 2);
+	headerRootContainer_mainLayout->setContentsMargins(0, 0, 0, 0);
+
 
 
 	// Add it to the layout

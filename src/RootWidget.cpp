@@ -168,6 +168,7 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 					//new_widget->updateConfiguration(new_config);
 					/*this->behavioralBoxWidgets.push_back(this->contentsStack_->addWidget(new_widget));*/
 					this->behavioralBoxWidgets.push_back(this->contentsStack_->addWidget(std::make_unique<BehavioralBoxDataWidget>(curr_widget_config)));
+					needCreateNewWidget = false;
 				}
 
 				// Handle what to do if the BB info itself changed:
@@ -176,9 +177,11 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 				}
 
 			}
-			this->updateBehavioralBoxWidgets();
+			//this->updateBehavioralBoxWidgets();
 
 		}
+
+		this->updateBehavioralBoxWidgets();
 		//// Update the time series chart widget
 		//this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
 	}
@@ -198,4 +201,52 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 
 void RootWidget::setupHeader()
 {
+	setOverflow(Wt::Overflow::Hidden);
+
+	auto headerRootContainer = Wt::cpp14::make_unique<Wt::WContainerWidget>();
+	headerRootContainer_ = headerRootContainer.get();
+
+	auto navigation = Wt::cpp14::make_unique<Wt::WNavigationBar>();
+	navigation_ = navigation.get();
+
+	std::string access_url = "http://" + this->hostName + ":8080";
+	navigation_->addStyleClass("main-nav");
+	//navigation_->setTitle(this->appName, "http://127.0.0.1:8080");
+	navigation_->setTitle(this->appName, access_url);
+	//navigation_->setResponsive(true);
+
+	//Wt::WAnimation animation(Wt::AnimationEffect::Fade,	Wt::TimingFunction::Linear,	200);
+	//contentsStack_->setTransitionAnimation(animation, true);
+
+	/*
+	 * Setup the top-level menu
+	 */
+	 //auto menu = Wt::cpp14::make_unique<Wt::WMenu>(contentsStack_);
+	 //menu->setInternalPathEnabled();
+	 //menu->setInternalBasePath("/");
+
+	 //addToMenu(menu.get(), "Layout", Wt::cpp14::make_unique<Layout>());
+	 //addToMenu(menu.get(), "Forms", Wt::cpp14::make_unique<FormWidgets>());
+	 //addToMenu(menu.get(), "Navigation", Wt::cpp14::make_unique<Navigation>());
+	 //addToMenu(menu.get(), "Trees & Tables", Wt::cpp14::make_unique<TreesTables>())->setPathComponent("trees-tables");
+	 //addToMenu(menu.get(), "Graphics & Charts", Wt::cpp14::make_unique<GraphicsWidgets>())->setPathComponent("graphics-charts");
+	 ////addToMenu(menu.get(), "Events", Wt::cpp14::make_unique<EventsDemo>());
+	 //addToMenu(menu.get(), "Media", Wt::cpp14::make_unique<Media>());
+
+	 //auto item = Wt::cpp14::make_unique<Wt::WMenuItem>("TEST");
+	 //auto item_ = menu->addItem(std::move(item));
+
+	 //item = Wt::cpp14::make_unique<Wt::WMenuItem>("TEST 2");
+	 //item_ = menu->addItem(std::move(item));
+
+	 //navigation_->addMenu(std::move(menu));
+
+	auto inactiveActiveLabjackLabel = this->headerRootContainer_->addWidget(cpp14::make_unique<WText>("Behavioral Boxes: "));
+	this->lblNumberOfBehavioralBoxesFound_ = this->headerRootContainer_->addWidget(cpp14::make_unique<WText>("Loading..."));
+
+
+	// Add it to the layout
+	this->mainLayout_->addWidget(std::move(navigation), 0);
+	this->mainLayout_->addWidget(std::move(headerRootContainer), 1);
+
 }

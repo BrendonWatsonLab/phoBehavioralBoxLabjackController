@@ -51,6 +51,7 @@ private:
 	// Header:
 	void setupHeader();
 	Wt::WContainerWidget* headerRootContainer_;
+	Wt::WText* lblNumberOfBehavioralBoxesFound_;
 	Wt::WNavigationBar* navigation_;
 	Wt::WStackedWidget* contentsStack_;
 

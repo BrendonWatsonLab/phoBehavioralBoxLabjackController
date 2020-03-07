@@ -68,7 +68,10 @@ private:
 	void setupHeader();
 	Wt::WContainerWidget* headerRootContainer_;
 	Wt::WStackedWidget* contentsStack_;
-	Wt::WText* activeBBIDName_;
+
+	Wt::WText* lblActiveBBIDName_;
+	Wt::WText* lblActiveFilePath_;
+	Wt::WText* lblActiveDataRangeDescription_;
 
 	//void home();
 	//void sidebar();
