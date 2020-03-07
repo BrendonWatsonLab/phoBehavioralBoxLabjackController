@@ -203,6 +203,9 @@ public:
 
 	const int getLabjackSerialNumber() { return this->labjackSerialNumber_; };
 	const std::string getBoxIdentifier() { return this->boxID_; };
+	const std::string getSearchDirectory() { return this->dataFilesSearchDirectory_; }
+
+	const int getNumberOfDataFiles() { return this->dataFiles_.size(); }
 
 	const void exportAsCSV(std::string path);
 

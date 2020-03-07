@@ -47,7 +47,8 @@ private:
 
 	//LabjackControllerOuterWidget* labjackControllerOuterWidget = nullptr;
 	RootWidget* rootWidget = nullptr;
-	void updateActiveLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks);
+	//void updateActiveLabjacks(std::vector<BehavioralBoxLabjack*> updatedLabjacks);
+	void updateBehavioralBoxWidgets();
 };
 
 

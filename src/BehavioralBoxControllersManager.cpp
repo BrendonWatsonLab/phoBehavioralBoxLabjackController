@@ -289,7 +289,7 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 		int curr_bbID = activeBoxSearchPathPair.first;
 		std::string curr_bbID_String = FormattingHelper::format_two_digit_string(curr_bbID);
 		fs::path curr_search_path = activeBoxSearchPathPair.second;
-		BehavioralBoxHistoricalData currHistoryData = BehavioralBoxHistoricalData(curr_search_path.string(), -1, this->behavioralBoxEventDataFilesMap_[curr_bbID]);
+		BehavioralBoxHistoricalData currHistoryData = BehavioralBoxHistoricalData(curr_search_path.string(), -1, curr_bbID_String, this->behavioralBoxEventDataFilesMap_[curr_bbID]);
 		this->historicalData_.push_back(currHistoryData);
 	}
 

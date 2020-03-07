@@ -162,12 +162,12 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 
 				if (needCreateNewWidget) {
 					// Create the new widget for this BBID:
-					
+					std::cout << "Creating new BB Widget for BBID: " << currBoxIdentifier << std::endl;
 
 					//BehavioralBoxDataWidget* new_widget = std::make_unique<BehavioralBoxDataWidget>();
 					//new_widget->updateConfiguration(new_config);
 					/*this->behavioralBoxWidgets.push_back(this->contentsStack_->addWidget(new_widget));*/
-					this->behavioralBoxWidgets.push_back(this->contentsStack_->addWidget(std::make_unique<BehavioralBoxDataWidget>()));
+					this->behavioralBoxWidgets.push_back(this->contentsStack_->addWidget(std::make_unique<BehavioralBoxDataWidget>(curr_widget_config)));
 				}
 
 				// Handle what to do if the BB info itself changed:

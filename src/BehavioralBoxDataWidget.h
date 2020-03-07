@@ -23,7 +23,7 @@ struct BehavioralBoxDataWidgetConfiguration
 		//this->newestFileDate = std::string(data.getFinalMillisecondsSinceEpoch());
 	}
 
-	BehavioralBoxDataWidgetConfiguration(BehavioralBoxHistoricalData data): data(data), bbIDString(data.getBoxIdentifier()) {
+	BehavioralBoxDataWidgetConfiguration(BehavioralBoxHistoricalData data): data(data), bbIDString(data.getBoxIdentifier()), fileSearchPath(data.getSearchDirectory()) {
 		//this->newestFileDate = std::string(data.getFinalMillisecondsSinceEpoch());
 	}
 };
