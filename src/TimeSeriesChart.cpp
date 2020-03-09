@@ -438,6 +438,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 }
 
 // Build vector of line series objects
+// Called from this->setupCharts(...)
 std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataSeries(const std::shared_ptr<Wt::WAbstractItemModel> model)
 {
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> outputVector;

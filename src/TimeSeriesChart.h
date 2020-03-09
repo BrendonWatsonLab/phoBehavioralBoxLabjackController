@@ -41,13 +41,18 @@ public:
 	struct TimeSeriesChartDisplayOptions {
 		bool shouldShowTable = false;
 		bool shouldShowPlot = false;
+
+		//bool shouldShowIndividualEvents = false;
+		//bool shouldEnableAggregateEvents = TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS;
+
 		TimeSeriesChartDisplayOptions(bool showTable, bool showPlot) : shouldShowTable(showTable), shouldShowPlot(showPlot) {};
 	};
 
 
 	TimeSeriesChartDisplayOptions totalDisplayOptions = TimeSeriesChartDisplayOptions(false, true);
 	DataDisplayOptions tableDisplayOptions = DataDisplayOptions(false, false);
-	DataDisplayOptions plotDisplayOptions = DataDisplayOptions(true, true);
+	//DataDisplayOptions plotDisplayOptions = DataDisplayOptions(true, true);
+	DataDisplayOptions plotDisplayOptions = DataDisplayOptions(false, true);
 
 	std::vector<Wt::WColor> getVariableColors() { return this->colorVect_; }
 	Wt::WColor getDefaultColor() { return this->otherColor_; }
@@ -144,6 +149,7 @@ BoxPortInformation::BehavioralEventKind::Dispense, BoxPortInformation::Behaviora
 BoxPortInformation::BehavioralEventKind::Other };
 	std::vector<Wt::WColor> colorVect_ = { Wt::WColor(0, 255, 255, 255), Wt::WColor(127, 255, 212, 255), Wt::WColor(255, 127, 80, 255), Wt::WColor(255, 0, 255, 255), Wt::WColor(0, 0, 255, 255), Wt::WColor(0, 0, 139, 255), Wt::WColor(220, 20, 60, 255), Wt::WColor(128, 0, 0, 255), Wt::WColor(200, 200, 200, 255) };
 	std::vector<bool> isVariableAggregate_ = { false, false, false, false, false, false, false, false, false };
+
 #endif // TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS
 
 	Wt::WColor otherColor_ = Wt::WColor(200, 200, 200, 255);
