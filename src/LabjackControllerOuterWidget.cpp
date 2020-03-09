@@ -125,7 +125,8 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 			
 		}
 		// Update the time series chart widget
-		this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
+		//this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
+		//TODO: needs to be updated if we ever use this widget again.
 	}
 	else {
 		std::cout << "Warning: DataServerEvent Event recieved but not yet implemented!" << std::endl;

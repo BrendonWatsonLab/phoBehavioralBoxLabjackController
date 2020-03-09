@@ -2,7 +2,13 @@
 #include <Wt/WContainerWidget.h>
 #include <iostream>
 
-class TimeSeriesChart;
+#define PHO_INCLUDE_TIME_SERIES_CHART
+
+#ifdef PHO_INCLUDE_TIME_SERIES_CHART
+	class TimeSeriesChart;
+#endif // PHO_INCLUDE_TIME_SERIES_CHART
+
+
 class WebAppHelpWidget;
 
 #include "BehavioralBoxHistoricalData.h"
@@ -28,7 +34,6 @@ struct BehavioralBoxDataWidgetConfiguration
 		//this->newestFileDate = std::string(data.getFinalMillisecondsSinceEpoch());
 		this->numberOfFiles = data.getNumberOfDataFiles();
 
-
 		// Get earliest and latest:
 		auto dataFileTimestamps = data.getDataFileTimestamps();
 		if (dataFileTimestamps.size() == 0)
@@ -45,8 +50,6 @@ struct BehavioralBoxDataWidgetConfiguration
 			this->oldestFileDate = FormattingHelper::format_datetime(dataFileTimestamps[0]);
 			this->newestFileDate = FormattingHelper::format_datetime(dataFileTimestamps[dataFileTimestamps.size()-1]);
 		}
-
-		
 
 	}
 
@@ -89,6 +92,10 @@ protected:
 	//TimeSeriesChart* timeSeriesChartWidget;
 	//WebAppHelpWidget* webAppHelpWidget;
 
+	#ifdef PHO_INCLUDE_TIME_SERIES_CHART
+		TimeSeriesChart* timeSeriesChartWidget;
+	#endif // PHO_INCLUDE_TIME_SERIES_CHART
+
 private:
 	BehavioralBoxDataWidgetConfiguration configuration;
 	Wt::WVBoxLayout* mainLayout_;
@@ -96,7 +103,8 @@ private:
 	// Header:
 	void setupHeader();
 	Wt::WContainerWidget* headerRootContainer_;
-	Wt::WStackedWidget* contentsStack_;
+	/*Wt::WStackedWidget* contentsStack_;*/
+	Wt::WContainerWidget* contentsContainer_;
 
 	Wt::WText* lblActiveBBIDName_;
 	Wt::WText* lblActiveFilePath_;

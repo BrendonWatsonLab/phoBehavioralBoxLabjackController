@@ -38,12 +38,16 @@ public:
 		DataDisplayOptions(bool showEvents, bool showAggregate) : shouldShowEventData(showEvents), shouldShowAggregateData(showAggregate) {};
 	};
 
+	struct TimeSeriesChartDisplayOptions {
+		bool shouldShowTable = false;
+		bool shouldShowPlot = false;
+		TimeSeriesChartDisplayOptions(bool showTable, bool showPlot) : shouldShowTable(showTable), shouldShowPlot(showPlot) {};
+	};
+
+
+	TimeSeriesChartDisplayOptions totalDisplayOptions = TimeSeriesChartDisplayOptions(false, true);
 	DataDisplayOptions tableDisplayOptions = DataDisplayOptions(false, false);
 	DataDisplayOptions plotDisplayOptions = DataDisplayOptions(true, true);
-
-	
-
-	void reload(std::vector<BehavioralBoxHistoricalData> historicalData);
 
 	std::vector<Wt::WColor> getVariableColors() { return this->colorVect_; }
 	Wt::WColor getDefaultColor() { return this->otherColor_; }
@@ -51,7 +55,8 @@ public:
 	std::shared_ptr<Wt::WAbstractItemModel> model;
 
 	// Update Function:
-	void processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event);
+	void reload(BehavioralBoxHistoricalData historicalData);
+	//void processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event);
 
 	struct CurrentDateTimeRange {
 
@@ -89,7 +94,7 @@ private:
 	bool isLoadingIndicatorVisible = true;
 	void changeLoadingIndicatorVisibility(bool shouldLoadingIndicatorBeVisible);
 
-	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData);
+	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel(BehavioralBoxHistoricalData activeHistoricalData);
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> buildDataSeries(const std::shared_ptr<Wt::WAbstractItemModel> model);
 
 	// Data Series:

@@ -33,60 +33,13 @@
 
 TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 {
-	this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Historic Labjack Data:")));
+	this->addWidget(std::make_unique<Wt::WText>(Wt::WString("Historic Labjack Data:")));
 	this->setupLoadingIndicator();
 	//Load from config
 	this->loadFromConfig();
 }
 
-// This is called with a vector of BehavioralBoxHistoricalData, one for each found labjackSerial.
-void TimeSeriesChart::reload(std::vector<BehavioralBoxHistoricalData> historicalData)
-{
-	// Update the model
-	this->model = this->buildHistoricDataModel(historicalData);
-	if (!this->model)
-		return;
 
-	if (this->model->columnCount() <= 0) {
-		return;
-	}
-
-	this->changeLoadingIndicatorVisibility(!this->isLoadingIndicatorVisible);
-
-	//this->loadingContainerWidget->propagateSetVisible(false);
-
-	/*
-	 * Parses the first column as dates, to be able to use a date scale
-	 */
-	//if (this->shouldUseDateXAxis) {
-	//	for (int i = 0; i < this->model->rowCount(); ++i) {			
-	//		cpp17::any currData = model->data(i, 0);
-	//		Wt::WString s = Wt::asString(currData);
-	//		std::string::size_type sz = 0;   // alias of size_t
-	//		unsigned long long currTimestampData = stoull(s, &sz);
-	//		std::chrono::time_point<Clock> currDataTimepoint = LabjackHelpers::date_from_milliseconds_since_epoch(currTimestampData);
-	//		//TODO: I think I need to use WLocalDateTime instead of WDateTime, as WDateTime assumes UTC
-	//		Wt::WDateTime currTimestampDateTime = Wt::WDateTime(currDataTimepoint + std::chrono::hours(-4)); // Places the absolute center of the bar here:
-	//		// Need to shift foward by 12 hours
-	//		//Wt::WLocalDateTime currLocalTimestampDateTime = currTimestampDateTime.toLocalTime();
-	//		model->setData(i, 0, currTimestampDateTime);
-	//		//model->setData(i, 0, currLocalTimestampDateTime);
-	//	}
-	//}
-
-	/*
-	 * Build the data table.
-	 */
-	this->setupTable(this->model);
-
-	/*
-	 * Build the graphs.
-	 */
-	this->setupCharts(this->model);
-
-	//this->addWidget(cpp14::make_unique<ChartConfig>(chart));
-
-}
 
 
 // GUI Setup:
@@ -289,44 +242,101 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 
 
 // Update function
-void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
+//void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
+//{
+//	std::cout << "TimeSeriesChart::processHistoricalDataUpdateEvent(...):" << std::endl;
+//	if (event.type() == HistoricalDataLoadingEvent::Complete) {
+//		std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = event.dataLoadedHistoricalDataVector();
+//		std::cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << std::endl;
+//		std::cout << "reloading.... " << std::endl;
+//		// Hardcoded to get 0th element in loadedHistoricalDataVect
+//		this->reload(loadedHistoricalDataVect[0]);
+//		std::cout << "done." << std::endl;
+//	}
+//	else {
+//		std::cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << std::endl;
+//	}
+//}
+
+// This is called with a vector of BehavioralBoxHistoricalData, one for each behavioral box.
+// Called from this->processHistoricalDataUpdateEvent(...)
+void TimeSeriesChart::reload(BehavioralBoxHistoricalData historicalData)
 {
-	std::cout << "TimeSeriesChart::processHistoricalDataUpdateEvent(...):" << std::endl;
-	if (event.type() == HistoricalDataLoadingEvent::Complete) {
-		std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = event.dataLoadedHistoricalDataVector();
-		std::cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << std::endl;
-		std::cout << "reloading.... " << std::endl;
-		this->reload(loadedHistoricalDataVect);
-		std::cout << "done." << std::endl;
+	// Update the model
+	this->model = this->buildHistoricDataModel(historicalData);
+	if (!this->model)
+		return;
+
+	if (this->model->columnCount() <= 0) {
+		return;
 	}
-	else {
-		std::cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << std::endl;
+
+	this->changeLoadingIndicatorVisibility(!this->isLoadingIndicatorVisible);
+
+	//this->loadingContainerWidget->propagateSetVisible(false);
+
+	/*
+	 * Parses the first column as dates, to be able to use a date scale
+	 */
+	 //if (this->shouldUseDateXAxis) {
+	 //	for (int i = 0; i < this->model->rowCount(); ++i) {			
+	 //		cpp17::any currData = model->data(i, 0);
+	 //		Wt::WString s = Wt::asString(currData);
+	 //		std::string::size_type sz = 0;   // alias of size_t
+	 //		unsigned long long currTimestampData = stoull(s, &sz);
+	 //		std::chrono::time_point<Clock> currDataTimepoint = LabjackHelpers::date_from_milliseconds_since_epoch(currTimestampData);
+	 //		//TODO: I think I need to use WLocalDateTime instead of WDateTime, as WDateTime assumes UTC
+	 //		Wt::WDateTime currTimestampDateTime = Wt::WDateTime(currDataTimepoint + std::chrono::hours(-4)); // Places the absolute center of the bar here:
+	 //		// Need to shift foward by 12 hours
+	 //		//Wt::WLocalDateTime currLocalTimestampDateTime = currTimestampDateTime.toLocalTime();
+	 //		model->setData(i, 0, currTimestampDateTime);
+	 //		//model->setData(i, 0, currLocalTimestampDateTime);
+	 //	}
+	 //}
+
+	 /*
+	  * Build the data table.
+	  */
+	if (this->totalDisplayOptions.shouldShowTable)
+	{
+		this->setupTable(this->model);
 	}
+
+	/*
+	 * Build the graphs.
+	 */
+	if (this->totalDisplayOptions.shouldShowPlot)
+	{
+		this->setupCharts(this->model);
+	}
+	//this->addWidget(cpp14::make_unique<ChartConfig>(chart));
+
 }
 
-void TimeSeriesChart::changeLoadingIndicatorVisibility(bool shouldLoadingIndicatorBeVisible)
-{
-	this->loadingContainerWidget->setHidden(!shouldLoadingIndicatorBeVisible);
-	this->isLoadingIndicatorVisible = shouldLoadingIndicatorBeVisible;
-}
 
-// Builds a model from a vector of historical data
-std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData)
+
+
+// Builds a model from a vector of historical data. 
+// Called from this->reload(...)
+std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(BehavioralBoxHistoricalData activeHistoricalData)
 {
 	this->shared_y_axis_max = 0.0;
 
-	if (historicalData.empty()) {
-		std::cout << "WARNING: Data model empty!" << std::endl;
-		return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
-	}
-
-	//Hardcoded to get the first historicalData item passed
-	BehavioralBoxHistoricalData activeHistoricalData = historicalData[0];
+	//if (activeHistoricalData.empty()) {
+	//	std::cout << "WARNING: Data model empty!" << std::endl;
+	//	return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
+	//}
 	int numVariables = activeHistoricalData.getNumberVariables();
 	//TODO: get the number of distinct timestamps and then use those as the number of events instead of just using the max number of events. Each row must have a distinct timestamp, and there are no other requirements.
 	//TODO: this is really inefficient because this is the format it starts out in and then I parse them into vectors of events for each variable.
 	int maxNumEvents = activeHistoricalData.getMaxNumberEvents();
 	int maxNumEventTimepoints = activeHistoricalData.getNumberOfUniqueTimepoints();
+
+	if (maxNumEvents == 0) {
+		std::cout << "WARNING: Data model empty!" << std::endl;
+		return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
+	}
+
 	// TODO: Change to only digital port Purposes!
 	std::vector<std::string> headerLabels = globalLabjackDigitalInputPortPurpose;
 
@@ -352,7 +362,6 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	// Add "time" variable to front of list
 	headerLabels.insert(headerLabels.begin(), "time");
 
-
 	int totalNumRows = maxNumEventTimepoints + numAggregateEvents;
 	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(totalNumRows, numColumns);
 
@@ -370,8 +379,8 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 			// Compute earliest timestamp if we're in relative (not absolute date axis) mode.
 			earliest_event_timestamp = historicalEvents[0].milliseconds_since_epoch;
 		}
-		std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
-		model->setItemPrototype(std::move(prototype));
+		std::unique_ptr<NumericItem> prototype = std::make_unique<NumericItem>();
+		model->setItemPrototype(std::move(prototype)); // TODO: Should this be done here, or outside the loop?
 
 		// Get the height of the data bar
 		double currItemHeight = double(to_underlying(this->variableKindVect_[variableIndex]));
@@ -412,7 +421,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 			int absoluteColumnIndex = (variableIndex + 1) + statsVariableIndex;
 			int currVarNumDays = anAggregateDayPair.second[statsVariableIndex];
 			double currItemHeight = double(currVarNumDays);
-			std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
+			std::unique_ptr<NumericItem> prototype = std::make_unique<NumericItem>();
 			model->setItemPrototype(std::move(prototype));
 			model->setData(rowIndex, absoluteColumnIndex, currItemHeight);
 		} // end for each stats variable
@@ -531,6 +540,13 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 		outputVector.push_back(std::move(s));
 	}
 	return outputVector;
+}
+
+
+void TimeSeriesChart::changeLoadingIndicatorVisibility(bool shouldLoadingIndicatorBeVisible)
+{
+	this->loadingContainerWidget->setHidden(!shouldLoadingIndicatorBeVisible);
+	this->isLoadingIndicatorVisible = shouldLoadingIndicatorBeVisible;
 }
 
 void TimeSeriesChart::loadFromConfig()
