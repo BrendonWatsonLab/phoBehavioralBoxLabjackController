@@ -60,11 +60,9 @@ void BehavioralBoxDataWidget::requestHistoricalData()
 void BehavioralBoxDataWidget::refresh()
 {
 	// Update the time series chart widget
-	//this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
 	this->lblActiveBBIDName_->setText(this->configuration.bbIDString);
 	// Make the string
-	std::string dataDescriptionString = std::to_string(this->configuration.numberOfFiles) + " files from " + this->configuration.oldestFileDate + " to " + this->configuration.newestFileDate;
-	this->lblActiveDataRangeDescription_->setText(this->configuration.bbIDString);
+	this->lblActiveDataRangeDescription_->setText(this->configuration.getDataDescriptionString());
 	this->lblActiveFilePath_->setText(this->configuration.fileSearchPath);
 
 

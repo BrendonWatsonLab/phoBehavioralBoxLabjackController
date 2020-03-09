@@ -7,6 +7,7 @@ class WebAppHelpWidget;
 
 #include "BehavioralBoxHistoricalData.h"
 
+// Configuration for the widget:
 struct BehavioralBoxDataWidgetConfiguration
 {
 	/*int bbID = -1;*/
@@ -26,8 +27,14 @@ struct BehavioralBoxDataWidgetConfiguration
 	BehavioralBoxDataWidgetConfiguration(BehavioralBoxHistoricalData data): data(data), bbIDString(data.getBoxIdentifier()), fileSearchPath(data.getSearchDirectory()) {
 		//this->newestFileDate = std::string(data.getFinalMillisecondsSinceEpoch());
 	}
+
+	std::string getDataDescriptionString() {
+		return std::to_string(numberOfFiles) + " files from " + oldestFileDate + " to " + newestFileDate;
+	}
+
 };
 
+// DataWidget for a single Behavioral Box:
 class BehavioralBoxDataWidget : public Wt::WContainerWidget
 {
 public:
