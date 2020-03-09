@@ -21,6 +21,7 @@ BehavioralBoxDataWidget::BehavioralBoxDataWidget() : BehavioralBoxDataWidget(Beh
 
 BehavioralBoxDataWidget::BehavioralBoxDataWidget(BehavioralBoxDataWidgetConfiguration configuration) : WContainerWidget(), configuration(configuration)
 {
+	this->setStyleClass("BB-DataWidget");
 	this->setPadding(10);
 	this->resize(WLength::Auto, WLength::Auto);
 
@@ -34,6 +35,7 @@ BehavioralBoxDataWidget::BehavioralBoxDataWidget(BehavioralBoxDataWidgetConfigur
 #ifdef PHO_INCLUDE_TIME_SERIES_CHART
 	// Timeseries Charts:
 	this->timeSeriesChartWidget = this->contentsContainer_->addWidget<TimeSeriesChart>(std::make_unique<TimeSeriesChart>());
+	this->timeSeriesChartWidget->setStyleClass("TimeSeriesChart");
 
 #endif // PHO_INCLUDE_TIME_SERIES_CHART
 
@@ -91,6 +93,7 @@ void BehavioralBoxDataWidget::setupHeader()
 
 	auto headerRootContainer = Wt::cpp14::make_unique<Wt::WContainerWidget>();
 	headerRootContainer_ = headerRootContainer.get();
+	this->headerRootContainer_->setStyleClass("BB-DataWidget header");
 
 	// Setup main layout
 	auto headerRootContainer_mainLayout = headerRootContainer_->setLayout(std::make_unique<Wt::WVBoxLayout>());
@@ -105,10 +108,13 @@ void BehavioralBoxDataWidget::setupHeader()
 
 	auto inactiveActiveLabjackLabel = headerRootContainer_TopRow_Layout->addWidget(std::make_unique<WText>("BBID: "));
 	this->lblActiveBBIDName_ = headerRootContainer_TopRow_Layout->addWidget(std::make_unique<WText>("Loading..."));
+	this->lblActiveBBIDName_->setStyleClass("BB-DataWidget header title");
+
 	this->lblActiveDataRangeDescription_ = headerRootContainer_TopRow_Layout->addWidget(std::make_unique<WText>(""));
+	this->lblActiveDataRangeDescription_->setStyleClass("BB-DataWidget header subtitle");
 
 	this->lblActiveFilePath_ = headerRootContainer_BottomRow_Layout->addWidget(std::make_unique<WText>(""));
-
+	this->lblActiveDataRangeDescription_->setStyleClass("BB-DataWidget header extended");
 
 
 	//auto inactiveActiveLabjackLabel = this->headerRootContainer_->addWidget(std::make_unique<WText>("BBID: "));
