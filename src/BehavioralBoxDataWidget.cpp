@@ -25,10 +25,18 @@ BehavioralBoxDataWidget::BehavioralBoxDataWidget(BehavioralBoxDataWidgetConfigur
 	this->resize(WLength::Auto, WLength::Auto);
 
 	// Setup main layout
-	mainLayout_ = this->setLayout(Wt::cpp14::make_unique<Wt::WVBoxLayout>());
+	mainLayout_ = this->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
-	auto contentsStack = Wt::cpp14::make_unique<Wt::WStackedWidget>();
-	contentsStack_ = contentsStack.get();
+	auto contentsContainer = std::make_unique<Wt::WContainerWidget>();
+	contentsContainer_ = contentsContainer.get();
+
+
+#ifdef PHO_INCLUDE_TIME_SERIES_CHART
+	// Timeseries Charts:
+	this->timeSeriesChartWidget = this->contentsContainer_->addWidget(std::make_unique<TimeSeriesChart>());
+
+#endif // PHO_INCLUDE_TIME_SERIES_CHART
+
 
 	//// Timeseries Charts:
 	//this->timeSeriesChartWidget = this->contentsStack_->addWidget(cpp14::make_unique<TimeSeriesChart>());
@@ -42,7 +50,7 @@ BehavioralBoxDataWidget::BehavioralBoxDataWidget(BehavioralBoxDataWidgetConfigur
 	/*
 	 * Add it all inside a layout
 	 */
-	this->mainLayout_->addWidget(std::move(contentsStack), 2);
+	this->mainLayout_->addWidget(std::move(contentsContainer), 2);
 	this->mainLayout_->setContentsMargins(0, 0, 0, 0);
 
 	// Request an update
@@ -64,6 +72,15 @@ void BehavioralBoxDataWidget::refresh()
 	// Make the string
 	this->lblActiveDataRangeDescription_->setText(this->configuration.getDataDescriptionString());
 	this->lblActiveFilePath_->setText(this->configuration.fileSearchPath);
+
+	// Update the contents:
+	#ifdef PHO_INCLUDE_TIME_SERIES_CHART
+		// Update the time series chart widget
+		/*this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);*/
+		this->timeSeriesChartWidget->reload(this->configuration.data);
+
+	#endif // PHO_INCLUDE_TIME_SERIES_CHART
+
 
 
 }
