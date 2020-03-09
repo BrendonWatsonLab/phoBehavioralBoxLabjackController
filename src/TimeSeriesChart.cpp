@@ -45,17 +45,17 @@ TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 // GUI Setup:
 void TimeSeriesChart::setupLoadingIndicator()
 {
-	this->loadingContainerWidget = this->addWidget(cpp14::make_unique<WContainerWidget>());
+	this->loadingContainerWidget = this->addWidget(std::make_unique<WContainerWidget>());
 	this->loadingContainerWidget->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
-	this->loadingContainerWidget->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Loading Labjack Data...")));
+	this->loadingContainerWidget->addWidget(std::make_unique<Wt::WText>(Wt::WString("Loading Labjack Data...")));
 
 }
 
 void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model)
 {
 	// Show a view that allows editing of the model.
-	this->tableContainerWidget = this->addWidget(cpp14::make_unique<Wt::WContainerWidget>());
-	auto* table = this->tableContainerWidget->addWidget(cpp14::make_unique<Wt::WTableView>());
+	this->tableContainerWidget = this->addWidget(std::make_unique<Wt::WContainerWidget>());
+	auto* table = this->tableContainerWidget->addWidget(std::make_unique<Wt::WTableView>());
 
 	table->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);
 	table->setMargin(10, Wt::Side::Left | Wt::Side::Right);
@@ -112,17 +112,17 @@ void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model
 
 void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> model)
 {
-	this->chartsContainerWidget = this->addWidget(cpp14::make_unique<WContainerWidget>());
+	this->chartsContainerWidget = this->addWidget(std::make_unique<WContainerWidget>());
 	// Build the data series
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> dataSeries = this->buildDataSeries(model);
 	
 	// Iterate through and create each desired subplot
 	for (int subplotIndex = 0; subplotIndex < this->getNumSubplots(); subplotIndex++) {
 		// Make a container to hold the subplot and its related controls
-		auto currSubplotContainer = this->chartsContainerWidget->addWidget(cpp14::make_unique<WContainerWidget>());
+		auto currSubplotContainer = this->chartsContainerWidget->addWidget(std::make_unique<WContainerWidget>());
 		currSubplotContainer->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
 
-		Wt::Chart::WCartesianChart* currChart = currSubplotContainer->addWidget(cpp14::make_unique<Wt::Chart::WCartesianChart>());
+		Wt::Chart::WCartesianChart* currChart = currSubplotContainer->addWidget(std::make_unique<Wt::Chart::WCartesianChart>());
 		//chart->setPreferredMethod(WPaintedWidget::PngImage);
 		//chart->setBackground(gray);
 		currChart->setModel(model);        // set the model
@@ -217,11 +217,11 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 			// Add WAxisSliderWidget:
 			//if (isFirstSeriesForSubplot) {				
 			//	// Add a WAxisSliderWidget for the chart using the first data series
-			//	Wt::Chart::WAxisSliderWidget* sliderWidget = this->addWidget(cpp14::make_unique<Wt::Chart::WAxisSliderWidget>());
+			//	Wt::Chart::WAxisSliderWidget* sliderWidget = this->addWidget(std::make_unique<Wt::Chart::WAxisSliderWidget>());
 			//	sliderWidget->setSeries(currSeriesPointer_);
 			//	//currChart->addAxisSliderWidget(sliderWidget);
 
-			//	//auto sliderWidget = currSubplotContainer->addWidget(cpp14::make_unique<Chart::WAxisSliderWidget>(currSeriesPointer_));
+			//	//auto sliderWidget = currSubplotContainer->addWidget(std::make_unique<Chart::WAxisSliderWidget>(currSeriesPointer_));
 			//	sliderWidget->resize(TIME_SERIES_CHART_SUBPLOT_WIDTH, TIME_SERIES_CHART_RANGE_SLIDER_HEIGHT);
 			//	//sliderWidget->setSelectionAreaPadding(40, Side::Left | Side::Right);
 			//	sliderWidget->setBackground(Wt::WBrush(Wt::WColor(255, 0, 0, 255)));
@@ -309,7 +309,7 @@ void TimeSeriesChart::reload(BehavioralBoxHistoricalData historicalData)
 	{
 		this->setupCharts(this->model);
 	}
-	//this->addWidget(cpp14::make_unique<ChartConfig>(chart));
+	//this->addWidget(std::make_unique<ChartConfig>(chart));
 
 }
 
@@ -450,7 +450,7 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 	int columnCount = model->columnCount();
 	for (int colIndex = 1; colIndex < columnCount; ++colIndex) {
 		int currVariableIndex = colIndex - 1; // Subtract one to step back down to the variable indexing
-		std::unique_ptr<Wt::Chart::WDataSeries> s = cpp14::make_unique<Wt::Chart::WDataSeries>(colIndex, Wt::Chart::SeriesType::Bar);
+		std::unique_ptr<Wt::Chart::WDataSeries> s = std::make_unique<Wt::Chart::WDataSeries>(colIndex, Wt::Chart::SeriesType::Bar);
 		Wt::WColor currVariableColor;
 		if (currVariableIndex < colorVect.size()) {
 			currVariableColor = colorVect[currVariableIndex];
