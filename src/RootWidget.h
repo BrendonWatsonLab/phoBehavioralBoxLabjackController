@@ -53,7 +53,8 @@ private:
 	Wt::WContainerWidget* headerRootContainer_;
 	Wt::WText* lblNumberOfBehavioralBoxesFound_;
 	Wt::WNavigationBar* navigation_;
-	Wt::WStackedWidget* contentsStack_;
+	/*Wt::WStackedWidget* contentsStack_;*/
+	Wt::WContainerWidget* contentsStack_;
 
 
 };
