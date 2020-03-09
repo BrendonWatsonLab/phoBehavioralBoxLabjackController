@@ -27,12 +27,12 @@ RootWidget::RootWidget(BoxControllerWebDataServer& server) : WContainerWidget(),
 	this->resize(WLength::Auto, WLength::Auto);
 
 	// Setup main layout
-	mainLayout_ = this->setLayout(Wt::cpp14::make_unique<Wt::WVBoxLayout>());
+	mainLayout_ = this->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
 	//auto contentsStack = Wt::cpp14::make_unique<Wt::WStackedWidget>();
 	//contentsStack_ = contentsStack.get();
 
-	auto contentsStack = Wt::cpp14::make_unique<Wt::WContainerWidget>();
+	auto contentsStack = std::make_unique<Wt::WContainerWidget>();
 	contentsStack_ = contentsStack.get();
 
 	// Build Header:
@@ -125,24 +125,23 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 			int prevVectIDsMaxIndex = numPrevVectIDs - 1;
 
 			std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = historicalEvent.dataLoadedHistoricalDataVector();
-			//this->loadedHistoricalDataVect_ = historicalEvent.dataLoadedHistoricalDataVector();
 			int numLoadedVectIDs = loadedHistoricalDataVect.size();
 
-			if (is_first_time_settingUp_boxes) {
+			if (this->is_first_time_settingUp_boxes) {
 				std::cout << "Setting up boxes for the first time... " << std::endl;
 
 			}
 			else {
 				// Just updating existing boxes:
 				std::cout << "Updating existing boxes... " << std::endl;
-				this->loadedHistoricalDataVectIDs_.clear(); // Clear old vect IDs
-				this->loadedBehavioralBoxDataWidgetConfigs_.clear();
+				
 			}
+
+			this->loadedHistoricalDataVectIDs_.clear(); // Clear old vect IDs
+			this->loadedBehavioralBoxDataWidgetConfigs_.clear(); // Clear old configuration
 
 			bool loadedBBsChanged = false; // true if the number or info of the BBs changed since last time
 			bool needCreateNewWidget = true; // true if we need to create a new outer widget for this box
-
-			//TODO: Seems that maybe the contentsStack is getting overwritten several times, and that's why it's losing the widgets. Or maybe I need std::move(...)
 
 			for (int i = 0; i < numLoadedVectIDs; i++)
 			{
@@ -174,38 +173,26 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 					// Create the new widget for this BBID:
 					std::cout << "Creating new BB Widget for BBID: " << currBoxIdentifier << std::endl;
 
-					//BehavioralBoxDataWidget* new_widget = std::make_unique<BehavioralBoxDataWidget>();
-					//new_widget->updateConfiguration(new_config);
-					/*this->behavioralBoxWidgets.push_back(this->contentsStack_->addWidget(new_widget));*/
-
-					//BehavioralBoxDataWidget* currBBWidget = std::make_unique<BehavioralBoxDataWidget>(curr_widget_config);
-					//this->contentsStack_->addWidget<BehavioralBoxDataWidget>(currBBWidget)
-					//this->behavioralBoxWidgets.push_back(currBBWidget);
-
-					//this->behavioralBoxWidgets.push_back(this->contentsStack_->addWidget<BehavioralBoxDataWidget>(std::make_unique<BehavioralBoxDataWidget>(curr_widget_config)));
-
 					// Note: even replacing the widget with a simple WText doesn't add multiple of them to the widget hierarchy.
 					/*this->contentsStack_->addWidget<WText>(std::make_unique<WText>("Test"));*/
-
-					this->contentsStack_->addNew<BehavioralBoxDataWidget>(curr_widget_config);
+					this->behavioralBoxWidgets.push_back(this->contentsStack_->addNew<BehavioralBoxDataWidget>(curr_widget_config));
 
 					/*this->contentsStack_->addNew<Wt::WText>(Wt::WString("<p>Text {1}</p>").arg(currBoxIdentifier));*/
-
-
-					//needCreateNewWidget = false;
+					needCreateNewWidget = false;
 				}
 
 				// Handle what to do if the BB info itself changed:
 				if (loadedBBsChanged) {
 					//TODO: Replace the info in the widget at this index with the new info.
+									
 				}
 
 			}
 			this->updateBehavioralBoxWidgets();
-
+			this->is_first_time_settingUp_boxes = false;
 		}
 
-		//this->updateBehavioralBoxWidgets();
+		this->updateBehavioralBoxWidgets();
 		//// Update the time series chart widget
 		//this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
 	}
@@ -219,6 +206,7 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 	// *
 	// * This schedules an update and returns immediately
 	// */
+	this->updateBehavioralBoxWidgets();
 	app->triggerUpdate();
 }
 
