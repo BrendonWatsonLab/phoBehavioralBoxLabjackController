@@ -16,14 +16,6 @@ bool LabjackDataFile::reloadContents()
 	this->lineValues_.clear();
 	this->headerLabels_.clear();
 
-	//std::string line;
-	//while (std::getline(stream, line)) {
-	//	std::istringstream s(line);
-	//	std::string field;
-	//	while (getline(s, field, ','))
-	//}
-	//ifstream is("bigfile.txt", std::ios::binary);
-
 	std::ifstream csvFile;
 	csvFile.open(this->fullPath.c_str());
 
