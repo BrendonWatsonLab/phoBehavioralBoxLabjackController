@@ -45,7 +45,6 @@ private:
 
 	bool is_first_time_settingUp_boxes = true;
 	std::vector<std::string> loadedHistoricalDataVectIDs_;
-	//std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect_;
 	std::vector<BehavioralBoxDataWidgetConfiguration> loadedBehavioralBoxDataWidgetConfigs_;
 
 	// Header:

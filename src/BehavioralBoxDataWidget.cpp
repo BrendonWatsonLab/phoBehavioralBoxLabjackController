@@ -33,7 +33,7 @@ BehavioralBoxDataWidget::BehavioralBoxDataWidget(BehavioralBoxDataWidgetConfigur
 
 #ifdef PHO_INCLUDE_TIME_SERIES_CHART
 	// Timeseries Charts:
-	this->timeSeriesChartWidget = this->contentsContainer_->addWidget(std::make_unique<TimeSeriesChart>());
+	this->timeSeriesChartWidget = this->contentsContainer_->addWidget<TimeSeriesChart>(std::make_unique<TimeSeriesChart>());
 
 #endif // PHO_INCLUDE_TIME_SERIES_CHART
 

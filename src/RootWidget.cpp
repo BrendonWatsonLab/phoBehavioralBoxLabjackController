@@ -87,6 +87,7 @@ void RootWidget::requestServerHistoricalDataReload()
 
 void RootWidget::updateBehavioralBoxWidgets()
 {
+	Wt::WApplication* app = Wt::WApplication::instance();
 	if (this->behavioralBoxWidgets.size() > 0) {
 		this->lblNumberOfBehavioralBoxesFound_->setText(std::to_string(this->loadedBehavioralBoxDataWidgetConfigs_.size()));
 	}
@@ -99,6 +100,7 @@ void RootWidget::updateBehavioralBoxWidgets()
 		this->behavioralBoxWidgets[i]->updateConfiguration(this->loadedBehavioralBoxDataWidgetConfigs_[i]);
 		this->behavioralBoxWidgets[i]->refresh();
 	}
+	app->triggerUpdate();
 }
 
 bool RootWidget::loggedIn() const
@@ -182,17 +184,19 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 				}
 
 				// Handle what to do if the BB info itself changed:
-				if (loadedBBsChanged) {
-					//TODO: Replace the info in the widget at this index with the new info.
-									
-				}
+				//if (loadedBBsChanged) {
+				//	//TODO: Replace the info in the widget at this index with the new info.
+				//	std::cout << "Reloading BB Widget for BBID: " << currBoxIdentifier << std::endl;
+				//	this->updateBehavioralBoxWidgets();
+				//}
 
-			}
-			this->updateBehavioralBoxWidgets();
+			} // end for loop
+
+			//this->updateBehavioralBoxWidgets();
 			this->is_first_time_settingUp_boxes = false;
 		}
 
-		this->updateBehavioralBoxWidgets();
+		//this->updateBehavioralBoxWidgets();
 		//// Update the time series chart widget
 		//this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
 	}

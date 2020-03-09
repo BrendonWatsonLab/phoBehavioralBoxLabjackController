@@ -138,7 +138,7 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 	// *
 	// * This schedules an update and returns immediately
 	// */
-	app->triggerUpdate();
+	//app->triggerUpdate();
 
 }
 
