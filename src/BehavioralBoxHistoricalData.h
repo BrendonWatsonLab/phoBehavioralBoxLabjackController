@@ -209,7 +209,7 @@ public:
 
 	const void exportAsCSV(std::string path);
 
-
+	const std::vector<std::chrono::time_point<std::chrono::system_clock>> getDataFileTimestamps() { return this->dataFileTimestamps; };
 
 private:
 	std::string boxID_="";
@@ -218,6 +218,7 @@ private:
 
 	// A list of data files for that particular box
 	std::vector<LabjackDataFile> dataFiles_;
+	std::vector<std::chrono::time_point<std::chrono::system_clock>> dataFileTimestamps;
 
 	// Accumulated line timestamps and values for all files:
 	std::vector<unsigned long long> milliseconds_since_epoch;

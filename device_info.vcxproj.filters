@@ -144,6 +144,9 @@
     <ClCompile Include="src\BehavioralBoxDataWidget.cpp">
       <Filter>WtWebServer\WebComponents\BehavioralBoxDataWidget</Filter>
     </ClCompile>
+    <ClCompile Include="src\FormattingHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\NumericItem.h">

@@ -28,6 +28,7 @@
     <ClCompile Include="src\ConfigurationManager.cpp" />
     <ClCompile Include="src\DataServerEvent.cpp" />
     <ClCompile Include="src\FilesystemHelpers.cpp" />
+    <ClCompile Include="src\FormattingHelper.cpp" />
     <ClCompile Include="src\HistoricalDataLoadingEvent.cpp" />
     <ClCompile Include="src\InputState.cpp" />
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp" />

@@ -93,6 +93,7 @@ this->output_values and this->output_milliseconds_since_epoch contain only the v
 void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 {
 	this->milliseconds_since_epoch.clear();
+	this->dataFileTimestamps.clear();
 	this->values.clear();
 	this->output_milliseconds_since_epoch.clear();
 	this->output_values.clear();
@@ -114,8 +115,13 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 	for (int i = 0; i < this->dataFiles_.size(); i++)
 	{
 		std::string currDataFileName = this->dataFiles_[i].fileName;
+		// Get dataFileTime:
+		auto currDataFileTimestamp = this->dataFiles_[i].getFileTimestamp();
+		this->dataFileTimestamps.push_back(currDataFileTimestamp);
+		
 		std::vector<LabjackDataFileLine> tempLines = this->dataFiles_[i].getParsedLines();
 		std::vector<std::string> fileHeaderLabels = this->dataFiles_[i].getParsedHeaderLabels();
+
 
 		if (fileHeaderLabels.size() > hard_coded_header_column_maximum) {
 			std::cout << "DEBUG: " << this->dataFiles_[i].fullPath << " exceeds maximum column count of " << hard_coded_header_column_maximum << ", it has " << fileHeaderLabels.size() << ". Skipping." << std::endl;

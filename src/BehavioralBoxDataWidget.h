@@ -26,6 +26,28 @@ struct BehavioralBoxDataWidgetConfiguration
 
 	BehavioralBoxDataWidgetConfiguration(BehavioralBoxHistoricalData data): data(data), bbIDString(data.getBoxIdentifier()), fileSearchPath(data.getSearchDirectory()) {
 		//this->newestFileDate = std::string(data.getFinalMillisecondsSinceEpoch());
+		this->numberOfFiles = data.getNumberOfDataFiles();
+
+
+		// Get earliest and latest:
+		auto dataFileTimestamps = data.getDataFileTimestamps();
+		if (dataFileTimestamps.size() == 0)
+		{
+			this->oldestFileDate = "";
+			this->newestFileDate = "";
+		}
+		else if (dataFileTimestamps.size() == 1) {
+			this->oldestFileDate = "";
+			this->newestFileDate = FormattingHelper::format_datetime(dataFileTimestamps[0]);
+		}
+		else {
+			// (dataFileTimestamps.size() >= 2)
+			this->oldestFileDate = FormattingHelper::format_datetime(dataFileTimestamps[0]);
+			this->newestFileDate = FormattingHelper::format_datetime(dataFileTimestamps[dataFileTimestamps.size()-1]);
+		}
+
+		
+
 	}
 
 	std::string getDataDescriptionString() {

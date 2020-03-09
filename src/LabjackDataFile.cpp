@@ -4,7 +4,9 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+
 #include "LabjackDataFile.h"
+#include "FormattingHelper.h"
 
 //using namespace std;
 
@@ -101,4 +103,9 @@ bool LabjackDataFile::reloadContents()
 	//TODO: perhaps record the last read time or something
 
 	return true;
+}
+
+std::chrono::time_point<std::chrono::system_clock> LabjackDataFile::getFileTimestamp()
+{
+	return FormattingHelper::date_from_milliseconds_since_epoch(this->millisecondsSinceEpoch);
 }

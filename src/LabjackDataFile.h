@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <chrono>
 
 //using namespace std;
 namespace fs = std::filesystem;
@@ -60,6 +61,10 @@ struct LabjackDataFile {
 
 	std::vector<std::string> getParsedHeaderLabels() { return this->headerLabels_; };
 	std::vector<LabjackDataFileLine> getParsedLines() { return this->lineValues_; };
+
+	std::chrono::time_point<std::chrono::system_clock> getFileTimestamp();
+
+
 
 private:
 	std::vector<std::string> headerLabels_;
