@@ -29,7 +29,10 @@ RootWidget::RootWidget(BoxControllerWebDataServer& server) : WContainerWidget(),
 	// Setup main layout
 	mainLayout_ = this->setLayout(Wt::cpp14::make_unique<Wt::WVBoxLayout>());
 
-	auto contentsStack = Wt::cpp14::make_unique<Wt::WStackedWidget>();
+	//auto contentsStack = Wt::cpp14::make_unique<Wt::WStackedWidget>();
+	//contentsStack_ = contentsStack.get();
+
+	auto contentsStack = Wt::cpp14::make_unique<Wt::WContainerWidget>();
 	contentsStack_ = contentsStack.get();
 
 	// Build Header:
@@ -84,6 +87,13 @@ void RootWidget::requestServerHistoricalDataReload()
 
 void RootWidget::updateBehavioralBoxWidgets()
 {
+	if (this->behavioralBoxWidgets.size() > 0) {
+		this->lblNumberOfBehavioralBoxesFound_->setText(std::to_string(this->loadedBehavioralBoxDataWidgetConfigs_.size()));
+	}
+	else {
+		this->lblNumberOfBehavioralBoxesFound_->setText("None");
+	}
+
 	for (size_t i = 0; i < this->behavioralBoxWidgets.size(); i++)
 	{
 		this->behavioralBoxWidgets[i]->updateConfiguration(this->loadedBehavioralBoxDataWidgetConfigs_[i]);
@@ -132,10 +142,10 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 			bool loadedBBsChanged = false; // true if the number or info of the BBs changed since last time
 			bool needCreateNewWidget = true; // true if we need to create a new outer widget for this box
 
+			//TODO: Seems that maybe the contentsStack is getting overwritten several times, and that's why it's losing the widgets. Or maybe I need std::move(...)
+
 			for (int i = 0; i < numLoadedVectIDs; i++)
 			{
-				//BehavioralBoxHistoricalData currHistoricalData = loadedHistoricalDataVect[i];
-				/*std::string currBoxIdentifier = currHistoricalData.getBoxIdentifier();*/
 				BehavioralBoxDataWidgetConfiguration curr_widget_config = BehavioralBoxDataWidgetConfiguration(loadedHistoricalDataVect[i]);
 				std::string currBoxIdentifier = curr_widget_config.bbIDString;
 
@@ -167,8 +177,22 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 					//BehavioralBoxDataWidget* new_widget = std::make_unique<BehavioralBoxDataWidget>();
 					//new_widget->updateConfiguration(new_config);
 					/*this->behavioralBoxWidgets.push_back(this->contentsStack_->addWidget(new_widget));*/
-					this->behavioralBoxWidgets.push_back(this->contentsStack_->addWidget(std::make_unique<BehavioralBoxDataWidget>(curr_widget_config)));
-					needCreateNewWidget = false;
+
+					//BehavioralBoxDataWidget* currBBWidget = std::make_unique<BehavioralBoxDataWidget>(curr_widget_config);
+					//this->contentsStack_->addWidget<BehavioralBoxDataWidget>(currBBWidget)
+					//this->behavioralBoxWidgets.push_back(currBBWidget);
+
+					//this->behavioralBoxWidgets.push_back(this->contentsStack_->addWidget<BehavioralBoxDataWidget>(std::make_unique<BehavioralBoxDataWidget>(curr_widget_config)));
+
+					// Note: even replacing the widget with a simple WText doesn't add multiple of them to the widget hierarchy.
+					/*this->contentsStack_->addWidget<WText>(std::make_unique<WText>("Test"));*/
+
+					this->contentsStack_->addNew<BehavioralBoxDataWidget>(curr_widget_config);
+
+					/*this->contentsStack_->addNew<Wt::WText>(Wt::WString("<p>Text {1}</p>").arg(currBoxIdentifier));*/
+
+
+					//needCreateNewWidget = false;
 				}
 
 				// Handle what to do if the BB info itself changed:
@@ -177,11 +201,11 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 				}
 
 			}
-			//this->updateBehavioralBoxWidgets();
+			this->updateBehavioralBoxWidgets();
 
 		}
 
-		this->updateBehavioralBoxWidgets();
+		//this->updateBehavioralBoxWidgets();
 		//// Update the time series chart widget
 		//this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
 	}
@@ -214,32 +238,6 @@ void RootWidget::setupHeader()
 	//navigation_->setTitle(this->appName, "http://127.0.0.1:8080");
 	navigation_->setTitle(this->appName, access_url);
 	//navigation_->setResponsive(true);
-
-	//Wt::WAnimation animation(Wt::AnimationEffect::Fade,	Wt::TimingFunction::Linear,	200);
-	//contentsStack_->setTransitionAnimation(animation, true);
-
-	/*
-	 * Setup the top-level menu
-	 */
-	 //auto menu = Wt::cpp14::make_unique<Wt::WMenu>(contentsStack_);
-	 //menu->setInternalPathEnabled();
-	 //menu->setInternalBasePath("/");
-
-	 //addToMenu(menu.get(), "Layout", Wt::cpp14::make_unique<Layout>());
-	 //addToMenu(menu.get(), "Forms", Wt::cpp14::make_unique<FormWidgets>());
-	 //addToMenu(menu.get(), "Navigation", Wt::cpp14::make_unique<Navigation>());
-	 //addToMenu(menu.get(), "Trees & Tables", Wt::cpp14::make_unique<TreesTables>())->setPathComponent("trees-tables");
-	 //addToMenu(menu.get(), "Graphics & Charts", Wt::cpp14::make_unique<GraphicsWidgets>())->setPathComponent("graphics-charts");
-	 ////addToMenu(menu.get(), "Events", Wt::cpp14::make_unique<EventsDemo>());
-	 //addToMenu(menu.get(), "Media", Wt::cpp14::make_unique<Media>());
-
-	 //auto item = Wt::cpp14::make_unique<Wt::WMenuItem>("TEST");
-	 //auto item_ = menu->addItem(std::move(item));
-
-	 //item = Wt::cpp14::make_unique<Wt::WMenuItem>("TEST 2");
-	 //item_ = menu->addItem(std::move(item));
-
-	 //navigation_->addMenu(std::move(menu));
 
 	auto inactiveActiveLabjackLabel = this->headerRootContainer_->addWidget(cpp14::make_unique<WText>("Behavioral Boxes: "));
 	this->lblNumberOfBehavioralBoxesFound_ = this->headerRootContainer_->addWidget(cpp14::make_unique<WText>("Loading..."));
