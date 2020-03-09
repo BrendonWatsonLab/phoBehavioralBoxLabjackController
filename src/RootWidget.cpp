@@ -29,7 +29,7 @@ RootWidget::RootWidget(BoxControllerWebDataServer& server) : WContainerWidget(),
 	// Setup main layout
 	mainLayout_ = this->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
-	//auto contentsStack = Wt::cpp14::make_unique<Wt::WStackedWidget>();
+	//auto contentsStack = std::make_unique<Wt::WStackedWidget>();
 	//contentsStack_ = contentsStack.get();
 
 	auto contentsStack = std::make_unique<Wt::WContainerWidget>();
@@ -51,6 +51,8 @@ RootWidget::RootWidget(BoxControllerWebDataServer& server) : WContainerWidget(),
 	//this->requestServerHistoricalDataReload();
 	this->requestServerHistoricalData();
 
+	//Wt::WApplication* app = Wt::WApplication::instance();
+	//app->triggerUpdate();
 }
 
 RootWidget::~RootWidget()
@@ -87,7 +89,7 @@ void RootWidget::requestServerHistoricalDataReload()
 
 void RootWidget::updateBehavioralBoxWidgets()
 {
-	Wt::WApplication* app = Wt::WApplication::instance();
+	//Wt::WApplication* app = Wt::WApplication::instance();
 	if (this->behavioralBoxWidgets.size() > 0) {
 		this->lblNumberOfBehavioralBoxesFound_->setText(std::to_string(this->loadedBehavioralBoxDataWidgetConfigs_.size()));
 	}
@@ -99,8 +101,8 @@ void RootWidget::updateBehavioralBoxWidgets()
 	{
 		this->behavioralBoxWidgets[i]->updateConfiguration(this->loadedBehavioralBoxDataWidgetConfigs_[i]);
 		this->behavioralBoxWidgets[i]->refresh();
+		//app->triggerUpdate();
 	}
-	app->triggerUpdate();
 }
 
 bool RootWidget::loggedIn() const
@@ -120,8 +122,6 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 		std::cout << "RootWidget::processDataServerEvent(...): Historical data refreshed." << std::endl;
 		auto historicalEvent = event.historicalDataLoadingEvent();
 		if (historicalEvent.type() == HistoricalDataLoadingEvent::Type::Complete) {
-			// 
-
 			auto prev_vectIDs = this->loadedHistoricalDataVectIDs_;
 			int numPrevVectIDs = prev_vectIDs.size();
 			int prevVectIDsMaxIndex = numPrevVectIDs - 1;
@@ -136,7 +136,6 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 			else {
 				// Just updating existing boxes:
 				std::cout << "Updating existing boxes... " << std::endl;
-				
 			}
 
 			this->loadedHistoricalDataVectIDs_.clear(); // Clear old vect IDs
@@ -174,12 +173,8 @@ void RootWidget::processDataServerEvent(const DataServerEvent& event)
 				if (needCreateNewWidget) {
 					// Create the new widget for this BBID:
 					std::cout << "Creating new BB Widget for BBID: " << currBoxIdentifier << std::endl;
-
-					// Note: even replacing the widget with a simple WText doesn't add multiple of them to the widget hierarchy.
-					/*this->contentsStack_->addWidget<WText>(std::make_unique<WText>("Test"));*/
 					this->behavioralBoxWidgets.push_back(this->contentsStack_->addNew<BehavioralBoxDataWidget>(curr_widget_config));
-
-					/*this->contentsStack_->addNew<Wt::WText>(Wt::WString("<p>Text {1}</p>").arg(currBoxIdentifier));*/
+					/*app->triggerUpdate();*/
 					needCreateNewWidget = false;
 				}
 
@@ -219,21 +214,18 @@ void RootWidget::setupHeader()
 {
 	setOverflow(Wt::Overflow::Hidden);
 
-	auto headerRootContainer = Wt::cpp14::make_unique<Wt::WContainerWidget>();
+	auto headerRootContainer = std::make_unique<Wt::WContainerWidget>();
 	headerRootContainer_ = headerRootContainer.get();
 
-	auto navigation = Wt::cpp14::make_unique<Wt::WNavigationBar>();
+	auto navigation = std::make_unique<Wt::WNavigationBar>();
 	navigation_ = navigation.get();
 
 	std::string access_url = "http://" + this->hostName + ":8080";
 	navigation_->addStyleClass("main-nav");
-	//navigation_->setTitle(this->appName, "http://127.0.0.1:8080");
 	navigation_->setTitle(this->appName, access_url);
-	//navigation_->setResponsive(true);
 
 	auto inactiveActiveLabjackLabel = this->headerRootContainer_->addWidget(cpp14::make_unique<WText>("Behavioral Boxes: "));
 	this->lblNumberOfBehavioralBoxesFound_ = this->headerRootContainer_->addWidget(cpp14::make_unique<WText>("Loading..."));
-
 
 	// Add it to the layout
 	this->mainLayout_->addWidget(std::move(navigation), 0);
