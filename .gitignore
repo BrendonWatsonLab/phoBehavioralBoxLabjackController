@@ -270,3 +270,4 @@ output_data.7z
 logs/Screenshots
 Prerequisties/*.exe
 Installer/Install phoBehavioralBoxLabjackController.exe
+Installer/Install phoBehavioralBoxServer.exe
