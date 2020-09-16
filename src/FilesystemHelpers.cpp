@@ -4,6 +4,8 @@
 #include <sstream>
 #include <algorithm>
 #include "FilesystemHelpers.h"
+//Manhong-001 get the experimentName in the ini file
+#include "ConfigurationManager.h"
 
 template<bool RECURSIVE>
 inline std::vector<fs::path> FilesystemHelpers::file_list(fs::path dir, std::regex ext_pattern)
@@ -204,6 +206,8 @@ std::map<int, fs::path> FilesystemHelpers::findBehavioralBoxDataFolders(fs::path
 //TODO: This currently returns the first matching animal folder found per box folder, regardless of experiment or cohort. 
 std::map<int, fs::path> FilesystemHelpers::findActiveExperimentAnimalFolders(fs::path dir)
 {
+	//Manhong-002 get the experimentName in the ini file
+	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 	//std::vector<fs::path> full_path_results;
 	std::map<int, fs::path> full_path_result_map;
 
@@ -221,7 +225,8 @@ std::map<int, fs::path> FilesystemHelpers::findActiveExperimentAnimalFolders(fs:
 			// numbersMatchString should be a string like "06". Try to find the animal folder with this same number
 			std::string numbersMatchString = stringMatch[1];
 			int currBBID = std::stoi(numbersMatchString);
-
+			//Manhong-003
+			std::string matchExperimentStr = "BB" + numbersMatchString + "\\" + configMan->getLoadedConfig().experimentName + "\\";
 			// Search recurrsively for the animal folders (TODO: this ignores experiment/cohort for now)
 			std::vector<fs::path> found_animal_folders = dir_list<true>(a_box_folder, folder_animal_folder_regex);
 			if (found_animal_folders.size() < 1)
@@ -236,6 +241,8 @@ std::map<int, fs::path> FilesystemHelpers::findActiveExperimentAnimalFolders(fs:
 				bool found_matching_animal_folder = false;
 				for each (fs::path an_animal_folder in found_animal_folders)
 				{
+					//Manhong-004 use BB\d\d + the experimentName in ini file to filter found paths.
+					if (an_animal_folder.parent_path().string().find(matchExperimentStr) == std::string::npos) continue;
 					const std::string curr_animal_folder_name = an_animal_folder.filename().string();
 					std::regex_match(curr_animal_folder_name, stringMatch, folder_animal_folder_regex);
 					if (stringMatch.size() <= 1) {
