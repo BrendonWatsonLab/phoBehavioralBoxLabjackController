@@ -316,6 +316,7 @@ std::vector<double> LabjackHelpers::computeDelta(std::vector<double> V1, std::ve
 	return result;
 }
 
+//TODO: Migrated to FormattingHelper.h: Redundant
 std::chrono::time_point<Clock> LabjackHelpers::date_from_milliseconds_since_epoch(unsigned long long milliseconds_since_epoch)
 {
 	std::chrono::milliseconds dur(milliseconds_since_epoch);
@@ -323,6 +324,7 @@ std::chrono::time_point<Clock> LabjackHelpers::date_from_milliseconds_since_epoc
 	return dt;
 }
 
+//TODO: Migrated to FormattingHelper.h: Redundant
 unsigned long long LabjackHelpers::milliseconds_since_epoch_from_date(std::chrono::time_point<Clock> datetime)
 {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(datetime.time_since_epoch()).count();

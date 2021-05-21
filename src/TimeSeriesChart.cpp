@@ -33,75 +33,29 @@
 
 TimeSeriesChart::TimeSeriesChart() : Wt::WContainerWidget()
 {
-	this->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Historic Labjack Data:")));
+	this->addWidget(std::make_unique<Wt::WText>(Wt::WString("Historic Labjack Data:")));
 	this->setupLoadingIndicator();
 	//Load from config
 	this->loadFromConfig();
 }
 
-void TimeSeriesChart::reload(std::vector<BehavioralBoxHistoricalData> historicalData)
-{
-	// Update the model
-	this->model = this->buildHistoricDataModel(historicalData);
-	if (!this->model)
-		return;
 
-	if (this->model->columnCount() <= 0) {
-		return;
-	}
-
-	this->changeLoadingIndicatorVisibility(!this->isLoadingIndicatorVisible);
-
-	//this->loadingContainerWidget->propagateSetVisible(false);
-
-	/*
-	 * Parses the first column as dates, to be able to use a date scale
-	 */
-	//if (this->shouldUseDateXAxis) {
-	//	for (int i = 0; i < this->model->rowCount(); ++i) {			
-	//		cpp17::any currData = model->data(i, 0);
-	//		Wt::WString s = Wt::asString(currData);
-	//		std::string::size_type sz = 0;   // alias of size_t
-	//		unsigned long long currTimestampData = stoull(s, &sz);
-	//		std::chrono::time_point<Clock> currDataTimepoint = LabjackHelpers::date_from_milliseconds_since_epoch(currTimestampData);
-	//		//TODO: I think I need to use WLocalDateTime instead of WDateTime, as WDateTime assumes UTC
-	//		Wt::WDateTime currTimestampDateTime = Wt::WDateTime(currDataTimepoint + std::chrono::hours(-4)); // Places the absolute center of the bar here:
-	//		// Need to shift foward by 12 hours
-	//		//Wt::WLocalDateTime currLocalTimestampDateTime = currTimestampDateTime.toLocalTime();
-	//		model->setData(i, 0, currTimestampDateTime);
-	//		//model->setData(i, 0, currLocalTimestampDateTime);
-	//	}
-	//}
-
-	/*
-	 * Build the data table.
-	 */
-	this->setupTable(this->model);
-
-	/*
-	 * Build the graphs.
-	 */
-	this->setupCharts(this->model);
-
-	//this->addWidget(cpp14::make_unique<ChartConfig>(chart));
-
-}
 
 
 // GUI Setup:
 void TimeSeriesChart::setupLoadingIndicator()
 {
-	this->loadingContainerWidget = this->addWidget(cpp14::make_unique<WContainerWidget>());
+	this->loadingContainerWidget = this->addWidget(std::make_unique<WContainerWidget>());
 	this->loadingContainerWidget->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
-	this->loadingContainerWidget->addWidget(cpp14::make_unique<Wt::WText>(Wt::WString("Loading Labjack Data...")));
+	this->loadingContainerWidget->addWidget(std::make_unique<Wt::WText>(Wt::WString("Loading Labjack Data...")));
 
 }
 
 void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model)
 {
 	// Show a view that allows editing of the model.
-	this->tableContainerWidget = this->addWidget(cpp14::make_unique<Wt::WContainerWidget>());
-	auto* table = this->tableContainerWidget->addWidget(cpp14::make_unique<Wt::WTableView>());
+	this->tableContainerWidget = this->addWidget(std::make_unique<Wt::WContainerWidget>());
+	auto* table = this->tableContainerWidget->addWidget(std::make_unique<Wt::WTableView>());
 
 	table->setMargin(10, Wt::Side::Top | Wt::Side::Bottom);
 	table->setMargin(10, Wt::Side::Left | Wt::Side::Right);
@@ -158,17 +112,17 @@ void TimeSeriesChart::setupTable(const std::shared_ptr<WAbstractItemModel> model
 
 void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> model)
 {
-	this->chartsContainerWidget = this->addWidget(cpp14::make_unique<WContainerWidget>());
+	this->chartsContainerWidget = this->addWidget(std::make_unique<WContainerWidget>());
 	// Build the data series
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> dataSeries = this->buildDataSeries(model);
 	
 	// Iterate through and create each desired subplot
 	for (int subplotIndex = 0; subplotIndex < this->getNumSubplots(); subplotIndex++) {
 		// Make a container to hold the subplot and its related controls
-		auto currSubplotContainer = this->chartsContainerWidget->addWidget(cpp14::make_unique<WContainerWidget>());
+		auto currSubplotContainer = this->chartsContainerWidget->addWidget(std::make_unique<WContainerWidget>());
 		currSubplotContainer->setMargin(Wt::WLength::Auto, Wt::Side::Left | Wt::Side::Right); // center horizontally
 
-		Wt::Chart::WCartesianChart* currChart = currSubplotContainer->addWidget(cpp14::make_unique<Wt::Chart::WCartesianChart>());
+		Wt::Chart::WCartesianChart* currChart = currSubplotContainer->addWidget(std::make_unique<Wt::Chart::WCartesianChart>());
 		//chart->setPreferredMethod(WPaintedWidget::PngImage);
 		//chart->setBackground(gray);
 		currChart->setModel(model);        // set the model
@@ -263,11 +217,11 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 			// Add WAxisSliderWidget:
 			//if (isFirstSeriesForSubplot) {				
 			//	// Add a WAxisSliderWidget for the chart using the first data series
-			//	Wt::Chart::WAxisSliderWidget* sliderWidget = this->addWidget(cpp14::make_unique<Wt::Chart::WAxisSliderWidget>());
+			//	Wt::Chart::WAxisSliderWidget* sliderWidget = this->addWidget(std::make_unique<Wt::Chart::WAxisSliderWidget>());
 			//	sliderWidget->setSeries(currSeriesPointer_);
 			//	//currChart->addAxisSliderWidget(sliderWidget);
 
-			//	//auto sliderWidget = currSubplotContainer->addWidget(cpp14::make_unique<Chart::WAxisSliderWidget>(currSeriesPointer_));
+			//	//auto sliderWidget = currSubplotContainer->addWidget(std::make_unique<Chart::WAxisSliderWidget>(currSeriesPointer_));
 			//	sliderWidget->resize(TIME_SERIES_CHART_SUBPLOT_WIDTH, TIME_SERIES_CHART_RANGE_SLIDER_HEIGHT);
 			//	//sliderWidget->setSelectionAreaPadding(40, Side::Left | Side::Right);
 			//	sliderWidget->setBackground(Wt::WBrush(Wt::WColor(255, 0, 0, 255)));
@@ -288,44 +242,101 @@ void TimeSeriesChart::setupCharts(const std::shared_ptr<Wt::WAbstractItemModel> 
 
 
 // Update function
-void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
+//void TimeSeriesChart::processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event)
+//{
+//	std::cout << "TimeSeriesChart::processHistoricalDataUpdateEvent(...):" << std::endl;
+//	if (event.type() == HistoricalDataLoadingEvent::Complete) {
+//		std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = event.dataLoadedHistoricalDataVector();
+//		std::cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << std::endl;
+//		std::cout << "reloading.... " << std::endl;
+//		// Hardcoded to get 0th element in loadedHistoricalDataVect
+//		this->reload(loadedHistoricalDataVect[0]);
+//		std::cout << "done." << std::endl;
+//	}
+//	else {
+//		std::cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << std::endl;
+//	}
+//}
+
+// This is called with a vector of BehavioralBoxHistoricalData, one for each behavioral box.
+// Called from this->processHistoricalDataUpdateEvent(...)
+void TimeSeriesChart::reload(BehavioralBoxHistoricalData historicalData)
 {
-	cout << "TimeSeriesChart::processHistoricalDataUpdateEvent(...):" << endl;
-	if (event.type() == HistoricalDataLoadingEvent::Complete) {
-		std::vector<BehavioralBoxHistoricalData> loadedHistoricalDataVect = event.dataLoadedHistoricalDataVector();
-		cout << "processHistoricalDataUpdateEvent: complete event! Loaded " << loadedHistoricalDataVect.size() << " items." << endl;
-		cout << "reloading.... " << endl;
-		this->reload(loadedHistoricalDataVect);
-		cout << "done." << endl;
+	// Update the model
+	this->model = this->buildHistoricDataModel(historicalData);
+	if (!this->model)
+		return;
+
+	if (this->model->columnCount() <= 0) {
+		return;
 	}
-	else {
-		cout << "WARNING: processHistoricalDataUpdateEvent(...): unimplemented event type!" << endl;
+
+	this->changeLoadingIndicatorVisibility(!this->isLoadingIndicatorVisible);
+
+	//this->loadingContainerWidget->propagateSetVisible(false);
+
+	/*
+	 * Parses the first column as dates, to be able to use a date scale
+	 */
+	 //if (this->shouldUseDateXAxis) {
+	 //	for (int i = 0; i < this->model->rowCount(); ++i) {			
+	 //		cpp17::any currData = model->data(i, 0);
+	 //		Wt::WString s = Wt::asString(currData);
+	 //		std::string::size_type sz = 0;   // alias of size_t
+	 //		unsigned long long currTimestampData = stoull(s, &sz);
+	 //		std::chrono::time_point<Clock> currDataTimepoint = LabjackHelpers::date_from_milliseconds_since_epoch(currTimestampData);
+	 //		//TODO: I think I need to use WLocalDateTime instead of WDateTime, as WDateTime assumes UTC
+	 //		Wt::WDateTime currTimestampDateTime = Wt::WDateTime(currDataTimepoint + std::chrono::hours(-4)); // Places the absolute center of the bar here:
+	 //		// Need to shift foward by 12 hours
+	 //		//Wt::WLocalDateTime currLocalTimestampDateTime = currTimestampDateTime.toLocalTime();
+	 //		model->setData(i, 0, currTimestampDateTime);
+	 //		//model->setData(i, 0, currLocalTimestampDateTime);
+	 //	}
+	 //}
+
+	 /*
+	  * Build the data table.
+	  */
+	if (this->totalDisplayOptions.shouldShowTable)
+	{
+		this->setupTable(this->model);
 	}
+
+	/*
+	 * Build the graphs.
+	 */
+	if (this->totalDisplayOptions.shouldShowPlot)
+	{
+		this->setupCharts(this->model);
+	}
+	//this->addWidget(std::make_unique<ChartConfig>(chart));
+
 }
 
-void TimeSeriesChart::changeLoadingIndicatorVisibility(bool shouldLoadingIndicatorBeVisible)
-{
-	this->loadingContainerWidget->setHidden(!shouldLoadingIndicatorBeVisible);
-	this->isLoadingIndicatorVisible = shouldLoadingIndicatorBeVisible;
-}
 
-// Builds a model from a vector of historical data
-std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData)
+
+
+// Builds a model from a vector of historical data. 
+// Called from this->reload(...)
+std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(BehavioralBoxHistoricalData activeHistoricalData)
 {
 	this->shared_y_axis_max = 0.0;
 
-	if (historicalData.empty()) {
-		cout << "WARNING: Data model empty!" << endl;
-		return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
-	}
-
-	//Hardcoded to get the first historicalData item passed
-	BehavioralBoxHistoricalData activeHistoricalData = historicalData[0];
+	//if (activeHistoricalData.empty()) {
+	//	std::cout << "WARNING: Data model empty!" << std::endl;
+	//	return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
+	//}
 	int numVariables = activeHistoricalData.getNumberVariables();
 	//TODO: get the number of distinct timestamps and then use those as the number of events instead of just using the max number of events. Each row must have a distinct timestamp, and there are no other requirements.
 	//TODO: this is really inefficient because this is the format it starts out in and then I parse them into vectors of events for each variable.
 	int maxNumEvents = activeHistoricalData.getMaxNumberEvents();
 	int maxNumEventTimepoints = activeHistoricalData.getNumberOfUniqueTimepoints();
+
+	if (maxNumEvents == 0) {
+		std::cout << "WARNING: Data model empty!" << std::endl;
+		return std::make_shared<Wt::WStandardItemModel>(0, 0); // Add one to numVariables to account for the timestamp column
+	}
+
 	// TODO: Change to only digital port Purposes!
 	std::vector<std::string> headerLabels = globalLabjackDigitalInputPortPurpose;
 
@@ -351,7 +362,6 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 	// Add "time" variable to front of list
 	headerLabels.insert(headerLabels.begin(), "time");
 
-
 	int totalNumRows = maxNumEventTimepoints + numAggregateEvents;
 	std::shared_ptr<Wt::WStandardItemModel> model = std::make_shared<Wt::WStandardItemModel>(totalNumRows, numColumns);
 
@@ -369,8 +379,8 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 			// Compute earliest timestamp if we're in relative (not absolute date axis) mode.
 			earliest_event_timestamp = historicalEvents[0].milliseconds_since_epoch;
 		}
-		std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
-		model->setItemPrototype(std::move(prototype));
+		std::unique_ptr<NumericItem> prototype = std::make_unique<NumericItem>();
+		model->setItemPrototype(std::move(prototype)); // TODO: Should this be done here, or outside the loop?
 
 		// Get the height of the data bar
 		double currItemHeight = double(to_underlying(this->variableKindVect_[variableIndex]));
@@ -411,7 +421,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 			int absoluteColumnIndex = (variableIndex + 1) + statsVariableIndex;
 			int currVarNumDays = anAggregateDayPair.second[statsVariableIndex];
 			double currItemHeight = double(currVarNumDays);
-			std::unique_ptr<NumericItem> prototype = cpp14::make_unique<NumericItem>();
+			std::unique_ptr<NumericItem> prototype = std::make_unique<NumericItem>();
 			model->setItemPrototype(std::move(prototype));
 			model->setData(rowIndex, absoluteColumnIndex, currItemHeight);
 		} // end for each stats variable
@@ -428,6 +438,7 @@ std::shared_ptr<Wt::WStandardItemModel> TimeSeriesChart::buildHistoricDataModel(
 }
 
 // Build vector of line series objects
+// Called from this->setupCharts(...)
 std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataSeries(const std::shared_ptr<Wt::WAbstractItemModel> model)
 {
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> outputVector;
@@ -439,7 +450,7 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 	int columnCount = model->columnCount();
 	for (int colIndex = 1; colIndex < columnCount; ++colIndex) {
 		int currVariableIndex = colIndex - 1; // Subtract one to step back down to the variable indexing
-		std::unique_ptr<Wt::Chart::WDataSeries> s = cpp14::make_unique<Wt::Chart::WDataSeries>(colIndex, Wt::Chart::SeriesType::Bar);
+		std::unique_ptr<Wt::Chart::WDataSeries> s = std::make_unique<Wt::Chart::WDataSeries>(colIndex, Wt::Chart::SeriesType::Bar);
 		Wt::WColor currVariableColor;
 		if (currVariableIndex < colorVect.size()) {
 			currVariableColor = colorVect[currVariableIndex];
@@ -532,9 +543,16 @@ std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> TimeSeriesChart::buildDataS
 	return outputVector;
 }
 
+
+void TimeSeriesChart::changeLoadingIndicatorVisibility(bool shouldLoadingIndicatorBeVisible)
+{
+	this->loadingContainerWidget->setHidden(!shouldLoadingIndicatorBeVisible);
+	this->isLoadingIndicatorVisible = shouldLoadingIndicatorBeVisible;
+}
+
 void TimeSeriesChart::loadFromConfig()
 {
-	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 	this->numDaysToDisplay_ = configMan->getLoadedConfig().numDaysToDisplay;
 	this->shouldEnableSynchronize_Y_Axis = configMan->getLoadedConfig().shouldEnableSynchronize_Y_Axis;
 }

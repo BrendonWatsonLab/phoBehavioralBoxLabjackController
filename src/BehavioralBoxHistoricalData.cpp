@@ -12,6 +12,10 @@
 
 
 
+BehavioralBoxHistoricalData::BehavioralBoxHistoricalData()
+{
+}
+
 BehavioralBoxHistoricalData::BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID, std::vector<LabjackDataFile> dataFiles): labjackSerialNumber_(labjackSerialNumber), dataFilesSearchDirectory_(searchDirectory), boxID_(boxID), dataFiles_(dataFiles)
 {
 	// Sort the data files by decending recency:
@@ -89,6 +93,7 @@ this->output_values and this->output_milliseconds_since_epoch contain only the v
 void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 {
 	this->milliseconds_since_epoch.clear();
+	this->dataFileTimestamps.clear();
 	this->values.clear();
 	this->output_milliseconds_since_epoch.clear();
 	this->output_values.clear();
@@ -97,6 +102,8 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 	this->timestampToIndexMap_.clear();
 
 	//TODO: Do something special for analog (continuous) values?
+	bool areHeaderLabelsSameForAllFiles = true;
+	int hard_coded_header_column_maximum = 9;
 
 	int numVariables = 0;
 	int maxNumVariables = -1;
@@ -108,12 +115,31 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 	for (int i = 0; i < this->dataFiles_.size(); i++)
 	{
 		std::string currDataFileName = this->dataFiles_[i].fileName;
+		// Get dataFileTime:
+		auto currDataFileTimestamp = this->dataFiles_[i].getFileTimestamp();
+		this->dataFileTimestamps.push_back(currDataFileTimestamp);
+		
 		std::vector<LabjackDataFileLine> tempLines = this->dataFiles_[i].getParsedLines();
 		std::vector<std::string> fileHeaderLabels = this->dataFiles_[i].getParsedHeaderLabels();
+
+
+		if (fileHeaderLabels.size() > hard_coded_header_column_maximum) {
+			std::cout << "DEBUG: " << this->dataFiles_[i].fullPath << " exceeds maximum column count of " << hard_coded_header_column_maximum << ", it has " << fileHeaderLabels.size() << ". Skipping." << std::endl;
+			continue;
+		}
+
 		// If it's not the first file found and we already have a set of header labels
 		if (i > 0) {
-			bool areHeaderLabelsSame = std::equal(headerLabels.begin(), headerLabels.end(), fileHeaderLabels.begin());
+			bool areHeaderLabelsSame = true;
+			if (headerLabels.size() == fileHeaderLabels.size()) {
+				areHeaderLabelsSame = std::equal(headerLabels.begin(), headerLabels.end(), fileHeaderLabels.begin());
+			}
+			else {
+				// If they aren't the same size, they aren't the same
+				areHeaderLabelsSame = false;
+			}
 			if (!areHeaderLabelsSame) {
+				areHeaderLabelsSameForAllFiles = false;
 				// Generate a string from the headers to print the debug string if they're different
 				std::string fileHeadersDebugString = "";
 				for each (std::string aFileHeaderLabel in fileHeaderLabels)
@@ -130,8 +156,12 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 				std::cout << "WARNING: dataFile[" << currDataFileName << "] has <" << fileHeadersDebugString << "> while the previous headers were <" << allHeadersDebugString << ">." << std::endl;
 			}
 		}
-		// Update the header labels
-		headerLabels = fileHeaderLabels;
+		else {
+			// TODO: we may not want to do this!
+			// Update the header labels
+			headerLabels = fileHeaderLabels;
+		}
+
 
 		// For each line the returned set of lines for a given file:
 		for each (LabjackDataFileLine aLineObject in tempLines)
@@ -143,7 +173,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 					// If it's not the first file/line found
 					std::cout << "dataFile[" << currDataFileName << "] has " << std::to_string(numVariables) << " variables while previous files only had " << std::to_string(maxNumVariables) << ". Need to adjust all with fewer variables to max." << std::endl;
 				}
-				maxNumVariables = max(maxNumVariables, numVariables);
+				maxNumVariables = std::max(maxNumVariables, numVariables);
 			}
 
 			this->milliseconds_since_epoch.push_back(aLineObject.milliseconds_since_epoch);

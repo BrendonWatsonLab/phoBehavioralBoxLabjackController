@@ -4,9 +4,11 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "LabjackDataFile.h"
 
-using namespace std;
+#include "LabjackDataFile.h"
+#include "FormattingHelper.h"
+
+//using namespace std;
 
 bool LabjackDataFile::reloadContents()
 {
@@ -14,20 +16,12 @@ bool LabjackDataFile::reloadContents()
 	this->lineValues_.clear();
 	this->headerLabels_.clear();
 
-	//std::string line;
-	//while (std::getline(stream, line)) {
-	//	std::istringstream s(line);
-	//	std::string field;
-	//	while (getline(s, field, ','))
-	//}
-	//ifstream is("bigfile.txt", ios::binary);
-
-	ifstream csvFile;
+	std::ifstream csvFile;
 	csvFile.open(this->fullPath.c_str());
 
 	if (!csvFile.is_open())
 	{
-		cout << "Path Wrong!!!!" << endl;
+		std::cout << "Path Wrong!!!!" << std::endl;
 		this->hadError = true;
 		return false;
 	}
@@ -36,21 +30,21 @@ bool LabjackDataFile::reloadContents()
 	std::vector<double> temp_values;
 	char* endptr = nullptr;
 	
-	string line;
-	vector <string> vec;
+	std::string line;
+	std::vector <std::string> vec;
 
 	// Read the header line
 	getline(csvFile, line); // skip the 1st line
 	if (line.empty()) // skip empty lines:
 	{
-		cout << "Empty file, no header!!!!" << endl;
+		std::cout << "Empty file, no header!!!!" << std::endl;
 		this->hadError = true;
 		return false;
 	}
 	else {
-		istringstream iss(line);
-		string lineStream;
-		string::size_type sz;
+		std::istringstream iss(line);
+		std::string lineStream;
+		std::string::size_type sz;
 		// Add the item to the header labels stream
 		while (getline(iss, lineStream, ','))
 		{
@@ -63,16 +57,16 @@ bool LabjackDataFile::reloadContents()
 	{
 		if (line.empty()) // skip empty lines:
 		{
-			//cout << "empty line!" << endl;
+			//std::cout << "empty line!" << std::endl;
 			continue;
 		}
 
-		istringstream iss(line);
-		string lineStream;
-		string::size_type sz;
+		std::istringstream iss(line);
+		std::string lineStream;
+		std::string::size_type sz;
 		LabjackDataFileLine tempDataFileLine = LabjackDataFileLine();
 
-		vector <long double> row;
+		std::vector <long double> row;
 		int columnIndex = 0;
 		while (getline(iss, lineStream, ','))
 		{
@@ -101,4 +95,9 @@ bool LabjackDataFile::reloadContents()
 	//TODO: perhaps record the last read time or something
 
 	return true;
+}
+
+std::chrono::time_point<std::chrono::system_clock> LabjackDataFile::getFileTimestamp()
+{
+	return FormattingHelper::date_from_milliseconds_since_epoch(this->millisecondsSinceEpoch);
 }

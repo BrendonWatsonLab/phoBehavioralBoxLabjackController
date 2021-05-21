@@ -5,7 +5,7 @@
 #include <sstream>
 #include <typeinfo>
 
-using namespace std;
+//using namespace std;
 class CSVWriter
 {
     public:
@@ -23,44 +23,44 @@ class CSVWriter
             this->valueCount = 0;
         }
 
-        CSVWriter(string seperator){
+        CSVWriter(std::string seperator){
             this->firstRow = true;
             this->seperator = seperator;
             this->columnNum = -1;
             this->valueCount = 0;
         }
 
-        CSVWriter(string seperator, int numberOfColums){
+        CSVWriter(std::string seperator, int numberOfColums){
             this->firstRow = true;
             this->seperator = seperator;
             this->columnNum = numberOfColums;
             this->valueCount = 0;
-            cout << this->seperator << endl;
+            std::cout << this->seperator << std::endl;
         }
 
         CSVWriter& add(const char *str){
-            return this->add(string(str));
+            return this->add(std::string(str));
         }
 
         CSVWriter& add(char *str){
-            return this->add(string(str));
+            return this->add(std::string(str));
         }
 
-        CSVWriter& add(string str){
+        CSVWriter& add(std::string str){
             //if " character was found, escape it
             size_t position = str.find("\"",0);
-            bool foundQuotationMarks = position != string::npos;
-            while(position != string::npos){
+            bool foundQuotationMarks = position != std::string::npos;
+            while(position != std::string::npos){
                 str.insert(position,"\"");
                 position = str.find("\"",position + 2);
             }
             if(foundQuotationMarks){
                 str = "\"" + str + "\"";
-            }else if(str.find(this->seperator) != string::npos){
+            }else if(str.find(this->seperator) != std::string::npos){
                 //if seperator was found and string was not escapted before, surround string with "
                 str = "\"" + str + "\"";
             }
-            return this->add<string>(str);
+            return this->add<std::string>(str);
         }
 
         template<typename T>
@@ -85,20 +85,20 @@ class CSVWriter
         }
 
         void operator+=(CSVWriter &csv){
-            this->ss << endl << csv;
+            this->ss << std::endl << csv;
         }
 
-        string toString(){
+        std::string toString(){
             return ss.str();
         }
 
-        friend ostream& operator<<(std::ostream& os, CSVWriter & csv){
+        friend std::ostream& operator<<(std::ostream& os, CSVWriter & csv){
             return os << csv.toString();
         }
 
         CSVWriter& newRow(){
             if(!this->firstRow || this->columnNum > -1){
-                ss << endl;
+                ss << std::endl;
             }else{
                 //if the row is the first row, do not insert a new line
                 this->firstRow = false;
@@ -107,20 +107,20 @@ class CSVWriter
             return *this;
         }
 
-        bool writeToFile(string filename){
+        bool writeToFile(std::string filename){
             return writeToFile(filename, false);
         }
 
-        bool writeToFile(string filename, bool append){
-            ofstream file;
+        bool writeToFile(std::string filename, bool append){
+            std::ofstream file;
             if(append)
-                file.open(filename.c_str(),ios::out | ios::app);
+                file.open(filename.c_str(),std::ios::out | std::ios::app);
             else
-                file.open(filename.c_str(),ios::out | ios::trunc);
+                file.open(filename.c_str(),std::ios::out | std::ios::trunc);
             if(!file.is_open())
                 return false;
             if(append)
-                file << endl;
+                file << std::endl;
             file << this->toString();
             file.close();
             return file.good();
@@ -135,10 +135,10 @@ class CSVWriter
         }
     protected:
         bool firstRow;
-        string seperator;
+        std::string seperator;
         int columnNum;
         int valueCount;
-        stringstream ss;
+        std::stringstream ss;
 
 };
 

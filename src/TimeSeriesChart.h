@@ -11,8 +11,8 @@
 #define TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS true
 #define TIME_SERIES_CHART_NUM_TABLE_ROWS_SHOWN 8
 #define TIME_SERIES_CHART_NUM_TABLE_ROW_HEIGHT 20
-//#define TIME_SERIES_CHART_SUBPLOT_HEIGHT 130
-#define TIME_SERIES_CHART_SUBPLOT_HEIGHT 230
+#define TIME_SERIES_CHART_SUBPLOT_HEIGHT 130
+//#define TIME_SERIES_CHART_SUBPLOT_HEIGHT 50
 #define TIME_SERIES_CHART_SUBPLOT_WIDTH 1080
 #define TIME_SERIES_CHART_RANGE_SLIDER_HEIGHT 80
 
@@ -38,12 +38,21 @@ public:
 		DataDisplayOptions(bool showEvents, bool showAggregate) : shouldShowEventData(showEvents), shouldShowAggregateData(showAggregate) {};
 	};
 
+	struct TimeSeriesChartDisplayOptions {
+		bool shouldShowTable = false;
+		bool shouldShowPlot = false;
+
+		//bool shouldShowIndividualEvents = false;
+		//bool shouldEnableAggregateEvents = TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS;
+
+		TimeSeriesChartDisplayOptions(bool showTable, bool showPlot) : shouldShowTable(showTable), shouldShowPlot(showPlot) {};
+	};
+
+
+	TimeSeriesChartDisplayOptions totalDisplayOptions = TimeSeriesChartDisplayOptions(false, true);
 	DataDisplayOptions tableDisplayOptions = DataDisplayOptions(false, false);
-	DataDisplayOptions plotDisplayOptions = DataDisplayOptions(true, true);
-
-	
-
-	void reload(std::vector<BehavioralBoxHistoricalData> historicalData);
+	//DataDisplayOptions plotDisplayOptions = DataDisplayOptions(true, true);
+	DataDisplayOptions plotDisplayOptions = DataDisplayOptions(false, true);
 
 	std::vector<Wt::WColor> getVariableColors() { return this->colorVect_; }
 	Wt::WColor getDefaultColor() { return this->otherColor_; }
@@ -51,7 +60,8 @@ public:
 	std::shared_ptr<Wt::WAbstractItemModel> model;
 
 	// Update Function:
-	void processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event);
+	void reload(BehavioralBoxHistoricalData historicalData);
+	//void processHistoricalDataUpdateEvent(const HistoricalDataLoadingEvent& event);
 
 	struct CurrentDateTimeRange {
 
@@ -89,7 +99,7 @@ private:
 	bool isLoadingIndicatorVisible = true;
 	void changeLoadingIndicatorVisibility(bool shouldLoadingIndicatorBeVisible);
 
-	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel(std::vector<BehavioralBoxHistoricalData> historicalData);
+	std::shared_ptr<Wt::WStandardItemModel> buildHistoricDataModel(BehavioralBoxHistoricalData activeHistoricalData);
 	std::vector<std::unique_ptr<Wt::Chart::WDataSeries>> buildDataSeries(const std::shared_ptr<Wt::WAbstractItemModel> model);
 
 	// Data Series:
@@ -139,6 +149,7 @@ BoxPortInformation::BehavioralEventKind::Dispense, BoxPortInformation::Behaviora
 BoxPortInformation::BehavioralEventKind::Other };
 	std::vector<Wt::WColor> colorVect_ = { Wt::WColor(0, 255, 255, 255), Wt::WColor(127, 255, 212, 255), Wt::WColor(255, 127, 80, 255), Wt::WColor(255, 0, 255, 255), Wt::WColor(0, 0, 255, 255), Wt::WColor(0, 0, 139, 255), Wt::WColor(220, 20, 60, 255), Wt::WColor(128, 0, 0, 255), Wt::WColor(200, 200, 200, 255) };
 	std::vector<bool> isVariableAggregate_ = { false, false, false, false, false, false, false, false, false };
+
 #endif // TIME_SERIES_CHART_ENABLE_AGGREGATE_STATS
 
 	Wt::WColor otherColor_ = Wt::WColor(200, 200, 200, 255);

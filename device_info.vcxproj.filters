@@ -58,6 +58,12 @@
     <Filter Include="Required DLLs\Release">
       <UniqueIdentifier>{3b1f1fd9-17d5-4573-88b3-0f8ba0556918}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WtWebServer\WebComponents\RootWidget">
+      <UniqueIdentifier>{8237a116-7803-44b7-96da-3ae5770ae937}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WtWebServer\WebComponents\BehavioralBoxDataWidget">
+      <UniqueIdentifier>{eac6791e-96c7-4099-bbb1-33f4219d96aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BehavioralBoxLabjack.cpp">
@@ -131,6 +137,15 @@
     </ClCompile>
     <ClCompile Include="src\ConfigurationManager.cpp">
       <Filter>Singletons</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RootWidget.cpp">
+      <Filter>WtWebServer\WebComponents\RootWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BehavioralBoxDataWidget.cpp">
+      <Filter>WtWebServer\WebComponents\BehavioralBoxDataWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FormattingHelper.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +259,18 @@
     </ClInclude>
     <ClInclude Include="resource1.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigFiles\config-AnalogRunningWheel-12-17-2019.h">
+      <Filter>Header Files\Configuration Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FormattingHelper.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RootWidget.h">
+      <Filter>WtWebServer\WebComponents\RootWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BehavioralBoxDataWidget.h">
+      <Filter>WtWebServer\WebComponents\BehavioralBoxDataWidget</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

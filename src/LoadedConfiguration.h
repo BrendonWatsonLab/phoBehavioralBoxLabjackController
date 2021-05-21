@@ -12,7 +12,7 @@ struct LoadedConfiguration
 
 	//Filesystem:
 	std::string outputFileRootDirectory = "C:/Common/data/";
-	bool enableOverrideDefaultHistoricalFileSearchDirectory = false;
+	bool enableOverrideDefaultHistoricalFileSearchDirectory = true;
 	std::string historicalFileSearchRootDirectory = "C:/Common/data/";
 
 	//Features:

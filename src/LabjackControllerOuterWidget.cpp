@@ -32,7 +32,6 @@ LabjackControllerOuterWidget::LabjackControllerOuterWidget(BoxControllerWebDataS
 	// Setup main layout
 	mainLayout_ = this->setLayout(Wt::cpp14::make_unique<Wt::WVBoxLayout>());
 
-
 	auto contentsStack = Wt::cpp14::make_unique<Wt::WStackedWidget>();
 	contentsStack_ = contentsStack.get();
 
@@ -112,7 +111,7 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 	 * event from other sessions, see SimpleChatServer::postChatEvent()
 	 */
 	if (event.type() == DataServerEvent::Type::HistoricalDataRefreshed) {
-		cout << "LabjackControllerOuterWidget::processDataServerEvent(...): Historical data refreshed." << endl;
+		std::cout << "LabjackControllerOuterWidget::processDataServerEvent(...): Historical data refreshed." << std::endl;
 		auto historicalEvent = event.historicalDataLoadingEvent();
 		if (historicalEvent.type() == HistoricalDataLoadingEvent::Type::Complete) {
 			this->loadedHistoricalDataVectIDs_.clear();
@@ -126,10 +125,11 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 			
 		}
 		// Update the time series chart widget
-		this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
+		//this->timeSeriesChartWidget->processHistoricalDataUpdateEvent(historicalEvent);
+		//TODO: needs to be updated if we ever use this widget again.
 	}
 	else {
-		cout << "Warning: DataServerEvent Event recieved but not yet implemented!" << endl;
+		std::cout << "Warning: DataServerEvent Event recieved but not yet implemented!" << std::endl;
 	}
 	
 	///*
@@ -138,7 +138,7 @@ void LabjackControllerOuterWidget::processDataServerEvent(const DataServerEvent&
 	// *
 	// * This schedules an update and returns immediately
 	// */
-	app->triggerUpdate();
+	//app->triggerUpdate();
 
 }
 

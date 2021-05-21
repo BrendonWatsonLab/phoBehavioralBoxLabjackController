@@ -29,6 +29,8 @@ Specifies what ports to open
 #define LAUNCH_WEB_SERVER true
 #define ENABLE_WEB_SERVER_LIVE_WIDGET false
 
+#define ENABLE_LIVE_LABJACK_CONNECTIONS false
+
 ////// DEBUGGING ONLY:
 //CONTINUE_WITHOUT_LABJACKS: if false, it waits on at least one labjack hardware to be detected before moving forward.
 //#define CONTINUE_WITHOUT_LABJACKS true

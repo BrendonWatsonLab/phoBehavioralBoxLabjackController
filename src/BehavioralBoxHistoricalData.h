@@ -6,6 +6,7 @@
 #include <algorithm>
 
 #include "LabjackDataFile.h"
+#include "FormattingHelper.h"
 
 typedef std::chrono::system_clock Clock;
 
@@ -177,6 +178,7 @@ class BehavioralBoxHistoricalData
 {
 public:
 
+	BehavioralBoxHistoricalData();
 	BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::string boxID, std::vector<LabjackDataFile> dataFiles);
 	BehavioralBoxHistoricalData(std::string searchDirectory, int labjackSerialNumber, std::vector<LabjackDataFile> dataFiles);
 
@@ -201,18 +203,22 @@ public:
 
 	const int getLabjackSerialNumber() { return this->labjackSerialNumber_; };
 	const std::string getBoxIdentifier() { return this->boxID_; };
+	const std::string getSearchDirectory() { return this->dataFilesSearchDirectory_; }
+
+	const int getNumberOfDataFiles() { return this->dataFiles_.size(); }
 
 	const void exportAsCSV(std::string path);
 
-
+	const std::vector<std::chrono::time_point<std::chrono::system_clock>> getDataFileTimestamps() { return this->dataFileTimestamps; };
 
 private:
-	std::string boxID_;
-	int labjackSerialNumber_;
-	std::string dataFilesSearchDirectory_;
+	std::string boxID_="";
+	int labjackSerialNumber_=-1;
+	std::string dataFilesSearchDirectory_ = "";
 
 	// A list of data files for that particular box
 	std::vector<LabjackDataFile> dataFiles_;
+	std::vector<std::chrono::time_point<std::chrono::system_clock>> dataFileTimestamps;
 
 	// Accumulated line timestamps and values for all files:
 	std::vector<unsigned long long> milliseconds_since_epoch;

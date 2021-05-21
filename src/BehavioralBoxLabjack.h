@@ -72,13 +72,13 @@ public:
 	int getSerialNumber() { return this->serialNumber; }
 	std::string getDeviceName() { return this->deviceName; }
 	bool isVisibleLEDLit();
-	string getFullFilePath() { return this->fileFullPath; }
+	std::string getFullFilePath() { return this->fileFullPath; }
 	int getNumberInputChannels(bool include_digital_ports = true, bool include_analog_ports = false);
 	int getNumberOutputChannels() { return NUM_OUTPUT_CHANNELS; }
-	vector<std::string> getInputPortNames(bool include_digital_ports = true, bool include_analog_ports = false);
-	vector<std::string> getInputPortPurpose(bool include_digital_ports = true, bool include_analog_ports = false);
-	vector<double> getLastReadValues(bool include_digital_ports = true, bool include_analog_ports = false);
-	string getOutputDirectory() { return this->outputDirectory; }
+	std::vector<std::string> getInputPortNames(bool include_digital_ports = true, bool include_analog_ports = false);
+	std::vector<std::string> getInputPortPurpose(bool include_digital_ports = true, bool include_analog_ports = false);
+	std::vector<double> getLastReadValues(bool include_digital_ports = true, bool include_analog_ports = false);
+	std::string getOutputDirectory() { return this->outputDirectory; }
 
 #if LAUNCH_WEB_SERVER
 	Wt::Signal<int, int, double>& valueChanged() { return this->valueChanged_; }
@@ -107,15 +107,15 @@ private:
 	bool overrideValue_areAttractModeLEDsLit = false;
 
 	// File Output:
-	std::shared_ptr<ConfigurationManager> configMan = make_shared<ConfigurationManager>();
+	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 	CSVWriter csv;
-	string filename = "outputFile.csv";
-	string outputDirectory = configMan->getGeneratedActiveOutputDirectory(); // should end in a slash if it's not empty
-	string fileFullPath = "C:/Common/data/outputFile.csv";
+	std::string filename = "outputFile.csv";
+	std::string outputDirectory = configMan->getGeneratedActiveOutputDirectory(); // should end in a slash if it's not empty
+	std::string fileFullPath = "C:/Common/data/outputFile.csv";
 
 	CSVWriter csv_analog;
-	string filename_analog = "outputFile_analog.csv";
-	string fileFullPath_analog = "C:/Common/data/outputFile_analog.csv";
+	std::string filename_analog = "outputFile_analog.csv";
+	std::string fileFullPath_analog = "C:/Common/data/outputFile_analog.csv";
 
 
 	// Variables for holding the last read values

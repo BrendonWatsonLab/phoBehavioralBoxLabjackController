@@ -39,6 +39,8 @@ public:
 	// Computes the change
 	static std::vector<double> computeDelta(std::vector<double> V1, std::vector<double> V2);
 
+	//TODO: Migrated to FormattingHelper.h: Redundant
+
 	// Converts an unsigned long long value representing the milliseconds since epoch back to a time_point<Clock> (a datetime).
 	static std::chrono::time_point<Clock> date_from_milliseconds_since_epoch(unsigned long long milliseconds_since_epoch);
 	// Converts a time_point<Clock> (a datetime) to an unsigned long long value representing the milliseconds since epoch.
