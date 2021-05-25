@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 {
 	std::cout << "BehavioralBoxLabjackController:" << std::endl;
 	std::cout << "\t Version " << SOFTWARE_VERSION << std::endl;
-	std::cout << "\t Pho Hale 2019" << std::endl << std::endl;
+	std::cout << "\t Pho Hale 2021" << std::endl << std::endl;
 	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 
 	// Get the hostname

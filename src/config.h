@@ -9,10 +9,10 @@ Specifies what ports to open
 // number of tasks that can run simultaneously
 #define MAX_NUM_THREAD_PER_LABJACK 1
 
-#define LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC 50
+#define LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC 20
 
 // The maximum number of simultaneous labjacks that can be connected to this computer
-#define max_number_labjacks 8
+#define max_number_labjacks 4
 
 ////// Daylight Cycle Settings:
 // globalDaylightStartHour: defines the hour of the day (in a 24-hour format) at which the Visible LEDS are turned on (illuminated) (simulating daylight for the mouse).
