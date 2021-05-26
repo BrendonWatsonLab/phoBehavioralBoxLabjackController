@@ -20,7 +20,6 @@
 #include "OutputState.h"
 #include "ConfigurationManager.h"
 
-
 typedef std::chrono::system_clock Clock;
 
 //// Scheduler
