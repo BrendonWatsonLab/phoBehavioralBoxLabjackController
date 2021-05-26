@@ -21,9 +21,13 @@
 #include <string>
 
 #include "External/C_C++_LJM/LJM_Utilities.h"
-//#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
+#include "External/C_C++_LJM/LJM_StreamUtilities.h" // Include the Stream utilities now
 
 #include "FilesystemHelpers.h"
+
+
+
+
 
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, int serialNumber) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), serialNumber) {}
 
