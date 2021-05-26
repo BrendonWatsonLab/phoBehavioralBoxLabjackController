@@ -369,6 +369,8 @@ void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 				did_anyDigitalPortChange = true;
 			}
 			
+			//TODO: WARNING: This might be where the errors are being introduced for the water ports in general. We don't do this anymore.
+			// FIXME:
 			// Special handling for the water ports. If the port is a water port that has transitioned from off to on, set the appropriate "this->water*PortEndIlluminationTime" variable so the port is illuminated for a second after dispense.
 			if (this->lastReadInputPortValues[i] > 0.0) {
 				// If the port transitioned from off to on:

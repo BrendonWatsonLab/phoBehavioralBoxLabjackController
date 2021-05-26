@@ -25,7 +25,9 @@
   !define PHO_COMMON_NAME_CONFIG "config"
   !define PHO_COMMON_DIR_CONFIG "C:\Common\config"
   ;!define PHO_BUILD_PATH "../x64/Release"
-  !define PHO_BUILD_PATH "C:\Common\repo\phoBehavioralBoxLabjackController\x64\Release"
+  ; !define PHO_BUILD_PATH "C:\Common\repo\phoBehavioralBoxLabjackController\x64\Release"
+  !define PHO_BUILD_PATH "C:\Users\Pho\repos\phoBehavioralBoxLabjackController\x64\Release"
+
   CRCCheck On
 
   ; Installer silent by default:
