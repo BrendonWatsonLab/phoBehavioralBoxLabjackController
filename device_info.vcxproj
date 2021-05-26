@@ -35,6 +35,7 @@
     <ClCompile Include="src\LabjackControllerWebApplication.cpp" />
     <ClCompile Include="src\LabjackDataFile.cpp" />
     <ClCompile Include="src\LabjackLiveStateWidget.cpp" />
+    <ClCompile Include="src\LabjackStreamHelpers.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\ChartConfig.cpp" />
     <ClCompile Include="src\CsvUtil.cpp" />
@@ -80,6 +81,7 @@
     <ClInclude Include="src\LabjackLiveStateWidget.h" />
     <ClInclude Include="src\LabjackHelpers.h" />
     <ClInclude Include="src\BoxPortInformation.h" />
+    <ClInclude Include="src\LabjackStreamHelpers.h" />
     <ClInclude Include="src\LoadedConfiguration.h" />
     <ClInclude Include="src\NumericItem.h" />
     <ClInclude Include="src\OutputState.h" />

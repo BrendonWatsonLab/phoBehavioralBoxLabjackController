@@ -2,7 +2,6 @@
 #include "BehavioralBoxLabjack.h"
 #include <vector>
 
-
 class LabjackHelpers
 {
 public:
@@ -45,6 +44,7 @@ public:
 	static std::chrono::time_point<Clock> date_from_milliseconds_since_epoch(unsigned long long milliseconds_since_epoch);
 	// Converts a time_point<Clock> (a datetime) to an unsigned long long value representing the milliseconds since epoch.
 	static unsigned long long milliseconds_since_epoch_from_date(std::chrono::time_point<Clock> datetime);
+
 
 };
 
