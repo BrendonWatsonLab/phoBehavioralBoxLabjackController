@@ -30,7 +30,7 @@ typedef std::chrono::system_clock Clock;
 static const std::regex behavioral_box_labjack_deviceName_regex("LJ-(\\d{2})");
 
 
-
+#include "LabjackStreamHelpers.h"
 
 
 class BehavioralBoxLabjack
@@ -122,6 +122,8 @@ private:
 	std::string fileFullPath_analog = "C:/Common/data/outputFile_analog.csv";
 
 
+	// Labjack Stream-specific values:
+	StreamInfo ljStreamInfo;
 	// Variables for holding the last read values
 	StateMonitor* monitor;
 	// All Values:

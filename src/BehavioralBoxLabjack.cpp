@@ -24,6 +24,7 @@
 #include "External/C_C++_LJM/LJM_StreamUtilities.h" // Include the Stream utilities now
 
 #include "FilesystemHelpers.h"
+#include "LabjackStreamHelpers.h"
 
 
 
@@ -719,6 +720,41 @@ void BehavioralBoxLabjack::initializeLabjackConfigurationIfNeeded()
 		this->writeDeviceName(new_proposed_labjack_name_string);
 		std::cout << "done." << std::endl;
 	}
+
+
+	// Labjack Stream Mode Setup:
+	//
+	this->ljStreamInfo = StreamInfo();
+
+	this->ljStreamInfo.scanRate = 2000; // Set the scan rate to the fastest rate expected
+	/*this->ljStreamInfo.numChannels = 4;*/
+	this->ljStreamInfo.numChannels = this->getNumberInputChannels();
+	//this->ljStreamInfo.channelNames = this->getInputPortNames();
+	//const char* CHANNEL_NAMES[] = { "AIN0", "AIN1" };
+	//const char* foudnNames = this->inputPortNames_all;
+	const char* CHANNEL_NAMES[] = globalLabjackInputPortNames;
+	this->ljStreamInfo.channelNames = CHANNEL_NAMES;
+
+	this->ljStreamInfo.scansPerRead = this->ljStreamInfo.scanRate / 2;
+
+	this->ljStreamInfo.streamLengthMS = 10000;
+	this->ljStreamInfo.done = FALSE;
+
+	//this->ljStreamInfo.callback = &this->onLabjackStreamReadCallback;
+	
+	//this->ljStreamInfo->callback = &(this->onLabjackStreamReadCallback);
+
+	this->ljStreamInfo.callback = &LabjackStreamHelpers::GlobalLabjackStreamReadCallback;
+
+
+	this->ljStreamInfo.aData = NULL;
+	this->ljStreamInfo.aScanList = NULL;
+
+	this->ljStreamInfo.numScansToPrint = 1;
+	
+	this->ljStreamInfo.handle = this->handle;
+
+
 
 }
 
