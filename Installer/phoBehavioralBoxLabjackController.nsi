@@ -4,8 +4,8 @@
  
 ; -------------------------------
 ; Start
-  !define PRODUCT_VERSION "1.0.0.7"
-  !define VERSION "1.0.0.7"
+  !define PRODUCT_VERSION "1.0.1.0"
+  !define VERSION "1.0.1.0"
 
   !define MUI_PRODUCT "phoBehavioralBoxLabjackController"
   !define MUI_FILE "phoBehavioralBoxLabjackController"

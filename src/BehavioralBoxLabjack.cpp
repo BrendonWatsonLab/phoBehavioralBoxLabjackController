@@ -160,7 +160,6 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	this->readSensorValues();
 	// TODO: see if the stream version needs to do anything special here
 	// Probably need to do something with To stop stream, use LJM_eStreamStop.
-
 	printf("Stopping stream...\n");
 	this->ljStreamInfo.done = TRUE;
 	this->err = LJM_eStreamStop(this->ljStreamInfo.handle);
@@ -357,7 +356,8 @@ void BehavioralBoxLabjack::readSensorValues()
 
 	this->HardcodedPrintScans(deviceScanBacklog, LJMScanBacklog);
 	//this->CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
-
+	CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
+	
 	// If LJM has called this callback, the data is valid, but LJM_eStreamRead
 	// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
 	// such as this example program does in StreamWithCallback().
