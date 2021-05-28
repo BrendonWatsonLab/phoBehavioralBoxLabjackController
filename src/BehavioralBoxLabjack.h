@@ -64,7 +64,9 @@ public:
 	
 
 	// Read Sensor values
-	void readSensorValues();
+	// void readSensorValues();
+	
+
 	void persistReadValues(bool enableConsoleLogging);
 	//void persistReadValues();
 

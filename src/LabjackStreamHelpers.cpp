@@ -14,6 +14,7 @@ LabjackStreamHelpers::~LabjackStreamHelpers()
 {
 }
 
+// StreamWithCallback: called to start a new labjack stream using the info provided in si
 void LabjackStreamHelpers::StreamWithCallback(StreamInfo* si)
 {
 	int err;
@@ -150,6 +151,7 @@ void LabjackStreamHelpers::HardcodedPrintScans(StreamInfo* si, int deviceScanBac
 	}
 }
 
+// GlobalLabjackStreamReadCallback the callback that occurs when the stream updates
 void LabjackStreamHelpers::GlobalLabjackStreamReadCallback(void* arg)
 {
 	StreamInfo* si = arg;
@@ -165,9 +167,8 @@ void LabjackStreamHelpers::GlobalLabjackStreamReadCallback(void* arg)
 	printf("\niteration: % 3d    ", streamRead++);
 
 	err = LJM_eStreamRead(si->handle, si->aData, &deviceScanBacklog, &LJMScanBacklog);
-	HardcodedPrintScans(si, deviceScanBacklog, LJMScanBacklog);
-	CountAndOutputNumSkippedSamples(si->numChannels,
-		si->scansPerRead, si->aData);
+	LabjackStreamHelpers::HardcodedPrintScans(si, deviceScanBacklog, LJMScanBacklog);
+	CountAndOutputNumSkippedSamples(si->numChannels, si->scansPerRead, si->aData);
 
 	// If LJM has called this callback, the data is valid, but LJM_eStreamRead
 	// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
