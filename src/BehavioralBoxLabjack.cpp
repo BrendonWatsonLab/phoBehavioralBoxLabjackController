@@ -162,8 +162,8 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	// Probably need to do something with To stop stream, use LJM_eStreamStop.
 
 	printf("Stopping stream...\n");
-	this->ljStreamInfo->done = TRUE;
-	this->err = LJM_eStreamStop(this->ljStreamInfo->handle);
+	this->ljStreamInfo.done = TRUE;
+	this->err = LJM_eStreamStop(this->ljStreamInfo.handle);
 	auto t1 = GetCurrentTimeMS();
 	ErrorCheck(this->err, "LJM_eStreamStop");
 
@@ -345,15 +345,18 @@ void BehavioralBoxLabjack::readSensorValues()
 	int err;
 
 	// Check if stream is done so that we don't output the printf below
-	if (this->ljStreamInfo->done) {
+	if (this->ljStreamInfo.done) {
 		return;
 	}
 	printf("\niteration: % 3d    ", streamRead++);
 
-	err = LJM_eStreamRead(this->ljStreamInfo->handle, this->ljStreamInfo->aData, &deviceScanBacklog, &LJMScanBacklog);
+	err = LJM_eStreamRead(this->ljStreamInfo.handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
 	// TODO: Figure out what this is doing
-	LabjackStreamHelpers::HardcodedPrintScans(this->ljStreamInfo.get(), deviceScanBacklog, LJMScanBacklog);
-	//CountAndOutputNumSkippedSamples(this->ljStreamInfo->numChannels, this->ljStreamInfo->scansPerRead, this->ljStreamInfo->aData);
+	/*LabjackStreamHelpers::HardcodedPrintScans(this->ljStreamInfo.get(), deviceScanBacklog, LJMScanBacklog);*/
+	//CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
+
+	this->HardcodedPrintScans(deviceScanBacklog, LJMScanBacklog);
+	//this->CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
 
 	// If LJM has called this callback, the data is valid, but LJM_eStreamRead
 	// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
@@ -361,7 +364,7 @@ void BehavioralBoxLabjack::readSensorValues()
 	if (err != LJME_NOERROR && err != LJME_STREAM_NOT_RUNNING) {
 		PrintErrorIfError(err, "LJM_eStreamRead");
 
-		err = LJM_eStreamStop(this->ljStreamInfo->handle);
+		err = LJM_eStreamStop(this->ljStreamInfo.handle);
 		PrintErrorIfError(err, "LJM_eStreamStop");
 	}
 

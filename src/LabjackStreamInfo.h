@@ -27,7 +27,7 @@ public:
 	void setup(int numChannels, int handle)
 	{
 		this->numChannels = numChannels;
-		this->scansPerRead = this.scanRate / 2;
+		this->scansPerRead = this->scanRate / 2;
 	}
 	
 
