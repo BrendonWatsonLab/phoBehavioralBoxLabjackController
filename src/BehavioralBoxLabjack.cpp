@@ -21,7 +21,7 @@
 #include <string>
 
 #include "External/C_C++_LJM/LJM_Utilities.h"
-#include "External/C_C++_LJM/LJM_StreamUtilities.h" // Include the Stream utilities now
+//#include "External/C_C++_LJM/LJM_StreamUtilities.h" // Include the Stream utilities now
 
 #include "FilesystemHelpers.h"
 #include "LabjackStreamHelpers.h"
@@ -349,7 +349,7 @@ void BehavioralBoxLabjack::readSensorValues()
 	err = LJM_eStreamRead(this->ljStreamInfo->handle, this->ljStreamInfo->aData, &deviceScanBacklog, &LJMScanBacklog);
 	// TODO: Figure out what this is doing
 	LabjackStreamHelpers::HardcodedPrintScans(this->ljStreamInfo.get(), deviceScanBacklog, LJMScanBacklog);
-	CountAndOutputNumSkippedSamples(this->ljStreamInfo->numChannels, this->ljStreamInfo->scansPerRead, this->ljStreamInfo->aData);
+	//CountAndOutputNumSkippedSamples(this->ljStreamInfo->numChannels, this->ljStreamInfo->scansPerRead, this->ljStreamInfo->aData);
 
 	// If LJM has called this callback, the data is valid, but LJM_eStreamRead
 	// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,

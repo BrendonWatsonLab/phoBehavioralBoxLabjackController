@@ -1,5 +1,5 @@
 #include "LabjackStreamInfo.h"
 
-LabjackStreamInfo::LabjackStreamInfo()
-{
-}
+//LabjackStreamInfo::LabjackStreamInfo()
+//{
+//}

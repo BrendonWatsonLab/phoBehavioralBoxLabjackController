@@ -29,7 +29,7 @@ typedef std::chrono::system_clock Clock;
 static const std::regex behavioral_box_labjack_deviceName_regex("LJ-(\\d{2})");
 
 
-#include "LabjackStreamHelpers.h"
+//#include "LabjackStreamHelpers.h"
 #include "LabjackStreamInfo.h"
 
 

@@ -1,10 +1,10 @@
 #pragma once
-#include <LabJackM.h>
+//#include <LabJackM.h>
 
 class LabjackStreamInfo
 {
 public:
-	LabjackStreamInfo();
+	//LabjackStreamInfo();
 	//LabjackStreamInfo(std::string filePath);
 
 	int handle;

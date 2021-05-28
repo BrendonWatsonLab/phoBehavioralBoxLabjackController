@@ -2,9 +2,21 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <LabJackM.h>
+#include "LabjackStreamInfo.h"
+//#include <LabJackM.h>
 //#include "External/C_C++_LJM/LJM_Utilities.h"
 #include "External/C_C++_LJM/LJM_StreamUtilities.h" // Include the Stream utilities now
+
+// Labjack Streaming Helpers:
+#define FALSE 0
+#define TRUE 1
+
+// Set to non-zero for external stream clock
+#define EXTERNAL_STREAM_CLOCK FALSE
+
+// Set FIO0 to pulse out. See EnableFIO0PulseOut()
+#define FIO0_PULSE_OUT FALSE
+
 
 LabjackStreamHelpers::LabjackStreamHelpers()
 {
