@@ -208,7 +208,7 @@ void BehavioralBoxControllersManager::reloadHistoricalData()
 	// Get the maximum found box ID from the found paths:
 	int maximum_found_box_id = -1;
 	for (std::map<int, fs::path>::iterator it = foundBoxPaths.begin(); it != foundBoxPaths.end(); ++it) {
-		maximum_found_box_id = std::max(maximum_found_box_id, it->first);
+		maximum_found_box_id = (std::max)(maximum_found_box_id, it->first);
 		//found_box_ids.push_back(it->first);
 		//std::cout << it->first << "\n";
 	}
