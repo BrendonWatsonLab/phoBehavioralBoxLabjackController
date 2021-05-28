@@ -150,6 +150,9 @@
     <ClCompile Include="src\LabjackStreamHelpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\LabjackStreamInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\NumericItem.h">
@@ -277,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="src\LabjackStreamHelpers.h">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackStreamInfo.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

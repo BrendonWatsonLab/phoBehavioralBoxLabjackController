@@ -154,6 +154,17 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	this->shouldStop = true;
 	//Read the values and save them one more time, so we know when the end of data collection occured.
 	this->readSensorValues();
+	// TODO: see if the stream version needs to do anything special here
+	// Probably need to do something with To stop stream, use LJM_eStreamStop.
+
+	printf("Stopping stream...\n");
+	this->ljStreamInfo->done = TRUE;
+	this->err = LJM_eStreamStop(this->ljStreamInfo->handle);
+	auto t1 = GetCurrentTimeMS();
+	ErrorCheck(this->err, "LJM_eStreamStop");
+
+	//printf("Stream stopped. %u milliseconds have elapsed since LJM_eStreamStart\n", t1 - t0);
+
 
 	// Cleanup output ports vector
 	for (int i = 0; i < NUM_OUTPUT_CHANNELS; i++) {

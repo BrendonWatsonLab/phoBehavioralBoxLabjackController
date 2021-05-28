@@ -30,6 +30,7 @@ static const std::regex behavioral_box_labjack_deviceName_regex("LJ-(\\d{2})");
 
 
 #include "LabjackStreamHelpers.h"
+#include "LabjackStreamInfo.h"
 
 
 class BehavioralBoxLabjack
@@ -64,7 +65,7 @@ public:
 	
 
 	// Read Sensor values
-	// void readSensorValues();
+	 void readSensorValues();
 	
 
 	void persistReadValues(bool enableConsoleLogging);
@@ -124,7 +125,9 @@ private:
 
 
 	// Labjack Stream-specific values:
-	StreamInfo ljStreamInfo;
+	//StreamInfo ljStreamInfo;
+	std::shared_ptr<LabjackStreamInfo> ljStreamInfo = std::make_shared<LabjackStreamInfo>();
+
 	// Variables for holding the last read values
 	StateMonitor* monitor;
 	// All Values:
