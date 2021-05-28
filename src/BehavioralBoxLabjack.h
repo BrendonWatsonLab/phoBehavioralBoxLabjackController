@@ -86,6 +86,8 @@ public:
 	std::vector<double> getLastReadValues(bool include_digital_ports = true, bool include_analog_ports = false);
 	std::string getOutputDirectory() { return this->outputDirectory; }
 
+	LabjackStreamInfo getStreamInfo() { return this->ljStreamInfo; }
+
 #if LAUNCH_WEB_SERVER
 	Wt::Signal<int, int, double>& valueChanged() { return this->valueChanged_; }
 #endif // LAUNCH_WEB_SERVER
@@ -126,7 +128,10 @@ private:
 
 	// Labjack Stream-specific values:
 	//StreamInfo ljStreamInfo;
-	std::shared_ptr<LabjackStreamInfo> ljStreamInfo = std::make_shared<LabjackStreamInfo>();
+	/*std::shared_ptr<LabjackStreamInfo> ljStreamInfo = std::make_shared<LabjackStreamInfo>();*/
+	/*std::shared_ptr<LabjackStreamInfo> ljStreamInfo;*/
+	LabjackStreamInfo ljStreamInfo;
+	
 
 	// Variables for holding the last read values
 	StateMonitor* monitor;
@@ -177,6 +182,18 @@ private:
 
 	// Visible Light Relay Control
 	//void setVisibleLightRelayState(bool isOn);
+
+
+	// Stream Functionality:
+	void SetupStream();
+	
+	/**
+	 * Prints scans of the channels:
+	 *     "AIN0",  "FIO_STATE",  "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16".
+	 * Combines SYSTEM_TIMER_20HZ and STREAM_DATA_CAPTURE_16 to create the original
+	 * 32-bit value of SYSTEM_TIMER_20HZ.
+	**/
+	void HardcodedPrintScans(int deviceScanBacklog, int LJMScanBacklog);
 
 #if LAUNCH_WEB_SERVER
 	// Signals

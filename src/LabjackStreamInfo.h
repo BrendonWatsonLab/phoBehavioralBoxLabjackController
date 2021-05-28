@@ -1,32 +1,37 @@
 #pragma once
-//#include <LabJackM.h>
 
-class LabjackStreamInfo
+struct LabjackStreamInfo
 {
 public:
 	//LabjackStreamInfo();
 	//LabjackStreamInfo(std::string filePath);
 
-	int handle;
-	double scanRate;
-	int scansPerRead;
+	int handle = 0;
+	double scanRate = 2000; // Set the scan rate to the fastest rate expected
+	int scansPerRead = 1000; // Should usually be (this.scanRate / 2)
 
-	int streamLengthMS;
+	int streamLengthMS = 10000;
 	
 	//LJM_StreamReadCallback callback;
 
-	int numChannels;
-	int* aScanList;
-	const char** channelNames;
+	int numChannels = 0;
+	int* aScanList = nullptr;
+	const char** channelNames = nullptr;
 
-	int aDataSize;
-	double* aData;
+	int aDataSize = 0;
+	double* aData = nullptr;
 
-	unsigned int numScansToPrint;
+	unsigned int numScansToPrint = 1;
+	int done = 0; // Done is 0 == FALSE
 
-	int done;
+	void setup(int numChannels, int handle)
+	{
+		this->numChannels = numChannels;
+		this->scansPerRead = this.scanRate / 2;
+	}
+	
 
 private:
-	bool broken;
+	bool broken = false;
 };
 
