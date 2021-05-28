@@ -335,19 +335,48 @@ void BehavioralBoxLabjack::readSensorValues()
 {
 	this->lastCaptureComputerTime = Clock::now();
 
-	//Read the sensor values from the labjack DIO and AIO Inputs
-	{
-		// Lock the mutex to prevent concurrent labjack interaction
-		std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
-		this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char**)this->inputPortNames_all, this->lastReadInputPortValues, &this->errorAddress);
-		ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
+	static int streamRead = 0;
+	int deviceScanBacklog = 0;
+	int LJMScanBacklog = 0;
+	int err;
+
+	// Check if stream is done so that we don't output the printf below
+	if (this->ljStreamInfo->done) {
+		return;
+	}
+	printf("\niteration: % 3d    ", streamRead++);
+
+	err = LJM_eStreamRead(this->ljStreamInfo->handle, this->ljStreamInfo->aData, &deviceScanBacklog, &LJMScanBacklog);
+	// TODO: Figure out what this is doing
+	LabjackStreamHelpers::HardcodedPrintScans(this->ljStreamInfo.get(), deviceScanBacklog, LJMScanBacklog);
+	CountAndOutputNumSkippedSamples(this->ljStreamInfo->numChannels, this->ljStreamInfo->scansPerRead, this->ljStreamInfo->aData);
+
+	// If LJM has called this callback, the data is valid, but LJM_eStreamRead
+	// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
+	// such as this example program does in StreamWithCallback().
+	if (err != LJME_NOERROR && err != LJME_STREAM_NOT_RUNNING) {
+		PrintErrorIfError(err, "LJM_eStreamRead");
+
+		err = LJM_eStreamStop(this->ljStreamInfo->handle);
+		PrintErrorIfError(err, "LJM_eStreamStop");
 	}
 
-	// Only persist the values if the state has changed.
-	if (this->monitor->refreshState(this->lastCaptureComputerTime, this->lastReadInputPortValues)) {
-		//TODO: should this be asynchronous? This would require passing in the capture time and read values
-		this->persistReadValues(true);
-	}
+
+
+	// # Old non-stream version:
+	////Read the sensor values from the labjack DIO and AIO Inputs
+	//{
+	//	// Lock the mutex to prevent concurrent labjack interaction
+	//	std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
+	//	this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char**)this->inputPortNames_all, this->lastReadInputPortValues, &this->errorAddress);
+	//	ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
+	//}
+
+	//// Only persist the values if the state has changed.
+	//if (this->monitor->refreshState(this->lastCaptureComputerTime, this->lastReadInputPortValues)) {
+	//	//TODO: should this be asynchronous? This would require passing in the capture time and read values
+	//	this->persistReadValues(true);
+	//}
 }
 
 // Reads the most recently read values and persists them to the available output modalities (file, TCP, etc) if they've changed or it's needed.
@@ -735,35 +764,36 @@ void BehavioralBoxLabjack::initializeLabjackConfigurationIfNeeded()
 
 	// Labjack Stream Mode Setup:
 	//
-	this->ljStreamInfo = StreamInfo();
+	//this->ljStreamInfo = StreamInfo();
 
-	this->ljStreamInfo.scanRate = 2000; // Set the scan rate to the fastest rate expected
+	this->ljStreamInfo->scanRate = 2000; // Set the scan rate to the fastest rate expected
 	/*this->ljStreamInfo.numChannels = 4;*/
-	this->ljStreamInfo.numChannels = this->getNumberInputChannels();
+	this->ljStreamInfo->numChannels = this->getNumberInputChannels();
 	//this->ljStreamInfo.channelNames = this->getInputPortNames();
 	//const char* CHANNEL_NAMES[] = { "AIN0", "AIN1" };
 	//const char* foudnNames = this->inputPortNames_all;
 	const char* CHANNEL_NAMES[] = globalLabjackInputPortNames;
-	this->ljStreamInfo.channelNames = CHANNEL_NAMES;
+	this->ljStreamInfo->channelNames = CHANNEL_NAMES;
 
-	this->ljStreamInfo.scansPerRead = this->ljStreamInfo.scanRate / 2;
+	this->ljStreamInfo->scansPerRead = this->ljStreamInfo->scanRate / 2;
 
-	this->ljStreamInfo.streamLengthMS = 10000;
-	this->ljStreamInfo.done = FALSE;
+	this->ljStreamInfo->streamLengthMS = 10000;
+	this->ljStreamInfo->done = FALSE;
 
 	//this->ljStreamInfo.callback = &this->onLabjackStreamReadCallback;
-	
 	//this->ljStreamInfo->callback = &(this->onLabjackStreamReadCallback);
+	//this->ljStreamInfo->callback = &LabjackStreamHelpers::GlobalLabjackStreamReadCallback;
 
-	this->ljStreamInfo.callback = &LabjackStreamHelpers::GlobalLabjackStreamReadCallback;
 
+	this->ljStreamInfo->aData = NULL;
+	this->ljStreamInfo->aScanList = NULL;
 
-	this->ljStreamInfo.aData = NULL;
-	this->ljStreamInfo.aScanList = NULL;
-
-	this->ljStreamInfo.numScansToPrint = 1;
+	this->ljStreamInfo->numScansToPrint = 1;
 	
-	this->ljStreamInfo.handle = this->handle;
+	this->ljStreamInfo->handle = this->handle;
+
+	// Begin Setup:
+	LabjackStreamHelpers::SetupStream(this->ljStreamInfo.get());
 
 
 

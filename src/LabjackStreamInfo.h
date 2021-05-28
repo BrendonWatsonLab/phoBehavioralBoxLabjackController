@@ -13,7 +13,7 @@ public:
 
 	int streamLengthMS;
 	
-	LJM_StreamReadCallback callback;
+	//LJM_StreamReadCallback callback;
 
 	int numChannels;
 	int* aScanList;
