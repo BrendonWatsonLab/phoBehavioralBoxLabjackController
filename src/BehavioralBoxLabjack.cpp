@@ -231,7 +231,7 @@ time_t BehavioralBoxLabjack::getTime()
 	double labjackTime = 0.0;
 	this->err = LJM_eReadAddress(this->handle, 61500, 1, &labjackTime);
 	ErrorCheck(this->err, "getTime - LJM_eReadAddress");
-	return time_t(labjackTime);
+	return static_cast<time_t>(labjackTime);
 }
 
 void BehavioralBoxLabjack::setTime(time_t newTime)
@@ -347,28 +347,33 @@ void BehavioralBoxLabjack::readSensorValues()
 	if (this->ljStreamInfo.done) {
 		return;
 	}
-	printf("\niteration: % 3d    ", streamRead++);
 
-	err = LJM_eStreamRead(this->ljStreamInfo.handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
-	// TODO: Figure out what this is doing
-	/*LabjackStreamHelpers::HardcodedPrintScans(this->ljStreamInfo.get(), deviceScanBacklog, LJMScanBacklog);*/
-	//CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
+	{ // make sure I"m not introducing a bug with my concurrency/mutex by having the variables be defined outside the block
+		
+		// Lock the mutex to prevent concurrent labjack interaction
+		std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
+		printf("\niteration: % 3d    ", streamRead++);
 
-	this->HardcodedPrintScans(deviceScanBacklog, LJMScanBacklog);
-	//this->CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
-	CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
-	
-	// If LJM has called this callback, the data is valid, but LJM_eStreamRead
-	// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
-	// such as this example program does in StreamWithCallback().
-	if (err != LJME_NOERROR && err != LJME_STREAM_NOT_RUNNING) {
-		PrintErrorIfError(err, "LJM_eStreamRead");
+		err = LJM_eStreamRead(this->ljStreamInfo.handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
+		// TODO: Figure out what this is doing
+		/*LabjackStreamHelpers::HardcodedPrintScans(this->ljStreamInfo.get(), deviceScanBacklog, LJMScanBacklog);*/
+		//CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
 
-		err = LJM_eStreamStop(this->ljStreamInfo.handle);
-		PrintErrorIfError(err, "LJM_eStreamStop");
+		this->HardcodedPrintScans(deviceScanBacklog, LJMScanBacklog);
+		//this->CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
+		CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
+
+		// If LJM has called this callback, the data is valid, but LJM_eStreamRead
+		// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
+		// such as this example program does in StreamWithCallback().
+		if (err != LJME_NOERROR && err != LJME_STREAM_NOT_RUNNING) {
+			PrintErrorIfError(err, "LJM_eStreamRead");
+
+			err = LJM_eStreamStop(this->ljStreamInfo.handle);
+			PrintErrorIfError(err, "LJM_eStreamStop");
+		}
+
 	}
-
-
 
 	// # Old non-stream version:
 	////Read the sensor values from the labjack DIO and AIO Inputs
@@ -384,6 +389,10 @@ void BehavioralBoxLabjack::readSensorValues()
 	//	//TODO: should this be asynchronous? This would require passing in the capture time and read values
 	//	this->persistReadValues(true);
 	//}
+
+
+	// #TODO: Write the new logic for how the read stream values are persisted out:
+	
 }
 
 // Reads the most recently read values and persists them to the available output modalities (file, TCP, etc) if they've changed or it's needed.
@@ -891,7 +900,7 @@ void BehavioralBoxLabjack::SetupStream()
 	this->ljStreamInfo.aScanList = static_cast<int*>(malloc(sizeof(int) * this->ljStreamInfo.numChannels));
 	this->ljStreamInfo.aDataSize = this->ljStreamInfo.numChannels * this->ljStreamInfo.scansPerRead;
 	this->ljStreamInfo.aData = static_cast<double*>(malloc(sizeof(double) * this->ljStreamInfo.aDataSize));
-	memset(this->ljStreamInfo.aData, 0, sizeof(double) * this->ljStreamInfo.aDataSize);
+	memset(this->ljStreamInfo.aData, 0, sizeof(double) * this->ljStreamInfo.aDataSize); // I think this is supposed to initialize the contents of aData to real '0' values, not nullptr, but idk
 
 	err = LJM_NamesToAddresses(this->ljStreamInfo.numChannels, this->ljStreamInfo.channelNames, this->ljStreamInfo.aScanList, NULL);
 	ErrorCheck(err, "Getting positive channel addresses");
@@ -912,6 +921,7 @@ void BehavioralBoxLabjack::SetupStream()
 	err = LJM_eStreamStart(this->ljStreamInfo.handle, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.numChannels, this->ljStreamInfo.aScanList, &(this->ljStreamInfo.scanRate));
 	ErrorCheck(err, "LJM_eStreamStart");
 
+	//TODO: FIXME: We can't free the memory for aData yet, as it's needed in the next step, right?
 	free(this->ljStreamInfo.aScanList);
 	free(this->ljStreamInfo.aData);
 }
@@ -950,8 +960,8 @@ void BehavioralBoxLabjack::HardcodedPrintScans(int deviceScanBacklog, int LJMSca
 
 		// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which
 		// contains SYSTEM_TIMER_20HZ's upper 16 bits
-		timerValue = ((unsigned short)aData[scanI * 4 + 3] << 16) +
-			(unsigned short)aData[scanI * 4 + 2];
+		timerValue = (static_cast<unsigned short>(aData[scanI * 4 + 3]) << 16) +
+			static_cast<unsigned short>(aData[scanI * 4 + 2]);
 		printf("  0x%8X (%s)", timerValue, chanNames[2]);
 
 		printf("\n");
