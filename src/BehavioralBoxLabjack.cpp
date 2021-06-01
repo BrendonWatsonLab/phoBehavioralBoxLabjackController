@@ -168,6 +168,10 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 
 	//printf("Stream stopped. %u milliseconds have elapsed since LJM_eStreamStart\n", t1 - t0);
 
+	// Tear down the ljStreamInfo struct, which had its arrays dynamically allocated:
+	free(this->ljStreamInfo.aScanList);
+	free(this->ljStreamInfo.aData);
+	
 
 	// Cleanup output ports vector
 	for (int i = 0; i < NUM_OUTPUT_CHANNELS; i++) {
@@ -922,8 +926,10 @@ void BehavioralBoxLabjack::SetupStream()
 	ErrorCheck(err, "LJM_eStreamStart");
 
 	//TODO: FIXME: We can't free the memory for aData yet, as it's needed in the next step, right?
-	free(this->ljStreamInfo.aScanList);
-	free(this->ljStreamInfo.aData);
+	//free(this->ljStreamInfo.aScanList);
+	//free(this->ljStreamInfo.aData);
+	//TODO: should be freed after reading complete though, on shutdown.
+	
 }
 
 void BehavioralBoxLabjack::HardcodedPrintScans(int deviceScanBacklog, int LJMScanBacklog)
