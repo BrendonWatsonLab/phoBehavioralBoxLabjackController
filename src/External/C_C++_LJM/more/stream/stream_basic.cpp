@@ -156,7 +156,8 @@ void HardcodedConfigureStream(int handle)
 
 void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSkippedSamples)
 {
-	int scanI, chanI;
+	int scanStartOffsetI, chanI;
+	int scanI = 0;
 	numSkippedSamples = 0;
 	
 	int numSkippedScans = 0;
@@ -173,10 +174,10 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 	double* lastReadValues = nullptr;
 	lastReadValues = new double[numChannels];
 	
-	for (scanI = 0; scanI < numScans * numChannels; scanI += numChannels) {
+	for (scanStartOffsetI = 0; scanStartOffsetI < numScans * numChannels; scanStartOffsetI += numChannels) {
 		for (chanI = 0; chanI < numChannels; chanI++) {
 
-			if (aData[scanI + chanI] == LJM_DUMMY_VALUE) {
+			if (aData[scanStartOffsetI + chanI] == LJM_DUMMY_VALUE) {
 				++numSkippedScans;
 				++numSkippedSamples;
 			}
@@ -184,7 +185,7 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 			if (scanI == 0)
 			{
 				// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
-				lastReadValues[chanI] = aData[scanI + chanI];
+				lastReadValues[chanI] = aData[scanStartOffsetI + chanI];
 			}
 			else
 			{
@@ -205,21 +206,23 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 
 
 				//bool didChange = (lastReadValues[chanI] == aData[scanI + chanI]);
-				currDidChange = ((aData[scanI + chanI] - lastReadValues[chanI]) > changeTolerance);
+				currDidChange = ((aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
 				
 				if (currDidChange)
 				{
-					printf("didChange: aData[%3d]: %+.05f    \n", scanI + chanI, aData[scanI + chanI]);
+					//printf("didChange: aData[%3d]: %+.05f    \n", scanStartOffsetI + chanI, aData[scanStartOffsetI + chanI]);
+					printf("didChange: aData[%3d, %3d]: %+.05f    \n", scanI, chanI, aData[scanStartOffsetI + chanI]);					
 				}
 
 				// Update the last read value either way:
-				lastReadValues[chanI] = aData[scanI + chanI];
+				lastReadValues[chanI] = aData[scanStartOffsetI + chanI];
 			}
 
 			
 		} // end for chanI
 		//printf("\n");
-		
+
+		scanI++; // update scanI
 	} // end for scanI
 
 	// release the dynamically allocated memory:
