@@ -228,7 +228,7 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 					}
 				}
 				else {
-					temp = (unsigned short)aData[scanI + chanI];
+					temp = (unsigned short)aData[scanStartOffsetI + chanI];
 					bytes = (unsigned char*)&temp;
 
 					//printf("aData[%3d, %3d]: 0x ", scanI + chanI);
@@ -263,7 +263,7 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 						//printf("%02x %02x", bytes[0], bytes[1]);
 						printf("didChange: aData[%3d, %3d]: 0x %02x %02x -to-> 0x %02x %02x    \n", scanI, chanI, last_bytes[0], last_bytes[1], bytes[0], bytes[1]);
 					}
-					//digitalChannelsBitset 
+					
 				}
 
 
