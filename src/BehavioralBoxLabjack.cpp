@@ -454,17 +454,11 @@ void BehavioralBoxLabjack::readSensorValues()
 					}
 					else
 					{
-						//bool didChange = (lastReadValues[chanI] == aData[scanI + chanI]);
-						//currDidChange = ((aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
 						currDidChange = (fabs(this->ljStreamInfo.aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
 						if (currDidChange)
 						{
-							currScanDidAnyAnalogPortChange = currScanDidAnyAnalogPortChange || true; 
-							//printf("didChange: aData[%3d, %3d]:  %+.05f -to-> %+.05f    \n", scanI, chanI, lastReadValues[chanI], this->ljStreamInfo.aData[scanStartOffsetI + chanI]);
-							//printf(" >> didChange: aData[%3d, %3d] (%.05f)sec:  %+.05f -to-> %+.05f", scanI, chanI, currScanTimeOffsetSinceFirstScan, lastReadValues[chanI], this->ljStreamInfo.aData[scanStartOffsetI + chanI]);
+							currScanDidAnyAnalogPortChange = currScanDidAnyAnalogPortChange || true;
 							currScanDidAnyChange = currScanDidAnyChange || true;
-							
-							//% +.05f
 						}
 
 						// Update the last read value either way:
@@ -487,7 +481,7 @@ void BehavioralBoxLabjack::readSensorValues()
 						last_bytes = (unsigned char*)&last_temp;
 
 						// it changed if any of the bytes of interest changed:
-						//LJM_FLOAT32ToByteArray()
+						//
 						memcmpDidChange = memcmp(bytes, last_bytes, sizeof(unsigned char*));
 						currDidChange = (memcmpDidChange != 0);
 						if (currDidChange)
@@ -514,15 +508,7 @@ void BehavioralBoxLabjack::readSensorValues()
 			 * "Internal 32-bit system timer running at 1/2 core speed, thus normally 80M/2 => 40 MHz."
 			 */
 			
-			
 			// Gets the timer value for this scanI (scan index), guessing this is MS
-			
-			
-
-			
-			//printf("  0x%8X (%s)", timerValue, chanNames[2]);
-			//printf("\n");
-
 			if (currScanDidAnyChange)
 			{
 				currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(scanI);
@@ -964,46 +950,6 @@ void BehavioralBoxLabjack::SetupStream()
 	
 }
 
-void BehavioralBoxLabjack::HardcodedPrintScans(int deviceScanBacklog, int LJMScanBacklog)
-{
-	int dataI, scanI;
-	unsigned int timerValue;
-
-	const char** chanNames = this->ljStreamInfo.channelNames;
-	const double* aData = this->ljStreamInfo.aData;
-	int numScansReceived = this->ljStreamInfo.scansPerRead;
-	int numChannelsPerScan = this->ljStreamInfo.numChannels;
-	//int numScansToPrint = this->ljStreamInfo.numScansToPrint;
-	int numScansToPrint = this->ljStreamInfo.scansPerRead;
-
-	if (numChannelsPerScan < 4 || numChannelsPerScan > 4) {
-		printf("%s:%d - HardcodedPrintScans() - unexpected numChannelsPerScan: %d\n",	__FILE__, __LINE__, numChannelsPerScan);
-		return;
-	}
-
-	printf("devBacklog: % 4d - LJMBacklog: % 4d  - %d of %d scans: \n", deviceScanBacklog, LJMScanBacklog, numScansToPrint, numScansReceived);
-	for (scanI = 0; scanI < numScansToPrint; scanI++) {
-		for (dataI = 0; dataI < 2; dataI++) {
-			printf(" % 4.03f (%s),", aData[scanI * 4 + dataI], chanNames[dataI]);
-		}
-
-		if (strcmp(chanNames[2], "SYSTEM_TIMER_20HZ") != 0
-			|| strcmp(chanNames[3], "STREAM_DATA_CAPTURE_16") != 0)
-		{
-			printf("%s:%d - HardcodedPrintScans() - unexpected register: %s and/or %s\n",	__FILE__, __LINE__, chanNames[2], chanNames[3]);
-			return;
-		}
-
-		// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which
-		// contains SYSTEM_TIMER_20HZ's upper 16 bits
-		timerValue = (static_cast<unsigned short>(aData[scanI * 4 + 3]) << 16) +
-			static_cast<unsigned short>(aData[scanI * 4 + 2]);
-		printf("  0x%8X (%s)", timerValue, chanNames[2]);
-
-		printf("\n");
-	}
-}
-
 bool BehavioralBoxLabjack::isArtificialDaylightHours()
 {
 	time_t currTime = time(nullptr);
@@ -1181,24 +1127,64 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 	//newCSVLine.newRow() << milliseconds_since_epoch;
 	newCSVLine_digitalOnly.newRow() << estimated_scan_milliseconds_since_epoch;
 	newCSVLine_analogOnly.newRow() << estimated_scan_milliseconds_since_epoch;
+
+	unsigned short temp;
+	unsigned char* rawBytes;
 	
 	for (int i = 0; i < NUM_CHANNELS; i++) {
 		auto currPortType = this->inputPortTypes_all[i];
 		bool isOutput = this->inputPortIsLogged_all[i];
 
 		if (isOutput) {
-			if (this->inputPortIsAnalog[i])
+			switch (currPortType)
 			{
+			case LabjackPortType::Analog:
 				// If it's an analog port:
-				newCSVLine_analogOnly << this->lastReadInputPortValues[i];
-			}
-			else {
+				newCSVLine_analogOnly << lastReadValues[i];
+				break;
+			case LabjackPortType::Digital: 
 				// Otherwise, it's a digital port
-				newCSVLine_digitalOnly << this->lastReadInputPortValues[i];
-			}
+				newCSVLine_digitalOnly << lastReadValues[i];
+				break;
+			case LabjackPortType::DigitalState: 
+				// Otherwise, it's a digital port, need to read all bitwise values that we're interested in
+				//LJM_FLOAT32ToByteArray(lastReadValues[i],)
+				temp = (unsigned short)lastReadValues[i];
+				rawBytes = (unsigned char*)&temp;
 
+				// Convert the unsigned char output to binary representation (https://stackoverflow.com/questions/8521638/exact-binary-representation-of-a-double)
+				//The C++ standard does not guarantee 8-bit bytes
+				unsigned char startMask = 1;
+				while (0 != static_cast<unsigned char>(startMask << 1)) {
+					startMask <<= 1;
+				}
+				bool hasLeadBit = false;   //set this to true if you want to see leading zeros
+				size_t byteIndex;
+				for (byteIndex = 0;byteIndex < sizeof(double);++byteIndex) {
+					unsigned char bitMask = startMask;
+					while (0 != bitMask) {
+						if (0 != (bitMask & rawBytes[byteIndex])) {
+							//std::cout << "1";
+							newCSVLine_digitalOnly << 1;
+							hasLeadBit = true;
+						}
+						else if (hasLeadBit) {
+							newCSVLine_digitalOnly << 0;
+							//std::cout << "0";
+						}
+						bitMask >>= 1;
+					}
+				}
+				if (!hasLeadBit) {
+					//std::cout << "0";
+					newCSVLine_digitalOnly << 0;
+				}
+				//newCSVLine_digitalOnly << lastReadValues[i];
+				break;
+			}
+	
 			if (enableConsoleLogging) {
-				std::cout << this->lastReadInputPortValues[i] << ", ";
+				std::cout << lastReadValues[i] << ", ";
 			}
 		}
 	} //end for num channels

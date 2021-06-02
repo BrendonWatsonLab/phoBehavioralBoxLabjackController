@@ -203,7 +203,6 @@ private:
 	 * Combines SYSTEM_TIMER_20HZ and STREAM_DATA_CAPTURE_16 to create the original
 	 * 32-bit value of SYSTEM_TIMER_20HZ.
 	**/
-	void HardcodedPrintScans(int deviceScanBacklog, int LJMScanBacklog);
 
 #if LAUNCH_WEB_SERVER
 	// Signals
