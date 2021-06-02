@@ -937,13 +937,11 @@ void BehavioralBoxLabjack::HardcodedPrintScans(int deviceScanBacklog, int LJMSca
 	int numScansToPrint = this->ljStreamInfo.numScansToPrint;
 
 	if (numChannelsPerScan < 4 || numChannelsPerScan > 4) {
-		printf("%s:%d - HardcodedPrintScans() - unexpected numChannelsPerScan: %d\n",
-			__FILE__, __LINE__, numChannelsPerScan);
+		printf("%s:%d - HardcodedPrintScans() - unexpected numChannelsPerScan: %d\n",	__FILE__, __LINE__, numChannelsPerScan);
 		return;
 	}
 
-	printf("devBacklog: % 4d - LJMBacklog: % 4d  - %d of %d scans: \n",
-		deviceScanBacklog, LJMScanBacklog, numScansToPrint, numScansReceived);
+	printf("devBacklog: % 4d - LJMBacklog: % 4d  - %d of %d scans: \n", deviceScanBacklog, LJMScanBacklog, numScansToPrint, numScansReceived);
 	for (scanI = 0; scanI < numScansToPrint; scanI++) {
 		for (dataI = 0; dataI < 2; dataI++) {
 			printf(" % 4.03f (%s),", aData[scanI * 4 + dataI], chanNames[dataI]);
@@ -952,8 +950,7 @@ void BehavioralBoxLabjack::HardcodedPrintScans(int deviceScanBacklog, int LJMSca
 		if (strcmp(chanNames[2], "SYSTEM_TIMER_20HZ") != 0
 			|| strcmp(chanNames[3], "STREAM_DATA_CAPTURE_16") != 0)
 		{
-			printf("%s:%d - HardcodedPrintScans() - unexpected register: %s and/or %s\n",
-				__FILE__, __LINE__, chanNames[2], chanNames[3]);
+			printf("%s:%d - HardcodedPrintScans() - unexpected register: %s and/or %s\n",	__FILE__, __LINE__, chanNames[2], chanNames[3]);
 			return;
 		}
 

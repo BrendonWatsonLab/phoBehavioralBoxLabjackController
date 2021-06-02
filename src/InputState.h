@@ -7,6 +7,7 @@
 //TODO: Enable analog mode "thresholds/ranges" for determining if value changed.
 //TODO: Enable custom port names
 
+enum class LabjackPortType;
 // Manages the input state for a single pin. Responsible for detecting changes.
 typedef std::chrono::system_clock Clock;
 
@@ -14,7 +15,7 @@ class InputState
 {
 public:
 	InputState();
-	InputState(std::string pinName);
+	InputState(std::string pinName, LabjackPortType type);
 	~InputState();
 
 	// returns true if the input state has been changed
@@ -24,5 +25,8 @@ public:
 	bool presumedPinState = false; //Either high (true) or false (low)
 	std::chrono::time_point<Clock> last_change_time = Clock::now(); // The most recent time that the pin's value was changed.
 	std::chrono::time_point<Clock> last_refresh_time = Clock::now(); // The most recent time the pin's value was refreshed (whether it changed or not)
+
+private:
+	LabjackPortType portType;
 };
 

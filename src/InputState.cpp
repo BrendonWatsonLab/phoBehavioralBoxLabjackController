@@ -1,11 +1,13 @@
 #include "InputState.h"
 
+#include "LabjackPortType.h"
 
-InputState::InputState()
+
+InputState::InputState() : portType(LabjackPortType::Analog)
 {
 }
 
-InputState::InputState(std::string pinName) : pinName{pinName}
+InputState::InputState(std::string pinName, LabjackPortType type) : pinName{pinName}, portType(type)
 {
 }
 

@@ -5,6 +5,7 @@ Specifies what ports to open
 */
 
 #include "..\ProgramVersion.h"
+#include "LabjackPortType.h"
 
 // number of tasks that can run simultaneously
 #define MAX_NUM_THREAD_PER_LABJACK 1
@@ -34,6 +35,10 @@ Specifies what ports to open
 ////// DEBUGGING ONLY:
 //CONTINUE_WITHOUT_LABJACKS: if false, it waits on at least one labjack hardware to be detected before moving forward.
 //#define CONTINUE_WITHOUT_LABJACKS true
+
+
+
+
 
 ////// Labjack Port Configurations:
 // Only one of these should be un-commented at a time.

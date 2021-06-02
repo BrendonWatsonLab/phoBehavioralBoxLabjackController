@@ -5,6 +5,9 @@
 #include "config.h"
 #include "InputState.h"
 
+// Simple forward declaration
+struct LabjackStreamInfo;
+
 // Keep track of the presumed current state of each port. 
 // Upon each read, check if the read values differ from the previous values. When a change occurs:
 	// Capture the current timestamp and the new value
@@ -19,6 +22,10 @@ public:
 
 	// returns true if any state has been changed
 	bool refreshState(std::chrono::time_point<Clock> readTime, double readValues[NUM_CHANNELS]);
+
+	//bool refreshState(std::chrono::time_point<Clock> readTime, double readValues[NUM_CHANNELS], LabjackPortType readPortType[NUM_CHANNELS]);
+
+	//bool refreshState(std::chrono::time_point<Clock> readTime, LabjackStreamInfo* readStreamState);
 
 private:
 	InputState* inputs[NUM_CHANNELS];

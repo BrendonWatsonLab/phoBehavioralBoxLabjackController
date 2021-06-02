@@ -68,6 +68,7 @@
     <ClInclude Include="ConfigFiles\config-DownstairsBox.h" />
     <ClInclude Include="ConfigFiles\config-FinalBoxes-10-01-2019.h" />
     <ClInclude Include="ConfigFiles\config-PhoHomeTesting-05-28-2021.h" />
+    <ClInclude Include="ConfigFiles\config-PhoHomeTesting-06-02-2021.h" />
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h" />
     <ClInclude Include="ProgramVersion.h" />
     <ClInclude Include="resource.h" />
@@ -97,6 +98,7 @@
     <ClInclude Include="src\LabjackLiveStateWidget.h" />
     <ClInclude Include="src\LabjackHelpers.h" />
     <ClInclude Include="src\BoxPortInformation.h" />
+    <ClInclude Include="src\LabjackPortType.h" />
     <ClInclude Include="src\LabjackStreamInfo.h" />
     <ClInclude Include="src\LoadedConfiguration.h" />
     <ClInclude Include="src\NumericItem.h" />

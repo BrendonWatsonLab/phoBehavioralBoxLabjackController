@@ -278,6 +278,12 @@
     <ClInclude Include="ConfigFiles\config-PhoHomeTesting-05-28-2021.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
+    <ClInclude Include="ConfigFiles\config-PhoHomeTesting-06-02-2021.h">
+      <Filter>Header Files\Configuration Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackPortType.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml">

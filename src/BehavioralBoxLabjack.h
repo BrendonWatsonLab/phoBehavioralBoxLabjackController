@@ -138,6 +138,8 @@ private:
 	// All Values:
 	char * inputPortNames_all[NUM_CHANNELS] = globalLabjackInputPortNames;
 	char * inputPortPurpose_all[NUM_CHANNELS] = globalLabjackInputPortPurpose;
+	LabjackPortType inputPortTypes_all[NUM_CHANNELS] = globalLabjackInputPortType;
+	
 	bool inputPortIsAnalog[NUM_CHANNELS] = globalLabjackInputPortIsAnalog;
 	double previousReadInputPortValues_all[NUM_CHANNELS] = {0.0};
 	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
@@ -146,13 +148,16 @@ private:
 	// Digital values:
 	char* inputPortNames_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortNames;
 	char* inputPortPurpose_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortPurpose;
+	LabjackPortType inputPortTypes_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortType;
+	
 
 	// Analog Values:
 	//TODO: Check if we need a separate StateMonitor
 	//TODO: Check how CSVWriter is initialized
 	char* inputPortNames_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortNames;
 	char* inputPortPurpose_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortPurpose;
-
+	LabjackPortType inputPortTypes_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortType;
+	
 	int errorAddress;
 
 	// Vector of Output Port Objects
