@@ -1160,7 +1160,9 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 				}
 				bool hasLeadBit = false;   //set this to true if you want to see leading zeros
 				size_t byteIndex;
-				for (byteIndex = 0;byteIndex < sizeof(double);++byteIndex) {
+				/*for (byteIndex = 0;byteIndex < sizeof(double); ++byteIndex) {*/
+				//for (byteIndex = 0;byteIndex < sizeof(unsigned char); ++byteIndex) {
+				for (byteIndex = 0;byteIndex < sizeof(unsigned short); ++byteIndex) {
 					unsigned char bitMask = startMask;
 					while (0 != bitMask) {
 						if (0 != (bitMask & rawBytes[byteIndex])) {
