@@ -53,9 +53,6 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 
 	this->initializeLabjackConfigurationIfNeeded();
 
-	
-
-
 	// Get device info
 	this->err = LJM_GetHandleInfo(this->handle, &deviceType, &connectionType, &this->serialNumber, &ipAddress,
 		&portOrPipe, &packetMaxBytes);
@@ -162,15 +159,16 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	// Probably need to do something with To stop stream, use LJM_eStreamStop.
 	printf("Stopping stream...\n");
 	this->ljStreamInfo.done = TRUE;
-	this->err = LJM_eStreamStop(this->ljStreamInfo.handle);
-	auto t1 = GetCurrentTimeMS();
+	this->err = LJM_eStreamStop(this->handle);
 	ErrorCheck(this->err, "LJM_eStreamStop");
 
+	this->ljStreamInfo.cleanup();
+	
 	//printf("Stream stopped. %u milliseconds have elapsed since LJM_eStreamStart\n", t1 - t0);
 
 	// Tear down the ljStreamInfo struct, which had its arrays dynamically allocated:
-	free(this->ljStreamInfo.aScanList);
-	free(this->ljStreamInfo.aData);
+	//free(this->ljStreamInfo.aScanList);
+	//free(this->ljStreamInfo.aData);
 	
 
 	// Cleanup output ports vector
@@ -341,40 +339,42 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 void BehavioralBoxLabjack::readSensorValues()
 {
 	this->lastCaptureComputerTime = Clock::now();
-
 	static int streamRead = 0;
-	int deviceScanBacklog = 0;
-	int LJMScanBacklog = 0;
-	int err;
 
 	// Check if stream is done so that we don't output the printf below
 	if (this->ljStreamInfo.done) {
 		return;
 	}
 
-	{ // make sure I"m not introducing a bug with my concurrency/mutex by having the variables be defined outside the block
-		
+	{ // make sure I"m not introducing a bug with my concurrency/mutex by having the variables be defined outside the block		
 		// Lock the mutex to prevent concurrent labjack interaction
 		std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
-		printf("\niteration: % 3d    ", streamRead++);
+		//printf("\niteration: % 3d    ", streamRead++);
 
-		err = LJM_eStreamRead(this->ljStreamInfo.handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
+		int deviceScanBacklog = 0;
+		int LJMScanBacklog = 0;
+
+		this->err = LJM_eStreamRead(this->handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
+
 		// TODO: Figure out what this is doing
 		/*LabjackStreamHelpers::HardcodedPrintScans(this->ljStreamInfo.get(), deviceScanBacklog, LJMScanBacklog);*/
 		//CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
 
-		this->HardcodedPrintScans(deviceScanBacklog, LJMScanBacklog);
+		//this->HardcodedPrintScans(deviceScanBacklog, LJMScanBacklog);
 		//this->CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
-		CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
+		//CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
 
 		// If LJM has called this callback, the data is valid, but LJM_eStreamRead
 		// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
 		// such as this example program does in StreamWithCallback().
-		if (err != LJME_NOERROR && err != LJME_STREAM_NOT_RUNNING) {
-			PrintErrorIfError(err, "LJM_eStreamRead");
+		if (this->err != LJME_NOERROR && this->err != LJME_STREAM_NOT_RUNNING) {
+			PrintErrorIfError(this->err, "LJM_eStreamRead");
 
-			err = LJM_eStreamStop(this->ljStreamInfo.handle);
-			PrintErrorIfError(err, "LJM_eStreamStop");
+			// Tries to stop the stream:
+			this->ljStreamInfo.done = 1;
+			this->shouldStop = true;
+			//this->err = LJM_eStreamStop(this->handle);
+			//PrintErrorIfError(this->err, "LJM_eStreamStop");
 		}
 
 	}
@@ -787,30 +787,40 @@ void BehavioralBoxLabjack::initializeLabjackConfigurationIfNeeded()
 	//this->ljStreamInfo = StreamInfo();
 
 
-	this->ljStreamInfo.scanRate = 2000; // Set the scan rate to the fastest rate expected
+	//this->ljStreamInfo.scanRate = 2000; // Set the scan rate to the fastest rate expected
 	/*this->ljStreamInfo.numChannels = 4;*/
-	this->ljStreamInfo.numChannels = this->getNumberInputChannels();
+	//this->ljStreamInfo.numChannels = this->getNumberInputChannels(true, true);
 	//this->ljStreamInfo.channelNames = this->getInputPortNames();
 	//const char* CHANNEL_NAMES[] = { "AIN0", "AIN1" };
 	//const char* foudnNames = this->inputPortNames_all;
-	const char* CHANNEL_NAMES[] = globalLabjackInputPortNames;
-	this->ljStreamInfo.channelNames = CHANNEL_NAMES;
+	//const char* CHANNEL_NAMES[] = globalLabjackInputPortNames;
+	//this->ljStreamInfo.channelNames = CHANNEL_NAMES;
+	//this->ljStreamInfo.scansPerRead = this->ljStreamInfo.scanRate / 2;
 
-	this->ljStreamInfo.scansPerRead = this->ljStreamInfo.scanRate / 2;
-
-	this->ljStreamInfo.streamLengthMS = 10000;
-	this->ljStreamInfo.done = FALSE;
+	//this->ljStreamInfo.streamLengthMS = 10000;
+	//this->ljStreamInfo.done = FALSE;
 
 	//this->ljStreamInfo.callback = &this->onLabjackStreamReadCallback;
 	//this->ljStreamInfo.callback = &(this->onLabjackStreamReadCallback);
 	//this->ljStreamInfo.callback = &LabjackStreamHelpers::GlobalLabjackStreamReadCallback;
 
-	this->ljStreamInfo.aData = nullptr;
-	this->ljStreamInfo.aScanList = nullptr;
+	//this->ljStreamInfo.aData = nullptr;
+	//this->ljStreamInfo.aScanList = nullptr;
 
-	this->ljStreamInfo.numScansToPrint = 1;
+	//this->ljStreamInfo.numScansToPrint = 1;
 
-	this->ljStreamInfo.handle = this->handle;
+	//this->ljStreamInfo.aScanList
+
+	/*this->ljStreamInfo.build(this->getNumberInputChannels(true, true), CHANNEL_NAMES, 100);
+	
+	this->err = LJM_NamesToAddresses(this->ljStreamInfo.numChannels, this->ljStreamInfo.channelNames, this->ljStreamInfo.aScanList, NULL);
+	ErrorCheck(this->err, "Getting positive channel addresses");*/
+	
+	
+
+	//this->ljStreamInfo.handle = this->handle;
+
+	//unsigned int aDataSize = numChannels * scansPerRead;
 	
 
 	// ## Class version:
@@ -851,9 +861,6 @@ void BehavioralBoxLabjack::initializeLabjackConfigurationIfNeeded()
 
 void BehavioralBoxLabjack::SetupStream()
 {
-	int err;
-	unsigned int t0, t1;
-
 	const int STREAM_TRIGGER_INDEX = 0;
 	const int STREAM_CLOCK_SOURCE = 0;
 	const int STREAM_RESOLUTION_INDEX = 0;
@@ -867,12 +874,12 @@ void BehavioralBoxLabjack::SetupStream()
 		printf("    Ensuring triggered stream is disabled:");
 	}
 	printf("    Setting STREAM_TRIGGER_INDEX to %d\n", STREAM_TRIGGER_INDEX);
-	WriteNameOrDie(this->ljStreamInfo.handle, "STREAM_TRIGGER_INDEX", STREAM_TRIGGER_INDEX);
+	WriteNameOrDie(this->handle, "STREAM_TRIGGER_INDEX", STREAM_TRIGGER_INDEX);
 
 	if (!EXTERNAL_STREAM_CLOCK) {
 		printf("    Enabling internally-clocked stream:");
 		printf("    Setting STREAM_CLOCK_SOURCE to %d\n", STREAM_CLOCK_SOURCE);
-		WriteNameOrDie(this->ljStreamInfo.handle, "STREAM_CLOCK_SOURCE", STREAM_CLOCK_SOURCE);
+		WriteNameOrDie(this->handle, "STREAM_CLOCK_SOURCE", STREAM_CLOCK_SOURCE);
 	}
 
 	// Configure the analog inputs' negative channel, range, settling time and
@@ -880,15 +887,14 @@ void BehavioralBoxLabjack::SetupStream()
 	// Note: when streaming, negative channels and ranges can be configured for
 	// individual analog inputs, but the stream has only one settling time and
 	// resolution.
-	printf("    Setting STREAM_RESOLUTION_INDEX to %d\n",
-		STREAM_RESOLUTION_INDEX);
-	WriteNameOrDie(this->ljStreamInfo.handle, "STREAM_RESOLUTION_INDEX", STREAM_RESOLUTION_INDEX);
+	printf("    Setting STREAM_RESOLUTION_INDEX to %d\n",	STREAM_RESOLUTION_INDEX);
+	WriteNameOrDie(this->handle, "STREAM_RESOLUTION_INDEX", STREAM_RESOLUTION_INDEX);
 
 	printf("    Setting STREAM_SETTLING_US to %f\n", STREAM_SETTLING_US);
-	WriteNameOrDie(this->ljStreamInfo.handle, "STREAM_SETTLING_US", STREAM_SETTLING_US);
+	WriteNameOrDie(this->handle, "STREAM_SETTLING_US", STREAM_SETTLING_US);
 
 	printf("    Setting AIN_ALL_RANGE to %f\n", AIN_ALL_RANGE);
-	WriteNameOrDie(this->ljStreamInfo.handle, "AIN_ALL_RANGE", AIN_ALL_RANGE);
+	WriteNameOrDie(this->handle, "AIN_ALL_RANGE", AIN_ALL_RANGE);
 
 	printf("    Setting AIN_ALL_NEGATIVE_CH to ");
 	if (AIN_ALL_NEGATIVE_CH == LJM_GND) {
@@ -898,32 +904,19 @@ void BehavioralBoxLabjack::SetupStream()
 		printf("%d", AIN_ALL_NEGATIVE_CH);
 	}
 	printf("\n\n");
-	WriteNameOrDie(this->ljStreamInfo.handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
+	WriteNameOrDie(this->handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
 
+	// Build the stream object:
+	const char* CHANNEL_NAMES[] = globalLabjackInputPortNames;
+	this->ljStreamInfo.build(this->getNumberInputChannels(true, true), CHANNEL_NAMES, 200);
+
+	this->err = LJM_NamesToAddresses(this->ljStreamInfo.numChannels, this->ljStreamInfo.channelNames, this->ljStreamInfo.aScanList, NULL);
+	ErrorCheck(this->err, "Getting positive channel addresses");
+	
+	
 	// Variables for LJM_eStreamStart
-	this->ljStreamInfo.aScanList = static_cast<int*>(malloc(sizeof(int) * this->ljStreamInfo.numChannels));
-	this->ljStreamInfo.aDataSize = this->ljStreamInfo.numChannels * this->ljStreamInfo.scansPerRead;
-	this->ljStreamInfo.aData = static_cast<double*>(malloc(sizeof(double) * this->ljStreamInfo.aDataSize));
-	memset(this->ljStreamInfo.aData, 0, sizeof(double) * this->ljStreamInfo.aDataSize); // I think this is supposed to initialize the contents of aData to real '0' values, not nullptr, but idk
-
-	err = LJM_NamesToAddresses(this->ljStreamInfo.numChannels, this->ljStreamInfo.channelNames, this->ljStreamInfo.aScanList, NULL);
-	ErrorCheck(err, "Getting positive channel addresses");
-
-	if (EXTERNAL_STREAM_CLOCK) {
-		SetupExternalClockStream(this->ljStreamInfo.handle);
-	}
-
-	// If you do not have a signal generator of some sort, you can connect a
-	// wire from FIO0 to CIO3 and call EnableFIO0PulseOut to verify
-	// that your program is working.
-	if (FIO0_PULSE_OUT) {
-		EnableFIO0PulseOut(this->ljStreamInfo.handle, this->ljStreamInfo.scanRate,
-			this->ljStreamInfo.scanRate * this->ljStreamInfo.streamLengthMS / 1000 + 5000);
-	}
-
-	t0 = GetCurrentTimeMS();
-	err = LJM_eStreamStart(this->ljStreamInfo.handle, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.numChannels, this->ljStreamInfo.aScanList, &(this->ljStreamInfo.scanRate));
-	ErrorCheck(err, "LJM_eStreamStart");
+	this->err = LJM_eStreamStart(this->handle, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.numChannels, this->ljStreamInfo.aScanList, &(this->ljStreamInfo.scanRate));
+	ErrorCheck(this->err, "LJM_eStreamStart");
 
 	//TODO: FIXME: We can't free the memory for aData yet, as it's needed in the next step, right?
 	//free(this->ljStreamInfo.aScanList);
