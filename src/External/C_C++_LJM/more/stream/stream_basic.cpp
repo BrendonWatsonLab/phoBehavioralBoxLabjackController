@@ -197,6 +197,22 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 	// Normally would allocate a double* buffer, right?
 	double* lastReadValues = nullptr;
 	lastReadValues = new double[numChannels];
+
+
+	
+	
+	/*for (chanI = 0; chanI < numChannels; chanI++)
+	{
+		if (isChannelAnalog)
+		{
+
+		}
+		else
+		{
+			
+		}
+
+	}*/
 	
 	for (scanStartOffsetI = 0; scanStartOffsetI < numScans * numChannels; scanStartOffsetI += numChannels) {
 		for (chanI = 0; chanI < numChannels; chanI++) {
@@ -206,62 +222,77 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 				++numSkippedSamples;
 			}
 			
-			if (scanI == 0)
-			{
-				// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
-				lastReadValues[chanI] = aData[scanStartOffsetI + chanI];
-			}
-			else
-			{
+			
 				// Otherwise, get the last read value and compare it to this value:
 				if (isChannelAnalog[chanI]) {
-					//printf("aData[%3d]: %+.05f    ", scanI + chanI, aData[scanI + chanI]);
 					// aData[scanI + chanI] is a double
-					//bool didChange = (lastReadValues[chanI] == aData[scanI + chanI]);
-					//currDidChange = ((aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
-					currDidChange = (fabs(aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
-					if (currDidChange)
+					if (scanI == 0)
 					{
-						//printf("didChange: aData[%3d]: %+.05f    \n", scanStartOffsetI + chanI, aData[scanStartOffsetI + chanI]);
-						//printf("didChange: aData[%3d, %3d]: %+.05f    \n", scanI, chanI, aData[scanStartOffsetI + chanI]);					
-						printf("didChange: aData[%3d, %3d]:  %+.05f -to-> %+.05f    \n", scanI, chanI, lastReadValues[chanI], aData[scanStartOffsetI + chanI]);
+						// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
+						lastReadValues[chanI] = aData[scanStartOffsetI + chanI];
+					}
+					else
+					{
+						//bool didChange = (lastReadValues[chanI] == aData[scanI + chanI]);
+						//currDidChange = ((aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
+						currDidChange = (fabs(aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
+						if (currDidChange)
+						{	
+							printf("didChange: aData[%3d, %3d]:  %+.05f -to-> %+.05f    \n", scanI, chanI, lastReadValues[chanI], aData[scanStartOffsetI + chanI]);
+						}
+
+						// Update the last read value either way:
+						lastReadValues[chanI] = aData[scanStartOffsetI + chanI];
 					}
 				}
 				else {
 					temp = (unsigned short)aData[scanStartOffsetI + chanI];
 					bytes = (unsigned char*)&temp;
 
-					//printf("aData[%3d, %3d]: 0x ", scanI + chanI);
-					//printf("aData[%3d, %3d]: 0x ", scanI, chanI);
-					//printf("%02x %02x", bytes[0], bytes[1]);
-					//printf("  (% 7.00f)   ", aData[scanI + chanI]);
-
-					//digitalChannelsBitset.set()
-					//digitalChannelsBitset(bytes[0]);
-					//digitalChannelsBitset = std::bitset(bytes[0]);
-					//sizeof(unsigned char*)
-
-					// Get current values:
-					//digitalChannelsBitset = std::bitset<8>(bytes[0]);
-					
-					// Get last read values:
-					last_temp = (unsigned short)lastReadValues[chanI];
-					last_bytes = (unsigned char*)&last_temp;
-					//digitalChannelsLastValuesBitset = std::bitset<8>(last_bytes[0]);
-
-					
-					// it changed if any of the bytes of interest changed:
-					//const std::bitset<8>didAnyChange
-					//auto didPortChange = (digitalChannelsBitset & digitalChannelsLastValuesBitset);
-					//currDidChange = (digitalChannelsBitset != digitalChannelsLastValuesBitset);
-					//memcmpDidChange = memcmp(bytes, last_bytes, (sizeof(unsigned char*) * 2));
-					memcmpDidChange = memcmp(bytes, last_bytes, sizeof(unsigned char*));
-					currDidChange = (memcmpDidChange != 0);
-					if (currDidChange)
+					if (scanI == 0)
 					{
+						// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
+						lastReadValues[chanI] = aData[scanStartOffsetI + chanI];
+					}
+					else
+					{
+						//printf("aData[%3d, %3d]: 0x ", scanI + chanI);
 						//printf("aData[%3d, %3d]: 0x ", scanI, chanI);
 						//printf("%02x %02x", bytes[0], bytes[1]);
-						printf("didChange: aData[%3d, %3d]: 0x %02x %02x -to-> 0x %02x %02x    \n", scanI, chanI, last_bytes[0], last_bytes[1], bytes[0], bytes[1]);
+						//printf("  (% 7.00f)   ", aData[scanI + chanI]);
+
+						//digitalChannelsBitset.set()
+						//digitalChannelsBitset(bytes[0]);
+						//digitalChannelsBitset = std::bitset(bytes[0]);
+						//sizeof(unsigned char*)
+
+						// Get current values:
+						//digitalChannelsBitset = std::bitset<8>(bytes[0]);
+						
+						// Get last read values:
+						last_temp = (unsigned short)lastReadValues[chanI];
+						last_bytes = (unsigned char*)&last_temp;
+						//digitalChannelsLastValuesBitset = std::bitset<8>(last_bytes[0]);
+
+						//ToBits(last_bytes[0]);
+					
+						// it changed if any of the bytes of interest changed:
+						//const std::bitset<8>didAnyChange
+						//auto didPortChange = (digitalChannelsBitset & digitalChannelsLastValuesBitset);
+						//currDidChange = (digitalChannelsBitset != digitalChannelsLastValuesBitset);
+						//memcmpDidChange = memcmp(bytes, last_bytes, (sizeof(unsigned char*) * 2));
+						memcmpDidChange = memcmp(bytes, last_bytes, sizeof(unsigned char*));
+						currDidChange = (memcmpDidChange != 0);
+						if (currDidChange)
+						{
+							//printf("aData[%3d, %3d]: 0x ", scanI, chanI);
+							//printf("%02x %02x", bytes[0], bytes[1]);
+							printf("didChange: aData[%3d, %3d]: 0x %02x %02x -to-> 0x %02x %02x    \n", scanI, chanI, last_bytes[0], last_bytes[1], bytes[0], bytes[1]);
+						}
+						//digitalChannelsBitset
+
+							// Update the last read value either way:
+						lastReadValues[chanI] = aData[scanStartOffsetI + chanI];
 					}
 					
 				}
@@ -273,9 +304,7 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 				
 				
 
-				// Update the last read value either way:
-				lastReadValues[chanI] = aData[scanStartOffsetI + chanI];
-			}
+				
 
 			
 		} // end for chanI
