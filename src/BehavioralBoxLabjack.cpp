@@ -360,16 +360,11 @@ void BehavioralBoxLabjack::readSensorValues()
 		int LJMScanBacklog = 0;
 
 		timeStart = GetCurrentTimeMS();
+		auto systemTimeStart = Clock::now();
 		this->err = LJM_eStreamRead(this->handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
 		timeEnd = GetCurrentTimeMS();
+		auto systemTimeEnd = Clock::now();
 		printf("timerStart: %f\t timeEnd: %f\t difference: %f\n", double(timeStart), double(timeEnd), (double(timeEnd) - double(timeStart)));
-		// TODO: Figure out what this is doing
-		/*LabjackStreamHelpers::HardcodedPrintScans(this->ljStreamInfo.get(), deviceScanBacklog, LJMScanBacklog);*/
-		//CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
-
-		//this->HardcodedPrintScans(deviceScanBacklog, LJMScanBacklog);
-		//this->CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
-		//CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
 
 		// If LJM has called this callback, the data is valid, but LJM_eStreamRead
 		// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
@@ -479,41 +474,17 @@ void BehavioralBoxLabjack::readSensorValues()
 					}
 					else
 					{
-						//printf("aData[%3d, %3d]: 0x ", scanI + chanI);
-						//printf("aData[%3d, %3d]: 0x ", scanI, chanI);
-						//printf("%02x %02x", bytes[0], bytes[1]);
-						//printf("  (% 7.00f)   ", aData[scanI + chanI]);
-
-						//digitalChannelsBitset.set()
-						//digitalChannelsBitset(bytes[0]);
-						//digitalChannelsBitset = std::bitset(bytes[0]);
-						//sizeof(unsigned char*)
-
-						// Get current values:
-						//digitalChannelsBitset = std::bitset<8>(bytes[0]);
-
 						// Get last read values:
 						last_temp = (unsigned short)lastReadValues[chanI];
 						last_bytes = (unsigned char*)&last_temp;
-						//digitalChannelsLastValuesBitset = std::bitset<8>(last_bytes[0]);
-
-						//ToBits(last_bytes[0]);
 
 						// it changed if any of the bytes of interest changed:
-						//const std::bitset<8>didAnyChange
-						//auto didPortChange = (digitalChannelsBitset & digitalChannelsLastValuesBitset);
-						//currDidChange = (digitalChannelsBitset != digitalChannelsLastValuesBitset);
-						//memcmpDidChange = memcmp(bytes, last_bytes, (sizeof(unsigned char*) * 2));
-
 						//LJM_FLOAT32ToByteArray()
 						memcmpDidChange = memcmp(bytes, last_bytes, sizeof(unsigned char*));
 						currDidChange = (memcmpDidChange != 0);
 						if (currDidChange)
 						{
 							currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(scanI);
-							//printf("aData[%3d, %3d]: 0x ", scanI, chanI);
-							//printf("%02x %02x", bytes[0], bytes[1]);
-							//printf(" >> didChange: aData[%3d, %3d] (%.05f)sec: 0x %02x %02x -to-> 0x %02x %02x", scanI, chanI, currScanTimeOffsetSinceFirstScan, last_bytes[0], last_bytes[1], bytes[0], bytes[1]);
 							currScanDidAnyChange = currScanDidAnyChange || true;
 						}
 
@@ -550,14 +521,25 @@ void BehavioralBoxLabjack::readSensorValues()
 				//double currTimerOffsetSeconds = double(timerValue) * 40.0 * 1000000.0; // Convert to seconds
 				double currTimerOffsetSeconds = double(timerValue); // Convert to seconds
 				double timerDifference = double(previousTimerValue) - currTimerOffsetSeconds;
-				printf(" >>\t timer: %f; delta: %f", currTimerOffsetSeconds, double(timerDifference));
+				//printf(" >>\t timer: %f; delta: %f", currTimerOffsetSeconds, double(timerDifference));
 
 				//printf("  0x%8X timer)", timerValue);
-				printf("\n");
 
+				// This value is in seconds, but we want whole values:
+				long long int roundedMsValue = static_cast<long long int>(currScanTimeOffsetSinceFirstScan * 1000.0);
+				auto estimatedScanTime = systemTimeStart + std::chrono::milliseconds(roundedMsValue);
 				
 				// Here is where we'll convert to a this->monitor() appropriate value
+				//this->monitor(estimatedScanTime, lastReadValues);
 
+				printf("\n");
+				
+				// Only persist the values if the state has changed.
+				if (this->monitor->refreshState(estimatedScanTime, lastReadValues)) {
+					//TODO: should this be asynchronous? This would require passing in the capture time and read values
+					//this->persistReadValues(true);
+					printf("refresh state returned true!");
+				}
 				//this->monitor->refreshState()
 				//lastReadValues;
 				
