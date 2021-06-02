@@ -11,17 +11,26 @@
 
 #include "../../LJM_StreamUtilities.h"
 
-void Stream(int handle, int numChannels, const char ** channelNames,
-	double scanRate, int scansPerRead, int numReads);
+
+
+void Stream(int handle, int numChannels, const char ** channelNames, double scanRate, int scansPerRead, int numReads);
 
 void HardcodedConfigureStream(int handle);
+
+
+//void PhoAccumulateScans(int numScans, int numChannels, const char** channelNames, const int* channelAddresses, double* aData);
+
+
+const boolean isAnalogChannel[] = { true, true, true, true, false };
+
 
 int main()
 {
 	int handle;
 
 	// How fast to stream in Hz
-	double INIT_SCAN_RATE = 2000;
+	//double INIT_SCAN_RATE = 2000;
+	double INIT_SCAN_RATE = 200;
 
 	// How many scans to get per call to LJM_eStreamRead. INIT_SCAN_RATE/2 is
 	// recommended
@@ -32,9 +41,23 @@ int main()
 
 	// Channels/Addresses to stream. NUM_CHANNELS can be less than or equal to
 	// the size of CHANNEL_NAMES
-	enum { NUM_CHANNELS = 2 };
-	const char * CHANNEL_NAMES[] = {"AIN0", "AIN1"};
+	//enum { NUM_CHANNELS = 2 };
+	//const char * CHANNEL_NAMES[] = {"AIN0", "AIN1"};
 
+	
+	//enum { NUM_CHANNELS = 8 };
+	//const char * CHANNEL_NAMES[] = {"AIN0", "AIN1", "AIN2", "AIN3", "FIO0", "FIO1", "FIO2", "FIO3"};
+
+	//enum { NUM_CHANNELS = 4 };
+	//const char* CHANNEL_NAMES[] = {"AIN0", "AIN1", "AIN2", "AIN3"};
+
+	enum { NUM_CHANNELS = 5 };
+	const char* CHANNEL_NAMES[] = { "AIN0", "AIN1", "AIN2", "AIN3", "FIO_STATE" };
+	
+
+	// FIO_STATE: Read the state of the 8 bits of FIO in a single binary-encoded value.
+	// FIO_EIO_STATE: Read the state of the 16 bits of FIO-EIO in a single binary encoded value. 0=Low AND 1=HIGH
+	
 	// Open first found LabJack
 	handle = OpenOrDie(LJM_dtANY, LJM_ctANY, "LJM_idANY");
 	// handle = OpenSOrDie("LJM_dtANY", "LJM_ctANY", "LJM_idANY");
@@ -42,8 +65,7 @@ int main()
 	PrintDeviceInfoFromHandle(handle);
 	printf("\n");
 
-	Stream(handle, NUM_CHANNELS, CHANNEL_NAMES, INIT_SCAN_RATE, SCANS_PER_READ,
-		NUM_READS);
+	Stream(handle, NUM_CHANNELS, CHANNEL_NAMES, INIT_SCAN_RATE, SCANS_PER_READ, NUM_READS);
 
 	CloseOrDie(handle);
 
@@ -101,8 +123,44 @@ void HardcodedConfigureStream(int handle)
 	WriteNameOrDie(handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
 }
 
-void Stream(int handle, int numChannels, const char ** channelNames,
-	double scanRate, int scansPerRead, int numReads)
+//void PhoAccumulateScans(int numScans, int numChannels, const char** channelNames, const int* channelAddresses, double* aData)
+//{
+//	int scanI, chanI;
+//	int numSkippedScans = 0;
+//	//int maxScansPerChannel = limitScans ? MAX_NUM : numScans;
+//	unsigned short temp;
+//	unsigned char* bytes;
+//
+//	// Goal is to find lines (scanI) where a value change occurs most efficiently
+//	
+//	
+//	for (scanI = 0; scanI < numScans * numChannels; scanI += numChannels) {
+//		for (chanI = 0; chanI < numChannels; chanI++) {
+//			if (aData[scanI + chanI] == LJM_DUMMY_VALUE) {
+//				++numSkippedScans;
+//			}
+//			if (channelAddresses[chanI] < 1000) {
+//				//printf("aData[%3d]: %+.05f    ", scanI + chanI, aData[scanI + chanI]);
+//				// aData[scanI + chanI] is a double
+//				
+//			}
+//			else {
+//				temp = (unsigned short)aData[scanI + chanI];
+//				bytes = (unsigned char*)&temp;
+//
+//				//printf("aData[%3d]: 0x ", scanI + chanI);
+//				//printf("%02x %02x", bytes[0], bytes[1]);
+//				//printf("  (% 7.00f)   ", aData[scanI + chanI]);
+//			}
+//		} // end for chanI
+//		//printf("\n");
+//		
+//	} // end for scanI
+//
+//	
+//}
+
+void Stream(int handle, int numChannels, const char ** channelNames, double scanRate, int scansPerRead, int numReads)
 {
 	int err, iteration, channel;
 	int numSkippedScans = 0;
@@ -112,6 +170,10 @@ void Stream(int handle, int numChannels, const char ** channelNames,
 	unsigned int receiveBufferBytesSize = 0;
 	unsigned int receiveBufferBytesBacklog = 0;
 	int connectionType;
+
+	char* formatString;
+	unsigned short temp;
+	unsigned char* bytes;
 
 	int * aScanList = malloc(sizeof(int) * numChannels);
 
@@ -143,12 +205,11 @@ void Stream(int handle, int numChannels, const char ** channelNames,
 	printf("Now performing %d reads\n", numReads);
 	printf("\n");
 	for (iteration = 0; iteration < numReads; iteration++) {
-		err = LJM_eStreamRead(handle, aData, &deviceScanBacklog,
-			&LJMScanBacklog);
+		// reads SCANS_PER_READ for each iteration of this loop
+		err = LJM_eStreamRead(handle, aData, &deviceScanBacklog, &LJMScanBacklog);
 		ErrorCheck(err, "LJM_eStreamRead");
 
-		printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d",
-			iteration, deviceScanBacklog, LJMScanBacklog);
+		printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d", iteration, deviceScanBacklog, LJMScanBacklog);
 		if (connectionType != LJM_ctUSB) {
 			err = LJM_GetStreamTCPReceiveBufferStatus(handle,
 				&receiveBufferBytesSize, &receiveBufferBytesBacklog);
@@ -157,24 +218,50 @@ void Stream(int handle, int numChannels, const char ** channelNames,
 				((double)receiveBufferBytesBacklog) / receiveBufferBytesSize * 100);
 		}
 		printf("\n");
+
+		//PhoAccumulateScans(scansPerRead, numChannels, channelNames, aScanList, aData);
+
+		
 		printf("  1st scan out of %d:\n", scansPerRead);
 		for (channel = 0; channel < numChannels; channel++) {
-			printf("    %s = %0.5f\n", channelNames[channel], aData[channel]);
+			if (isAnalogChannel[channel])
+			{
+				printf("    %s = %0.5f\n", channelNames[channel], aData[channel]);
+			}
+			else
+			{
+				//double currValue = aData[channel];
+
+				
+				/*UINT16 readDigitalValues = static_cast<UINT16>(aData[channel]);*/
+				//auto bitcastValue = std::bit_cast<int>(aData[channel]);
+
+				//UINT16 readDigitalValues = static_cast<UINT16>(aData[channel]);
+				//UINT16 readDigitalValues = *(UINT16*)&currValue;
+				//int readDigitalValues = *(int*)&currValue;
+
+				temp = (unsigned short)aData[channel];
+				bytes = (unsigned char*)&temp;
+				
+				printf("aData[%3d]: 0x ", channel);
+				printf("%02x %02x", bytes[0], bytes[1]);
+				printf("  (% 7.00f)   \n", aData[channel]);
+				
+				//printf("    %s = %hu\n", channelNames[channel], readDigitalValues);
+			
+			}
 		}
 
-		numSkippedScans = CountAndOutputNumSkippedSamples(numChannels,
-			scansPerRead, aData);
+		numSkippedScans = CountAndOutputNumSkippedSamples(numChannels, scansPerRead, aData);
 
 		if (numSkippedScans) {
-			printf("  %d skipped scans in this LJM_eStreamRead\n",
-				numSkippedScans);
+			printf("  %d skipped scans in this LJM_eStreamRead\n", numSkippedScans);
 			totalSkippedScans += numSkippedScans;
 		}
 		printf("\n");
 	}
 	if (totalSkippedScans) {
-		printf("\n****** Total number of skipped scans: %d ******\n\n",
-			totalSkippedScans);
+		printf("\n****** Total number of skipped scans: %d ******\n\n", totalSkippedScans);
 	}
 
 	printf("Stopping stream\n");
