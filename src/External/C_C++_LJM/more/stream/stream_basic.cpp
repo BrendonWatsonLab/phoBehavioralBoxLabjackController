@@ -297,16 +297,6 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 					
 				}
 
-
-
-
-				
-				
-				
-
-				
-
-			
 		} // end for chanI
 		//printf("\n");
 
@@ -357,11 +347,9 @@ void Stream(int handle, int numChannels, const char ** channelNames, double scan
 
 	printf("\n");
 	printf("Starting stream...\n");
-	err = LJM_eStreamStart(handle, scansPerRead, numChannels, aScanList,
-		&scanRate);
+	err = LJM_eStreamStart(handle, scansPerRead, numChannels, aScanList, &scanRate);
 	ErrorCheck(err, "LJM_eStreamStart");
-	printf("Stream started. Actual scan rate: %.02f Hz (%.02f sample rate)\n",
-		scanRate, scanRate * numChannels);
+	printf("Stream started. Actual scan rate: %.02f Hz (%.02f sample rate)\n", scanRate, scanRate * numChannels);
 	printf("\n");
 
 	// Read the scans

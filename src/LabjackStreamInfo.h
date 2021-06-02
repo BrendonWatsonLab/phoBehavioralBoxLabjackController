@@ -17,7 +17,7 @@ public:
 
 	int numChannels = 0;
 	int* aScanList = nullptr;
-	const char** channelNames = nullptr;
+	const char** channelNames = nullptr; // FIXME: these go out of scope
 
 	//int aDataSize = 0;
 	unsigned int aDataSize;

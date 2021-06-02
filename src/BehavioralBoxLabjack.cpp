@@ -343,6 +343,9 @@ void BehavioralBoxLabjack::readSensorValues()
 	this->lastCaptureComputerTime = Clock::now();
 	static int streamRead = 0;
 
+	unsigned int timeStart, timeEnd;
+
+	
 	// Check if stream is done so that we don't output the printf below
 	if (this->ljStreamInfo.done) {
 		return;
@@ -356,8 +359,10 @@ void BehavioralBoxLabjack::readSensorValues()
 		int deviceScanBacklog = 0;
 		int LJMScanBacklog = 0;
 
+		timeStart = GetCurrentTimeMS();
 		this->err = LJM_eStreamRead(this->handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
-
+		timeEnd = GetCurrentTimeMS();
+		printf("timerStart: %f\t timeEnd: %f\t difference: %f\n", double(timeStart), double(timeEnd), (double(timeEnd) - double(timeStart)));
 		// TODO: Figure out what this is doing
 		/*LabjackStreamHelpers::HardcodedPrintScans(this->ljStreamInfo.get(), deviceScanBacklog, LJMScanBacklog);*/
 		//CountAndOutputNumSkippedSamples(this->ljStreamInfo.numChannels, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.aData);
@@ -380,9 +385,20 @@ void BehavioralBoxLabjack::readSensorValues()
 			return;
 		}
 
-		// Otherwise it's good
-		printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d", streamRead, deviceScanBacklog, LJMScanBacklog);
+		// TODO: Assumes the last to channels are the timer channels:
+		const int timer_lower_bits_index = this->ljStreamInfo.numChannels - 2;
+		const int timer_upper_bits_index = this->ljStreamInfo.numChannels - 1;
 
+		if (strcmp(this->inputPortNames_all[timer_lower_bits_index], "SYSTEM_TIMER_20HZ") != 0
+			|| strcmp(this->inputPortNames_all[timer_upper_bits_index], "STREAM_DATA_CAPTURE_16") != 0)
+		{
+			printf("%s:%d - BehavioralBoxLabjack::readSensorValues() - unexpected register: %s and/or %s\n", __FILE__, __LINE__, this->inputPortNames_all[timer_lower_bits_index], this->inputPortNames_all[timer_upper_bits_index]);
+			this->ljStreamInfo.done = 1;
+			this->shouldStop = true;
+			return;
+		}
+
+		
 		// Main:
 		int scanStartOffsetI, chanI;
 		int scanI = 0;
@@ -398,17 +414,28 @@ void BehavioralBoxLabjack::readSensorValues()
 		double changeTolerance = 0.1; // The amount of change permitted without considering an event a change
 		bool currDidChange = false;
 		int memcmpDidChange = 0;
-
+		
 		// Goal is to find lines (scanI) where a value change occurs most efficiently
-
+		bool currScanDidAnyChange = false;
+		
 		// Normally would allocate a double* buffer, right?
 		double* lastReadValues = nullptr;
 		lastReadValues = new double[this->ljStreamInfo.numChannels];
 
 		double currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(1);
 		
-		for (scanStartOffsetI = 0; scanStartOffsetI < this->ljStreamInfo.scansPerRead * this->ljStreamInfo.numChannels; scanStartOffsetI += this->ljStreamInfo.numChannels) {
-			for (chanI = 0; chanI < this->ljStreamInfo.numChannels; chanI++) {
+		unsigned int timerValue;
+		unsigned int previousTimerValue;
+		//unsigned int * timerValues = new unsigned int[this->ljStreamInfo.scansPerRead];
+
+		// Otherwise it's good
+		printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d....\n", streamRead, deviceScanBacklog, LJMScanBacklog);
+		
+		scanStartOffsetI = 0;
+		for (scanI = 0; scanI < this->ljStreamInfo.scansPerRead; scanI++) {
+			currScanDidAnyChange = false;
+			// Skip the two timer channels
+			for (chanI = 0; chanI < (this->ljStreamInfo.numChannels - 2); chanI++) {
 
 				if (this->ljStreamInfo.aData[scanStartOffsetI + chanI] == LJM_DUMMY_VALUE) {
 					++numSkippedScans;
@@ -430,7 +457,11 @@ void BehavioralBoxLabjack::readSensorValues()
 						if (currDidChange)
 						{
 							currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(scanI);
-							printf("didChange: aData[%3d, %3d]:  %+.05f -to-> %+.05f    \n", scanI, chanI, lastReadValues[chanI], this->ljStreamInfo.aData[scanStartOffsetI + chanI]);
+							//printf("didChange: aData[%3d, %3d]:  %+.05f -to-> %+.05f    \n", scanI, chanI, lastReadValues[chanI], this->ljStreamInfo.aData[scanStartOffsetI + chanI]);
+							//printf(" >> didChange: aData[%3d, %3d] (%.05f)sec:  %+.05f -to-> %+.05f", scanI, chanI, currScanTimeOffsetSinceFirstScan, lastReadValues[chanI], this->ljStreamInfo.aData[scanStartOffsetI + chanI]);
+							currScanDidAnyChange = currScanDidAnyChange || true;
+							
+							//% +.05f
 						}
 
 						// Update the last read value either way:
@@ -473,6 +504,8 @@ void BehavioralBoxLabjack::readSensorValues()
 						//auto didPortChange = (digitalChannelsBitset & digitalChannelsLastValuesBitset);
 						//currDidChange = (digitalChannelsBitset != digitalChannelsLastValuesBitset);
 						//memcmpDidChange = memcmp(bytes, last_bytes, (sizeof(unsigned char*) * 2));
+
+						//LJM_FLOAT32ToByteArray()
 						memcmpDidChange = memcmp(bytes, last_bytes, sizeof(unsigned char*));
 						currDidChange = (memcmpDidChange != 0);
 						if (currDidChange)
@@ -480,25 +513,70 @@ void BehavioralBoxLabjack::readSensorValues()
 							currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(scanI);
 							//printf("aData[%3d, %3d]: 0x ", scanI, chanI);
 							//printf("%02x %02x", bytes[0], bytes[1]);
-							printf("didChange: aData[%3d, %3d]: 0x %02x %02x -to-> 0x %02x %02x    \n", scanI, chanI, last_bytes[0], last_bytes[1], bytes[0], bytes[1]);
+							//printf(" >> didChange: aData[%3d, %3d] (%.05f)sec: 0x %02x %02x -to-> 0x %02x %02x", scanI, chanI, currScanTimeOffsetSinceFirstScan, last_bytes[0], last_bytes[1], bytes[0], bytes[1]);
+							currScanDidAnyChange = currScanDidAnyChange || true;
 						}
 
 						// Update the last read value either way:
 						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
 					}
 
-				}
+				} // end else (if is analog)
 
 			} // end for chanI
+			
+			// Get timers:
+			// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which
+			// contains SYSTEM_TIMER_20HZ's upper 16 bits
+			timerValue = ((unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + timer_upper_bits_index] << 16) +
+				(unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + timer_lower_bits_index];
+
+			/*
+			 * "Internal 32-bit system timer running at 1/2 core speed, thus normally 80M/2 => 40 MHz."
+			 */
+			
+			
+			// Gets the timer value for this scanI (scan index), guessing this is MS
+			
+			
+
+			
+			//printf("  0x%8X (%s)", timerValue, chanNames[2]);
 			//printf("\n");
 
-			scanI++; // update scanI
+			if (currScanDidAnyChange)
+			{
+				// Get the timerValue as a timepoint:
+				//double currTimerOffsetSeconds = double(timerValue) * 40.0 * 1000000.0; // Convert to seconds
+				double currTimerOffsetSeconds = double(timerValue); // Convert to seconds
+				double timerDifference = double(previousTimerValue) - currTimerOffsetSeconds;
+				printf(" >>\t timer: %f; delta: %f", currTimerOffsetSeconds, double(timerDifference));
+
+				//printf("  0x%8X timer)", timerValue);
+				printf("\n");
+
+				
+				// Here is where we'll convert to a this->monitor() appropriate value
+
+				//this->monitor->refreshState()
+				//lastReadValues;
+				
+			}
+
+			previousTimerValue = timerValue; // copy the current timerValue to the previousTimerValue
+			
+			
+			
+			//scanI++; // update scanI
+			scanStartOffsetI += this->ljStreamInfo.numChannels; // update scanStartOffsetI
 		} // end for scanI
 
-			// release the dynamically allocated memory:
+		// release the dynamically allocated memory:
 		delete[] lastReadValues;
 		lastReadValues = nullptr;
-		
+
+		//delete[] timerValues;
+		//timerValues = nullptr;
 		
 
 		
@@ -911,81 +989,8 @@ void BehavioralBoxLabjack::initializeLabjackConfigurationIfNeeded()
 		std::cout << "done." << std::endl;
 	}
 
-
 	// Labjack Stream Mode Setup:
-	//
-	//this->ljStreamInfo = StreamInfo();
-
-
-	//this->ljStreamInfo.scanRate = 2000; // Set the scan rate to the fastest rate expected
-	/*this->ljStreamInfo.numChannels = 4;*/
-	//this->ljStreamInfo.numChannels = this->getNumberInputChannels(true, true);
-	//this->ljStreamInfo.channelNames = this->getInputPortNames();
-	//const char* CHANNEL_NAMES[] = { "AIN0", "AIN1" };
-	//const char* foudnNames = this->inputPortNames_all;
-	//const char* CHANNEL_NAMES[] = globalLabjackInputPortNames;
-	//this->ljStreamInfo.channelNames = CHANNEL_NAMES;
-	//this->ljStreamInfo.scansPerRead = this->ljStreamInfo.scanRate / 2;
-
-	//this->ljStreamInfo.streamLengthMS = 10000;
-	//this->ljStreamInfo.done = FALSE;
-
-	//this->ljStreamInfo.callback = &this->onLabjackStreamReadCallback;
-	//this->ljStreamInfo.callback = &(this->onLabjackStreamReadCallback);
-	//this->ljStreamInfo.callback = &LabjackStreamHelpers::GlobalLabjackStreamReadCallback;
-
-	//this->ljStreamInfo.aData = nullptr;
-	//this->ljStreamInfo.aScanList = nullptr;
-
-	//this->ljStreamInfo.numScansToPrint = 1;
-
-	//this->ljStreamInfo.aScanList
-
-	/*this->ljStreamInfo.build(this->getNumberInputChannels(true, true), CHANNEL_NAMES, 100);
-	
-	this->err = LJM_NamesToAddresses(this->ljStreamInfo.numChannels, this->ljStreamInfo.channelNames, this->ljStreamInfo.aScanList, NULL);
-	ErrorCheck(this->err, "Getting positive channel addresses");*/
-	
-	
-
-	//this->ljStreamInfo.handle = this->handle;
-
-	//unsigned int aDataSize = numChannels * scansPerRead;
-	
-
-	// ## Class version:
-	//this->ljStreamInfo->scanRate = 2000; // Set the scan rate to the fastest rate expected
-	///*this->ljStreamInfo.numChannels = 4;*/
-	//this->ljStreamInfo->numChannels = this->getNumberInputChannels();
-	////this->ljStreamInfo.channelNames = this->getInputPortNames();
-	////const char* CHANNEL_NAMES[] = { "AIN0", "AIN1" };
-	////const char* foudnNames = this->inputPortNames_all;
-	//const char* CHANNEL_NAMES[] = globalLabjackInputPortNames;
-	//this->ljStreamInfo->channelNames = CHANNEL_NAMES;
-
-	//this->ljStreamInfo->scansPerRead = this->ljStreamInfo->scanRate / 2;
-
-	//this->ljStreamInfo->streamLengthMS = 10000;
-	//this->ljStreamInfo->done = FALSE;
-
-	////this->ljStreamInfo.callback = &this->onLabjackStreamReadCallback;
-	////this->ljStreamInfo->callback = &(this->onLabjackStreamReadCallback);
-	////this->ljStreamInfo->callback = &LabjackStreamHelpers::GlobalLabjackStreamReadCallback;
-
-
-	//this->ljStreamInfo->aData = nullptr;
-	//this->ljStreamInfo->aScanList = nullptr;
-
-	//this->ljStreamInfo->numScansToPrint = 1;
-	//
-	//this->ljStreamInfo->handle = this->handle;
-
-	// Begin Setup:
-	//LabjackStreamHelpers::SetupStream(this->ljStreamInfo.get());
-
 	this->SetupStream();
-
-
 
 }
 
@@ -999,6 +1004,10 @@ void BehavioralBoxLabjack::SetupStream()
 	const int AIN_ALL_NEGATIVE_CH = LJM_GND;
 
 	printf("Writing configurations:\n");
+
+	// Tears down existing streams if they're already running:
+	DisableStreamIfEnabled(this->handle);
+	
 
 	if (STREAM_TRIGGER_INDEX == 0) {
 		printf("    Ensuring triggered stream is disabled:");
@@ -1038,6 +1047,11 @@ void BehavioralBoxLabjack::SetupStream()
 
 	// Build the stream object:
 	const char* CHANNEL_NAMES[] = globalLabjackInputPortNames;
+	//auto channelNames = this->getInputPortNames();
+	//const char** CHANNEL_NAMES = channelNames
+	//const char* CHANNEL_NAMES[] = this->inputPortNames_all;
+	
+	//this->ljStreamInfo.build(this->getNumberInputChannels(true, true), CHANNEL_NAMES, 200);
 	this->ljStreamInfo.build(this->getNumberInputChannels(true, true), CHANNEL_NAMES, 200);
 
 	this->err = LJM_NamesToAddresses(this->ljStreamInfo.numChannels, this->ljStreamInfo.channelNames, this->ljStreamInfo.aScanList, NULL);
