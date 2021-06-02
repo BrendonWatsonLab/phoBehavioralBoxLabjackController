@@ -41,6 +41,8 @@
 
 
 // Pho Custom:
+#include <cmath>
+
 #include "LabjackStreamDataDestination.h"
 
 
@@ -165,7 +167,7 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 	unsigned short temp;
 	unsigned char* bytes;
 
-	double changeTolerance = 1.0; // The amount of change permitted without considering an event a change
+	double changeTolerance = 0.1; // The amount of change permitted without considering an event a change
 	bool currDidChange = false;
 
 	// Goal is to find lines (scanI) where a value change occurs most efficiently
@@ -206,12 +208,18 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 
 
 				//bool didChange = (lastReadValues[chanI] == aData[scanI + chanI]);
-				currDidChange = ((aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
+				//currDidChange = ((aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
+
+				currDidChange = (fabs(aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
+
+				
 				
 				if (currDidChange)
 				{
 					//printf("didChange: aData[%3d]: %+.05f    \n", scanStartOffsetI + chanI, aData[scanStartOffsetI + chanI]);
-					printf("didChange: aData[%3d, %3d]: %+.05f    \n", scanI, chanI, aData[scanStartOffsetI + chanI]);					
+					//printf("didChange: aData[%3d, %3d]: %+.05f    \n", scanI, chanI, aData[scanStartOffsetI + chanI]);					
+					printf("didChange: aData[%3d, %3d]:  %+.05f -to-> %+.05f    \n", scanI, chanI, lastReadValues[chanI], aData[scanStartOffsetI + chanI]);
+
 				}
 
 				// Update the last read value either way:
