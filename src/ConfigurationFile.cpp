@@ -34,8 +34,8 @@ bool ConfigurationFile::reloadFromFile()
 	this->loadedConfig.animalName = this->iniReader.Get("DEFAULT", "animalName", "animal_00");
 
 	//Features:
-	this->loadedConfig.enableHistoricalDataLoading = this->iniReader.GetBoolean("Features", "enableHistoricalDataLoading", true);
-	this->loadedConfig.launch_web_server = this->iniReader.GetBoolean("Features", "LAUNCH_WEB_SERVER", true);
+	this->loadedConfig.enableHistoricalDataLoading = this->iniReader.GetBoolean("Features", "enableHistoricalDataLoading", false);
+	this->loadedConfig.launch_web_server = this->iniReader.GetBoolean("Features", "LAUNCH_WEB_SERVER", false);
 
 	//Filesystem:
 	this->loadedConfig.outputFileRootDirectory = this->iniReader.Get("Filesystem", "globalOutputFileDirectory", "C:/Common/data/");

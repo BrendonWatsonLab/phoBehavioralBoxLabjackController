@@ -22,6 +22,8 @@
 #include <thread>
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
+#include <Wt/WServer.h>
+
 #include "BehavioralBoxControllersManager.h"
 #include "BehavioralBoxLabjack.h"
 #include "LabjackHelpers.h"
@@ -86,7 +88,7 @@ int main(int argc, char** argv)
 	}
 
 	if (shouldStartWebServer) {
-		WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
+		Wt::WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
 	}
 
 	// TODO - READ ME: main run loop
