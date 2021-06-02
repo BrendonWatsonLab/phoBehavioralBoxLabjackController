@@ -170,7 +170,9 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	//free(this->ljStreamInfo.aScanList);
 	//free(this->ljStreamInfo.aData);
 	
-
+	// Write out INI config if needed:
+	//this->configMan->saveConfig();
+	
 	// Cleanup output ports vector
 	for (int i = 0; i < NUM_OUTPUT_CHANNELS; i++) {
 		delete this->outputPorts[i];
@@ -400,6 +402,10 @@ void BehavioralBoxLabjack::readSensorValues()
 }
 
 // Reads the most recently read values and persists them to the available output modalities (file, TCP, etc) if they've changed or it's needed.
+/*
+ * this->lastCaptureComputerTime, inputPortValuesChanged, lastReadInputPortValues, previousReadInputPortValues_all, logMutex
+ * inputPortIsAnalog, inputPortPurpose_all, water1PortEndIlluminationTime
+ */
 void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
 {
 	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
@@ -934,7 +940,8 @@ void BehavioralBoxLabjack::HardcodedPrintScans(int deviceScanBacklog, int LJMSca
 	const double* aData = this->ljStreamInfo.aData;
 	int numScansReceived = this->ljStreamInfo.scansPerRead;
 	int numChannelsPerScan = this->ljStreamInfo.numChannels;
-	int numScansToPrint = this->ljStreamInfo.numScansToPrint;
+	//int numScansToPrint = this->ljStreamInfo.numScansToPrint;
+	int numScansToPrint = this->ljStreamInfo.scansPerRead;
 
 	if (numChannelsPerScan < 4 || numChannelsPerScan > 4) {
 		printf("%s:%d - HardcodedPrintScans() - unexpected numChannelsPerScan: %d\n",	__FILE__, __LINE__, numChannelsPerScan);

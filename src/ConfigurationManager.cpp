@@ -62,3 +62,8 @@ std::string ConfigurationManager::getGeneratedActiveHistoricalSearchDirectory()
 		return this->configFile.getLoadedConfig().historicalFileSearchRootDirectory;
 	}
 }
+
+bool ConfigurationManager::saveConfig()
+{
+	return this->configFile.saveToFile();
+}

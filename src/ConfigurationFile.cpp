@@ -18,7 +18,8 @@ ConfigurationFile::ConfigurationFile(std::string filePath): filePath(filePath), 
 
 bool ConfigurationFile::reloadFromFile()
 {
-	if (this->iniReader.ParseError() != 0) {
+	int parseError = this->iniReader.ParseError();
+	if (parseError != 0) {
 		std::cout << "\t ERROR: Can't load '" << this->filePath << "'\n";
 		return false;
 	}
@@ -42,13 +43,9 @@ bool ConfigurationFile::reloadFromFile()
 	this->loadedConfig.enableOverrideDefaultHistoricalFileSearchDirectory = this->iniReader.GetBoolean("Filesystem", "globalEnableOverrideDefaultHistoricalFileSearchDirectory", false);
 	this->loadedConfig.historicalFileSearchRootDirectory = this->iniReader.Get("Filesystem", "globalHistoricalFileSearchDirectory", "C:/Common/data/");
 
-	
-	
-
 	//TimeSeriesChart:
 	this->loadedConfig.shouldEnableSynchronize_Y_Axis = this->iniReader.GetBoolean("TimeSeriesChart", "shouldEnableSynchronize_Y_Axis", true);
 	this->loadedConfig.numDaysToDisplay = this->iniReader.GetInteger("TimeSeriesChart", "numDaysToDisplay", 60);
-
 
 	return true;
 }

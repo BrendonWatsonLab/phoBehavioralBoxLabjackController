@@ -23,6 +23,8 @@ public:
 	std::string getGeneratedActiveOutputDirectory();
 	std::string getGeneratedActiveHistoricalSearchDirectory();
 
+	bool saveConfig();
+
 
 private:
 	std::string output_path_ = "";

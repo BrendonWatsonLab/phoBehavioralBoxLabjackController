@@ -189,6 +189,9 @@ private:
 	//void setVisibleLightRelayState(bool isOn);
 
 
+	void performPersistValues(bool enableConsoleLogging);
+
+
 	// Stream Functionality:
 	void SetupStream();
 	
