@@ -4,13 +4,44 @@
  *       functions.
 **/
 
+/* --- PRINTF_BYTE_TO_BINARY macro's --- */
+#define PRINTF_BINARY_PATTERN_INT8 "%c%c%c%c%c%c%c%c"
+#define PRINTF_BYTE_TO_BINARY_INT8(i)    \
+    (((i) & 0x80ll) ? '1' : '0'), \
+    (((i) & 0x40ll) ? '1' : '0'), \
+    (((i) & 0x20ll) ? '1' : '0'), \
+    (((i) & 0x10ll) ? '1' : '0'), \
+    (((i) & 0x08ll) ? '1' : '0'), \
+    (((i) & 0x04ll) ? '1' : '0'), \
+    (((i) & 0x02ll) ? '1' : '0'), \
+    (((i) & 0x01ll) ? '1' : '0')
+
+#define PRINTF_BINARY_PATTERN_INT16 \
+    PRINTF_BINARY_PATTERN_INT8              PRINTF_BINARY_PATTERN_INT8
+#define PRINTF_BYTE_TO_BINARY_INT16(i) \
+    PRINTF_BYTE_TO_BINARY_INT8((i) >> 8),   PRINTF_BYTE_TO_BINARY_INT8(i)
+#define PRINTF_BINARY_PATTERN_INT32 \
+    PRINTF_BINARY_PATTERN_INT16             PRINTF_BINARY_PATTERN_INT16
+#define PRINTF_BYTE_TO_BINARY_INT32(i) \
+    PRINTF_BYTE_TO_BINARY_INT16((i) >> 16), PRINTF_BYTE_TO_BINARY_INT16(i)
+#define PRINTF_BINARY_PATTERN_INT64    \
+    PRINTF_BINARY_PATTERN_INT32             PRINTF_BINARY_PATTERN_INT32
+#define PRINTF_BYTE_TO_BINARY_INT64(i) \
+    PRINTF_BYTE_TO_BINARY_INT32((i) >> 32), PRINTF_BYTE_TO_BINARY_INT32(i)
+/* --- end macros --- */
+
+
 #include <stdio.h>
 #include <string.h>
 
 #include <LabJackM.h>
+#include <stdbool.h>
 
 #include "../../LJM_StreamUtilities.h"
 
+
+// Pho Custom:
+//#include "LabjackStreamDataDestination.h"
 
 
 void Stream(int handle, int numChannels, const char ** channelNames, double scanRate, int scansPerRead, int numReads);
@@ -18,7 +49,7 @@ void Stream(int handle, int numChannels, const char ** channelNames, double scan
 void HardcodedConfigureStream(int handle);
 
 
-//void PhoAccumulateScans(int numScans, int numChannels, const char** channelNames, const int* channelAddresses, double* aData);
+void PhoAccumulateScans(int numScans, int numChannels, const char** channelNames, const int* channelAddresses, double* aData);
 
 
 const boolean isAnalogChannel[] = { true, true, true, true, false };
@@ -123,42 +154,45 @@ void HardcodedConfigureStream(int handle)
 	WriteNameOrDie(handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
 }
 
-//void PhoAccumulateScans(int numScans, int numChannels, const char** channelNames, const int* channelAddresses, double* aData)
-//{
-//	int scanI, chanI;
-//	int numSkippedScans = 0;
-//	//int maxScansPerChannel = limitScans ? MAX_NUM : numScans;
-//	unsigned short temp;
-//	unsigned char* bytes;
-//
-//	// Goal is to find lines (scanI) where a value change occurs most efficiently
-//	
-//	
-//	for (scanI = 0; scanI < numScans * numChannels; scanI += numChannels) {
-//		for (chanI = 0; chanI < numChannels; chanI++) {
-//			if (aData[scanI + chanI] == LJM_DUMMY_VALUE) {
-//				++numSkippedScans;
-//			}
-//			if (channelAddresses[chanI] < 1000) {
-//				//printf("aData[%3d]: %+.05f    ", scanI + chanI, aData[scanI + chanI]);
-//				// aData[scanI + chanI] is a double
-//				
-//			}
-//			else {
-//				temp = (unsigned short)aData[scanI + chanI];
-//				bytes = (unsigned char*)&temp;
-//
-//				//printf("aData[%3d]: 0x ", scanI + chanI);
-//				//printf("%02x %02x", bytes[0], bytes[1]);
-//				//printf("  (% 7.00f)   ", aData[scanI + chanI]);
-//			}
-//		} // end for chanI
-//		//printf("\n");
-//		
-//	} // end for scanI
-//
-//	
-//}
+void PhoAccumulateScans(int numScans, int numChannels, const char** channelNames, const int* channelAddresses, double* aData)
+{
+	int scanI, chanI;
+	int numSkippedScans = 0;
+	//int maxScansPerChannel = limitScans ? MAX_NUM : numScans;
+	unsigned short temp;
+	unsigned char* bytes;
+
+	// Goal is to find lines (scanI) where a value change occurs most efficiently
+
+	// Normally would allocate a double* buffer, right?
+	double* lastReadValues = nullptr;
+	lastReadValues = new double[numChannels];
+	
+	for (scanI = 0; scanI < numScans * numChannels; scanI += numChannels) {
+		for (chanI = 0; chanI < numChannels; chanI++) {
+			if (aData[scanI + chanI] == LJM_DUMMY_VALUE) {
+				++numSkippedScans;
+			}
+			if (channelAddresses[chanI] < 1000) {
+				//printf("aData[%3d]: %+.05f    ", scanI + chanI, aData[scanI + chanI]);
+				// aData[scanI + chanI] is a double
+				
+			}
+			else {
+				temp = (unsigned short)aData[scanI + chanI];
+				bytes = (unsigned char*)&temp;
+
+				//printf("aData[%3d]: 0x ", scanI + chanI);
+				//printf("%02x %02x", bytes[0], bytes[1]);
+				//printf("  (% 7.00f)   ", aData[scanI + chanI]);
+			}
+		} // end for chanI
+		//printf("\n");
+		
+	} // end for scanI
+
+	
+}
 
 void Stream(int handle, int numChannels, const char ** channelNames, double scanRate, int scansPerRead, int numReads)
 {
@@ -175,10 +209,15 @@ void Stream(int handle, int numChannels, const char ** channelNames, double scan
 	unsigned short temp;
 	unsigned char* bytes;
 
-	int * aScanList = malloc(sizeof(int) * numChannels);
-
 	unsigned int aDataSize = numChannels * scansPerRead;
-	double * aData = malloc(sizeof(double) * aDataSize);
+
+	//// C style:
+	//int* aScanList = malloc(sizeof(int) * numChannels);
+	//double * aData = malloc(sizeof(double) * aDataSize);
+
+	// C++ style:
+	int* aScanList = new int[numChannels];
+	double* aData = new double[aDataSize];
 
 	err = LJM_GetHandleInfo(handle, NULL, &connectionType, NULL, NULL, NULL,
 		NULL);
@@ -219,7 +258,7 @@ void Stream(int handle, int numChannels, const char ** channelNames, double scan
 		}
 		printf("\n");
 
-		//PhoAccumulateScans(scansPerRead, numChannels, channelNames, aScanList, aData);
+		PhoAccumulateScans(scansPerRead, numChannels, channelNames, aScanList, aData);
 
 		
 		printf("  1st scan out of %d:\n", scansPerRead);
@@ -268,6 +307,13 @@ void Stream(int handle, int numChannels, const char ** channelNames, double scan
 	err = LJM_eStreamStop(handle);
 	ErrorCheck(err, "Stopping stream");
 
-	free(aData);
-	free(aScanList);
+	//// C style:
+	//free(aData);
+	//free(aScanList);
+
+	// C++ Style:
+	delete[] aData;
+	aData = NULL;
+	delete[] aScanList;
+	aScanList = NULL;
 }
