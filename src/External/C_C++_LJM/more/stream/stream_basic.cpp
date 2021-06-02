@@ -49,7 +49,7 @@ void Stream(int handle, int numChannels, const char ** channelNames, double scan
 void HardcodedConfigureStream(int handle);
 
 
-void PhoAccumulateScans(int numScans, int numChannels, const char** channelNames, const int* channelAddresses, double* aData);
+void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSkippedSamples);
 
 
 const boolean isAnalogChannel[] = { true, true, true, true, false };
@@ -154,9 +154,11 @@ void HardcodedConfigureStream(int handle)
 	WriteNameOrDie(handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
 }
 
-void PhoAccumulateScans(int numScans, int numChannels, const char** channelNames, const int* channelAddresses, double* aData)
+void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSkippedSamples)
 {
 	int scanI, chanI;
+	numSkippedSamples = 0;
+	
 	int numSkippedScans = 0;
 	//int maxScansPerChannel = limitScans ? MAX_NUM : numScans;
 	unsigned short temp;
@@ -176,6 +178,7 @@ void PhoAccumulateScans(int numScans, int numChannels, const char** channelNames
 
 			if (aData[scanI + chanI] == LJM_DUMMY_VALUE) {
 				++numSkippedScans;
+				++numSkippedSamples;
 			}
 			
 			if (scanI == 0)
@@ -288,46 +291,52 @@ void Stream(int handle, int numChannels, const char ** channelNames, double scan
 		}
 		printf("\n");
 
-		//PhoAccumulateScans(scansPerRead, numChannels, channelNames, aScanList, aData);
+		numSkippedScans = 0;
+		PhoAccumulateScans(scansPerRead, numChannels, aData, &numSkippedScans);
 
+		//printf("  1st scan out of %d:\n", scansPerRead);
+
+		//
+
+		//
+		//for (channel = 0; channel < numChannels; channel++) {
+		//	if (isAnalogChannel[channel])
+		//	{
+		//		printf("    %s = %0.5f\n", channelNames[channel], aData[channel]);
+		//	}
+		//	else
+		//	{
+		//		//double currValue = aData[channel];
+
+		//		
+		//		/*UINT16 readDigitalValues = static_cast<UINT16>(aData[channel]);*/
+		//		//auto bitcastValue = std::bit_cast<int>(aData[channel]);
+
+		//		//UINT16 readDigitalValues = static_cast<UINT16>(aData[channel]);
+		//		//UINT16 readDigitalValues = *(UINT16*)&currValue;
+		//		//int readDigitalValues = *(int*)&currValue;
+
+		//		temp = (unsigned short)aData[channel];
+		//		bytes = (unsigned char*)&temp;
+		//		
+		//		printf("aData[%3d]: 0x ", channel);
+		//		printf("%02x %02x", bytes[0], bytes[1]);
+		//		printf("  (% 7.00f)   \n", aData[channel]);
+		//		
+		//		//printf("    %s = %hu\n", channelNames[channel], readDigitalValues);
+		//	
+		//	}
+		//}
 		
-		printf("  1st scan out of %d:\n", scansPerRead);
-		for (channel = 0; channel < numChannels; channel++) {
-			if (isAnalogChannel[channel])
-			{
-				printf("    %s = %0.5f\n", channelNames[channel], aData[channel]);
-			}
-			else
-			{
-				//double currValue = aData[channel];
-
-				
-				/*UINT16 readDigitalValues = static_cast<UINT16>(aData[channel]);*/
-				//auto bitcastValue = std::bit_cast<int>(aData[channel]);
-
-				//UINT16 readDigitalValues = static_cast<UINT16>(aData[channel]);
-				//UINT16 readDigitalValues = *(UINT16*)&currValue;
-				//int readDigitalValues = *(int*)&currValue;
-
-				temp = (unsigned short)aData[channel];
-				bytes = (unsigned char*)&temp;
-				
-				printf("aData[%3d]: 0x ", channel);
-				printf("%02x %02x", bytes[0], bytes[1]);
-				printf("  (% 7.00f)   \n", aData[channel]);
-				
-				//printf("    %s = %hu\n", channelNames[channel], readDigitalValues);
-			
-			}
-		}
-
-		numSkippedScans = CountAndOutputNumSkippedSamples(numChannels, scansPerRead, aData);
+		//numSkippedScans = CountAndOutputNumSkippedSamples(numChannels, scansPerRead, aData);
 
 		if (numSkippedScans) {
 			printf("  %d skipped scans in this LJM_eStreamRead\n", numSkippedScans);
 			totalSkippedScans += numSkippedScans;
 		}
 		printf("\n");
+
+		
 	}
 	if (totalSkippedScans) {
 		printf("\n****** Total number of skipped scans: %d ******\n\n", totalSkippedScans);
