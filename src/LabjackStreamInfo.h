@@ -43,6 +43,7 @@ public:
 
 		// Clear aData. This is not strictly necessary, but can help debugging.
 		memset(this->aData, 0, sizeof(double) * this->aDataSize);
+		
 	}
 
 	void cleanup()
@@ -52,6 +53,14 @@ public:
 
 		delete[] this->aScanList;
 		this->aScanList = nullptr;
+	}
+
+
+	// getTimeSinceFirstScan: computes the time since the first scan given the scanIndex (offset)
+	double getTimeSinceFirstScan(int scanIndex)
+	{
+		//TimeSinceFirstScan = Offset * (1 / ScanRate);
+		return (double(scanIndex) * (1.0 / this->scanRate));
 	}
 
 private:
