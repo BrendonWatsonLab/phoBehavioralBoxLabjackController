@@ -412,6 +412,9 @@ void BehavioralBoxLabjack::readSensorValues()
 		
 		// Goal is to find lines (scanI) where a value change occurs most efficiently
 		bool currScanDidAnyChange = false;
+		bool currScanDidAnyAnalogPortChange = false;
+		bool currScanDidAnyDigitalPortChange = false;
+		
 		
 		// Normally would allocate a double* buffer, right?
 		double* lastReadValues = nullptr;
@@ -429,11 +432,16 @@ void BehavioralBoxLabjack::readSensorValues()
 		scanStartOffsetI = 0;
 		for (scanI = 0; scanI < this->ljStreamInfo.scansPerRead; scanI++) {
 			currScanDidAnyChange = false;
+			currScanDidAnyAnalogPortChange = false;
+			currScanDidAnyDigitalPortChange = false;
+			
 			// Skip the two timer channels
 			for (chanI = 0; chanI < (this->ljStreamInfo.numChannels - 2); chanI++) {
 
 				if (this->ljStreamInfo.aData[scanStartOffsetI + chanI] == LJM_DUMMY_VALUE) {
 					++numSkippedScans;
+					//FIXME: I think we need to handle this case if the scan is skipped, we shouldn't go on and use its values
+					
 				}
 
 				// Otherwise, get the last read value and compare it to this value:
@@ -451,7 +459,7 @@ void BehavioralBoxLabjack::readSensorValues()
 						currDidChange = (fabs(this->ljStreamInfo.aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
 						if (currDidChange)
 						{
-							currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(scanI);
+							currScanDidAnyAnalogPortChange = currScanDidAnyAnalogPortChange || true; 
 							//printf("didChange: aData[%3d, %3d]:  %+.05f -to-> %+.05f    \n", scanI, chanI, lastReadValues[chanI], this->ljStreamInfo.aData[scanStartOffsetI + chanI]);
 							//printf(" >> didChange: aData[%3d, %3d] (%.05f)sec:  %+.05f -to-> %+.05f", scanI, chanI, currScanTimeOffsetSinceFirstScan, lastReadValues[chanI], this->ljStreamInfo.aData[scanStartOffsetI + chanI]);
 							currScanDidAnyChange = currScanDidAnyChange || true;
@@ -484,7 +492,7 @@ void BehavioralBoxLabjack::readSensorValues()
 						currDidChange = (memcmpDidChange != 0);
 						if (currDidChange)
 						{
-							currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(scanI);
+							currScanDidAnyDigitalPortChange = currScanDidAnyDigitalPortChange || true;
 							currScanDidAnyChange = currScanDidAnyChange || true;
 						}
 
@@ -517,6 +525,7 @@ void BehavioralBoxLabjack::readSensorValues()
 
 			if (currScanDidAnyChange)
 			{
+				currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(scanI);
 				// Get the timerValue as a timepoint:
 				//double currTimerOffsetSeconds = double(timerValue) * 40.0 * 1000000.0; // Convert to seconds
 				double currTimerOffsetSeconds = double(timerValue); // Convert to seconds
@@ -528,17 +537,20 @@ void BehavioralBoxLabjack::readSensorValues()
 				// This value is in seconds, but we want whole values:
 				long long int roundedMsValue = static_cast<long long int>(currScanTimeOffsetSinceFirstScan * 1000.0);
 				auto estimatedScanTime = systemTimeStart + std::chrono::milliseconds(roundedMsValue);
-				
+				unsigned long long estimated_scan_milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(estimatedScanTime.time_since_epoch()).count();
+
 				// Here is where we'll convert to a this->monitor() appropriate value
 				//this->monitor(estimatedScanTime, lastReadValues);
 
 				printf("\n");
 				
 				// Only persist the values if the state has changed.
+				// Note: should ignore the last two entries in the array, since they're the timer and they'll always update
 				if (this->monitor->refreshState(estimatedScanTime, lastReadValues)) {
 					//TODO: should this be asynchronous? This would require passing in the capture time and read values
 					//this->persistReadValues(true);
 					printf("refresh state returned true!");
+					this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
 				}
 				//this->monitor->refreshState()
 				//lastReadValues;
@@ -559,9 +571,6 @@ void BehavioralBoxLabjack::readSensorValues()
 
 		//delete[] timerValues;
 		//timerValues = nullptr;
-		
-
-		
 		streamRead++;
 	}
 
@@ -585,107 +594,7 @@ void BehavioralBoxLabjack::readSensorValues()
 	
 }
 
-// Reads the most recently read values and persists them to the available output modalities (file, TCP, etc) if they've changed or it's needed.
-/*
- * this->lastCaptureComputerTime, inputPortValuesChanged, lastReadInputPortValues, previousReadInputPortValues_all, logMutex
- * inputPortIsAnalog, inputPortPurpose_all, water1PortEndIlluminationTime
- */
-void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
-{
-	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
 
-	// Determine if the change occured in the analog ports, digital ports, or both
-
-	//CSVWriter newCSVLine(",");
-	CSVWriter newCSVLine_digitalOnly(",");
-	CSVWriter newCSVLine_analogOnly(",");
-
-	bool did_anyAnalogPortChange = false;
-	bool did_anyDigitalPortChange = false;
-
-	if (enableConsoleLogging) {
-		this->printIdentifierLine();
-		std::cout << "\t " << milliseconds_since_epoch << ": ";
-	}
-	//newCSVLine.newRow() << milliseconds_since_epoch;
-	newCSVLine_digitalOnly.newRow() << milliseconds_since_epoch;
-	newCSVLine_analogOnly.newRow() << milliseconds_since_epoch;
-	for (int i = 0; i < NUM_CHANNELS; i++) {
-		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues_all[i]);
-		if (inputPortValuesChanged[i] == true) {
-			// The input port changed from the previous value
-			if (this->inputPortIsAnalog[i])
-			{
-				// If it's an analog port:
-				did_anyAnalogPortChange = true;
-			}
-			else {
-				// Otherwise, it's a digital port
-				did_anyDigitalPortChange = true;
-			}
-			
-			//TODO: WARNING: This might be where the errors are being introduced for the water ports in general. We don't do this anymore.
-			// FIXME:
-			// Special handling for the water ports. If the port is a water port that has transitioned from off to on, set the appropriate "this->water*PortEndIlluminationTime" variable so the port is illuminated for a second after dispense.
-			if (this->lastReadInputPortValues[i] > 0.0) {
-				// If the port transitioned from off to on:
-				if (strcmp(this->inputPortPurpose_all[i], "Water1_BeamBreak") == 0) {
-					auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(this->lastCaptureComputerTime);
-					this->water1PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
-				}
-				else if (strcmp(this->inputPortPurpose_all[i], "Water2_BeamBreak") == 0) {
-					this->water2PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
-				}
-			} // end if greater than zero
-
-#if LAUNCH_WEB_SERVER
-			// Emit the "valueChanged" signal for the web server
-			// Only send signals to the webserver for digital ports:
-			if (!this->inputPortIsAnalog[i])
-			{
-				this->valueChanged_.emit(this->serialNumber, i, this->lastReadInputPortValues[i]);
-			}
-#endif // LAUNCH_WEB_SERVER
-
-		} // end if input port values changed
-
-		//newCSVLine << this->lastReadInputPortValues[i];
-		if (this->inputPortIsAnalog[i])
-		{
-			// If it's an analog port:
-			newCSVLine_analogOnly << this->lastReadInputPortValues[i];
-		}
-		else {
-			// Otherwise, it's a digital port
-			newCSVLine_digitalOnly << this->lastReadInputPortValues[i];
-		}
-
-		if (enableConsoleLogging) {
-			std::cout << this->lastReadInputPortValues[i] << ", ";
-		}
-		// After capturing the change, replace the old value
-		this->previousReadInputPortValues_all[i] = this->lastReadInputPortValues[i];
-	} //end for num channels
-	if (enableConsoleLogging) {
-		std::cout << std::endl;
-	}
-	// Lock the mutex to prevent concurrent persisting
-	std::lock_guard<std::mutex> csvLock(this->logMutex);
-	{
-		//newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
-		if (did_anyAnalogPortChange)
-		{
-			// If an analog port changed, write out to the digital line
-			newCSVLine_analogOnly.writeToFile(this->fileFullPath_analog, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
-		}
-		if (did_anyDigitalPortChange)
-		{
-			// If a digital port changed, write out to the digital line
-			newCSVLine_digitalOnly.writeToFile(this->fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
-		}
-	}
-
-}
 
 
 // The main run loop
@@ -976,6 +885,10 @@ void BehavioralBoxLabjack::initializeLabjackConfigurationIfNeeded()
 
 }
 
+
+
+
+
 void BehavioralBoxLabjack::SetupStream()
 {
 	const int STREAM_TRIGGER_INDEX = 0;
@@ -1145,4 +1058,168 @@ void BehavioralBoxLabjack::updateVisibleLightRelayIfNeeded()
 	this->writeOutputPinValues(true);
 	//bool isDay = isArtificialDaylightHours();
 	//this->setVisibleLightRelayState(isDay);
+}
+
+
+
+
+// Reads the most recently read values and persists them to the available output modalities (file, TCP, etc) if they've changed or it's needed.
+/*
+ * this->lastCaptureComputerTime, inputPortValuesChanged, lastReadInputPortValues, previousReadInputPortValues_all, logMutex
+ * inputPortIsAnalog, inputPortPurpose_all, water1PortEndIlluminationTime
+ */
+void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
+{
+	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
+
+	// Determine if the change occured in the analog ports, digital ports, or both
+
+	//CSVWriter newCSVLine(",");
+	CSVWriter newCSVLine_digitalOnly(",");
+	CSVWriter newCSVLine_analogOnly(",");
+
+	bool did_anyAnalogPortChange = false;
+	bool did_anyDigitalPortChange = false;
+
+	if (enableConsoleLogging) {
+		this->printIdentifierLine();
+		std::cout << "\t " << milliseconds_since_epoch << ": ";
+	}
+	//newCSVLine.newRow() << milliseconds_since_epoch;
+	newCSVLine_digitalOnly.newRow() << milliseconds_since_epoch;
+	newCSVLine_analogOnly.newRow() << milliseconds_since_epoch;
+	for (int i = 0; i < NUM_CHANNELS; i++) {
+		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues_all[i]);
+		if (inputPortValuesChanged[i] == true) {
+			// The input port changed from the previous value
+			if (this->inputPortIsAnalog[i])
+			{
+				// If it's an analog port:
+				did_anyAnalogPortChange = true;
+			}
+			else {
+				// Otherwise, it's a digital port
+				did_anyDigitalPortChange = true;
+			}
+
+			//TODO: WARNING: This might be where the errors are being introduced for the water ports in general. We don't do this anymore.
+			// FIXME:
+			// Special handling for the water ports. If the port is a water port that has transitioned from off to on, set the appropriate "this->water*PortEndIlluminationTime" variable so the port is illuminated for a second after dispense.
+			if (this->lastReadInputPortValues[i] > 0.0) {
+				// If the port transitioned from off to on:
+				if (strcmp(this->inputPortPurpose_all[i], "Water1_BeamBreak") == 0) {
+					auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(this->lastCaptureComputerTime);
+					this->water1PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
+				}
+				else if (strcmp(this->inputPortPurpose_all[i], "Water2_BeamBreak") == 0) {
+					this->water2PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
+				}
+			} // end if greater than zero
+
+#if LAUNCH_WEB_SERVER
+			// Emit the "valueChanged" signal for the web server
+			// Only send signals to the webserver for digital ports:
+			if (!this->inputPortIsAnalog[i])
+			{
+				this->valueChanged_.emit(this->serialNumber, i, this->lastReadInputPortValues[i]);
+			}
+#endif // LAUNCH_WEB_SERVER
+
+		} // end if input port values changed
+
+		//newCSVLine << this->lastReadInputPortValues[i];
+		if (this->inputPortIsAnalog[i])
+		{
+			// If it's an analog port:
+			newCSVLine_analogOnly << this->lastReadInputPortValues[i];
+		}
+		else {
+			// Otherwise, it's a digital port
+			newCSVLine_digitalOnly << this->lastReadInputPortValues[i];
+		}
+
+		if (enableConsoleLogging) {
+			std::cout << this->lastReadInputPortValues[i] << ", ";
+		}
+		// After capturing the change, replace the old value
+		this->previousReadInputPortValues_all[i] = this->lastReadInputPortValues[i];
+	} //end for num channels
+	if (enableConsoleLogging) {
+		std::cout << std::endl;
+	}
+	// Lock the mutex to prevent concurrent persisting
+	std::lock_guard<std::mutex> csvLock(this->logMutex);
+	{
+		//newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		if (did_anyAnalogPortChange)
+		{
+			// If an analog port changed, write out to the digital line
+			newCSVLine_analogOnly.writeToFile(this->fileFullPath_analog, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		}
+		if (did_anyDigitalPortChange)
+		{
+			// If a digital port changed, write out to the digital line
+			newCSVLine_digitalOnly.writeToFile(this->fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		}
+	}
+
+}
+
+// New value that aims to be independent of the last values cached, thus allowing Stream mode persistance
+void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_scan_milliseconds_since_epoch, double* lastReadValues, bool did_anyAnalogPortChange, bool did_anyDigitalPortChange, bool enableConsoleLogging)
+{
+	// Determine if the change occured in the analog ports, digital ports, or both
+
+	//CSVWriter newCSVLine(",");
+	CSVWriter newCSVLine_digitalOnly(",");
+	CSVWriter newCSVLine_analogOnly(",");
+
+	if (enableConsoleLogging) {
+		this->printIdentifierLine();
+		std::cout << "\t " << estimated_scan_milliseconds_since_epoch << ": ";
+	}
+	//newCSVLine.newRow() << milliseconds_since_epoch;
+	newCSVLine_digitalOnly.newRow() << estimated_scan_milliseconds_since_epoch;
+	newCSVLine_analogOnly.newRow() << estimated_scan_milliseconds_since_epoch;
+	
+	for (int i = 0; i < NUM_CHANNELS; i++) {
+		auto currPortType = this->inputPortTypes_all[i];
+		bool isOutput = this->inputPortIsLogged_all[i];
+
+		if (isOutput) {
+			if (this->inputPortIsAnalog[i])
+			{
+				// If it's an analog port:
+				newCSVLine_analogOnly << this->lastReadInputPortValues[i];
+			}
+			else {
+				// Otherwise, it's a digital port
+				newCSVLine_digitalOnly << this->lastReadInputPortValues[i];
+			}
+
+			if (enableConsoleLogging) {
+				std::cout << this->lastReadInputPortValues[i] << ", ";
+			}
+		}
+	} //end for num channels
+	if (enableConsoleLogging) {
+		std::cout << std::endl;
+	}
+	// Lock the mutex to prevent concurrent persisting
+	std::lock_guard<std::mutex> csvLock(this->logMutex);
+	{
+		//newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		if (did_anyAnalogPortChange)
+		{
+			// If an analog port changed, write out to the digital line
+			newCSVLine_analogOnly.writeToFile(this->fileFullPath_analog, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		}
+		if (did_anyDigitalPortChange)
+		{
+			// If a digital port changed, write out to the digital line
+			newCSVLine_digitalOnly.writeToFile(this->fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		}
+	}
+
+	
 }

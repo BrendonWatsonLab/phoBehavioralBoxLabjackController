@@ -139,6 +139,8 @@ private:
 	char * inputPortNames_all[NUM_CHANNELS] = globalLabjackInputPortNames;
 	char * inputPortPurpose_all[NUM_CHANNELS] = globalLabjackInputPortPurpose;
 	LabjackPortType inputPortTypes_all[NUM_CHANNELS] = globalLabjackInputPortType;
+	bool inputPortIsLogged_all[NUM_CHANNELS] = globalLabjackInputPortIsLogged;
+
 	
 	bool inputPortIsAnalog[NUM_CHANNELS] = globalLabjackInputPortIsAnalog;
 	double previousReadInputPortValues_all[NUM_CHANNELS] = {0.0};
@@ -189,7 +191,7 @@ private:
 	//void setVisibleLightRelayState(bool isOn);
 
 
-	void performPersistValues(bool enableConsoleLogging);
+	void performPersistValues(unsigned long long estimated_scan_milliseconds_since_epoch, double* lastReadValues, bool did_anyAnalogPortChange,	bool did_anyDigitalPortChange, bool enableConsoleLogging);
 
 
 	// Stream Functionality:
