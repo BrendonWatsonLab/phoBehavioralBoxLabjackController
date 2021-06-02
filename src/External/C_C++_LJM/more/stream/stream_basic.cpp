@@ -41,7 +41,7 @@
 
 
 // Pho Custom:
-//#include "LabjackStreamDataDestination.h"
+#include "LabjackStreamDataDestination.h"
 
 
 void Stream(int handle, int numChannels, const char ** channelNames, double scanRate, int scansPerRead, int numReads);
@@ -162,6 +162,9 @@ void PhoAccumulateScans(int numScans, int numChannels, const char** channelNames
 	unsigned short temp;
 	unsigned char* bytes;
 
+	double changeTolerance = 1.0; // The amount of change permitted without considering an event a change
+	bool currDidChange = false;
+
 	// Goal is to find lines (scanI) where a value change occurs most efficiently
 
 	// Normally would allocate a double* buffer, right?
@@ -170,27 +173,55 @@ void PhoAccumulateScans(int numScans, int numChannels, const char** channelNames
 	
 	for (scanI = 0; scanI < numScans * numChannels; scanI += numChannels) {
 		for (chanI = 0; chanI < numChannels; chanI++) {
+
 			if (aData[scanI + chanI] == LJM_DUMMY_VALUE) {
 				++numSkippedScans;
 			}
-			if (channelAddresses[chanI] < 1000) {
-				//printf("aData[%3d]: %+.05f    ", scanI + chanI, aData[scanI + chanI]);
-				// aData[scanI + chanI] is a double
-				
+			
+			if (scanI == 0)
+			{
+				// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
+				lastReadValues[chanI] = aData[scanI + chanI];
 			}
-			else {
-				temp = (unsigned short)aData[scanI + chanI];
-				bytes = (unsigned char*)&temp;
+			else
+			{
+				// Otherwise, get the last read value and compare it to this value:
+				//if (channelAddresses[chanI] < 1000) {
+				//	//printf("aData[%3d]: %+.05f    ", scanI + chanI, aData[scanI + chanI]);
+				//	// aData[scanI + chanI] is a double
 
-				//printf("aData[%3d]: 0x ", scanI + chanI);
-				//printf("%02x %02x", bytes[0], bytes[1]);
-				//printf("  (% 7.00f)   ", aData[scanI + chanI]);
+				//}
+				//else {
+				//	temp = (unsigned short)aData[scanI + chanI];
+				//	bytes = (unsigned char*)&temp;
+
+				//	//printf("aData[%3d]: 0x ", scanI + chanI);
+				//	//printf("%02x %02x", bytes[0], bytes[1]);
+				//	//printf("  (% 7.00f)   ", aData[scanI + chanI]);
+				//}
+
+
+				//bool didChange = (lastReadValues[chanI] == aData[scanI + chanI]);
+				currDidChange = ((aData[scanI + chanI] - lastReadValues[chanI]) > changeTolerance);
+				
+				if (currDidChange)
+				{
+					printf("didChange: aData[%3d]: %+.05f    \n", scanI + chanI, aData[scanI + chanI]);
+				}
+
+				// Update the last read value either way:
+				lastReadValues[chanI] = aData[scanI + chanI];
 			}
+
+			
 		} // end for chanI
 		//printf("\n");
 		
 	} // end for scanI
 
+	// release the dynamically allocated memory:
+	delete[] lastReadValues;
+	lastReadValues = NULL;
 	
 }
 
@@ -219,8 +250,7 @@ void Stream(int handle, int numChannels, const char ** channelNames, double scan
 	int* aScanList = new int[numChannels];
 	double* aData = new double[aDataSize];
 
-	err = LJM_GetHandleInfo(handle, NULL, &connectionType, NULL, NULL, NULL,
-		NULL);
+	err = LJM_GetHandleInfo(handle, NULL, &connectionType, NULL, NULL, NULL,	NULL);
 	ErrorCheck(err, "LJM_GetHandleInfo");
 
 	// Clear aData. This is not strictly necessary, but can help debugging.
@@ -258,7 +288,7 @@ void Stream(int handle, int numChannels, const char ** channelNames, double scan
 		}
 		printf("\n");
 
-		PhoAccumulateScans(scansPerRead, numChannels, channelNames, aScanList, aData);
+		//PhoAccumulateScans(scansPerRead, numChannels, channelNames, aScanList, aData);
 
 		
 		printf("  1st scan out of %d:\n", scansPerRead);

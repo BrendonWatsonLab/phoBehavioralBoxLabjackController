@@ -2,6 +2,14 @@
 
 #include <LabJackM.h>
 
+LabjackStreamDataDestination::LabjackStreamDataDestination()
+{
+}
+
+LabjackStreamDataDestination::~LabjackStreamDataDestination()
+{
+}
+
 void LabjackStreamDataDestination::accumulateScans(int numScans, int numChannels, const char** channelNames, const int* channelAddresses, double* aData)
 {
 
