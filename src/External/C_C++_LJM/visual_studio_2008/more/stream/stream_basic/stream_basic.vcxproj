@@ -190,6 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\more\stream\LabjackStreamDataDestination.h" />
+    <ClInclude Include="..\..\..\..\more\stream\PhoBitHelpersHeader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

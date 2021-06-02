@@ -31,8 +31,13 @@
 /* --- end macros --- */
 
 
-#include <stdio.h>
-#include <string.h>
+#include <bit>
+#include <cstdio>
+#include <cstring>
+
+// C-style includes:
+//#include <stdio.h>
+//#include <string.h>
 
 #include <LabJackM.h>
 #include <stdbool.h>
@@ -41,9 +46,17 @@
 
 
 // Pho Custom:
+#include <bitset>
 #include <cmath>
 
+#include "PhoBitHelpersHeader.h"
 #include "LabjackStreamDataDestination.h"
+
+
+std::bitset<8> ToBits(unsigned char byte)
+{
+	return std::bitset<8>(byte);
+}
 
 
 void Stream(int handle, int numChannels, const char ** channelNames, double scanRate, int scansPerRead, int numReads);
@@ -51,7 +64,7 @@ void Stream(int handle, int numChannels, const char ** channelNames, double scan
 void HardcodedConfigureStream(int handle);
 
 
-void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSkippedSamples);
+void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSkippedSamples, const boolean* isChannelAnalog);
 
 
 const boolean isAnalogChannel[] = { true, true, true, true, false };
@@ -156,7 +169,7 @@ void HardcodedConfigureStream(int handle)
 	WriteNameOrDie(handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
 }
 
-void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSkippedSamples)
+void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSkippedSamples, const boolean* isChannelAnalog)
 {
 	int scanStartOffsetI, chanI;
 	int scanI = 0;
@@ -167,8 +180,17 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 	unsigned short temp;
 	unsigned char* bytes;
 
+	unsigned short last_temp;
+	unsigned char* last_bytes;
+
+	std::bitset<8> digitalChannelsBitset;
+	std::bitset<8> digitalChannelsLastValuesBitset;
+
+	
 	double changeTolerance = 0.1; // The amount of change permitted without considering an event a change
 	bool currDidChange = false;
+
+	int memcmpDidChange = 0;
 
 	// Goal is to find lines (scanI) where a value change occurs most efficiently
 
@@ -192,35 +214,64 @@ void PhoAccumulateScans(int numScans, int numChannels, double* aData, int* numSk
 			else
 			{
 				// Otherwise, get the last read value and compare it to this value:
-				//if (channelAddresses[chanI] < 1000) {
-				//	//printf("aData[%3d]: %+.05f    ", scanI + chanI, aData[scanI + chanI]);
-				//	// aData[scanI + chanI] is a double
-
-				//}
-				//else {
-				//	temp = (unsigned short)aData[scanI + chanI];
-				//	bytes = (unsigned char*)&temp;
-
-				//	//printf("aData[%3d]: 0x ", scanI + chanI);
-				//	//printf("%02x %02x", bytes[0], bytes[1]);
-				//	//printf("  (% 7.00f)   ", aData[scanI + chanI]);
-				//}
-
-
-				//bool didChange = (lastReadValues[chanI] == aData[scanI + chanI]);
-				//currDidChange = ((aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
-
-				currDidChange = (fabs(aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
-
-				
-				
-				if (currDidChange)
-				{
-					//printf("didChange: aData[%3d]: %+.05f    \n", scanStartOffsetI + chanI, aData[scanStartOffsetI + chanI]);
-					//printf("didChange: aData[%3d, %3d]: %+.05f    \n", scanI, chanI, aData[scanStartOffsetI + chanI]);					
-					printf("didChange: aData[%3d, %3d]:  %+.05f -to-> %+.05f    \n", scanI, chanI, lastReadValues[chanI], aData[scanStartOffsetI + chanI]);
-
+				if (isChannelAnalog[chanI]) {
+					//printf("aData[%3d]: %+.05f    ", scanI + chanI, aData[scanI + chanI]);
+					// aData[scanI + chanI] is a double
+					//bool didChange = (lastReadValues[chanI] == aData[scanI + chanI]);
+					//currDidChange = ((aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
+					currDidChange = (fabs(aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
+					if (currDidChange)
+					{
+						//printf("didChange: aData[%3d]: %+.05f    \n", scanStartOffsetI + chanI, aData[scanStartOffsetI + chanI]);
+						//printf("didChange: aData[%3d, %3d]: %+.05f    \n", scanI, chanI, aData[scanStartOffsetI + chanI]);					
+						printf("didChange: aData[%3d, %3d]:  %+.05f -to-> %+.05f    \n", scanI, chanI, lastReadValues[chanI], aData[scanStartOffsetI + chanI]);
+					}
 				}
+				else {
+					temp = (unsigned short)aData[scanI + chanI];
+					bytes = (unsigned char*)&temp;
+
+					//printf("aData[%3d, %3d]: 0x ", scanI + chanI);
+					//printf("aData[%3d, %3d]: 0x ", scanI, chanI);
+					//printf("%02x %02x", bytes[0], bytes[1]);
+					//printf("  (% 7.00f)   ", aData[scanI + chanI]);
+
+					//digitalChannelsBitset.set()
+					//digitalChannelsBitset(bytes[0]);
+					//digitalChannelsBitset = std::bitset(bytes[0]);
+					//sizeof(unsigned char*)
+
+					// Get current values:
+					//digitalChannelsBitset = std::bitset<8>(bytes[0]);
+					
+					// Get last read values:
+					last_temp = (unsigned short)lastReadValues[chanI];
+					last_bytes = (unsigned char*)&last_temp;
+					//digitalChannelsLastValuesBitset = std::bitset<8>(last_bytes[0]);
+
+					
+					// it changed if any of the bytes of interest changed:
+					//const std::bitset<8>didAnyChange
+					//auto didPortChange = (digitalChannelsBitset & digitalChannelsLastValuesBitset);
+					//currDidChange = (digitalChannelsBitset != digitalChannelsLastValuesBitset);
+					//memcmpDidChange = memcmp(bytes, last_bytes, (sizeof(unsigned char*) * 2));
+					memcmpDidChange = memcmp(bytes, last_bytes, sizeof(unsigned char*));
+					currDidChange = (memcmpDidChange != 0);
+					if (currDidChange)
+					{
+						//printf("aData[%3d, %3d]: 0x ", scanI, chanI);
+						//printf("%02x %02x", bytes[0], bytes[1]);
+						printf("didChange: aData[%3d, %3d]: 0x %02x %02x -to-> 0x %02x %02x    \n", scanI, chanI, last_bytes[0], last_bytes[1], bytes[0], bytes[1]);
+					}
+					//digitalChannelsBitset 
+				}
+
+
+
+
+				
+				
+				
 
 				// Update the last read value either way:
 				lastReadValues[chanI] = aData[scanStartOffsetI + chanI];
@@ -303,7 +354,7 @@ void Stream(int handle, int numChannels, const char ** channelNames, double scan
 		printf("\n");
 
 		numSkippedScans = 0;
-		PhoAccumulateScans(scansPerRead, numChannels, aData, &numSkippedScans);
+		PhoAccumulateScans(scansPerRead, numChannels, aData, &numSkippedScans, isAnalogChannel);
 
 		//printf("  1st scan out of %d:\n", scansPerRead);
 

@@ -26,5 +26,8 @@
     <ClInclude Include="..\..\..\..\more\stream\LabjackStreamDataDestination.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\more\stream\PhoBitHelpersHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
