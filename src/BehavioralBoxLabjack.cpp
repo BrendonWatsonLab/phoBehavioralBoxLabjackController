@@ -427,7 +427,7 @@ void BehavioralBoxLabjack::readSensorValues()
 		this->err = LJM_eStreamRead(this->handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
 		timeEnd = GetCurrentTimeMS();
 		auto systemTimeEnd = Clock::now();
-		printf("timerStart: %f\t timeEnd: %f\t difference: %f\n", double(timeStart), double(timeEnd), (double(timeEnd) - double(timeStart)));
+		//printf("timerStart: %f\t timeEnd: %f\t difference: %f\n", double(timeStart), double(timeEnd), (double(timeEnd) - double(timeStart)));
 
 		// If LJM has called this callback, the data is valid, but LJM_eStreamRead
 		// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
@@ -450,13 +450,12 @@ void BehavioralBoxLabjack::readSensorValues()
 		if (strcmp(this->inputPortNames_all[timer_lower_bits_index], "SYSTEM_TIMER_20HZ") != 0
 			|| strcmp(this->inputPortNames_all[timer_upper_bits_index], "STREAM_DATA_CAPTURE_16") != 0)
 		{
-			printf("%s:%d - BehavioralBoxLabjack::readSensorValues() - unexpected register: %s and/or %s\n", __FILE__, __LINE__, this->inputPortNames_all[timer_lower_bits_index], this->inputPortNames_all[timer_upper_bits_index]);
+			//printf("%s:%d - BehavioralBoxLabjack::readSensorValues() - unexpected register: %s and/or %s\n", __FILE__, __LINE__, this->inputPortNames_all[timer_lower_bits_index], this->inputPortNames_all[timer_upper_bits_index]);
 			this->ljStreamInfo.done = 1;
 			this->shouldStop = true;
 			return;
 		}
 
-		
 		// Main:
 		int scanStartOffsetI, chanI;
 		int scanI = 0;
@@ -490,7 +489,7 @@ void BehavioralBoxLabjack::readSensorValues()
 		//unsigned int * timerValues = new unsigned int[this->ljStreamInfo.scansPerRead];
 
 		// Otherwise it's good
-		printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d....\n", streamRead, deviceScanBacklog, LJMScanBacklog);
+		//printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d....\n", streamRead, deviceScanBacklog, LJMScanBacklog);
 		
 		scanStartOffsetI = 0;
 		for (scanI = 0; scanI < this->ljStreamInfo.scansPerRead; scanI++) {
@@ -579,19 +578,11 @@ void BehavioralBoxLabjack::readSensorValues()
 				//double currTimerOffsetSeconds = double(timerValue) * 40.0 * 1000000.0; // Convert to seconds
 				double currTimerOffsetSeconds = double(timerValue); // Convert to seconds
 				double timerDifference = double(previousTimerValue) - currTimerOffsetSeconds;
-				//printf(" >>\t timer: %f; delta: %f", currTimerOffsetSeconds, double(timerDifference));
-
-				//printf("  0x%8X timer)", timerValue);
 
 				// This value is in seconds, but we want whole values:
 				long long int roundedMsValue = static_cast<long long int>(currScanTimeOffsetSinceFirstScan * 1000.0);
 				auto estimatedScanTime = systemTimeStart + std::chrono::milliseconds(roundedMsValue);
 				unsigned long long estimated_scan_milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(estimatedScanTime.time_since_epoch()).count();
-
-				// Here is where we'll convert to a this->monitor() appropriate value
-				//this->monitor(estimatedScanTime, lastReadValues);
-
-				printf("\n");
 				
 				// Only persist the values if the state has changed.
 				// Note: should ignore the last two entries in the array, since they're the timer and they'll always update
@@ -612,29 +603,9 @@ void BehavioralBoxLabjack::readSensorValues()
 		// release the dynamically allocated memory:
 		delete[] lastReadValues;
 		lastReadValues = nullptr;
-
-		//delete[] timerValues;
-		//timerValues = nullptr;
+		
 		streamRead++;
 	}
-
-	// # Old non-stream version:
-	////Read the sensor values from the labjack DIO and AIO Inputs
-	//{
-	//	// Lock the mutex to prevent concurrent labjack interaction
-	//	std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
-	//	this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char**)this->inputPortNames_all, this->lastReadInputPortValues, &this->errorAddress);
-	//	ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
-	//}
-
-	//// Only persist the values if the state has changed.
-	//if (this->monitor->refreshState(this->lastCaptureComputerTime, this->lastReadInputPortValues)) {
-	//	//TODO: should this be asynchronous? This would require passing in the capture time and read values
-	//	this->persistReadValues(true);
-	//}
-
-
-	// #TODO: Write the new logic for how the read stream values are persisted out:
 	
 }
 
