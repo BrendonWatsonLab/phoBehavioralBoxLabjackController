@@ -121,27 +121,27 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 				// Otherwise, it's a digital port, need to read all bitwise values that we're interested in
 				// FIXME: change this so it isn't hardcoded
 
-				if (_strcmpi(this->inputPortNames_digital[i], "FIO_STATE"))
+				if (_strcmpi(this->inputPortNames_digital[i], "FIO_STATE") == 0)
 				{
 					// There's 8 ports to add: FIO0 - FIO7
 					this->csv << "FIO0" << "FIO1" << "FIO2" << "FIO3" << "FIO4" << "FIO5" << "FIO6" << "FIO7";
 				}
-				else if (_strcmpi(this->inputPortNames_digital[i], "EIO_STATE"))
+				else if (_strcmpi(this->inputPortNames_digital[i], "EIO_STATE") == 0)
 				{
 					// There's 8 ports to add: EIO0 - EIO7
 					this->csv << "EIO0" << "EIO1" << "EIO2" << "EIO3" << "EIO4" << "EIO5" << "EIO6" << "EIO7";
 				}
-				else if (_strcmpi(this->inputPortNames_digital[i], "MIO_STATE"))
+				else if (_strcmpi(this->inputPortNames_digital[i], "MIO_STATE") == 0)
 				{
 					// There's 8 ports to add: MIO0 - MIO7
 					this->csv << "MIO0" << "MIO1" << "MIO2" << "MIO3" << "MIO4" << "MIO5" << "MIO6" << "MIO7";
 				}
-				else if (_strcmpi(this->inputPortNames_digital[i], "CIO_STATE"))
+				else if (_strcmpi(this->inputPortNames_digital[i], "CIO_STATE") == 0)
 				{
 					// There's 8 ports to add: CIO0 - CIO7
 					this->csv << "CIO0" << "CIO1" << "CIO2" << "CIO3" << "CIO4" << "CIO5" << "CIO6" << "CIO7";
 				}
-				else if (_strcmpi(this->inputPortNames_digital[i], "DIO_STATE"))
+				else if (_strcmpi(this->inputPortNames_digital[i], "DIO_STATE") == 0)
 				{
 					// There's 8 ports to add: DIO0 - DIO7
 					this->csv << "DIO0" << "DIO1" << "DIO2" << "DIO3" << "DIO4" << "DIO5" << "DIO6" << "DIO7";
