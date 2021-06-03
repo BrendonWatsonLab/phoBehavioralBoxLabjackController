@@ -68,7 +68,7 @@ public:
 	 void readSensorValues();
 	
 
-	void persistReadValues(bool enableConsoleLogging);
+	//void persistReadValues(bool enableConsoleLogging);
 	//void persistReadValues();
 
 	// Main run loop
