@@ -92,13 +92,76 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	std::cout << "\t New file paths: " << std::endl << "\t Digital Inputs: " << this->fileFullPath << std::endl << "\t Analog Inputs: " << this->fileFullPath_analog << std::endl;
 	
 	// Write the header to the digital .csv file:
+	//FIXME: Need to perform a smarter csv header line generation to deal with digital bit arrays and analog ports read as binary
+	/*
+	 * The same logic present in the new persistReadValues(...) replacement should work
+	 */
 	this->csv.newRow() << "computerTime";
 	for (int i = 0; i < NUM_CHANNELS_DIGITAL; i++) {
-		this->csv << this->inputPortNames_digital[i];
+		auto currPortType = this->inputPortTypes_digital[i];
+		bool currPortIsLogged = this->inputPortIsLogged_digital[i];
+
+		if (currPortIsLogged) {
+			// Only logged ports have their header written out to the CSV
+			switch (currPortType)
+			{
+			case LabjackPortType::Analog:
+				// If it's an analog port:
+				//newCSVLine_analogOnly << lastReadValues[i];
+				printf("ERROR: Analog type port returned when setting up digital ports... aborting...\n");
+				this->shouldStop = true;
+
+				// this should be an exception/error
+				break;
+			case LabjackPortType::Digital:
+				// It's a normal digital port:
+				this->csv << this->inputPortNames_digital[i];
+				break;
+			case LabjackPortType::DigitalState:
+				// Otherwise, it's a digital port, need to read all bitwise values that we're interested in
+				// FIXME: change this so it isn't hardcoded
+
+				if (_strcmpi(this->inputPortNames_digital[i], "FIO_STATE"))
+				{
+					// There's 8 ports to add: FIO0 - FIO7
+					this->csv << "FIO0" << "FIO1" << "FIO2" << "FIO3" << "FIO4" << "FIO5" << "FIO6" << "FIO7";
+				}
+				else if (_strcmpi(this->inputPortNames_digital[i], "EIO_STATE"))
+				{
+					// There's 8 ports to add: EIO0 - EIO7
+					this->csv << "EIO0" << "EIO1" << "EIO2" << "EIO3" << "EIO4" << "EIO5" << "EIO6" << "EIO7";
+				}
+				else if (_strcmpi(this->inputPortNames_digital[i], "MIO_STATE"))
+				{
+					// There's 8 ports to add: MIO0 - MIO7
+					this->csv << "MIO0" << "MIO1" << "MIO2" << "MIO3" << "MIO4" << "MIO5" << "MIO6" << "MIO7";
+				}
+				else if (_strcmpi(this->inputPortNames_digital[i], "CIO_STATE"))
+				{
+					// There's 8 ports to add: CIO0 - CIO7
+					this->csv << "CIO0" << "CIO1" << "CIO2" << "CIO3" << "CIO4" << "CIO5" << "CIO6" << "CIO7";
+				}
+				else if (_strcmpi(this->inputPortNames_digital[i], "DIO_STATE"))
+				{
+					// There's 8 ports to add: DIO0 - DIO7
+					this->csv << "DIO0" << "DIO1" << "DIO2" << "DIO3" << "DIO4" << "DIO5" << "DIO6" << "DIO7";
+				}
+				else
+				{
+					// UNKNOWN digitial import name
+					printf("ERROR: UNKNOWN digital state port name... aborting...\n");
+					this->shouldStop = true;
+				}
+				break;
+			}
+
+		}
+		
 	}
 	this->csv.writeToFile(this->fileFullPath, false);
 
 	// Write the header to the analog .csv file:
+	//FIXME: Do I need to implement functionality to the digital state ports for generality?
 	this->csv_analog.newRow() << "computerTime";
 	for (int i = 0; i < NUM_CHANNELS_ANALOG; i++) {
 		this->csv_analog << this->inputPortNames_analog[i];
@@ -534,18 +597,13 @@ void BehavioralBoxLabjack::readSensorValues()
 				// Note: should ignore the last two entries in the array, since they're the timer and they'll always update
 				if (this->monitor->refreshState(estimatedScanTime, lastReadValues)) {
 					//TODO: should this be asynchronous? This would require passing in the capture time and read values
-					//this->persistReadValues(true);
-					printf("refresh state returned true!");
+					//printf("refresh state returned true!");
 					this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
 				}
-				//this->monitor->refreshState()
-				//lastReadValues;
 				
 			}
 
 			previousTimerValue = timerValue; // copy the current timerValue to the previousTimerValue
-			
-			
 			
 			//scanI++; // update scanI
 			scanStartOffsetI += this->ljStreamInfo.numChannels; // update scanStartOffsetI
@@ -1020,8 +1078,6 @@ void BehavioralBoxLabjack::updateVisibleLightRelayIfNeeded()
 void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_scan_milliseconds_since_epoch, double* lastReadValues, bool did_anyAnalogPortChange, bool did_anyDigitalPortChange, bool enableConsoleLogging)
 {
 	// Determine if the change occured in the analog ports, digital ports, or both
-
-	//CSVWriter newCSVLine(",");
 	CSVWriter newCSVLine_digitalOnly(",");
 	CSVWriter newCSVLine_analogOnly(",");
 

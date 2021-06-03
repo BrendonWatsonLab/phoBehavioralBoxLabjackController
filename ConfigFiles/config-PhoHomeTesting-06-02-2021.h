@@ -17,6 +17,7 @@ enum { NUM_CHANNELS_DIGITAL = 3 };
 #define globalLabjackDigitalInputPortNames { "FIO_STATE","SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16"}
 #define globalLabjackDigitalInputPortPurpose { "SIGNALS_Dispense","SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16"}
 #define globalLabjackDigitalInputPortType {LabjackPortType::DigitalState, LabjackPortType::DigitalState, LabjackPortType::DigitalState}
+#define globalLabjackDigitalInputPortIsLogged { true,false,false}
 
 // Analog Only:
 enum { NUM_CHANNELS_ANALOG = 4 };

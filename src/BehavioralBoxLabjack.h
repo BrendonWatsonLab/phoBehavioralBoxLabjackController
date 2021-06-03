@@ -151,6 +151,8 @@ private:
 	char* inputPortNames_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortNames;
 	char* inputPortPurpose_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortPurpose;
 	LabjackPortType inputPortTypes_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortType;
+	bool inputPortIsLogged_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortIsLogged;
+	
 	
 
 	// Analog Values:
