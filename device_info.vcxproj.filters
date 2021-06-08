@@ -242,9 +242,6 @@
     <ClInclude Include="ConfigFiles\config-FinalBoxes-10-01-2019.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\External\INIReader.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
@@ -256,9 +253,6 @@
     </ClInclude>
     <ClInclude Include="ProgramVersion.h">
       <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ConfigFiles\config-AnalogRunningWheel-12-17-2019.h">
       <Filter>Header Files\Configuration Files</Filter>
@@ -283,6 +277,9 @@
     </ClInclude>
     <ClInclude Include="src\LabjackPortType.h">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -344,15 +341,9 @@
     <ResourceCompile Include="phoBehavioralBoxLabjackController.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="VersionResource.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\phoBehavioralBoxController Icon.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\phoBehavioralBoxController STREAM-Alt Icon.ico">
+    <Image Include="resources\Design\Exports\phoBehavioralBox_MAIN_STREAM.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

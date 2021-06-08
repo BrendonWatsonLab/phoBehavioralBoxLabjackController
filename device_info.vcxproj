@@ -72,7 +72,6 @@
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h" />
     <ClInclude Include="ProgramVersion.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="resource1.h" />
     <ClInclude Include="src\BehavioralBoxDataWidget.h" />
     <ClInclude Include="src\BehavioralBoxHistoricalData.h" />
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
@@ -253,11 +252,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="phoBehavioralBoxLabjackController.rc" />
-    <ResourceCompile Include="VersionResource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\phoBehavioralBoxController Icon.ico" />
-    <Image Include="resources\phoBehavioralBoxController STREAM-Alt Icon.ico" />
+    <Image Include="resources\Design\Exports\phoBehavioralBox_MAIN_STREAM.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CA30395F-5251-40D8-8C39-297793F13B1E}</ProjectGuid>
