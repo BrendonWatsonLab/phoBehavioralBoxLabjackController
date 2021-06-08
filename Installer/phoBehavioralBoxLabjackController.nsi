@@ -42,7 +42,7 @@
 ;---------------------------------
 ;General
  
-  OutFile "Install phoBehavioralBoxLabjackController.exe"
+  OutFile "Install phoBehavioralBoxLabjackController v${PRODUCT_VERSION}.exe"
   ShowInstDetails "nevershow"
   ShowUninstDetails "nevershow"
   ;SetCompressor "bzip2"
