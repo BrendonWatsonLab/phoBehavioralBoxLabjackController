@@ -4,8 +4,8 @@
  
 ; -------------------------------
 ; Start
-  !define PRODUCT_VERSION "1.0.1.0"
-  !define VERSION "1.0.1.0"
+  !define PRODUCT_VERSION "1.0.1.1"
+  !define VERSION "1.0.1.1"
 
   !define MUI_PRODUCT "phoBehavioralBoxLabjackController"
   !define MUI_FILE "phoBehavioralBoxLabjackController"
@@ -15,7 +15,7 @@
   VIProductVersion "${PRODUCT_VERSION}"
   VIFileVersion "${VERSION}"
   VIAddVersionKey "FileVersion" "${VERSION}"
-  VIAddVersionKey "LegalCopyright" "(C) Pho Hale, Brendon Watson Lab, 2020"
+  VIAddVersionKey "LegalCopyright" "(C) Pho Hale, Brendon Watson Lab, 2021"
   VIAddVersionKey "FileDescription" "Controller for the Brendon Watson lab's behavioral box hardware."
 
 
@@ -26,7 +26,8 @@
   !define PHO_COMMON_DIR_CONFIG "C:\Common\config"
   ;!define PHO_BUILD_PATH "../x64/Release"
   ; !define PHO_BUILD_PATH "C:\Common\repo\phoBehavioralBoxLabjackController\x64\Release"
-  !define PHO_BUILD_PATH "C:\Users\Pho\repos\phoBehavioralBoxLabjackController\x64\Release"
+  ; !define PHO_BUILD_PATH "C:\Users\Pho\repos\phoBehavioralBoxLabjackController\x64\Release"
+  !define PHO_BUILD_PATH "C:\Users\Pho\repos\phoBehavioralBoxLabjackController\builds\x64\Release"
 
   CRCCheck On
 
