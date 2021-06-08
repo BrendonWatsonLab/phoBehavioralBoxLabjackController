@@ -257,6 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\phoBehavioralBoxController Icon.ico" />
+    <Image Include="resources\phoBehavioralBoxController STREAM-Alt Icon.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CA30395F-5251-40D8-8C39-297793F13B1E}</ProjectGuid>
