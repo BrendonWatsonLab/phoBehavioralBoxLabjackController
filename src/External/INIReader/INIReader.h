@@ -14,6 +14,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 // Read an INI file into easy-to-access name/value pairs. (Note that I've gone
 // for simplicity here rather than speed, but it should be pretty decent.)
@@ -33,13 +34,11 @@ public:
     int ParseError() const;
 
     // Get a string value from INI file, returning default_value if not found.
-    std::string Get(const std::string& section, const std::string& name,
-                    const std::string& default_value) const;
+    std::string Get(const std::string& section, const std::string& name, const std::string& default_value) const;
 
     // Get a string value from INI file, returning default_value if not found,
     // empty, or contains only whitespace.
-    std::string GetString(const std::string& section, const std::string& name,
-                    const std::string& default_value) const;
+    std::string GetString(const std::string& section, const std::string& name, const std::string& default_value) const;
 
     // Get an integer (long) value from INI file, returning default_value if
     // not found or not a valid integer (decimal "1234", "-1234", or hex "0x4d2").
@@ -62,12 +61,22 @@ public:
     // Return true if a value exists with the given section and field names.
     bool HasValue(const std::string& section, const std::string& name) const;
 
+	// Dynamic Building Helpers
+
+
+    bool writeDynamicIni(std::string path);
+
 private:
+    bool enableDynamicIniBuilding = true;
+    //std::map<std::string, std::vector<std::string>> _dynamicIniBuilder;
+    std::map<std::string, std::vector<std::pair<std::string, std::string>>> _dynamicIniBuilder;
+    void addDynamic(std::string section, std::string name, std::string value);
+
+	
     int _error;
     std::map<std::string, std::string> _values;
     static std::string MakeKey(const std::string& section, const std::string& name);
-    static int ValueHandler(void* user, const char* section, const char* name,
-                            const char* value);
+    static int ValueHandler(void* user, const char* section, const char* name, const char* value);
 };
 
 #endif  // INIREADER_H

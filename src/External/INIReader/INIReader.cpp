@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <iostream>
+#include <fstream>
 #include "ini.h"
 #include "INIReader.h"
 
@@ -36,6 +38,12 @@ int INIReader::ParseError() const
 string INIReader::Get(const string& section, const string& name, const string& default_value) const
 {
     string key = MakeKey(section, name);
+	if (this->enableDynamicIniBuilding)
+	{
+		auto gotValue = _values.count(key) ? _values.find(key)->second : default_value;
+        this->addDynamic(section, name, gotValue);
+				
+	}
     // Use _values.find() here instead of _values.at() to support pre C++11 compilers
     return _values.count(key) ? _values.find(key)->second : default_value;
 }
@@ -92,6 +100,58 @@ bool INIReader::HasValue(const string& section, const string& name) const
 {
     string key = MakeKey(section, name);
     return _values.count(key);
+}
+
+bool INIReader::writeDynamicIni(std::string path)
+{
+    if (!this->enableDynamicIniBuilding)
+    {
+        return false;
+    }
+	if (this->_dynamicIniBuilder.empty())
+	{
+        return false;
+	}
+    std::ofstream myNewINIFile;
+    myNewINIFile.open(path);
+    for (const auto& [key, sectionItems] : this->_dynamicIniBuilder) {
+        //itemKeys.push_back(key);
+        // Write out the section:
+        myNewINIFile << "[" << key << "]\n";
+    	// Iterate through the keys:
+        for (const auto& [aSectionItemKey, aSectionItemValue] : sectionItems)
+        {
+            myNewINIFile << aSectionItemKey << "=" << aSectionItemValue << "\n";
+        }
+        myNewINIFile << " \n"; // Blank line at the end of the section
+    }
+    myNewINIFile.close(); // Close the file
+    return true;
+}
+
+void INIReader::addDynamic(std::string section, std::string name, std::string value)
+{
+	if (!this->enableDynamicIniBuilding)
+	{
+        return;
+	}
+
+    auto finalValuePair = std::pair<std::string, std::string>(name, value);
+	if (this->_dynamicIniBuilder.count(section))
+	{
+		// Section already exists
+        this->_dynamicIniBuilder.at(section).push_back(finalValuePair);
+	}
+    else
+    {
+	    // Section needs to be created
+        auto newVector = std::vector<std::pair<std::string, std::string>>();
+        newVector.push_back(finalValuePair);
+        //auto newVectorKeyValuePair = { section, newVector };
+        /*this->_dynamicIniBuilder.insert(section, newVector);*/
+        this->_dynamicIniBuilder.insert({ section, newVector });
+    }
+	
 }
 
 string INIReader::MakeKey(const string& section, const string& name)
