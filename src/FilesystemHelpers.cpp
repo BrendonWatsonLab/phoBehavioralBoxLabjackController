@@ -176,7 +176,37 @@ bool FilesystemHelpers::createDirectory(std::string path)
 	else {
 		return fs::create_directories(path);
 	}
+
+	
 }
+
+bool FilesystemHelpers::fileExists(std::string path)
+{
+	if (path.empty()) {
+		return false;
+	}
+	return fs::exists(path);
+}
+
+FilesystemHelpers::FilesystemItemStatus FilesystemHelpers::filesystemItemStatus(std::string path)
+{
+	if (path.empty()) {
+		return FilesystemHelpers::FilesystemItemStatus::NonExistant;
+	}
+	if (!fs::exists(path)) {
+		return FilesystemHelpers::FilesystemItemStatus::NonExistant;
+	}
+	if (fs::is_directory(path))
+	{
+		return FilesystemHelpers::FilesystemItemStatus::Directory;
+	}
+	if (fs::is_regular_file(path))
+	{
+		return FilesystemHelpers::FilesystemItemStatus::File;
+	}
+	return FilesystemItemStatus::OtherExtant;
+}
+
 
 std::map<int, fs::path> FilesystemHelpers::findBehavioralBoxDataFolders(fs::path dir)
 {

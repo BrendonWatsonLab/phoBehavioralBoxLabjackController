@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include "FilesystemHelpers.h"
 
 //using json = nlohmann::json;
 
@@ -21,6 +22,7 @@ bool ConfigurationFile::reloadFromFile()
 	int parseError = this->iniReader.ParseError();
 	if (parseError != 0) {
 		std::cout << "\t ERROR: Can't load '" << this->filePath << "'\n";
+		this->loadStatus = ConfigFileLoadStatus::ExistsOnlyInMemory;
 		return false;
 	}
 
@@ -47,19 +49,39 @@ bool ConfigurationFile::reloadFromFile()
 	this->loadedConfig.shouldEnableSynchronize_Y_Axis = this->iniReader.GetBoolean("TimeSeriesChart", "shouldEnableSynchronize_Y_Axis", true);
 	this->loadedConfig.numDaysToDisplay = this->iniReader.GetInteger("TimeSeriesChart", "numDaysToDisplay", 60);
 
+	this->loadStatus = ConfigFileLoadStatus::LoadedFromFile;
+
 	return true;
 }
 
 bool ConfigurationFile::saveToFile()
 {
+	switch (FilesystemHelpers::filesystemItemStatus(this->filePath))
+	{
+	case FilesystemHelpers::FilesystemItemStatus::NonExistant: break;
+	case FilesystemHelpers::FilesystemItemStatus::File: break;
+	case FilesystemHelpers::FilesystemItemStatus::Directory: break;
+	case FilesystemHelpers::FilesystemItemStatus::OtherExtant: break;
+	default: ;
+	}
+	
+	
+	
+	if (this->filePath == "") {
+		throw std::invalid_argument("received negative value");
+	}
+	
 	return this->saveToFile(this->filePath);
 }
 
-bool ConfigurationFile::saveToFile(std::string overrideFilename)
+bool ConfigurationFile::saveToFile(std::string overrideFilepath)
 {
-	if (overrideFilename != this->filePath) {
-		this->filePath = overrideFilename;
+	if (overrideFilepath != this->filePath) {
+		this->filePath = overrideFilepath;
 	}
+
+	this->iniReader = INIReader(overrideFilepath);
+	
 
 	//// write prettified JSON to another file
 	//std::ofstream outputStream(this->filePath);

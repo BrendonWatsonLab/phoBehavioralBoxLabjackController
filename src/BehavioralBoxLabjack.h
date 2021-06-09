@@ -96,6 +96,10 @@ public:
 	void toggleOverrideMode_VisibleLED();
 	void toggleOverrideMode_AttractModeLEDs();
 
+
+	// Save out configuration File (INI)
+	bool saveConfigurationFile(std::string filePath);
+
 private:
 	int serialNumber;
 	int uniqueIdentifier;

@@ -799,6 +799,21 @@ void BehavioralBoxLabjack::toggleOverrideMode_AttractModeLEDs()
 	}
 }
 
+bool BehavioralBoxLabjack::saveConfigurationFile(std::string filePath)
+{
+	// Saves the configuration INI out to file
+	try
+	{
+		//TODO: Set path
+
+		return this->configMan->saveConfig();
+	}
+	catch (...)
+	{
+		return false;
+	}
+}
+
 // Reads the device name and updates its value
 std::string BehavioralBoxLabjack::readDeviceName()
 {

@@ -30,6 +30,8 @@ public:
 	FilesystemHelpers() {};
 	//~FilesystemHelpers() {};
 
+	enum class FilesystemItemStatus { NonExistant, File, Directory, OtherExtant  };
+
 	// list of paths of all files under the directory 'dir' when the extenstion matches the regex
 	// file_list<true> searches recursively into sub-directories; file_list<false> searches only the specified directory
 	template < bool RECURSIVE > static std::vector<fs::path> file_list(fs::path dir, std::regex ext_pattern);
@@ -57,6 +59,9 @@ public:
 
 	static bool createDirectory(std::string path);
 
+	static bool fileExists(std::string path);
+
+	static FilesystemItemStatus filesystemItemStatus(std::string path);
 
 	// Given a root EventDataFolder, finds a list of paths for each boxes that correspond to the current experiment/cohort/animal
 	static std::map<int, fs::path> findBehavioralBoxDataFolders(fs::path dir);

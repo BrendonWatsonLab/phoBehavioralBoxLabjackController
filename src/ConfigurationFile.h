@@ -15,17 +15,22 @@ public:
 	ConfigurationFile();
 	ConfigurationFile(std::string filePath);
 
-	INIReader iniReader;
-
 	bool reloadFromFile();
 	bool saveToFile();
-	bool saveToFile(std::string overrideFilename);
-
-	std::string filePath;
+	bool saveToFile(std::string overrideFilepath);
 
 	LoadedConfiguration getLoadedConfig() { return this->loadedConfig; }
 
+	enum class ConfigFileLoadStatus { LoadedFromFile, ExistsOnlyInMemory };
+
+
 private:
 	LoadedConfiguration loadedConfig;
+	std::string filePath;
+	INIReader iniReader;
+
+	ConfigFileLoadStatus loadStatus;
+
+	//bool isLoadedFromFile = false;
 };
 
