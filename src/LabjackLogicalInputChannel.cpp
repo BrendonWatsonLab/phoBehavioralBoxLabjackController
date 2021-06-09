@@ -210,6 +210,7 @@ std::function<std::vector<bool>(int, double*, double*)> LabjackLogicalInputChann
 	return fcn;
 }
 
+// returns a vector<double> with one value for each expanded port value
 std::function<std::vector<double>(int, double*)> LabjackLogicalInputChannel::getDefault_genericGetValueFcn_DigitalStateAsDigitalValues()
 {
 	auto fcn = [](int numInputs, double* valuePointer)

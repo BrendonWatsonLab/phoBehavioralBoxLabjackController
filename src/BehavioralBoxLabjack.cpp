@@ -970,7 +970,7 @@ void BehavioralBoxLabjack::readSensorValues()
 		}
 
 		// Main:
-		int scanStartOffsetI, chanI;
+		int scanStartOffsetI, chanI, expandedPortIndex;
 		int scanI = 0;
 
 		int numSkippedScans = 0;
@@ -1016,6 +1016,7 @@ void BehavioralBoxLabjack::readSensorValues()
 			currScanDidAnyDigitalPortChange = false;
 
 			chanI = 0;
+			expandedPortIndex = 0;
 			for (int logicalChannelIndex = 0; logicalChannelIndex < this->logicalInputChannels.size(); logicalChannelIndex++) {
 				auto currChannel = this->logicalInputChannels[logicalChannelIndex];
 				auto currNumberOfDoublesToRead = currChannel->getNumberOfDoubleInputs();
@@ -1027,6 +1028,14 @@ void BehavioralBoxLabjack::readSensorValues()
 				}
 
 				double* updated_pointer = this->ljStreamInfo.aData + (scanStartOffsetI + chanI);
+				// Update the last read raw values:
+				for (int i = 0; i < currNumberOfDoublesToRead; i++)
+				{
+					// Loop through and update the individual expanded port values:
+					lastReadValues[chanI + i] = updated_pointer[i];
+				}
+
+				// get the final values:
 				auto curr_got_value = currChannel->fn_generic_get_value(currNumberOfDoublesToRead, updated_pointer);
 
 				
@@ -1050,14 +1059,40 @@ void BehavioralBoxLabjack::readSensorValues()
 				//	break;
 				//}
 
-				for (int i = 0; i < curr_got_value.size(); i++)
+				int numExpandedValues = curr_got_value.size();
+				
+				double* last_expanded_value_pointer = lastReadExpandedPortValues + (expandedPortIndex);
+				double* curr_expanded_value_pointer = curr_got_value.data();
+				auto didAnyChange = currChannel->fn_generic_get_didValueChange(numExpandedValues, last_expanded_value_pointer, curr_expanded_value_pointer);
+				for (int i = 0; i < numExpandedValues; i++)
 				{
 					// Loop through and update the individual expanded port values:
-					lastReadValues[chanI+i] = curr_got_value[i];
+					if (currChannel->isLoggedToCSV() || currChannel->isLoggedToConsole()) {
+						currDidChange = didAnyChange[i];
+						if (currDidChange)
+						{
+							if (currChannel->getReturnsContinuousValue())
+							{
+								currScanDidAnyAnalogPortChange = currScanDidAnyAnalogPortChange || true;
+							}
+							else
+							{
+								currScanDidAnyDigitalPortChange = currScanDidAnyDigitalPortChange || true;
+
+							}
+							currScanDidAnyChange = currScanDidAnyChange || true;
+
+						}
+
+						
+					} // end if isLoggedTo...
+
+					lastReadExpandedPortValues[expandedPortIndex + i] = curr_got_value[i];
 				}
 				
 				// Once done with this port, move the chanI (raw index into double* aray for current scan) to prepare for the next row
 				chanI += currNumberOfDoublesToRead;
+				expandedPortIndex += curr_got_value.size();
 			}
 
 			
@@ -1127,8 +1162,8 @@ void BehavioralBoxLabjack::readSensorValues()
 			// Get timers:
 			// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which
 			// contains SYSTEM_TIMER_20HZ's upper 16 bits
-			timerValue = ((unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + timer_upper_bits_index] << 16) +
-				(unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + timer_lower_bits_index];
+			/*timerValue = ((unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + timer_upper_bits_index] << 16) +
+				(unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + timer_lower_bits_index];*/
 
 			/*
 			 * "Internal 32-bit system timer running at 1/2 core speed, thus normally 80M/2 => 40 MHz."
@@ -1138,11 +1173,6 @@ void BehavioralBoxLabjack::readSensorValues()
 			if (currScanDidAnyChange)
 			{
 				currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(scanI);
-				// Get the timerValue as a timepoint:
-				//double currTimerOffsetSeconds = double(timerValue) * 40.0 * 1000000.0; // Convert to seconds
-				double currTimerOffsetSeconds = double(timerValue); // Convert to seconds
-				double timerDifference = double(previousTimerValue) - currTimerOffsetSeconds;
-
 				// This value is in seconds, but we want whole values:
 				long long int roundedMsValue = static_cast<long long int>(currScanTimeOffsetSinceFirstScan * 1000.0);
 				auto estimatedScanTime = systemTimeStart + std::chrono::milliseconds(roundedMsValue);
