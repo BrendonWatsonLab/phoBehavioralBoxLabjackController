@@ -33,6 +33,8 @@ bool ConfigurationFile::reloadFromFile()
 	}
 
 	//DEFAULT:
+	this->loadedConfig.config_version = this->iniReader.GetInteger("DEFAULT", "config_version", 2);
+
 	this->loadedConfig.daylightStartHour = this->iniReader.GetInteger("DEFAULT", "globalDaylightStartHour", 6);
 	this->loadedConfig.daylightOffHour = this->iniReader.GetInteger("DEFAULT", "globalDaylightOffHour", 18);
 	this->loadedConfig.continue_without_labjacks = this->iniReader.GetBoolean("DEFAULT", "CONTINUE_WITHOUT_LABJACKS", true);
@@ -54,6 +56,10 @@ bool ConfigurationFile::reloadFromFile()
 	//TimeSeriesChart:
 	this->loadedConfig.shouldEnableSynchronize_Y_Axis = this->iniReader.GetBoolean("TimeSeriesChart", "shouldEnableSynchronize_Y_Axis", true);
 	this->loadedConfig.numDaysToDisplay = this->iniReader.GetInteger("TimeSeriesChart", "numDaysToDisplay", 60);
+
+	// LABJACK:
+	this->loadedConfig.labjackInputChannelList = this->iniReader.GetString("Labjack", "labjackInputChannelList", "{AIN0,AIN1,AIN2,AIN3,FIO_STATE,SYSTEM_TIMER_20HZ,STREAM_DATA_CAPTURE_16}");
+	
 
 	switch (this->loadStatus)
 	{

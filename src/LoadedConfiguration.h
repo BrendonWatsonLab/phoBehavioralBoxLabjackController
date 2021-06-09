@@ -2,6 +2,9 @@
 
 struct LoadedConfiguration
 {
+	int config_version = 2;
+	
+	
 	//DEFAULT:
 	int daylightStartHour = 6;
 	int daylightOffHour = 18;
@@ -23,6 +26,9 @@ struct LoadedConfiguration
 	bool shouldEnableSynchronize_Y_Axis = false;
 	int numDaysToDisplay = 60;
 
+	//LABJACK:
+	std::string labjackInputChannelList = "{AIN0,AIN1,AIN2,AIN3,FIO_STATE,SYSTEM_TIMER_20HZ,STREAM_DATA_CAPTURE_16}";
+	
 	bool persistToIniFile(std::string path)
 	{
 		// Create Sections:
