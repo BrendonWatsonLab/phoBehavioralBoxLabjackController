@@ -147,9 +147,6 @@
     <ClCompile Include="src\FormattingHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LabjackLogicalChannel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\BoxControllerWebDataServer.cpp">
       <Filter>WebserverOnly</Filter>
     </ClCompile>
@@ -158,6 +155,12 @@
     </ClCompile>
     <ClCompile Include="src\External\INIReader\INIReader.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackLogicalChannelBase.cpp">
+      <Filter>Header Files\Configuration Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackLogicalInputChannel.cpp">
+      <Filter>Header Files\Configuration Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -287,9 +290,6 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LabjackLogicalChannel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\BoxControllerWebDataServer.h">
       <Filter>WebserverOnly</Filter>
     </ClInclude>
@@ -298,6 +298,15 @@
     </ClInclude>
     <ClInclude Include="src\External\INIReader\INIReader.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackLogicalInputChannel.h">
+      <Filter>Header Files\Configuration Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackLogicalChannelBase.h">
+      <Filter>Header Files\Configuration Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DigitalStatePortMask.h">
+      <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

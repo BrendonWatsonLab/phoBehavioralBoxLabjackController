@@ -19,9 +19,10 @@ const char ** aNames, const int * aAddresse
 The primary goal is to use modern C++ best-practices for data types while allowing compatibility with the Labjack Stream functions, which ask for C-style variables as inputs:
 
 For example, 
+```
 	LJM_ERROR_RETURN LJM_eStreamStart(int Handle, int ScansPerRead, int NumAddresses, const int* aScanList, double* ScanRate);
 	LJM_ERROR_RETURN LJM_eStreamRead(int Handle, double* aData, int* DeviceScanBacklog, int* LJMScanBacklog);
-
+```
 
 Want to be able to access `const int*` and `double*` type variables
 
