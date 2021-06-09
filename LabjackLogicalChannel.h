@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-struct LabjackPort
+struct LabjackLogicalChannel
 {
 	enum class Direction { Input, Output };
 	//enum direction { left = 'l', right = 'r' };
@@ -25,6 +25,8 @@ struct LabjackPort
 
 	// Gets the representation of this item to render in the CSV header
 	std::string getCSVHeaderRepresentation();
+
+	std::string
 
 	
 	

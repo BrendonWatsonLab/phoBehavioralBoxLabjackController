@@ -35,7 +35,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="LabjackPort.cpp" />
+    <ClCompile Include="LabjackLogicalChannel.cpp" />
     <ClCompile Include="src\BehavioralBoxDataWidget.cpp" />
     <ClCompile Include="src\BehavioralBoxHistoricalData.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
@@ -73,7 +73,7 @@
     <ClInclude Include="ConfigFiles\config-PhoHomeTesting-05-28-2021.h" />
     <ClInclude Include="ConfigFiles\config-PhoHomeTesting-06-02-2021.h" />
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h" />
-    <ClInclude Include="LabjackPort.h" />
+    <ClInclude Include="LabjackLogicalChannel.h" />
     <ClInclude Include="ProgramVersion.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\BehavioralBoxDataWidget.h" />
