@@ -7,7 +7,16 @@
 bool LabjackLogicalInputChannel::getReturnsContinuousValue()
 {
 	//TODO: Implement
-    return false;
+	switch (this->finalValueType)
+	{
+	case InputFinalDesiredValueType::Discrete: 
+		return false;
+		break;
+	case InputFinalDesiredValueType::Continuous: 
+		return true;
+		break;
+	}
+	return false;
 }
 
 std::string LabjackLogicalInputChannel::getCSVHeaderRepresentation()

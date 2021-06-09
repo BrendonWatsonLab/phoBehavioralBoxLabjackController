@@ -84,7 +84,7 @@ public:
 	int getNumberInputChannels(bool include_digital_ports = true, bool include_analog_ports = false);
 	int getNumberOutputChannels() { return NUM_OUTPUT_CHANNELS; }
 	std::vector<std::string> getInputPortNames(bool include_digital_ports = true, bool include_analog_ports = false);
-	std::vector<std::string> getInputPortPurpose(bool include_digital_ports = true, bool include_analog_ports = false);
+	//std::vector<std::string> getInputPortPurpose(bool include_digital_ports = true, bool include_analog_ports = false);
 	std::vector<double> getLastReadValues(bool include_digital_ports = true, bool include_analog_ports = false);
 	std::string getOutputDirectory() { return this->outputDirectory; }
 
