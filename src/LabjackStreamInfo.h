@@ -1,5 +1,7 @@
 #pragma once
 
+#define MAX_CHANNEL_NAME_LENGTH 50
+
 struct LabjackStreamInfo
 {
 public:
@@ -17,8 +19,12 @@ public:
 
 	int numChannels = 0;
 	int* aScanList = nullptr;
-	const char** channelNames = nullptr; // FIXME: these go out of scope
+	//const char** channelNames = nullptr; // FIXME: these go out of scope
 
+	//const char* channelNames[] = nullptr; // FIXME: these go out of scope
+	char** channelNames = nullptr; 
+
+	// 
 	//int aDataSize = 0;
 	unsigned int aDataSize;
 	double* aData = nullptr;
@@ -26,12 +32,27 @@ public:
 	//unsigned int numScansToPrint = 1;
 	int done = 0; // Done is 0 == FALSE
 
-	void build(int numChannels, const char** channelNames, double scanRate)
+	void build(int num_channels, const char** channel_names, double scan_rate)
 	{
-		this->numChannels = numChannels;
-		this->channelNames = channelNames;
+		this->numChannels = num_channels;
+		//this->channelNames = channel_names; // Old way that went out of scope
+
+		// Allocate channel names:
+		/*this->channelNames = new const char* [this->numChannels];*/
+		this->channelNames = new char*[this->numChannels];
 		
-		this->scanRate = scanRate;
+		for (int i = 0; i < num_channels; i++)
+		{
+			// Initialize to begin
+			this->channelNames[i] = new char[MAX_CHANNEL_NAME_LENGTH];
+			// Not necessary, but keeps things safe
+			memset(this->channelNames[i], '\0', MAX_CHANNEL_NAME_LENGTH);
+			// Copy the names to the string array
+			//strncpy(this->channelNames[i], "DAC1", MAX_CHANNEL_NAME_LENGTH);
+			strcpy_s(this->channelNames[i], MAX_CHANNEL_NAME_LENGTH, channel_names[i]);
+		}
+		
+		this->scanRate = scan_rate;
 		this->scansPerRead = this->scanRate / 2;
 
 		this->aDataSize = this->numChannels * this->scansPerRead;
@@ -53,6 +74,9 @@ public:
 
 		delete[] this->aScanList;
 		this->aScanList = nullptr;
+
+		delete[] this->channelNames;
+		this->channelNames = nullptr;
 	}
 
 
@@ -62,6 +86,9 @@ public:
 		//TimeSinceFirstScan = Offset * (1 / ScanRate);
 		return (double(scanIndex) * (1.0 / this->scanRate));
 	}
+
+	// Extended functions:
+	
 
 private:
 	bool broken = false;

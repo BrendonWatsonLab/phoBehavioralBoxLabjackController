@@ -156,8 +156,6 @@ private:
 	
 
 	// Analog Values:
-	//TODO: Check if we need a separate StateMonitor
-	//TODO: Check how CSVWriter is initialized
 	char* inputPortNames_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortNames;
 	char* inputPortPurpose_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortPurpose;
 	LabjackPortType inputPortTypes_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortType;

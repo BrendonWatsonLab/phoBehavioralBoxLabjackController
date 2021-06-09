@@ -443,7 +443,7 @@ void BehavioralBoxLabjack::readSensorValues()
 			return;
 		}
 
-		// TODO: Assumes the last to channels are the timer channels:
+		// TODO: Assumes the last two channels are the timer channels:
 		const int timer_lower_bits_index = this->ljStreamInfo.numChannels - 2;
 		const int timer_upper_bits_index = this->ljStreamInfo.numChannels - 1;
 
@@ -964,7 +964,8 @@ void BehavioralBoxLabjack::SetupStream()
 	//this->ljStreamInfo.build(this->getNumberInputChannels(true, true), CHANNEL_NAMES, 200);
 	this->ljStreamInfo.build(this->getNumberInputChannels(true, true), CHANNEL_NAMES, 200);
 
-	this->err = LJM_NamesToAddresses(this->ljStreamInfo.numChannels, this->ljStreamInfo.channelNames, this->ljStreamInfo.aScanList, NULL);
+	
+	this->err = LJM_NamesToAddresses(this->ljStreamInfo.numChannels, const_cast<const char**>(this->ljStreamInfo.channelNames), this->ljStreamInfo.aScanList, NULL);
 	ErrorCheck(this->err, "Getting positive channel addresses");
 	
 	

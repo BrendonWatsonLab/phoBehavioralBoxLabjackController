@@ -6,7 +6,7 @@
 #include "InputState.h"
 
 // Simple forward declaration
-struct LabjackStreamInfo;
+//struct LabjackStreamInfo;
 
 // Keep track of the presumed current state of each port. 
 // Upon each read, check if the read values differ from the previous values. When a change occurs:
