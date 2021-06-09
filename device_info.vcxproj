@@ -42,12 +42,10 @@
     <ClCompile Include="src\BoxControllerWebDataServer.cpp" />
     <ClCompile Include="src\ConfigurationFile.cpp" />
     <ClCompile Include="src\ConfigurationManager.cpp" />
-    <ClCompile Include="src\DataServerEvent.cpp" />
     <ClCompile Include="src\External\INIReader\ini.c" />
     <ClCompile Include="src\External\INIReader\INIReader.cpp" />
     <ClCompile Include="src\FilesystemHelpers.cpp" />
     <ClCompile Include="src\FormattingHelper.cpp" />
-    <ClCompile Include="src\HistoricalDataLoadingEvent.cpp" />
     <ClCompile Include="src\InputState.cpp" />
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp" />
     <ClCompile Include="src\LabjackControllerWebApplication.cpp" />
@@ -56,11 +54,9 @@
     <ClCompile Include="src\LabjackLogicalChannelBase.cpp" />
     <ClCompile Include="src\LabjackLogicalInputChannel.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\ChartConfig.cpp" />
     <ClCompile Include="src\CsvUtil.cpp" />
     <ClCompile Include="src\LabjackHelpers.cpp" />
     <ClCompile Include="src\OutputState.cpp" />
-    <ClCompile Include="src\PanelList.cpp" />
     <ClCompile Include="src\RootWidget.cpp" />
     <ClCompile Include="src\StateMonitor.cpp" />
     <ClCompile Include="src\TimeSeriesChart.cpp" />
@@ -81,7 +77,6 @@
     <ClInclude Include="src\BehavioralBoxLabjack.h" />
     <ClInclude Include="src\BehavioralBoxControllersManager.h" />
     <ClInclude Include="src\BoxControllerWebDataServer.h" />
-    <ClInclude Include="src\ChartConfig.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\ConfigurationFile.h" />
     <ClInclude Include="src\ConfigurationManager.h" />
@@ -110,7 +105,6 @@
     <ClInclude Include="src\LoadedConfiguration.h" />
     <ClInclude Include="src\NumericItem.h" />
     <ClInclude Include="src\OutputState.h" />
-    <ClInclude Include="src\PanelList.h" />
     <ClInclude Include="src\RootWidget.h" />
     <ClInclude Include="src\StateMonitor.h" />
     <ClInclude Include="src\TimeSeriesChart.h" />

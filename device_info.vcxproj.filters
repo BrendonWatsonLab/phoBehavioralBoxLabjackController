@@ -87,12 +87,6 @@
     <ClCompile Include="src\OutputState.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
-    <ClCompile Include="src\PanelList.cpp">
-      <Filter>WebserverOnly\WtWebServer\Obsolite</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChartConfig.cpp">
-      <Filter>WebserverOnly\WtWebServer\Obsolite</Filter>
-    </ClCompile>
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp">
       <Filter>WebserverOnly\WtWebServer\WebComponents\OuterWidget</Filter>
     </ClCompile>
@@ -113,12 +107,6 @@
     </ClCompile>
     <ClCompile Include="src\FilesystemHelpers.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DataServerEvent.cpp">
-      <Filter>WebserverOnly\WtWebServer\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="src\HistoricalDataLoadingEvent.cpp">
-      <Filter>WebserverOnly\WtWebServer\Events</Filter>
     </ClCompile>
     <ClCompile Include="src\BehavioralBoxHistoricalData.cpp">
       <Filter>Source Files\Model</Filter>
@@ -187,12 +175,6 @@
     </ClInclude>
     <ClInclude Include="src\StateMonitor.h">
       <Filter>Header Files\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PanelList.h">
-      <Filter>WebserverOnly\WtWebServer\Obsolite</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChartConfig.h">
-      <Filter>WebserverOnly\WtWebServer\Obsolite</Filter>
     </ClInclude>
     <ClInclude Include="src\LabjackControllerOuterWidget.h">
       <Filter>WebserverOnly\WtWebServer\WebComponents\OuterWidget</Filter>
