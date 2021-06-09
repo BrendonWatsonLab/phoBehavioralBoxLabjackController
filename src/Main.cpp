@@ -22,7 +22,7 @@
 #include <thread>
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
-#include <Wt/WServer.h>
+
 
 #include "BehavioralBoxControllersManager.h"
 #include "BehavioralBoxLabjack.h"
@@ -30,7 +30,7 @@
 #include "ConfigurationManager.h"
 
 // Webserver functionality:
-#if LAUNCH_WEB_SERVER
+#if INCLUDE_WEB_SERVER_FILES
 #include "LabjackControllerWebApplication.h"
 
 #include <Wt/WServer.h>
@@ -158,7 +158,7 @@ int main(int argc, char** argv)
 
 bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr)
 {
-
+#if INCLUDE_WEB_SERVER_FILES
 	std::cout << "Starting the web server." << std::endl;
 
 	// WEB SERVER THREAD BLOCK:
@@ -183,6 +183,7 @@ bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxCo
 		return true;
 	}));
 
+#endif
 	return true;
 }
 
@@ -192,6 +193,7 @@ int shutdownApplication(int shutdownCode)
 	std::cout << "Shutting down the application..." << std::endl;
 	//controller->shutdown();
 	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
+#if INCLUDE_WEB_SERVER_FILES
 	const bool shouldStartWebServer = configMan->getLoadedConfig().launch_web_server;
 	if (shouldStartWebServer) {
 		std::cout << "Waiting on web server thread to quit..." << std::endl;
@@ -199,6 +201,7 @@ int shutdownApplication(int shutdownCode)
 		// We can not let this object be destroyed until the thread finishes executing.
 		web_server_thread.join();
 	}
+#endif
 	printf("Done.");
 	// At this point the thread has finished.
 	// Destructor can now complete.
