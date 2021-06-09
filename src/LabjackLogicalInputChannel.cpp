@@ -97,6 +97,12 @@ std::string LabjackLogicalInputChannel::getCSVHeaderRepresentation()
 
 std::vector<std::string> LabjackLogicalInputChannel::getExpandedFinalValuePortNames()
 {
+	if (this->fn_get_expanded_port_names)
+	{
+		return this->fn_get_expanded_port_names(this);
+	}
+	// Otherwise do the default:
+
 	auto portNames = this->getPortNames();
 	if (portNames.size() == 1)
 	{
@@ -159,4 +165,74 @@ unsigned int LabjackLogicalInputChannel::convertValue_StreamTimer(double upper_b
 	unsigned int timerValue = ((unsigned short)upper_bits << 16) +
 		(unsigned short)lower_bits;
 	return timerValue;
+}
+
+std::vector<double> LabjackLogicalInputChannel::toFinalDoublesVector(std::bitset<8> value)
+{
+	std::vector<double> output = std::vector<double>(8);
+	for (int i = 0; i < 8; i++)
+	{
+		output[i] = value.test(i);
+	}
+	return output;
+}
+
+std::function<std::vector<double>(int, double*)> LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput()
+{
+	auto fcn = [](int numInputs, double* valuePointer)
+	{
+		auto currInputValue = valuePointer[0];
+		// return a double
+		if (LabjackLogicalInputChannel::convertValue_AnalogAsDigitalInput(currInputValue))
+		{
+			return std::vector<double>({ 1.0 });
+		}
+		else
+		{
+			return std::vector<double>({ 0.0 });
+		}
+	};
+	return fcn;
+}
+
+std::function<std::vector<bool>(int, double*, double*)> LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput()
+{
+	auto fcn = [](int numInputs, double* oldValuePointer, double* newValuePointer)
+	{
+		const double changeTolerance = 1.0;
+
+		auto prevInputValue = oldValuePointer[0];
+		auto currInputValue = newValuePointer[0];
+
+		bool currDidChange = (fabs(currInputValue - prevInputValue) > changeTolerance);
+		return std::vector<bool>({ (currDidChange) });
+	};
+	return fcn;
+}
+
+std::function<std::vector<double>(int, double*)> LabjackLogicalInputChannel::getDefault_genericGetValueFcn_DigitalStateAsDigitalValues()
+{
+	auto fcn = [](int numInputs, double* valuePointer)
+	{
+		auto currInputValue = valuePointer[0];
+		auto currBitsetValues = LabjackLogicalInputChannel::convertValue_DigitalStateAsDigitalValues(currInputValue);
+		// return a double vector
+		return LabjackLogicalInputChannel::toFinalDoublesVector(currBitsetValues);
+	};
+	return fcn;
+}
+
+std::function<std::vector<bool>(int, double*, double*)> LabjackLogicalInputChannel::getDefault_didChangeFcn_DigitalStateAsDigitalValues()
+{
+	auto fcn = [](int numInputs, double* oldValuePointer, double* newValuePointer)
+	{
+		const double changeTolerance = 1.0;
+
+		auto prevInputValue = oldValuePointer[0];
+		auto currInputValue = newValuePointer[0];
+
+		bool currDidChange = (fabs(currInputValue - prevInputValue) > changeTolerance);
+		return std::vector<bool>({ (currDidChange) });
+	};
+	return fcn;
 }

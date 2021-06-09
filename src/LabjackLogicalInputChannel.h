@@ -38,8 +38,15 @@ public:
 	void setNumberOfDoubleInputs(size_t numDoubles) { this->numDoubleInputValues = numDoubles; }
 
 
-	std::function<double(int, double*)> fn_generic_get_value;
+	std::function<std::vector<std::string>(LabjackLogicalInputChannel*)> fn_get_expanded_port_names;
 
+	size_t getNumberOfExpandedPorts() { return this->getExpandedFinalValuePortNames().size(); }
+	
+	//std::function<double(int, double*)> fn_generic_get_value;
+
+	std::function<std::vector<double>(int, double*)> fn_generic_get_value;
+	std::function<std::vector<bool>(int, double*, double*)> fn_generic_get_didValueChange;
+	
 	
 	
 	std::function<unsigned(double, double)> fn_stream_timer = [](double upper_bits, double lower_bits)
@@ -55,6 +62,15 @@ public:
 	static std::bitset<8> convertValue_DigitalStateAsDigitalValues(double doubleRepresentation);
 	static bool convertValue_AnalogAsDigitalInput(double analogValue);
 	static unsigned int convertValue_StreamTimer(double upper_bits, double lower_bits);
+
+	static std::vector<double> toFinalDoublesVector(std::bitset<8> value);
+	
+	// Default Functions:
+	static std::function<std::vector<double>(int, double*)> getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	static std::function<std::vector<bool>(int, double*, double*)> getDefault_didChangeFcn_AnalogAsDigitalInput();
+
+	static std::function<std::vector<double>(int, double*)> getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
+	static std::function<std::vector<bool>(int, double*, double*)> getDefault_didChangeFcn_DigitalStateAsDigitalValues();
 
 protected:
 	//std::function<bool> _fnDigitizeValue;

@@ -630,79 +630,33 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 {
 	// "AIN0", "AIN1", "AIN2", "AIN3"
 	LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "Water1_BeamBreak" }, "AIN0");
-	newInputChannel_A0->fn_generic_get_value = [](int numInputs, double* valuePointer)
-	{
-		auto currInputValue = valuePointer[0];
-		// return a double
-		if (LabjackLogicalInputChannel::convertValue_AnalogAsDigitalInput(currInputValue))
-		{
-			return 1.0;
-		}
-		else
-		{
-			return 0.0;
-		}
-	};
-	
+	newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
 	this->logicalInputChannels.push_back(newInputChannel_A0);
 
 	LabjackLogicalInputChannel* newInputChannel_A1 = new LabjackLogicalInputChannel({ "AIN1" }, { "Water2_BeamBreak" }, "AIN1");
-	newInputChannel_A1->fn_generic_get_value = [](int numInputs, double* valuePointer)
-	{
-		auto currInputValue = valuePointer[0];
-		// return a double
-		if (LabjackLogicalInputChannel::convertValue_AnalogAsDigitalInput(currInputValue))
-		{
-			return 1.0;
-		}
-		else
-		{
-			return 0.0;
-		}
-	};
-	this->logicalInputChannels.push_back(newInputChannel_A1);
+	newInputChannel_A1->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A1->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
 
 	LabjackLogicalInputChannel* newInputChannel_A2 = new LabjackLogicalInputChannel({ "AIN2" }, { "Food1_BeamBreak" }, "AIN2");
-	newInputChannel_A2->fn_generic_get_value = [](int numInputs, double* valuePointer)
-	{
-		auto currInputValue = valuePointer[0];
-		// return a double
-		if (LabjackLogicalInputChannel::convertValue_AnalogAsDigitalInput(currInputValue))
-		{
-			return 1.0;
-		}
-		else
-		{
-			return 0.0;
-		}
-	};
+	newInputChannel_A2->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A2->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
 	this->logicalInputChannels.push_back(newInputChannel_A2);
 
 	LabjackLogicalInputChannel* newInputChannel_A3 = new LabjackLogicalInputChannel({ "AIN3" }, { "Food2_BeamBreak" }, "AIN3");
-	newInputChannel_A3->fn_generic_get_value = [](int numInputs, double* valuePointer)
-	{
-		auto currInputValue = valuePointer[0];
-		// return a double
-		if (LabjackLogicalInputChannel::convertValue_AnalogAsDigitalInput(currInputValue))
-		{
-			return 1.0;
-		}
-		else
-		{
-			return 0.0;
-		}
-	};
+	newInputChannel_A3->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A3->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
 	this->logicalInputChannels.push_back(newInputChannel_A3);
 	
 	LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "FIO_STATE" }, { "SIGNALS_Dispense" }, "SIGNALS_Dispense");
+	newInputChannel->fn_generic_get_value = [](int numInputs, double* valuePointer)
+	{
+		auto currInputValue = valuePointer[0];
+		auto currBitsetValues = LabjackLogicalInputChannel::convertValue_DigitalStateAsDigitalValues(currInputValue);
+		// return a double vector
+		return LabjackLogicalInputChannel::toFinalDoublesVector(currBitsetValues);
+	};
 	this->logicalInputChannels.push_back(newInputChannel);
-	//newInputChannel_A0->fn_generic_get_value = [](int numInputs, double* valuePointer)
-	//{
-	//	auto currInputValue = valuePointer[0];
-	//	auto currBitsetValues = LabjackLogicalInputChannel::convertValue_DigitalStateAsDigitalValues(currInputValue);
-	//	// return a double
-	//	return currBitsetValues;
-	//};
 	
 
 	LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
@@ -715,9 +669,10 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 
 		// return a double
 		auto stream_timer_value = LabjackLogicalInputChannel::convertValue_StreamTimer(currInputValue_upperBits, currInputValue_lowerBits);
-		return double(stream_timer_value);
+		double currTimerOffsetSeconds = double(stream_timer_value); // Convert to seconds
+		
+		return std::vector<double>({ currTimerOffsetSeconds });
 	};
-	
 	this->logicalInputChannels.push_back(timerInputChannel);
 
 	
@@ -1098,8 +1053,11 @@ void BehavioralBoxLabjack::readSensorValues()
 				//	break;
 				//}
 
-
-				lastReadValues[chanI] = curr_got_value;
+				for (int i = 0; i < curr_got_value.size(); i++)
+				{
+					// Loop through and update the individual expanded port values:
+					lastReadValues[chanI+i] = curr_got_value[i];
+				}
 				
 				// Once done with this port, move the chanI (raw index into double* aray for current scan) to prepare for the next row
 				chanI += currNumberOfDoublesToRead;
