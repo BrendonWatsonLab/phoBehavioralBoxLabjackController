@@ -1106,38 +1106,71 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 	newCSVLine_analogOnly.newRow() << estimated_scan_milliseconds_since_epoch;
 
 
-
-
-	for (int i = 0; i < this->logicalInputChannels.size(); i++) {
-		if (!this->logicalInputChannels[i]->isLoggedToCSV())
+	int currAcrossChannelsExpandedPortLinearOffset = 0;
+	for (int logicalChannelIndex = 0; logicalChannelIndex < this->logicalInputChannels.size(); logicalChannelIndex++) {
+		auto currExpandedChannels = this->logicalInputChannels[logicalChannelIndex]->getExpandedFinalValuePortNames();
+		const size_t currChannelNumExpandedValues = currExpandedChannels.size();
+		
+		for (int j = 0; j < currChannelNumExpandedValues; j++)
 		{
-			continue; // skip this non-logged channel
-		}
-		auto currExpandedChannels = this->logicalInputChannels[i]->getExpandedFinalValuePortNames();
-		if (!this->logicalInputChannels[i]->getReturnsContinuousValue())
-		{
-			// if this is not a continuous (analog-like) channel:
-			for (int j = 0; j < currExpandedChannels.size(); ++j)
+			int currLinearOffsetIndex = currAcrossChannelsExpandedPortLinearOffset + j;
+			if (this->logicalInputChannels[logicalChannelIndex]->getReturnsContinuousValue())
+			{
+				// If it's an analog (continuous) port:
+				if (!this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
+				{
+					newCSVLine_analogOnly << lastReadValues[currLinearOffsetIndex];
+				}
+			}
+			else
 			{
 				// Otherwise, it's a digital port
-				newCSVLine_digitalOnly << lastReadValues[i+j];
-				if (enableConsoleLogging && this->logicalInputChannels[i]->isLoggedToConsole()) {
-					std::cout << lastReadValues[i + j] << ", ";
+				if (!this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
+				{
+					newCSVLine_digitalOnly << lastReadValues[currLinearOffsetIndex];
 				}
 			}
-		}
-		else
-		{
-			// If it's an analog (continuous) port:
-			for (int j = 0; j < currExpandedChannels.size(); ++j)
-			{
-				newCSVLine_analogOnly << lastReadValues[i + j];
-				if (enableConsoleLogging && this->logicalInputChannels[i]->isLoggedToConsole()) {
-					std::cout << lastReadValues[i + j] << ", ";
-				}
+			if (enableConsoleLogging && this->logicalInputChannels[logicalChannelIndex]->isLoggedToConsole()) {
+				std::cout << lastReadValues[currLinearOffsetIndex] << ", ";
 			}
-		}
+
+			currAcrossChannelsExpandedPortLinearOffset += currChannelNumExpandedValues;
+		} // end for currExpandedChannels
+
 	} // end for i
+
+
+
+	//for (int i = 0; i < this->logicalInputChannels.size(); i++) {
+	//	if (!this->logicalInputChannels[i]->isLoggedToCSV())
+	//	{
+	//		continue; // skip this non-logged channel
+	//	}
+	//	auto currExpandedChannels = this->logicalInputChannels[i]->getExpandedFinalValuePortNames();
+	//	if (!this->logicalInputChannels[i]->getReturnsContinuousValue())
+	//	{
+	//		// if this is not a continuous (analog-like) channel:
+	//		for (int j = 0; j < currExpandedChannels.size(); ++j)
+	//		{
+	//			// Otherwise, it's a digital port
+	//			newCSVLine_digitalOnly << lastReadValues[i+j];
+	//			if (enableConsoleLogging && this->logicalInputChannels[i]->isLoggedToConsole()) {
+	//				std::cout << lastReadValues[i + j] << ", ";
+	//			}
+	//		}
+	//	}
+	//	else
+	//	{
+	//		// If it's an analog (continuous) port:
+	//		for (int j = 0; j < currExpandedChannels.size(); ++j)
+	//		{
+	//			newCSVLine_analogOnly << lastReadValues[i + j];
+	//			if (enableConsoleLogging && this->logicalInputChannels[i]->isLoggedToConsole()) {
+	//				std::cout << lastReadValues[i + j] << ", ";
+	//			}
+	//		}
+	//	}
+	//} // end for i
 
 
 	if (enableConsoleLogging) {
