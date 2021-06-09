@@ -14,9 +14,6 @@ public:
 
 	//enum class PortType { Analog, Digital, DigitalState };
 
-
-
-	
 	std::vector<std::string> portNames;
 	std::vector<int> portAddresses;
 	
