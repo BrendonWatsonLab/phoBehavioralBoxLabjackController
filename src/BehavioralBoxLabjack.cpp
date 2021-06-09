@@ -253,6 +253,13 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 		delete this->outputPorts[i];
 	}
 
+	// Cleanup Input ports vector
+	for (int i = 0; i < this->logicalInputChannels.size(); i++) {
+		delete this->logicalInputChannels[i];
+	}
+	this->logicalInputChannels.clear();
+	
+
 	// Destroy the object's thread at the very start of its destructor
 	delete this->scheduler;
 	//this->scheduler = NULL;
