@@ -401,215 +401,6 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 	} // end for
 }
 
-void BehavioralBoxLabjack::readSensorValues()
-{
-	this->lastCaptureComputerTime = Clock::now();
-	static int streamRead = 0;
-
-	unsigned int timeStart, timeEnd;
-
-	
-	// Check if stream is done so that we don't output the printf below
-	if (this->ljStreamInfo.done) {
-		return;
-	}
-
-	{ // make sure I"m not introducing a bug with my concurrency/mutex by having the variables be defined outside the block		
-		// Lock the mutex to prevent concurrent labjack interaction
-		std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
-		//printf("\niteration: % 3d    ", streamRead++);
-
-		int deviceScanBacklog = 0;
-		int LJMScanBacklog = 0;
-
-		timeStart = GetCurrentTimeMS();
-		auto systemTimeStart = Clock::now();
-		this->err = LJM_eStreamRead(this->handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
-		timeEnd = GetCurrentTimeMS();
-		auto systemTimeEnd = Clock::now();
-		//printf("timerStart: %f\t timeEnd: %f\t difference: %f\n", double(timeStart), double(timeEnd), (double(timeEnd) - double(timeStart)));
-
-		// If LJM has called this callback, the data is valid, but LJM_eStreamRead
-		// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
-		// such as this example program does in StreamWithCallback().
-		if (this->err != LJME_NOERROR && this->err != LJME_STREAM_NOT_RUNNING) {
-			PrintErrorIfError(this->err, "LJM_eStreamRead");
-
-			// Tries to stop the stream:
-			this->ljStreamInfo.done = 1;
-			this->shouldStop = true;
-			//this->err = LJM_eStreamStop(this->handle);
-			//PrintErrorIfError(this->err, "LJM_eStreamStop");
-			return;
-		}
-
-		// TODO: Assumes the last two channels are the timer channels:
-		const int timer_lower_bits_index = this->ljStreamInfo.numChannels - 2;
-		const int timer_upper_bits_index = this->ljStreamInfo.numChannels - 1;
-
-		if (strcmp(this->inputPortNames_all[timer_lower_bits_index], "SYSTEM_TIMER_20HZ") != 0
-			|| strcmp(this->inputPortNames_all[timer_upper_bits_index], "STREAM_DATA_CAPTURE_16") != 0)
-		{
-			//printf("%s:%d - BehavioralBoxLabjack::readSensorValues() - unexpected register: %s and/or %s\n", __FILE__, __LINE__, this->inputPortNames_all[timer_lower_bits_index], this->inputPortNames_all[timer_upper_bits_index]);
-			this->ljStreamInfo.done = 1;
-			this->shouldStop = true;
-			return;
-		}
-
-		// Main:
-		int scanStartOffsetI, chanI;
-		int scanI = 0;
-
-		int numSkippedScans = 0;
-		//int maxScansPerChannel = limitScans ? MAX_NUM : numScans;
-		unsigned short temp;
-		unsigned char* bytes;
-
-		unsigned short last_temp;
-		unsigned char* last_bytes;
-
-		double changeTolerance = 0.1; // The amount of change permitted without considering an event a change
-		bool currDidChange = false;
-		int memcmpDidChange = 0;
-		
-		// Goal is to find lines (scanI) where a value change occurs most efficiently
-		bool currScanDidAnyChange = false;
-		bool currScanDidAnyAnalogPortChange = false;
-		bool currScanDidAnyDigitalPortChange = false;
-		
-		
-		// Normally would allocate a double* buffer, right?
-		double* lastReadValues = nullptr;
-		lastReadValues = new double[this->ljStreamInfo.numChannels];
-
-		double currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(1);
-		
-		unsigned int timerValue;
-		unsigned int previousTimerValue;
-		//unsigned int * timerValues = new unsigned int[this->ljStreamInfo.scansPerRead];
-
-		// Otherwise it's good
-		//printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d....\n", streamRead, deviceScanBacklog, LJMScanBacklog);
-		
-		scanStartOffsetI = 0;
-		for (scanI = 0; scanI < this->ljStreamInfo.scansPerRead; scanI++) {
-			currScanDidAnyChange = false;
-			currScanDidAnyAnalogPortChange = false;
-			currScanDidAnyDigitalPortChange = false;
-			
-			// Skip the two timer channels
-			for (chanI = 0; chanI < (this->ljStreamInfo.numChannels - 2); chanI++) {
-
-				if (this->ljStreamInfo.aData[scanStartOffsetI + chanI] == LJM_DUMMY_VALUE) {
-					++numSkippedScans;
-					//FIXME: I think we need to handle this case if the scan is skipped, we shouldn't go on and use its values
-					
-				}
-
-				// Otherwise, get the last read value and compare it to this value:
-				if (this->inputPortIsAnalog[chanI]) {
-					// aData[scanI + chanI] is a double
-					if (scanI == 0)
-					{
-						// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
-						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					}
-					else
-					{
-						currDidChange = (fabs(this->ljStreamInfo.aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
-						if (currDidChange)
-						{
-							currScanDidAnyAnalogPortChange = currScanDidAnyAnalogPortChange || true;
-							currScanDidAnyChange = currScanDidAnyChange || true;
-						}
-
-						// Update the last read value either way:
-						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					}
-				}
-				else {
-					temp = (unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					bytes = (unsigned char*)&temp;
-
-					if (scanI == 0)
-					{
-						// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
-						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					}
-					else
-					{
-						// Get last read values:
-						last_temp = (unsigned short)lastReadValues[chanI];
-						last_bytes = (unsigned char*)&last_temp;
-
-						// it changed if any of the bytes of interest changed:
-						//
-						memcmpDidChange = memcmp(bytes, last_bytes, sizeof(unsigned char*));
-						currDidChange = (memcmpDidChange != 0);
-						if (currDidChange)
-						{
-							currScanDidAnyDigitalPortChange = currScanDidAnyDigitalPortChange || true;
-							currScanDidAnyChange = currScanDidAnyChange || true;
-						}
-
-						// Update the last read value either way:
-						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					}
-
-				} // end else (if is analog)
-
-			} // end for chanI
-			
-			// Get timers:
-			// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which
-			// contains SYSTEM_TIMER_20HZ's upper 16 bits
-			timerValue = ((unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + timer_upper_bits_index] << 16) +
-				(unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + timer_lower_bits_index];
-
-			/*
-			 * "Internal 32-bit system timer running at 1/2 core speed, thus normally 80M/2 => 40 MHz."
-			 */
-			
-			// Gets the timer value for this scanI (scan index), guessing this is MS
-			if (currScanDidAnyChange)
-			{
-				currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(scanI);
-				// Get the timerValue as a timepoint:
-				//double currTimerOffsetSeconds = double(timerValue) * 40.0 * 1000000.0; // Convert to seconds
-				double currTimerOffsetSeconds = double(timerValue); // Convert to seconds
-				double timerDifference = double(previousTimerValue) - currTimerOffsetSeconds;
-
-				// This value is in seconds, but we want whole values:
-				long long int roundedMsValue = static_cast<long long int>(currScanTimeOffsetSinceFirstScan * 1000.0);
-				auto estimatedScanTime = systemTimeStart + std::chrono::milliseconds(roundedMsValue);
-				unsigned long long estimated_scan_milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(estimatedScanTime.time_since_epoch()).count();
-				
-				// Only persist the values if the state has changed.
-				// Note: should ignore the last two entries in the array, since they're the timer and they'll always update
-				if (this->monitor->refreshState(estimatedScanTime, lastReadValues)) {
-					//TODO: should this be asynchronous? This would require passing in the capture time and read values
-					//printf("refresh state returned true!");
-					this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
-				}
-				
-			}
-
-			previousTimerValue = timerValue; // copy the current timerValue to the previousTimerValue
-			
-			//scanI++; // update scanI
-			scanStartOffsetI += this->ljStreamInfo.numChannels; // update scanStartOffsetI
-		} // end for scanI
-
-		// release the dynamically allocated memory:
-		delete[] lastReadValues;
-		lastReadValues = nullptr;
-		
-		streamRead++;
-	}
-	
-}
-
-
 
 
 // The main run loop
@@ -1051,6 +842,216 @@ void BehavioralBoxLabjack::updateVisibleLightRelayIfNeeded()
 	//this->setVisibleLightRelayState(isDay);
 }
 
+
+
+
+void BehavioralBoxLabjack::readSensorValues()
+{
+	this->lastCaptureComputerTime = Clock::now();
+	static int streamRead = 0;
+
+	unsigned int timeStart, timeEnd;
+
+
+	// Check if stream is done so that we don't output the printf below
+	if (this->ljStreamInfo.done) {
+		return;
+	}
+
+	{ // make sure I"m not introducing a bug with my concurrency/mutex by having the variables be defined outside the block		
+		// Lock the mutex to prevent concurrent labjack interaction
+		std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
+		//printf("\niteration: % 3d    ", streamRead++);
+
+		int deviceScanBacklog = 0;
+		int LJMScanBacklog = 0;
+
+		timeStart = GetCurrentTimeMS();
+		auto systemTimeStart = Clock::now();
+		this->err = LJM_eStreamRead(this->handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
+		timeEnd = GetCurrentTimeMS();
+		auto systemTimeEnd = Clock::now();
+		//printf("timerStart: %f\t timeEnd: %f\t difference: %f\n", double(timeStart), double(timeEnd), (double(timeEnd) - double(timeStart)));
+
+		// If LJM has called this callback, the data is valid, but LJM_eStreamRead
+		// may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
+		// such as this example program does in StreamWithCallback().
+		if (this->err != LJME_NOERROR && this->err != LJME_STREAM_NOT_RUNNING) {
+			PrintErrorIfError(this->err, "LJM_eStreamRead");
+
+			// Tries to stop the stream:
+			this->ljStreamInfo.done = 1;
+			this->shouldStop = true;
+			//this->err = LJM_eStreamStop(this->handle);
+			//PrintErrorIfError(this->err, "LJM_eStreamStop");
+			return;
+		}
+
+		// TODO: Assumes the last two channels are the timer channels:
+		const int timer_lower_bits_index = this->ljStreamInfo.numChannels - 2;
+		const int timer_upper_bits_index = this->ljStreamInfo.numChannels - 1;
+
+		if (strcmp(this->inputPortNames_all[timer_lower_bits_index], "SYSTEM_TIMER_20HZ") != 0
+			|| strcmp(this->inputPortNames_all[timer_upper_bits_index], "STREAM_DATA_CAPTURE_16") != 0)
+		{
+			//printf("%s:%d - BehavioralBoxLabjack::readSensorValues() - unexpected register: %s and/or %s\n", __FILE__, __LINE__, this->inputPortNames_all[timer_lower_bits_index], this->inputPortNames_all[timer_upper_bits_index]);
+			this->ljStreamInfo.done = 1;
+			this->shouldStop = true;
+			return;
+		}
+
+		// Main:
+		int scanStartOffsetI, chanI;
+		int scanI = 0;
+
+		int numSkippedScans = 0;
+		//int maxScansPerChannel = limitScans ? MAX_NUM : numScans;
+		unsigned short temp;
+		unsigned char* bytes;
+
+		unsigned short last_temp;
+		unsigned char* last_bytes;
+
+		double changeTolerance = 0.1; // The amount of change permitted without considering an event a change
+		bool currDidChange = false;
+		int memcmpDidChange = 0;
+
+		// Goal is to find lines (scanI) where a value change occurs most efficiently
+		bool currScanDidAnyChange = false;
+		bool currScanDidAnyAnalogPortChange = false;
+		bool currScanDidAnyDigitalPortChange = false;
+
+
+		// Normally would allocate a double* buffer, right?
+		double* lastReadValues = nullptr;
+		lastReadValues = new double[this->ljStreamInfo.numChannels];
+
+		double currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(1);
+
+		unsigned int timerValue;
+		unsigned int previousTimerValue;
+		//unsigned int * timerValues = new unsigned int[this->ljStreamInfo.scansPerRead];
+
+		// Otherwise it's good
+		//printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d....\n", streamRead, deviceScanBacklog, LJMScanBacklog);
+
+		scanStartOffsetI = 0;
+		for (scanI = 0; scanI < this->ljStreamInfo.scansPerRead; scanI++) {
+			currScanDidAnyChange = false;
+			currScanDidAnyAnalogPortChange = false;
+			currScanDidAnyDigitalPortChange = false;
+
+			// Skip the two timer channels
+			for (chanI = 0; chanI < (this->ljStreamInfo.numChannels - 2); chanI++) {
+
+				if (this->ljStreamInfo.aData[scanStartOffsetI + chanI] == LJM_DUMMY_VALUE) {
+					++numSkippedScans;
+					//FIXME: I think we need to handle this case if the scan is skipped, we shouldn't go on and use its values
+
+				}
+
+				// Otherwise, get the last read value and compare it to this value:
+				if (this->inputPortIsAnalog[chanI]) {
+					// aData[scanI + chanI] is a double
+					if (scanI == 0)
+					{
+						// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
+						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+					}
+					else
+					{
+						currDidChange = (fabs(this->ljStreamInfo.aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
+						if (currDidChange)
+						{
+							currScanDidAnyAnalogPortChange = currScanDidAnyAnalogPortChange || true;
+							currScanDidAnyChange = currScanDidAnyChange || true;
+						}
+
+						// Update the last read value either way:
+						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+					}
+				}
+				else {
+					temp = (unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+					bytes = (unsigned char*)&temp;
+
+					if (scanI == 0)
+					{
+						// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
+						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+					}
+					else
+					{
+						// Get last read values:
+						last_temp = (unsigned short)lastReadValues[chanI];
+						last_bytes = (unsigned char*)&last_temp;
+
+						// it changed if any of the bytes of interest changed:
+						//
+						memcmpDidChange = memcmp(bytes, last_bytes, sizeof(unsigned char*));
+						currDidChange = (memcmpDidChange != 0);
+						if (currDidChange)
+						{
+							currScanDidAnyDigitalPortChange = currScanDidAnyDigitalPortChange || true;
+							currScanDidAnyChange = currScanDidAnyChange || true;
+						}
+
+						// Update the last read value either way:
+						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+					}
+
+				} // end else (if is analog)
+
+			} // end for chanI
+
+			// Get timers:
+			// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which
+			// contains SYSTEM_TIMER_20HZ's upper 16 bits
+			timerValue = ((unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + timer_upper_bits_index] << 16) +
+				(unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + timer_lower_bits_index];
+
+			/*
+			 * "Internal 32-bit system timer running at 1/2 core speed, thus normally 80M/2 => 40 MHz."
+			 */
+
+			 // Gets the timer value for this scanI (scan index), guessing this is MS
+			if (currScanDidAnyChange)
+			{
+				currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(scanI);
+				// Get the timerValue as a timepoint:
+				//double currTimerOffsetSeconds = double(timerValue) * 40.0 * 1000000.0; // Convert to seconds
+				double currTimerOffsetSeconds = double(timerValue); // Convert to seconds
+				double timerDifference = double(previousTimerValue) - currTimerOffsetSeconds;
+
+				// This value is in seconds, but we want whole values:
+				long long int roundedMsValue = static_cast<long long int>(currScanTimeOffsetSinceFirstScan * 1000.0);
+				auto estimatedScanTime = systemTimeStart + std::chrono::milliseconds(roundedMsValue);
+				unsigned long long estimated_scan_milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(estimatedScanTime.time_since_epoch()).count();
+
+				// Only persist the values if the state has changed.
+				// Note: should ignore the last two entries in the array, since they're the timer and they'll always update
+				if (this->monitor->refreshState(estimatedScanTime, lastReadValues)) {
+					//TODO: should this be asynchronous? This would require passing in the capture time and read values
+					//printf("refresh state returned true!");
+					this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+				}
+
+			}
+
+			previousTimerValue = timerValue; // copy the current timerValue to the previousTimerValue
+
+			//scanI++; // update scanI
+			scanStartOffsetI += this->ljStreamInfo.numChannels; // update scanStartOffsetI
+		} // end for scanI
+
+		// release the dynamically allocated memory:
+		delete[] lastReadValues;
+		lastReadValues = nullptr;
+
+		streamRead++;
+	}
+
+}
 
 
 
