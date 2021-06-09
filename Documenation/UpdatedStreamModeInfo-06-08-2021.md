@@ -25,6 +25,10 @@ For example,
 
 Want to be able to access `const int*` and `double*` type variables
 
-C-style: `(const char **)variable`
-C++-style: `const_cast<const char**>(variable)`
+Purpose | C-style | C++-style |
+| --- | --- | --- |
+| Casting variable | `(const char **)variable` | `const_cast<const char**>(variable)` |
+| Dynamically Allocating Memory | `int * aAddresses = (int*) malloc(NUM_NAMES * sizeof(int));` | `int * aAddresses = new int[this->numChannels];` |
+| Freeing Dynamically Allocated Memory | `free(aAddresses);` | <code>delete[] this->aScanList; <br/>this->aScanList = nullptr;</code> |
+
 
