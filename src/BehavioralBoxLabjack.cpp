@@ -109,75 +109,89 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	 * The same logic present in the new persistReadValues(...) replacement should work
 	 */
 	this->csv.newRow() << "computerTime";
-	for (int i = 0; i < NUM_CHANNELS_DIGITAL; i++) {
-		auto currPortType = this->inputPortTypes_digital[i];
-		bool currPortIsLogged = this->inputPortIsLogged_digital[i];
-
-		if (currPortIsLogged) {
-			// Only logged ports have their header written out to the CSV
-			switch (currPortType)
-			{
-			case LabjackPortType::Analog:
-				// If it's an analog port:
-				//newCSVLine_analogOnly << lastReadValues[i];
-				printf("ERROR: Analog type port returned when setting up digital ports... aborting...\n");
-				this->shouldStop = true;
-
-				// this should be an exception/error
-				break;
-			case LabjackPortType::Digital:
-				// It's a normal digital port:
-				this->csv << this->inputPortNames_digital[i];
-				break;
-			case LabjackPortType::DigitalState:
-				// Otherwise, it's a digital port, need to read all bitwise values that we're interested in
-				// FIXME: change this so it isn't hardcoded
-
-				if (_strcmpi(this->inputPortNames_digital[i], "FIO_STATE") == 0)
-				{
-					// There's 8 ports to add: FIO0 - FIO7
-					this->csv << "FIO0" << "FIO1" << "FIO2" << "FIO3" << "FIO4" << "FIO5" << "FIO6" << "FIO7";
-				}
-				else if (_strcmpi(this->inputPortNames_digital[i], "EIO_STATE") == 0)
-				{
-					// There's 8 ports to add: EIO0 - EIO7
-					this->csv << "EIO0" << "EIO1" << "EIO2" << "EIO3" << "EIO4" << "EIO5" << "EIO6" << "EIO7";
-				}
-				else if (_strcmpi(this->inputPortNames_digital[i], "MIO_STATE") == 0)
-				{
-					// There's 8 ports to add: MIO0 - MIO7
-					this->csv << "MIO0" << "MIO1" << "MIO2" << "MIO3" << "MIO4" << "MIO5" << "MIO6" << "MIO7";
-				}
-				else if (_strcmpi(this->inputPortNames_digital[i], "CIO_STATE") == 0)
-				{
-					// There's 8 ports to add: CIO0 - CIO7
-					this->csv << "CIO0" << "CIO1" << "CIO2" << "CIO3" << "CIO4" << "CIO5" << "CIO6" << "CIO7";
-				}
-				else if (_strcmpi(this->inputPortNames_digital[i], "DIO_STATE") == 0)
-				{
-					// There's 8 ports to add: DIO0 - DIO7
-					this->csv << "DIO0" << "DIO1" << "DIO2" << "DIO3" << "DIO4" << "DIO5" << "DIO6" << "DIO7";
-				}
-				else
-				{
-					// UNKNOWN digitial import name
-					printf("ERROR: UNKNOWN digital state port name... aborting...\n");
-					this->shouldStop = true;
-				}
-				break;
-			}
-
-		}
-		
+	for (int i = 0; i < this->logicalInputChannels.size(); i++) {
+		std::string currCSVHeaderRep = this->logicalInputChannels[i]->getCSVHeaderRepresentation();
+		this->csv << currCSVHeaderRep;
 	}
+	
+	//for (int i = 0; i < NUM_CHANNELS_DIGITAL; i++) {
+	//	auto currPortType = this->inputPortTypes_digital[i];
+	//	bool currPortIsLogged = this->inputPortIsLogged_digital[i];
+
+	//	if (currPortIsLogged) {
+	//		// Only logged ports have their header written out to the CSV
+	//		switch (currPortType)
+	//		{
+	//		case LabjackPortType::Analog:
+	//			// If it's an analog port:
+	//			//newCSVLine_analogOnly << lastReadValues[i];
+	//			printf("ERROR: Analog type port returned when setting up digital ports... aborting...\n");
+	//			this->shouldStop = true;
+
+	//			// this should be an exception/error
+	//			break;
+	//		case LabjackPortType::Digital:
+	//			// It's a normal digital port:
+	//			this->csv << this->inputPortNames_digital[i];
+	//			break;
+	//		case LabjackPortType::DigitalState:
+	//			// Otherwise, it's a digital port, need to read all bitwise values that we're interested in
+	//			// FIXME: change this so it isn't hardcoded
+
+	//			if (_strcmpi(this->inputPortNames_digital[i], "FIO_STATE") == 0)
+	//			{
+	//				// There's 8 ports to add: FIO0 - FIO7
+	//				this->csv << "FIO0" << "FIO1" << "FIO2" << "FIO3" << "FIO4" << "FIO5" << "FIO6" << "FIO7";
+	//			}
+	//			else if (_strcmpi(this->inputPortNames_digital[i], "EIO_STATE") == 0)
+	//			{
+	//				// There's 8 ports to add: EIO0 - EIO7
+	//				this->csv << "EIO0" << "EIO1" << "EIO2" << "EIO3" << "EIO4" << "EIO5" << "EIO6" << "EIO7";
+	//			}
+	//			else if (_strcmpi(this->inputPortNames_digital[i], "MIO_STATE") == 0)
+	//			{
+	//				// There's 8 ports to add: MIO0 - MIO7
+	//				this->csv << "MIO0" << "MIO1" << "MIO2" << "MIO3" << "MIO4" << "MIO5" << "MIO6" << "MIO7";
+	//			}
+	//			else if (_strcmpi(this->inputPortNames_digital[i], "CIO_STATE") == 0)
+	//			{
+	//				// There's 8 ports to add: CIO0 - CIO7
+	//				this->csv << "CIO0" << "CIO1" << "CIO2" << "CIO3" << "CIO4" << "CIO5" << "CIO6" << "CIO7";
+	//			}
+	//			else if (_strcmpi(this->inputPortNames_digital[i], "DIO_STATE") == 0)
+	//			{
+	//				// There's 8 ports to add: DIO0 - DIO7
+	//				this->csv << "DIO0" << "DIO1" << "DIO2" << "DIO3" << "DIO4" << "DIO5" << "DIO6" << "DIO7";
+	//			}
+	//			else
+	//			{
+	//				// UNKNOWN digitial import name
+	//				printf("ERROR: UNKNOWN digital state port name... aborting...\n");
+	//				this->shouldStop = true;
+	//			}
+	//			break;
+	//		}
+
+	//	} // end if (currPortIsLogged)
+	//	
+	//} // end for
 	this->csv.writeToFile(this->fileFullPath, false);
 
 	// Write the header to the analog .csv file:
 	//FIXME: Do I need to implement functionality to the digital state ports for generality?
 	this->csv_analog.newRow() << "computerTime";
-	for (int i = 0; i < NUM_CHANNELS_ANALOG; i++) {
-		this->csv_analog << this->inputPortNames_analog[i];
+	
+	
+	//for (int i = 0; i < NUM_CHANNELS_ANALOG; i++) {
+	//	this->csv_analog << this->inputPortNames_analog[i];
+	//}
+
+	auto analogInputPortNames = this->getInputPortNames(false, true);
+	
+	for (int i = 0; i < analogInputPortNames.size(); i++) {
+		this->csv_analog << analogInputPortNames[i];
 	}
+	
 	this->csv_analog.writeToFile(this->fileFullPath_analog, false);
 
 	// Setup output ports states:

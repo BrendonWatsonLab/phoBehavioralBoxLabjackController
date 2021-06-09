@@ -14,6 +14,8 @@ public:
 	{
 	}
 
+	bool getReturnsContinuousValue() override;
+	std::string getCSVHeaderRepresentation() override;
 protected:
 	//std::function<bool> _fnDigitizeValue;
 

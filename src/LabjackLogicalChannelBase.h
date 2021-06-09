@@ -38,7 +38,7 @@ public:
 	}
 
 	
-	bool getReturnsContinuousValue();
+	virtual bool getReturnsContinuousValue() { return false; };
 	std::vector<std::string> getPortNames() { return this->portNames; };
 	//std::vector<std::string> getPortPurposes();
 
@@ -46,7 +46,7 @@ public:
 	// Functions
 
 	// Gets the representation of this item to render in the CSV header
-	std::string getCSVHeaderRepresentation();
+	virtual std::string getCSVHeaderRepresentation() { return ""; };
 
 
 	

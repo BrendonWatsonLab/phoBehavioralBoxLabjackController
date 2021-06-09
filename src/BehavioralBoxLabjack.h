@@ -153,13 +153,13 @@ private:
 	bool inputPortIsAnalog[NUM_CHANNELS] = globalLabjackInputPortIsAnalog;
 	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
 
-	// Digital values:
-	char* inputPortNames_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortNames;
-	LabjackPortType inputPortTypes_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortType;
-	bool inputPortIsLogged_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortIsLogged;
+	//// Digital values:
+	//char* inputPortNames_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortNames;
+	//LabjackPortType inputPortTypes_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortType;
+	//bool inputPortIsLogged_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortIsLogged;
 
-	// Analog Values:
-	char* inputPortNames_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortNames;
+	//// Analog Values:
+	//char* inputPortNames_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortNames;
 	
 
 	// Vector of Output Port Objects
