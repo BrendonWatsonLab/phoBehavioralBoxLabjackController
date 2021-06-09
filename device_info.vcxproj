@@ -35,6 +35,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="LabjackPort.cpp" />
     <ClCompile Include="src\BehavioralBoxDataWidget.cpp" />
     <ClCompile Include="src\BehavioralBoxHistoricalData.cpp" />
     <ClCompile Include="src\BehavioralBoxLabjack.cpp" />
@@ -70,6 +71,7 @@
     <ClInclude Include="ConfigFiles\config-PhoHomeTesting-05-28-2021.h" />
     <ClInclude Include="ConfigFiles\config-PhoHomeTesting-06-02-2021.h" />
     <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h" />
+    <ClInclude Include="LabjackPort.h" />
     <ClInclude Include="ProgramVersion.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\BehavioralBoxDataWidget.h" />
@@ -84,7 +86,6 @@
     <ClInclude Include="src\CsvUtil.h" />
     <ClInclude Include="src\DataServerEvent.h" />
     <ClInclude Include="src\External\CSVWriter.h" />
-    <ClInclude Include="src\External\INIReader\INIReader.h" />
     <ClInclude Include="src\External\px_sched.h" />
     <ClInclude Include="src\External\Scheduler\Scheduler.h" />
     <ClInclude Include="src\FilesystemHelpers.h" />

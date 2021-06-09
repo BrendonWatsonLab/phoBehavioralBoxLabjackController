@@ -22,4 +22,11 @@ struct LoadedConfiguration
 	//TimeSeriesChart:
 	bool shouldEnableSynchronize_Y_Axis = false;
 	int numDaysToDisplay = 60;
+
+	bool persistToIniFile(std::string path)
+	{
+		// Create Sections:
+		//"DEFAULT"
+		
+	}
 };

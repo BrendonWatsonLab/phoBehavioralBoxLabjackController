@@ -46,5 +46,13 @@ public:
 	static unsigned long long milliseconds_since_epoch_from_date(std::chrono::time_point<Clock> datetime);
 
 
+	// Stream helpers:
+	//LJM_ERROR_RETURN LJM_eStreamStart(int Handle, int ScansPerRead, int NumAddresses, const int* aScanList, double* ScanRate);
+	//LJM_ERROR_RETURN LJM_eStreamRead(int Handle, double* aData, int* DeviceScanBacklog, int* LJMScanBacklog);
+
+	
+	//static const int* toLJM_ScanList(std::vector<std::string>);
+	
+	
 };
 
