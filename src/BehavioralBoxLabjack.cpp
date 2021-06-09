@@ -127,68 +127,6 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 			}
 		}
 	}
-	
-	//for (int i = 0; i < NUM_CHANNELS_DIGITAL; i++) {
-	//	auto currPortType = this->inputPortTypes_digital[i];
-	//	bool currPortIsLogged = this->inputPortIsLogged_digital[i];
-
-	//	if (currPortIsLogged) {
-	//		// Only logged ports have their header written out to the CSV
-	//		switch (currPortType)
-	//		{
-	//		case LabjackPortType::Analog:
-	//			// If it's an analog port:
-	//			//newCSVLine_analogOnly << lastReadValues[i];
-	//			printf("ERROR: Analog type port returned when setting up digital ports... aborting...\n");
-	//			this->shouldStop = true;
-
-	//			// this should be an exception/error
-	//			break;
-	//		case LabjackPortType::Digital:
-	//			// It's a normal digital port:
-	//			this->csv << this->inputPortNames_digital[i];
-	//			break;
-	//		case LabjackPortType::DigitalState:
-	//			// Otherwise, it's a digital port, need to read all bitwise values that we're interested in
-	//			// FIXME: change this so it isn't hardcoded
-
-	//			if (_strcmpi(this->inputPortNames_digital[i], "FIO_STATE") == 0)
-	//			{
-	//				// There's 8 ports to add: FIO0 - FIO7
-	//				this->csv << "FIO0" << "FIO1" << "FIO2" << "FIO3" << "FIO4" << "FIO5" << "FIO6" << "FIO7";
-	//			}
-	//			else if (_strcmpi(this->inputPortNames_digital[i], "EIO_STATE") == 0)
-	//			{
-	//				// There's 8 ports to add: EIO0 - EIO7
-	//				this->csv << "EIO0" << "EIO1" << "EIO2" << "EIO3" << "EIO4" << "EIO5" << "EIO6" << "EIO7";
-	//			}
-	//			else if (_strcmpi(this->inputPortNames_digital[i], "MIO_STATE") == 0)
-	//			{
-	//				// There's 8 ports to add: MIO0 - MIO7
-	//				this->csv << "MIO0" << "MIO1" << "MIO2" << "MIO3" << "MIO4" << "MIO5" << "MIO6" << "MIO7";
-	//			}
-	//			else if (_strcmpi(this->inputPortNames_digital[i], "CIO_STATE") == 0)
-	//			{
-	//				// There's 8 ports to add: CIO0 - CIO7
-	//				this->csv << "CIO0" << "CIO1" << "CIO2" << "CIO3" << "CIO4" << "CIO5" << "CIO6" << "CIO7";
-	//			}
-	//			else if (_strcmpi(this->inputPortNames_digital[i], "DIO_STATE") == 0)
-	//			{
-	//				// There's 8 ports to add: DIO0 - DIO7
-	//				this->csv << "DIO0" << "DIO1" << "DIO2" << "DIO3" << "DIO4" << "DIO5" << "DIO6" << "DIO7";
-	//			}
-	//			else
-	//			{
-	//				// UNKNOWN digitial import name
-	//				printf("ERROR: UNKNOWN digital state port name... aborting...\n");
-	//				this->shouldStop = true;
-	//			}
-	//			break;
-	//		}
-
-	//	} // end if (currPortIsLogged)
-	//	
-	//} // end for
 	this->csv.writeToFile(this->fileFullPath, false);
 
 	// Write the header to the analog .csv file:
@@ -209,16 +147,6 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 			} // end for expanded channel
 		} // end if (continuous)
 	} // end for
-	
-	//for (int i = 0; i < NUM_CHANNELS_ANALOG; i++) {
-	//	this->csv_analog << this->inputPortNames_analog[i];
-	//}
-
-	//auto analogInputPortNames = this->getInputPortNames(false, true);
-	//for (int i = 0; i < analogInputPortNames.size(); i++) {
-	//	this->csv_analog << analogInputPortNames[i];
-	//}
-	
 	this->csv_analog.writeToFile(this->fileFullPath_analog, false);
 
 	// Setup output ports states:
@@ -718,6 +646,7 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 
 	LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
 	timerInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
+	timerInputChannel->setNumberOfDoubleInputs(2); // Takes 2 double values to produce its output
 	this->logicalInputChannels.push_back(timerInputChannel);
 
 	
@@ -988,11 +917,11 @@ void BehavioralBoxLabjack::readSensorValues()
 		int deviceScanBacklog = 0;
 		int LJMScanBacklog = 0;
 
-		timeStart = GetCurrentTimeMS();
+		//timeStart = GetCurrentTimeMS();
 		auto systemTimeStart = Clock::now();
 		this->err = LJM_eStreamRead(this->handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
-		timeEnd = GetCurrentTimeMS();
-		auto systemTimeEnd = Clock::now();
+		/*timeEnd = GetCurrentTimeMS();*/
+		//auto systemTimeEnd = Clock::now();
 		//printf("timerStart: %f\t timeEnd: %f\t difference: %f\n", double(timeStart), double(timeEnd), (double(timeEnd) - double(timeStart)));
 
 		// If LJM has called this callback, the data is valid, but LJM_eStreamRead
@@ -1063,68 +992,79 @@ void BehavioralBoxLabjack::readSensorValues()
 			currScanDidAnyAnalogPortChange = false;
 			currScanDidAnyDigitalPortChange = false;
 
+			chanI = 0;
+			for (int logicalChannelIndex = 0; logicalChannelIndex < this->logicalInputChannels.size(); logicalChannelIndex++) {
+				auto currChannel = this->logicalInputChannels[logicalChannelIndex];
+				auto currNumberOfDoublesToRead = currChannel->getNumberOfDoubleInputs();
+
+				
+				// Once done with this port, move the chanI (raw index into double* aray for current scan) to prepare for the next row
+				chanI += currNumberOfDoublesToRead;
+			}
+
+			
 			// Skip the two timer channels
-			for (chanI = 0; chanI < (this->ljStreamInfo.numChannels - 2); chanI++) {
+			//for (chanI = 0; chanI < (this->ljStreamInfo.numChannels - 2); chanI++) {
 
-				if (this->ljStreamInfo.aData[scanStartOffsetI + chanI] == LJM_DUMMY_VALUE) {
-					++numSkippedScans;
-					//FIXME: I think we need to handle this case if the scan is skipped, we shouldn't go on and use its values
+			//	if (this->ljStreamInfo.aData[scanStartOffsetI + chanI] == LJM_DUMMY_VALUE) {
+			//		++numSkippedScans;
+			//		//FIXME: I think we need to handle this case if the scan is skipped, we shouldn't go on and use its values
 
-				}
+			//	}
 
-				// Otherwise, get the last read value and compare it to this value:
-				if (this->inputPortIsAnalog[chanI]) {
-					// aData[scanI + chanI] is a double
-					if (scanI == 0)
-					{
-						// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
-						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					}
-					else
-					{
-						currDidChange = (fabs(this->ljStreamInfo.aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
-						if (currDidChange)
-						{
-							currScanDidAnyAnalogPortChange = currScanDidAnyAnalogPortChange || true;
-							currScanDidAnyChange = currScanDidAnyChange || true;
-						}
+			//	// Otherwise, get the last read value and compare it to this value:
+			//	if (this->inputPortIsAnalog[chanI]) {
+			//		// aData[scanI + chanI] is a double
+			//		if (scanI == 0)
+			//		{
+			//			// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
+			//			lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+			//		}
+			//		else
+			//		{
+			//			currDidChange = (fabs(this->ljStreamInfo.aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
+			//			if (currDidChange)
+			//			{
+			//				currScanDidAnyAnalogPortChange = currScanDidAnyAnalogPortChange || true;
+			//				currScanDidAnyChange = currScanDidAnyChange || true;
+			//			}
 
-						// Update the last read value either way:
-						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					}
-				}
-				else {
-					temp = (unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					bytes = (unsigned char*)&temp;
+			//			// Update the last read value either way:
+			//			lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+			//		}
+			//	}
+			//	else {
+			//		temp = (unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+			//		bytes = (unsigned char*)&temp;
 
-					if (scanI == 0)
-					{
-						// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
-						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					}
-					else
-					{
-						// Get last read values:
-						last_temp = (unsigned short)lastReadValues[chanI];
-						last_bytes = (unsigned char*)&last_temp;
+			//		if (scanI == 0)
+			//		{
+			//			// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
+			//			lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+			//		}
+			//		else
+			//		{
+			//			// Get last read values:
+			//			last_temp = (unsigned short)lastReadValues[chanI];
+			//			last_bytes = (unsigned char*)&last_temp;
 
-						// it changed if any of the bytes of interest changed:
-						//
-						memcmpDidChange = memcmp(bytes, last_bytes, sizeof(unsigned char*));
-						currDidChange = (memcmpDidChange != 0);
-						if (currDidChange)
-						{
-							currScanDidAnyDigitalPortChange = currScanDidAnyDigitalPortChange || true;
-							currScanDidAnyChange = currScanDidAnyChange || true;
-						}
+			//			// it changed if any of the bytes of interest changed:
+			//			//
+			//			memcmpDidChange = memcmp(bytes, last_bytes, sizeof(unsigned char*));
+			//			currDidChange = (memcmpDidChange != 0);
+			//			if (currDidChange)
+			//			{
+			//				currScanDidAnyDigitalPortChange = currScanDidAnyDigitalPortChange || true;
+			//				currScanDidAnyChange = currScanDidAnyChange || true;
+			//			}
 
-						// Update the last read value either way:
-						lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					}
+			//			// Update the last read value either way:
+			//			lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+			//		}
 
-				} // end else (if is analog)
+			//	} // end else (if is analog)
 
-			} // end for chanI
+			//} // end for chanI
 
 			// Get timers:
 			// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which

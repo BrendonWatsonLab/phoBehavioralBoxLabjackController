@@ -120,8 +120,11 @@ private:
 	bool isOverrideActive_AttractModeLEDs = false;
 	bool overrideValue_areAttractModeLEDsLit = false;
 
-	// File Output:
+
 	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
+
+	
+	// File Output:
 	CSVWriter csv;
 	std::string filename = "outputFile.csv";
 	std::string outputDirectory = configMan->getGeneratedActiveOutputDirectory(); // should end in a slash if it's not empty
