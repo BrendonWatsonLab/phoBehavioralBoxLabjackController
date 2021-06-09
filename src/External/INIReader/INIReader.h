@@ -62,14 +62,25 @@ public:
     bool HasValue(const std::string& section, const std::string& name) const;
 
 	// Dynamic Building Helpers
-
+    void beginDynamicIniBuilding();
+    void endDynamicIniBuilding();
 
     bool writeDynamicIni(std::string path);
 
 private:
-    bool enableDynamicIniBuilding = true;
+
+    static bool ToBoolean(std::string valstr, bool default_value);
+    static long ToInteger(std::string valstr, long default_value);
+    static double ToReal(std::string valstr, double default_value);
+
+    static std::string FromBoolean(bool final_value);
+    static std::string FromInteger(long final_value);
+    static std::string FromReal(double final_value);
+	
+    bool enableDynamicIniBuilding = false;
     //std::map<std::string, std::vector<std::string>> _dynamicIniBuilder;
     std::map<std::string, std::vector<std::pair<std::string, std::string>>> _dynamicIniBuilder;
+	
     void addDynamic(std::string section, std::string name, std::string value);
 
 	

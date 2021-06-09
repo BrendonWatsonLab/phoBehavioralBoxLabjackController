@@ -38,12 +38,12 @@ int INIReader::ParseError() const
 string INIReader::Get(const string& section, const string& name, const string& default_value)
 {
     string key = MakeKey(section, name);
-	if (this->enableDynamicIniBuilding)
+	/*if (this->enableDynamicIniBuilding)
 	{
 		auto gotValue = _values.count(key) ? _values.find(key)->second : default_value;
         this->addDynamic(section, name, gotValue);
 				
-	}
+	}*/
     // Use _values.find() here instead of _values.at() to support pre C++11 compilers
     return _values.count(key) ? _values.find(key)->second : default_value;
 }
@@ -51,39 +51,45 @@ string INIReader::Get(const string& section, const string& name, const string& d
 string INIReader::GetString(const string& section, const string& name, const string& default_value)
 {
     const string str = Get(section, name, "");
-    return str.empty() ? default_value : str;
+    auto final_result = str.empty() ? default_value : str;
+    if (this->enableDynamicIniBuilding)
+    {
+        this->addDynamic(section, name, final_result);
+    }
+	return final_result;
 }
 
 long INIReader::GetInteger(const string& section, const string& name, long default_value)
 {
     string valstr = Get(section, name, "");
-    const char* value = valstr.c_str();
-    char* end;
-    // This parses "1234" (decimal) and also "0x4D2" (hex)
-    long n = strtol(value, &end, 0);
-    return end > value ? n : default_value;
+    auto final_result = INIReader::ToInteger(valstr, default_value);
+    if (this->enableDynamicIniBuilding)
+    {
+        this->addDynamic(section, name, INIReader::FromInteger(final_result));
+    }
+    return final_result;
 }
 
 double INIReader::GetReal(const string& section, const string& name, double default_value)
 {
     string valstr = Get(section, name, "");
-    const char* value = valstr.c_str();
-    char* end;
-    double n = strtod(value, &end);
-    return end > value ? n : default_value;
+    auto final_result = INIReader::ToReal(valstr, default_value);
+    if (this->enableDynamicIniBuilding)
+    {
+        this->addDynamic(section, name, INIReader::FromReal(final_result));
+    }
+    return final_result;
 }
 
 bool INIReader::GetBoolean(const string& section, const string& name, bool default_value)
 {
     string valstr = Get(section, name, "");
-    // Convert to lower case to make string comparisons case-insensitive
-    std::transform(valstr.begin(), valstr.end(), valstr.begin(), ::tolower);
-    if (valstr == "true" || valstr == "yes" || valstr == "on" || valstr == "1")
-        return true;
-    else if (valstr == "false" || valstr == "no" || valstr == "off" || valstr == "0")
-        return false;
-    else
-        return default_value;
+	auto final_result = INIReader::ToBoolean(valstr, default_value);
+    if (this->enableDynamicIniBuilding)
+    {
+        this->addDynamic(section, name, INIReader::FromBoolean(final_result));
+    }
+    return final_result;
 }
 
 bool INIReader::HasSection(const string& section) const
@@ -100,6 +106,19 @@ bool INIReader::HasValue(const string& section, const string& name) const
 {
     string key = MakeKey(section, name);
     return _values.count(key);
+}
+
+void INIReader::beginDynamicIniBuilding()
+{
+    this->_dynamicIniBuilder.clear(); // Clear existing dynamic ini building session
+    this->enableDynamicIniBuilding = true;
+    return;
+}
+
+void INIReader::endDynamicIniBuilding()
+{
+    this->_dynamicIniBuilder.clear(); // Clears the accumulated dynamic ini building session
+    this->enableDynamicIniBuilding = false;
 }
 
 bool INIReader::writeDynamicIni(std::string path)
@@ -126,7 +145,59 @@ bool INIReader::writeDynamicIni(std::string path)
         myNewINIFile << " \n"; // Blank line at the end of the section
     }
     myNewINIFile.close(); // Close the file
+
+    this->endDynamicIniBuilding(); // Signal that we're done with dynamic ini building
     return true;
+}
+
+bool INIReader::ToBoolean(std::string valstr, bool default_value)
+{
+    // Convert to lower case to make string comparisons case-insensitive
+    std::transform(valstr.begin(), valstr.end(), valstr.begin(), ::tolower);
+    if (valstr == "true" || valstr == "yes" || valstr == "on" || valstr == "1")
+        return true;
+    else if (valstr == "false" || valstr == "no" || valstr == "off" || valstr == "0")
+        return false;
+    else
+        return default_value;
+}
+
+long INIReader::ToInteger(std::string valstr, long default_value)
+{
+    const char* value = valstr.c_str();
+    char* end;
+    // This parses "1234" (decimal) and also "0x4D2" (hex)
+    long n = strtol(value, &end, 0);
+    return end > value ? n : default_value;
+}
+
+double INIReader::ToReal(std::string valstr, double default_value)
+{
+    const char* value = valstr.c_str();
+    char* end;
+    double n = strtod(value, &end);
+    return end > value ? n : default_value;
+}
+
+std::string INIReader::FromBoolean(bool final_value)
+{
+	if (final_value) {
+        return "true";
+	}
+    else
+    {
+        return "false";
+    }
+}
+
+std::string INIReader::FromInteger(long final_value)
+{
+    return std::to_string(final_value);
+}
+
+std::string INIReader::FromReal(double final_value)
+{
+    return std::to_string(final_value);
 }
 
 void INIReader::addDynamic(std::string section, std::string name, std::string value)
