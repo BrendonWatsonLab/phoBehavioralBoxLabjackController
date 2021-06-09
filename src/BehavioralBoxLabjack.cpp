@@ -647,19 +647,14 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 	
 
 	LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "EIO_STATE" }, { "SIGNALS_All" }, "SIGNALS_All");
-	newInputChannel->fn_generic_get_value = [](int numInputs, double* valuePointer)
-	{
-		auto currInputValue = valuePointer[0];
-		auto currBitsetValues = LabjackLogicalInputChannel::convertValue_DigitalStateAsDigitalValues(currInputValue);
-		// return a double vector
-		return LabjackLogicalInputChannel::toFinalDoublesVector(currBitsetValues);
-	};
+	newInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
+	newInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_DigitalStateAsDigitalValues();
 	this->logicalInputChannels.push_back(newInputChannel);
 
 
 	LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "RunningWheel" }, "AIN0");
-	newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
-	newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsContinuousInput();
+	newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
 	this->logicalInputChannels.push_back(newInputChannel_A0);
 
 	LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
@@ -969,7 +964,8 @@ void BehavioralBoxLabjack::readSensorValues()
 		auto expandedPortNames = this->getInputPortNames(PortEnumerationMode::expandedPortNames, true, true);
 		double* lastReadExpandedPortValues = nullptr;
 		lastReadExpandedPortValues = new double[expandedPortNames.size()];
-		
+
+		std::vector<std::vector<double>> currChannelExpandedPortValues = std::vector<std::vector<double>>(this->logicalInputChannels.size()); // a vector of vectors of doubles that retains the hierarchical structure of the expanded ports for each channel instead of flattening them
 		
 		double currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(1);
 		
@@ -1009,6 +1005,11 @@ void BehavioralBoxLabjack::readSensorValues()
 				double* last_expanded_value_pointer = lastReadExpandedPortValues + (currWithinScanExpandedPortLinearOffset);
 				double* curr_expanded_value_pointer = curr_got_expanded_values.data();
 				auto didAnyChange = currChannel->fn_generic_get_didValueChange(currChannelNumExpandedValues, last_expanded_value_pointer, curr_expanded_value_pointer);
+
+
+				//channelExpandedPortValues[logicalChannelIndex] = std::vector<double>(currChannelNumExpandedValues);
+				currChannelExpandedPortValues[logicalChannelIndex] = curr_got_expanded_values; //TODO: validate that this works
+				
 				for (int i = 0; i < currChannelNumExpandedValues; i++)
 				{
 					// Loop through and update the individual expanded port values:
@@ -1028,81 +1029,19 @@ void BehavioralBoxLabjack::readSensorValues()
 							currScanDidAnyChange = currScanDidAnyChange || true;
 
 						}
-
 						
 					} // end if isLoggedTo...
 
 					lastReadExpandedPortValues[currWithinScanExpandedPortLinearOffset + i] = curr_got_expanded_values[i];
 				}
+
+				//channelExpandedPortValues[logicalChannelIndex].push_back(curr_got_expanded_values);
 				
 				// Once done with this port, move the chanI (raw index into double* aray for current scan) to prepare for the next row
 				withinScanValueIndex += currNumberOfDoublesToRead;
 				currWithinScanExpandedPortLinearOffset += currChannelNumExpandedValues;
 			}
 
-			
-			// Skip the two timer channels
-			//for (chanI = 0; chanI < (this->ljStreamInfo.numChannels - 2); chanI++) {
-
-			//	if (this->ljStreamInfo.aData[scanStartOffsetI + chanI] == LJM_DUMMY_VALUE) {
-			//		++numSkippedScans;
-			//		//FIXME: I think we need to handle this case if the scan is skipped, we shouldn't go on and use its values
-
-			//	}
-
-			//	// Otherwise, get the last read value and compare it to this value:
-			//	if (this->inputPortIsAnalog[chanI]) {
-			//		// aData[scanI + chanI] is a double
-			//		if (scanI == 0)
-			//		{
-			//			// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
-			//			lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-			//		}
-			//		else
-			//		{
-			//			currDidChange = (fabs(this->ljStreamInfo.aData[scanStartOffsetI + chanI] - lastReadValues[chanI]) > changeTolerance);
-			//			if (currDidChange)
-			//			{
-			//				currScanDidAnyAnalogPortChange = currScanDidAnyAnalogPortChange || true;
-			//				currScanDidAnyChange = currScanDidAnyChange || true;
-			//			}
-
-			//			// Update the last read value either way:
-			//			lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-			//		}
-			//	}
-			//	else {
-			//		temp = (unsigned short)this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-			//		bytes = (unsigned char*)&temp;
-
-			//		if (scanI == 0)
-			//		{
-			//			// If it's the first scan for this channel channel, set the lastReadValue to the appropriate value:
-			//			lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-			//		}
-			//		else
-			//		{
-			//			// Get last read values:
-			//			last_temp = (unsigned short)lastReadValues[chanI];
-			//			last_bytes = (unsigned char*)&last_temp;
-
-			//			// it changed if any of the bytes of interest changed:
-			//			//
-			//			memcmpDidChange = memcmp(bytes, last_bytes, sizeof(unsigned char*));
-			//			currDidChange = (memcmpDidChange != 0);
-			//			if (currDidChange)
-			//			{
-			//				currScanDidAnyDigitalPortChange = currScanDidAnyDigitalPortChange || true;
-			//				currScanDidAnyChange = currScanDidAnyChange || true;
-			//			}
-
-			//			// Update the last read value either way:
-			//			lastReadValues[chanI] = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-			//		}
-
-			//	} // end else (if is analog)
-
-			//} // end for chanI
 			
 			 // Gets the timer value for this scanI (scan index), guessing this is MS
 			if (currScanDidAnyChange)
@@ -1116,7 +1055,8 @@ void BehavioralBoxLabjack::readSensorValues()
 				// Only persist the values if the state has changed.
 				// Note: should ignore the last two entries in the array, since they're the timer and they'll always update
 				//if (this->monitor->refreshState(estimatedScanTime, lastReadValues)) {
-				if (this->monitor->refreshState(estimatedScanTime, lastReadExpandedPortValues)) {
+				//if (this->monitor->refreshState(estimatedScanTime, lastReadExpandedPortValues)) {
+				if (this->monitor->refreshState(estimatedScanTime, currChannelExpandedPortValues)) {
 					//TODO: should this be asynchronous? This would require passing in the capture time and read values
 					//printf("refresh state returned true!");
 					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);

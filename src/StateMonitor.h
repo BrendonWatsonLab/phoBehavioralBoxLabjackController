@@ -22,11 +22,13 @@ public:
 	~StateMonitor();
 
 	// returns true if any state has been changed
-	bool refreshState(std::chrono::time_point<Clock> readTime, double readValues[NUM_CHANNELS]);
+	//bool refreshState(std::chrono::time_point<Clock> readTime, double readValues[NUM_CHANNELS]);
 
 	//bool refreshState(std::chrono::time_point<Clock> readTime, double readValues[NUM_CHANNELS], LabjackPortType readPortType[NUM_CHANNELS]);
 
 	//bool refreshState(std::chrono::time_point<Clock> readTime, LabjackStreamInfo* readStreamState);
+
+	bool refreshState(std::chrono::time_point<Clock> readTime, std::vector<std::vector<double>> readInputExpandedValues);
 
 	size_t getNumberOfInputs() const { return this->inputs.size(); }
 

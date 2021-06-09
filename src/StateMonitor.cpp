@@ -57,16 +57,28 @@ StateMonitor::~StateMonitor()
 	this->inputs.clear();
 }
 
-bool StateMonitor::refreshState(std::chrono::time_point<Clock> readTime, double readValues[NUM_CHANNELS])
+bool StateMonitor::refreshState(std::chrono::time_point<Clock> readTime, std::vector<std::vector<double>> readInputExpandedValues)
 {
 	bool hasAnyStateChanged = false;
-	for (int i = 0; i < NUM_CHANNELS; i++)
+	for (int i = 0; i < this->getNumberOfInputs(); i++)
 	{
-		bool hasThisStateChanged = this->inputs[i]->refresh(readTime, readValues[i]);
+		bool hasThisStateChanged = this->inputs[i]->refresh(readTime, readInputExpandedValues[i]);
 		hasAnyStateChanged = hasAnyStateChanged || hasThisStateChanged;
 	}
-	return hasAnyStateChanged; // returns true if any of the states has changed
+	return hasAnyStateChanged;
 }
+
+//bool StateMonitor::refreshState(std::chrono::time_point<Clock> readTime, double readValues[NUM_CHANNELS])
+//{
+//	bool hasAnyStateChanged = false;
+//	for (int i = 0; i < NUM_CHANNELS; i++)
+//	{
+//		bool hasThisStateChanged = this->inputs[i]->refresh(readTime, readValues[i]);
+//		hasAnyStateChanged = hasAnyStateChanged || hasThisStateChanged;
+//	}
+//	return hasAnyStateChanged; // returns true if any of the states has changed
+//}
+//
 //
 //bool StateMonitor::refreshState(std::chrono::time_point<Clock> readTime, double readValues[NUM_CHANNELS], LabjackPortType readPortType[NUM_CHANNELS])
 //{

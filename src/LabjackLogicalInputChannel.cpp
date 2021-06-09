@@ -1,4 +1,6 @@
 ﻿#include "LabjackLogicalInputChannel.h"
+
+#include <cassert>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>      // std::stringstream
@@ -181,6 +183,7 @@ std::function<std::vector<double>(int, double*)> LabjackLogicalInputChannel::get
 {
 	auto fcn = [](int numInputs, double* valuePointer)
 	{
+		assert(numInputs == 1);
 		auto currInputValue = valuePointer[0];
 		// return a double
 		if (LabjackLogicalInputChannel::convertValue_AnalogAsDigitalInput(currInputValue))
@@ -199,7 +202,9 @@ std::function<std::vector<bool>(int, double*, double*)> LabjackLogicalInputChann
 {
 	auto fcn = [](int numInputs, double* oldValuePointer, double* newValuePointer)
 	{
-		const double changeTolerance = 0.1; // The incomming values should already have been converted using convertValue_AnalogAsDigitalInput(...), so they both should be either 0.0 or 1.0.
+		assert(numInputs == 1);
+		const double changeTolerance = 0.1;  // always use a tolerance when comparing floating points to avoid precision errors
+		// The incomming values should already have been converted using convertValue_AnalogAsDigitalInput(...), so they both should be either 0.0 or 1.0.
 		// This means that this tolerance isn't really necissary.
 
 		auto prevInputValue = oldValuePointer[0];
@@ -215,6 +220,7 @@ std::function<std::vector<double>(int, double*)> LabjackLogicalInputChannel::get
 {
 	auto fcn = [](int numInputs, double* valuePointer)
 	{
+		assert(numInputs == 1);
 		auto currInputValue = valuePointer[0];
 		// return a double
 		return std::vector<double>({ currInputValue });
@@ -226,6 +232,7 @@ std::function<std::vector<bool>(int, double*, double*)> LabjackLogicalInputChann
 {
 	auto fcn = [](int numInputs, double* oldValuePointer, double* newValuePointer)
 	{
+		assert(numInputs == 1);
 		const double changeTolerance = 0.1;
 
 		auto prevInputValue = oldValuePointer[0];
@@ -242,6 +249,8 @@ std::function<std::vector<double>(int, double*)> LabjackLogicalInputChannel::get
 {
 	auto fcn = [](int numInputs, double* valuePointer)
 	{
+		assert(numInputs == 1);
+		
 		auto currInputValue = valuePointer[0];
 		auto currBitsetValues = LabjackLogicalInputChannel::convertValue_DigitalStateAsDigitalValues(currInputValue);
 		// return a double vector
@@ -254,13 +263,15 @@ std::function<std::vector<bool>(int, double*, double*)> LabjackLogicalInputChann
 {
 	auto fcn = [](int numInputs, double* oldValuePointer, double* newValuePointer)
 	{
-		const double changeTolerance = 1.0;
-
-		auto prevInputValue = oldValuePointer[0];
-		auto currInputValue = newValuePointer[0];
-
-		bool currDidChange = (fabs(currInputValue - prevInputValue) > changeTolerance);
-		return std::vector<bool>({ (currDidChange) });
+		const double changeTolerance = 0.2; // always use a tolerance when comparing floating points to avoid precision errors
+		std::vector<bool> output = std::vector<bool>(numInputs);
+		for (int i = 0; i < numInputs; i++)
+		{
+			auto prevInputValue = oldValuePointer[i];
+			auto currInputValue = newValuePointer[i];
+			output[i] = (fabs(currInputValue - prevInputValue) > changeTolerance);		
+		}
+		return output;
 	};
 	return fcn;
 }

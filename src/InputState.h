@@ -1,6 +1,7 @@
 #pragma once
 #include <time.h>
 #include <chrono>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -32,6 +33,8 @@ public:
 private:
 	bool _isUninitialized = true; // true until the first refresh(...) operation completes
 	std::vector<double> _previousExpandedFinalValues;
+
+	std::function<std::vector<bool>(int, double*, double*)> fn_get_didInputValueChange;
 	
 };
 
