@@ -2,6 +2,7 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>      // std::stringstream
+#include "LabjackHelpers.h"
 
 
 bool LabjackLogicalInputChannel::isLoggedToCSV()
@@ -139,4 +140,23 @@ std::vector<std::string> LabjackLogicalInputChannel::getExpandedFinalValuePortNa
 	}
 
 	return std::vector<std::string>();
+}
+
+std::bitset<8> LabjackLogicalInputChannel::convertValue_DigitalStateAsDigitalValues(double doubleRepresentation)
+{
+	return LabjackHelpers::parseDigitalStateChannelValue(doubleRepresentation);
+}
+
+bool LabjackLogicalInputChannel::convertValue_AnalogAsDigitalInput(double analogValue)
+{
+	return (analogValue >= 2.5); // if analogValue is greater than or equal to 2.5 (out of 5.0), return true indicating a HIGH signal
+}
+
+unsigned int LabjackLogicalInputChannel::convertValue_StreamTimer(double upper_bits, double lower_bits)
+{
+	// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which
+		// contains SYSTEM_TIMER_20HZ's upper 16 bits
+	unsigned int timerValue = ((unsigned short)upper_bits << 16) +
+		(unsigned short)lower_bits;
+	return timerValue;
 }

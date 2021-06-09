@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <bitset>
+
 #include "LabjackLogicalChannelBase.h"
 
 class LabjackLogicalInputChannel : public LabjackLogicalChannelBase
@@ -34,6 +36,21 @@ public:
 	std::vector<std::string> getExpandedFinalValuePortNames();
 	size_t getNumberOfDoubleInputs() const { return this->numDoubleInputValues; }
 	void setNumberOfDoubleInputs(size_t numDoubles) { this->numDoubleInputValues = numDoubles; }
+
+
+	std::function<unsigned(double, double)> fn_stream_timer = [](double upper_bits, double lower_bits)
+	{
+		// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which
+		// contains SYSTEM_TIMER_20HZ's upper 16 bits
+		unsigned int timerValue = ((unsigned short)upper_bits << 16) +
+			(unsigned short)lower_bits;
+		return timerValue;
+	};
+
+
+	static std::bitset<8> convertValue_DigitalStateAsDigitalValues(double doubleRepresentation);
+	static bool convertValue_AnalogAsDigitalInput(double analogValue);
+	static unsigned int convertValue_StreamTimer(double upper_bits, double lower_bits);
 
 protected:
 	//std::function<bool> _fnDigitizeValue;

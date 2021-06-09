@@ -997,6 +997,29 @@ void BehavioralBoxLabjack::readSensorValues()
 				auto currChannel = this->logicalInputChannels[logicalChannelIndex];
 				auto currNumberOfDoublesToRead = currChannel->getNumberOfDoubleInputs();
 
+				if (this->ljStreamInfo.aData[scanStartOffsetI + chanI] == LJM_DUMMY_VALUE) {
+					++numSkippedScans;
+					//FIXME: I think we need to handle this case if the scan is skipped, we shouldn't go on and use its values
+					continue;;
+				}
+				
+				switch (currNumberOfDoublesToRead)
+				{
+				case 1:
+					auto updated_value = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+					break;
+				case 2:
+					auto lower_bits = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+					auto upper_bits = this->ljStreamInfo.aData[scanStartOffsetI + chanI + 1];
+						// arg0: upper bits are later
+					auto updated_stream_timer = currChannel->fn_stream_timer(upper_bits, lower_bits);
+					
+					break;
+				default:
+					// error
+					break;
+				}
+				
 				
 				// Once done with this port, move the chanI (raw index into double* aray for current scan) to prepare for the next row
 				chanI += currNumberOfDoublesToRead;
