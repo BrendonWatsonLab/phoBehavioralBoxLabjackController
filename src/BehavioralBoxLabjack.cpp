@@ -799,7 +799,7 @@ void BehavioralBoxLabjack::SetupStream()
 	const double AIN_ALL_RANGE = 0;
 	const int AIN_ALL_NEGATIVE_CH = LJM_GND;
 
-	printf("Writing configurations:\n");
+	printf("Setting up Labjack Stream Registers:\n");
 
 	// Tears down existing streams if they're already running:
 	DisableStreamIfEnabled(this->handle);
@@ -842,32 +842,17 @@ void BehavioralBoxLabjack::SetupStream()
 	WriteNameOrDie(this->handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
 
 	// Build the stream object:
-	//const char* CHANNEL_NAMES[] = globalLabjackInputPortNames;
-	//auto channelNames = this->getInputPortNames();
-	//const char** CHANNEL_NAMES = channelNames
-	//const char* CHANNEL_NAMES[] = this->inputPortNames_all;
-	
-	//this->ljStreamInfo.build(this->getNumberInputChannels(true, true), CHANNEL_NAMES, 200);
-
 	auto currChannelNames = this->getInputPortNames(PortEnumerationMode::portNames, true, true);
-	
-	
-	//this->ljStreamInfo.build(this->getNumberInputChannels(true, true), CHANNEL_NAMES, 200);
 	this->ljStreamInfo.build(currChannelNames, 200);
 
 	this->err = LJM_NamesToAddresses(this->ljStreamInfo.numChannels, const_cast<const char**>(this->ljStreamInfo.channelNames), this->ljStreamInfo.aScanList, NULL);
 	ErrorCheck(this->err, "Getting positive channel addresses");
 	
-	
 	// Variables for LJM_eStreamStart
 	this->err = LJM_eStreamStart(this->handle, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.numChannels, this->ljStreamInfo.aScanList, &(this->ljStreamInfo.scanRate));
 	ErrorCheck(this->err, "LJM_eStreamStart");
 
-	//TODO: FIXME: We can't free the memory for aData yet, as it's needed in the next step, right?
-	//free(this->ljStreamInfo.aScanList);
-	//free(this->ljStreamInfo.aData);
-	//TODO: should be freed after reading complete though, on shutdown.
-	
+	std::cout << "Scan Stream started!" << std::endl;
 }
 
 bool BehavioralBoxLabjack::isArtificialDaylightHours()
@@ -1023,7 +1008,7 @@ void BehavioralBoxLabjack::readSensorValues()
 				}
 
 				// get the final values:
-				auto curr_got_value = currChannel->fn_generic_get_value(currNumberOfDoublesToRead, updated_pointer);
+				auto curr_got_expanded_values = currChannel->fn_generic_get_value(currNumberOfDoublesToRead, updated_pointer);
 
 				
 				//switch (currNumberOfDoublesToRead)
@@ -1046,10 +1031,10 @@ void BehavioralBoxLabjack::readSensorValues()
 				//	break;
 				//}
 
-				int numExpandedValues = curr_got_value.size();
+				int numExpandedValues = curr_got_expanded_values.size();
 				
 				double* last_expanded_value_pointer = lastReadExpandedPortValues + (expandedPortIndex);
-				double* curr_expanded_value_pointer = curr_got_value.data();
+				double* curr_expanded_value_pointer = curr_got_expanded_values.data();
 				auto didAnyChange = currChannel->fn_generic_get_didValueChange(numExpandedValues, last_expanded_value_pointer, curr_expanded_value_pointer);
 				for (int i = 0; i < numExpandedValues; i++)
 				{
