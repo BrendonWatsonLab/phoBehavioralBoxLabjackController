@@ -15,7 +15,7 @@ public:
 	}
 
 protected:
-	std::function<bool> _fnDigitizeValue;
+	//std::function<bool> _fnDigitizeValue;
 
 	
 };
