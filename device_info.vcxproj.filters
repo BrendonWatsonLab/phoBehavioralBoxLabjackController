@@ -290,6 +290,9 @@
     <ClInclude Include="src\DigitalStatePortMask.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
+    <ClInclude Include="ConfigFiles\config-FinalBoxesStreamMode-06-09-2021.h">
+      <Filter>Header Files\Configuration Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml">

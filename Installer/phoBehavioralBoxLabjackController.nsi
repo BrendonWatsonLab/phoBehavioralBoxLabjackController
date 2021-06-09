@@ -4,8 +4,8 @@
  
 ; -------------------------------
 ; Start
-  !define PRODUCT_VERSION "1.0.1.1"
-  !define VERSION "1.0.1.1"
+  !define PRODUCT_VERSION "1.0.1.2"
+  !define VERSION "1.0.1.2"
 
   !define MUI_PRODUCT "phoBehavioralBoxLabjackController"
   !define MUI_FILE "phoBehavioralBoxLabjackController"
@@ -27,7 +27,8 @@
   ;!define PHO_BUILD_PATH "../x64/Release"
   ; !define PHO_BUILD_PATH "C:\Common\repo\phoBehavioralBoxLabjackController\x64\Release"
   ; !define PHO_BUILD_PATH "C:\Users\Pho\repos\phoBehavioralBoxLabjackController\x64\Release"
-  !define PHO_BUILD_PATH "C:\Users\Pho\repos\phoBehavioralBoxLabjackController\builds\x64\Release"
+  ; !define PHO_BUILD_PATH "C:\Users\Pho\repos\phoBehavioralBoxLabjackController\builds\x64\Release"
+  !define PHO_BUILD_PATH "C:\Users\watsonlab\Desktop\phoTempRepo\phoBehavioralBoxLabjackController\builds\x64\Release"
 
   CRCCheck On
 
