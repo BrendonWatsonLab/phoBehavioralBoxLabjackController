@@ -24,6 +24,9 @@ public:
 
 	bool getReturnsContinuousValue() override;
 	std::string getCSVHeaderRepresentation() override;
+
+	std::vector<std::string> getExpandedFinalValuePortNames();
+
 protected:
 	//std::function<bool> _fnDigitizeValue;
 

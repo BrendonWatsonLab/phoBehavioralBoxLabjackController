@@ -110,8 +110,18 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	 */
 	this->csv.newRow() << "computerTime";
 	for (int i = 0; i < this->logicalInputChannels.size(); i++) {
-		std::string currCSVHeaderRep = this->logicalInputChannels[i]->getCSVHeaderRepresentation();
-		this->csv << currCSVHeaderRep;
+		//std::string currCSVHeaderRep = this->logicalInputChannels[i]->getCSVHeaderRepresentation();
+		//this->csv << currCSVHeaderRep;
+		//this->csv.add(currCSVHeaderRep);
+		if (!this->logicalInputChannels[i]->getReturnsContinuousValue())
+		{
+			// if this is not a continuous (analog-like) channel:
+			auto currExpandedChannels = this->logicalInputChannels[i]->getExpandedFinalValuePortNames();
+			for (auto curr_expanded_channel : currExpandedChannels)
+			{
+				this->csv << curr_expanded_channel; // Add the expanded channel to the CSV header
+			}
+		}
 	}
 	
 	//for (int i = 0; i < NUM_CHANNELS_DIGITAL; i++) {
@@ -180,17 +190,26 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	// Write the header to the analog .csv file:
 	//FIXME: Do I need to implement functionality to the digital state ports for generality?
 	this->csv_analog.newRow() << "computerTime";
-	
+	for (int i = 0; i < this->logicalInputChannels.size(); i++) {
+		if (this->logicalInputChannels[i]->getReturnsContinuousValue())
+		{
+			// if this *is* a continuous (analog-like) channel:
+			auto currExpandedChannels = this->logicalInputChannels[i]->getExpandedFinalValuePortNames();
+			for (auto curr_expanded_channel : currExpandedChannels)
+			{
+				this->csv_analog << curr_expanded_channel; // Add the expanded channel to the CSV header
+			} // end for expanded channel
+		} // end if (continuous)
+	} // end for
 	
 	//for (int i = 0; i < NUM_CHANNELS_ANALOG; i++) {
 	//	this->csv_analog << this->inputPortNames_analog[i];
 	//}
 
-	auto analogInputPortNames = this->getInputPortNames(false, true);
-	
-	for (int i = 0; i < analogInputPortNames.size(); i++) {
-		this->csv_analog << analogInputPortNames[i];
-	}
+	//auto analogInputPortNames = this->getInputPortNames(false, true);
+	//for (int i = 0; i < analogInputPortNames.size(); i++) {
+	//	this->csv_analog << analogInputPortNames[i];
+	//}
 	
 	this->csv_analog.writeToFile(this->fileFullPath_analog, false);
 
