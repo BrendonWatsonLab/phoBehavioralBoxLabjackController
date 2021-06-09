@@ -153,6 +153,12 @@
     <ClCompile Include="src\BoxControllerWebDataServer.cpp">
       <Filter>WebserverOnly</Filter>
     </ClCompile>
+    <ClCompile Include="src\External\INIReader\ini.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\External\INIReader\INIReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\NumericItem.h">
@@ -286,6 +292,12 @@
     </ClInclude>
     <ClInclude Include="src\BoxControllerWebDataServer.h">
       <Filter>WebserverOnly</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\INIReader\ini.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\INIReader\INIReader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
