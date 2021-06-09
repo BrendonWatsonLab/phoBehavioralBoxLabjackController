@@ -620,27 +620,38 @@ bool BehavioralBoxLabjack::saveConfigurationFile(std::string filePath)
 //TODO: eventually to be replaced by dynamic loading from config file
 void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 {
-	// "AIN0", "AIN1", "AIN2", "AIN3"
-	LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "Water1_BeamBreak" }, "AIN0");
-	newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
-	newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
-	this->logicalInputChannels.push_back(newInputChannel_A0);
+	//// "AIN0", "AIN1", "AIN2", "AIN3"
+	//LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "Water1_BeamBreak" }, "AIN0");
+	//newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	//newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	//this->logicalInputChannels.push_back(newInputChannel_A0);
 
-	LabjackLogicalInputChannel* newInputChannel_A1 = new LabjackLogicalInputChannel({ "AIN1" }, { "Water2_BeamBreak" }, "AIN1");
-	newInputChannel_A1->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
-	newInputChannel_A1->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	//LabjackLogicalInputChannel* newInputChannel_A1 = new LabjackLogicalInputChannel({ "AIN1" }, { "Water2_BeamBreak" }, "AIN1");
+	//newInputChannel_A1->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	//newInputChannel_A1->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
 
-	LabjackLogicalInputChannel* newInputChannel_A2 = new LabjackLogicalInputChannel({ "AIN2" }, { "Food1_BeamBreak" }, "AIN2");
-	newInputChannel_A2->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
-	newInputChannel_A2->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
-	this->logicalInputChannels.push_back(newInputChannel_A2);
+	//LabjackLogicalInputChannel* newInputChannel_A2 = new LabjackLogicalInputChannel({ "AIN2" }, { "Food1_BeamBreak" }, "AIN2");
+	//newInputChannel_A2->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	//newInputChannel_A2->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	//this->logicalInputChannels.push_back(newInputChannel_A2);
 
-	LabjackLogicalInputChannel* newInputChannel_A3 = new LabjackLogicalInputChannel({ "AIN3" }, { "Food2_BeamBreak" }, "AIN3");
-	newInputChannel_A3->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
-	newInputChannel_A3->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
-	this->logicalInputChannels.push_back(newInputChannel_A3);
+	//LabjackLogicalInputChannel* newInputChannel_A3 = new LabjackLogicalInputChannel({ "AIN3" }, { "Food2_BeamBreak" }, "AIN3");
+	//newInputChannel_A3->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	//newInputChannel_A3->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	//this->logicalInputChannels.push_back(newInputChannel_A3);
+	//
+	//LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "FIO_STATE" }, { "SIGNALS_Dispense" }, "SIGNALS_Dispense");
+	//newInputChannel->fn_generic_get_value = [](int numInputs, double* valuePointer)
+	//{
+	//	auto currInputValue = valuePointer[0];
+	//	auto currBitsetValues = LabjackLogicalInputChannel::convertValue_DigitalStateAsDigitalValues(currInputValue);
+	//	// return a double vector
+	//	return LabjackLogicalInputChannel::toFinalDoublesVector(currBitsetValues);
+	//};
+	//this->logicalInputChannels.push_back(newInputChannel);
 	
-	LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "FIO_STATE" }, { "SIGNALS_Dispense" }, "SIGNALS_Dispense");
+
+	LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "EIO_STATE" }, { "SIGNALS_All" }, "SIGNALS_All");
 	newInputChannel->fn_generic_get_value = [](int numInputs, double* valuePointer)
 	{
 		auto currInputValue = valuePointer[0];
@@ -649,7 +660,12 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 		return LabjackLogicalInputChannel::toFinalDoublesVector(currBitsetValues);
 	};
 	this->logicalInputChannels.push_back(newInputChannel);
-	
+
+
+	LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "RunningWheel" }, "AIN0");
+	newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	this->logicalInputChannels.push_back(newInputChannel_A0);
 
 	LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
 	timerInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
@@ -667,7 +683,6 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 	};
 	this->logicalInputChannels.push_back(timerInputChannel);
 
-	
 }
 
 // Reads the device name and updates its value
@@ -957,6 +972,7 @@ void BehavioralBoxLabjack::readSensorValues()
 		}
 
 		// TODO: Assumes the last two channels are the timer channels:
+		//FIXME: This hardcoded check needs to be removed
 		const int timer_lower_bits_index = this->ljStreamInfo.numChannels - 2;
 		const int timer_upper_bits_index = this->ljStreamInfo.numChannels - 1;
 
@@ -1004,7 +1020,6 @@ void BehavioralBoxLabjack::readSensorValues()
 
 		unsigned int timerValue;
 		unsigned int previousTimerValue;
-		//unsigned int * timerValues = new unsigned int[this->ljStreamInfo.scansPerRead];
 
 		// Otherwise it's good
 		//printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d....\n", streamRead, deviceScanBacklog, LJMScanBacklog);
