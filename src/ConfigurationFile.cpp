@@ -23,7 +23,12 @@ bool ConfigurationFile::reloadFromFile()
 	if (parseError != 0) {
 		std::cout << "\t ERROR: Can't load '" << this->filePath << "'\n";
 		this->loadStatus = ConfigFileLoadStatus::ExistsOnlyInMemory;
-		return false;
+		//return false;
+	}
+	else
+	{
+		// Successfully loaded from extant INI file:
+		this->loadStatus = ConfigFileLoadStatus::LoadedFromFile;
 	}
 
 	//DEFAULT:
@@ -49,7 +54,16 @@ bool ConfigurationFile::reloadFromFile()
 	this->loadedConfig.shouldEnableSynchronize_Y_Axis = this->iniReader.GetBoolean("TimeSeriesChart", "shouldEnableSynchronize_Y_Axis", true);
 	this->loadedConfig.numDaysToDisplay = this->iniReader.GetInteger("TimeSeriesChart", "numDaysToDisplay", 60);
 
-	this->loadStatus = ConfigFileLoadStatus::LoadedFromFile;
+	switch (this->loadStatus)
+	{
+	case ConfigFileLoadStatus::LoadedFromFile: break;
+	case ConfigFileLoadStatus::ExistsOnlyInMemory: 
+		// If it exists only in memory, create it
+		this->iniReader.writeDynamicIni(this->filePath);
+		break;
+	default: ;
+	}
+	
 
 	return true;
 }

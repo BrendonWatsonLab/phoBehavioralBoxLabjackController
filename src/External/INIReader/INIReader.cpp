@@ -35,7 +35,7 @@ int INIReader::ParseError() const
     return _error;
 }
 
-string INIReader::Get(const string& section, const string& name, const string& default_value) const
+string INIReader::Get(const string& section, const string& name, const string& default_value)
 {
     string key = MakeKey(section, name);
 	if (this->enableDynamicIniBuilding)
@@ -48,13 +48,13 @@ string INIReader::Get(const string& section, const string& name, const string& d
     return _values.count(key) ? _values.find(key)->second : default_value;
 }
 
-string INIReader::GetString(const string& section, const string& name, const string& default_value) const
+string INIReader::GetString(const string& section, const string& name, const string& default_value)
 {
     const string str = Get(section, name, "");
     return str.empty() ? default_value : str;
 }
 
-long INIReader::GetInteger(const string& section, const string& name, long default_value) const
+long INIReader::GetInteger(const string& section, const string& name, long default_value)
 {
     string valstr = Get(section, name, "");
     const char* value = valstr.c_str();
@@ -64,7 +64,7 @@ long INIReader::GetInteger(const string& section, const string& name, long defau
     return end > value ? n : default_value;
 }
 
-double INIReader::GetReal(const string& section, const string& name, double default_value) const
+double INIReader::GetReal(const string& section, const string& name, double default_value)
 {
     string valstr = Get(section, name, "");
     const char* value = valstr.c_str();
@@ -73,7 +73,7 @@ double INIReader::GetReal(const string& section, const string& name, double defa
     return end > value ? n : default_value;
 }
 
-bool INIReader::GetBoolean(const string& section, const string& name, bool default_value) const
+bool INIReader::GetBoolean(const string& section, const string& name, bool default_value)
 {
     string valstr = Get(section, name, "");
     // Convert to lower case to make string comparisons case-insensitive
