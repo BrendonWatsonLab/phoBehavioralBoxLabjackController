@@ -38,6 +38,10 @@ public:
 	void setNumberOfDoubleInputs(size_t numDoubles) { this->numDoubleInputValues = numDoubles; }
 
 
+	std::function<double(int, double*)> fn_generic_get_value;
+
+	
+	
 	std::function<unsigned(double, double)> fn_stream_timer = [](double upper_bits, double lower_bits)
 	{
 		// Combine SYSTEM_TIMER_20HZ's lower 16 bits and STREAM_DATA_CAPTURE_16, which

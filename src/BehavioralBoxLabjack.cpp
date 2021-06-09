@@ -630,23 +630,94 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 {
 	// "AIN0", "AIN1", "AIN2", "AIN3"
 	LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "Water1_BeamBreak" }, "AIN0");
+	newInputChannel_A0->fn_generic_get_value = [](int numInputs, double* valuePointer)
+	{
+		auto currInputValue = valuePointer[0];
+		// return a double
+		if (LabjackLogicalInputChannel::convertValue_AnalogAsDigitalInput(currInputValue))
+		{
+			return 1.0;
+		}
+		else
+		{
+			return 0.0;
+		}
+	};
+	
 	this->logicalInputChannels.push_back(newInputChannel_A0);
 
 	LabjackLogicalInputChannel* newInputChannel_A1 = new LabjackLogicalInputChannel({ "AIN1" }, { "Water2_BeamBreak" }, "AIN1");
+	newInputChannel_A1->fn_generic_get_value = [](int numInputs, double* valuePointer)
+	{
+		auto currInputValue = valuePointer[0];
+		// return a double
+		if (LabjackLogicalInputChannel::convertValue_AnalogAsDigitalInput(currInputValue))
+		{
+			return 1.0;
+		}
+		else
+		{
+			return 0.0;
+		}
+	};
 	this->logicalInputChannels.push_back(newInputChannel_A1);
 
 	LabjackLogicalInputChannel* newInputChannel_A2 = new LabjackLogicalInputChannel({ "AIN2" }, { "Food1_BeamBreak" }, "AIN2");
+	newInputChannel_A2->fn_generic_get_value = [](int numInputs, double* valuePointer)
+	{
+		auto currInputValue = valuePointer[0];
+		// return a double
+		if (LabjackLogicalInputChannel::convertValue_AnalogAsDigitalInput(currInputValue))
+		{
+			return 1.0;
+		}
+		else
+		{
+			return 0.0;
+		}
+	};
 	this->logicalInputChannels.push_back(newInputChannel_A2);
 
 	LabjackLogicalInputChannel* newInputChannel_A3 = new LabjackLogicalInputChannel({ "AIN3" }, { "Food2_BeamBreak" }, "AIN3");
+	newInputChannel_A3->fn_generic_get_value = [](int numInputs, double* valuePointer)
+	{
+		auto currInputValue = valuePointer[0];
+		// return a double
+		if (LabjackLogicalInputChannel::convertValue_AnalogAsDigitalInput(currInputValue))
+		{
+			return 1.0;
+		}
+		else
+		{
+			return 0.0;
+		}
+	};
 	this->logicalInputChannels.push_back(newInputChannel_A3);
 	
 	LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "FIO_STATE" }, { "SIGNALS_Dispense" }, "SIGNALS_Dispense");
 	this->logicalInputChannels.push_back(newInputChannel);
+	//newInputChannel_A0->fn_generic_get_value = [](int numInputs, double* valuePointer)
+	//{
+	//	auto currInputValue = valuePointer[0];
+	//	auto currBitsetValues = LabjackLogicalInputChannel::convertValue_DigitalStateAsDigitalValues(currInputValue);
+	//	// return a double
+	//	return currBitsetValues;
+	//};
+	
 
 	LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
 	timerInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
 	timerInputChannel->setNumberOfDoubleInputs(2); // Takes 2 double values to produce its output
+	timerInputChannel->fn_generic_get_value = [](int numInputs, double* valuePointer)
+	{
+		auto currInputValue_lowerBits = valuePointer[0];
+		auto currInputValue_upperBits = valuePointer[1];
+
+		// return a double
+		auto stream_timer_value = LabjackLogicalInputChannel::convertValue_StreamTimer(currInputValue_upperBits, currInputValue_lowerBits);
+		return double(stream_timer_value);
+	};
+	
 	this->logicalInputChannels.push_back(timerInputChannel);
 
 	
@@ -1002,24 +1073,33 @@ void BehavioralBoxLabjack::readSensorValues()
 					//FIXME: I think we need to handle this case if the scan is skipped, we shouldn't go on and use its values
 					continue;;
 				}
+
+				double* updated_pointer = this->ljStreamInfo.aData + (scanStartOffsetI + chanI);
+				auto curr_got_value = currChannel->fn_generic_get_value(currNumberOfDoublesToRead, updated_pointer);
+
 				
-				switch (currNumberOfDoublesToRead)
-				{
-				case 1:
-					auto updated_value = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					break;
-				case 2:
-					auto lower_bits = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-					auto upper_bits = this->ljStreamInfo.aData[scanStartOffsetI + chanI + 1];
-						// arg0: upper bits are later
-					auto updated_stream_timer = currChannel->fn_stream_timer(upper_bits, lower_bits);
-					
-					break;
-				default:
-					// error
-					break;
-				}
-				
+				//switch (currNumberOfDoublesToRead)
+				//{
+				//case 1:
+				//	auto updated_value = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+				//	//double* updated_pointer = this->ljStreamInfo.aData + (scanStartOffsetI + chanI);
+				//	auto curr_got_value = currChannel->fn_generic_get_value(currNumberOfDoublesToRead, updated_pointer);
+				//	
+				//	break;
+				//case 2:
+				//	auto lower_bits = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
+				//	auto upper_bits = this->ljStreamInfo.aData[scanStartOffsetI + chanI + 1];
+				//		// arg0: upper bits are later
+				//	auto updated_stream_timer = currChannel->fn_stream_timer(upper_bits, lower_bits);
+				//	
+				//	break;
+				//default:
+				//	// error
+				//	break;
+				//}
+
+
+				lastReadValues[chanI] = curr_got_value;
 				
 				// Once done with this port, move the chanI (raw index into double* aray for current scan) to prepare for the next row
 				chanI += currNumberOfDoublesToRead;
