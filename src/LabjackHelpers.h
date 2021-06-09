@@ -1,6 +1,7 @@
 #pragma once
 #include "BehavioralBoxLabjack.h"
 #include <vector>
+#include <bitset>
 
 class LabjackHelpers
 {
@@ -53,7 +54,10 @@ public:
 	
 	//static const int* toLJM_ScanList(std::vector<std::string>);
 
-	static std::vector<bool> parseDigitalStateChannelValue(double doubleRepresentation);
+	// Convert the double value returned for a digital state type Labjack channel (like MIO_STATE) into a bitset or vector<bool> representing the digital ON/OFF value for each port
+	static std::bitset<8> parseDigitalStateChannelValue(double doubleRepresentation);
+	
+	static std::vector<bool> parseDigitalStateChannelValueToVector(double doubleRepresentation);
 	
 	
 };

@@ -332,64 +332,21 @@ unsigned long long LabjackHelpers::milliseconds_since_epoch_from_date(std::chron
 	return std::chrono::duration_cast<std::chrono::milliseconds>(datetime.time_since_epoch()).count();
 }
 
-std::vector<bool> LabjackHelpers::parseDigitalStateChannelValue(double doubleRepresentation)
+std::bitset<8> LabjackHelpers::parseDigitalStateChannelValue(double doubleRepresentation)
 {
-	
 	unsigned short temp = (unsigned short)doubleRepresentation;
-	//unsigned char* rawBytes = (unsigned char*)&temp;
+	return std::bitset<8>(temp);
+}
 
-	auto bitsetValue = std::bitset<8>(temp);
-	
-
-	//unsigned char rawBytes[sizeof(double)];
-	//memcpy(rawBytes, &doubleRepresentation, sizeof(double));
-	
-	//size_t totalNumBits = CHAR_BIT * sizeof(unsigned short); // Gets the number of bits per byte for the current system, and then multiplies it by the number of bytes the system uses to represent an (unsigned short) to determine how many bits are needed to represent this binary value
-	//size_t totalNumBits = CHAR_BIT * sizeof(double);
+std::vector<bool> LabjackHelpers::parseDigitalStateChannelValueToVector(double doubleRepresentation)
+{
+	auto bitsetValue = LabjackHelpers::parseDigitalStateChannelValue(doubleRepresentation);
 	size_t totalNumBits = 8;
-
 	std::vector<bool> output = std::vector<bool>(totalNumBits);
-
 	for (int i = 0; i < totalNumBits; i++)
 	{
-		//auto bitValue = bitsetValue[i];
 		output[i] = bitsetValue.test(i);
-
-		
 	}
-
-	
-	//// Convert the unsigned char output to binary representation (https://stackoverflow.com/questions/8521638/exact-binary-representation-of-a-double)
-	////The C++ standard does not guarantee 8-bit bytes
-	//unsigned char startMask = 1;
-	//while (0 != static_cast<unsigned char>(startMask << 1)) {
-	//	startMask <<= 1;
-	//}
-
-	//bool hasLeadBit = false;   //set this to true if you want to see leading zeros
-
-	//size_t byteIndex;
-	//for (byteIndex = 0; byteIndex < sizeof(double); ++byteIndex) {
-	////for (byteIndex = 0; byteIndex < sizeof(unsigned short); ++byteIndex) {
-	//	unsigned char bitMask = startMask;
-	//	while (0 != bitMask) {
-	//		if (0 != (bitMask & rawBytes[byteIndex])) {
-	//			//std::cout << "1";
-	//			output[byteIndex] = true;
-	//			hasLeadBit = true;
-	//		}
-	//		else if (hasLeadBit) {
-	//			//std::cout << "0";
-	//			output[byteIndex] = false;
-	//		}
-	//		bitMask >>= 1;
-	//	}
-	//}
-	//if (!hasLeadBit) {
-	//	output[byteIndex] = false;
-	//	//std::cout << "0";
-	//}
-	
 	return output;
 }
 
