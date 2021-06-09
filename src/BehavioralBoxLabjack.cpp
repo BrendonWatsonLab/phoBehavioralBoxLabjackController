@@ -414,37 +414,40 @@ bool BehavioralBoxLabjack::isVisibleLEDLit()
 	}
 }
 
-int BehavioralBoxLabjack::getNumberInputChannels(bool include_digital_ports, bool include_analog_ports) {
-	return this->getInputPortNames(include_digital_ports, include_analog_ports).size();
-	//if (include_digital_ports && include_analog_ports)
-	//{
-	//	return NUM_CHANNELS;
-	//}
-	//if (include_digital_ports)
-	//{
-	//	return NUM_CHANNELS_DIGITAL;
-	//}
-	//if (include_analog_ports)
-	//{
-	//	return NUM_CHANNELS_ANALOG;
-	//}
+int BehavioralBoxLabjack::getNumberInputChannels(PortEnumerationMode port_enumeration_mode, bool include_digital_ports, bool include_analog_ports)
+{
+	return this->getInputPortNames(port_enumeration_mode, include_digital_ports, include_analog_ports).size();
 }
 
-std::vector<std::string> BehavioralBoxLabjack::getInputPortNames(bool include_digital_ports, bool include_analog_ports)
+std::vector<std::string> BehavioralBoxLabjack::getInputPortNames(PortEnumerationMode port_enumeration_mode, bool include_digital_ports, bool include_analog_ports)
 {
 	// Returns flat output strings
 	std::vector<std::string> outputStrings = std::vector<std::string>();
 	for (int i = 0; i < this->logicalInputChannels.size(); i++) {
 		auto currChannel = this->logicalInputChannels[i];
-		
+
 		if (currChannel->getReturnsContinuousValue())
 		{
 			// It's analog:
 			if (include_analog_ports)
 			{
-				for (auto output_string : currChannel->getPortNames())
+				switch (port_enumeration_mode)
 				{
-					outputStrings.push_back(output_string);
+				case PortEnumerationMode::logicalChannelOnly: 
+					outputStrings.push_back(currChannel->getName());
+					break;
+				case PortEnumerationMode::portNames:
+					for (auto output_string : currChannel->getPortNames())
+					{
+						outputStrings.push_back(output_string);
+					}
+					break;
+				case PortEnumerationMode::expandedPortNames:
+					for (auto output_string : currChannel->getExpandedFinalValuePortNames())
+					{
+						outputStrings.push_back(output_string);
+					}
+					break;
 				}
 			}
 			else {
@@ -455,41 +458,30 @@ std::vector<std::string> BehavioralBoxLabjack::getInputPortNames(bool include_di
 			// It's digital:
 			if (include_digital_ports)
 			{
-				for (auto output_string : currChannel->getPortNames())
+				switch (port_enumeration_mode)
 				{
-					outputStrings.push_back(output_string);
+				case PortEnumerationMode::logicalChannelOnly:
+					outputStrings.push_back(currChannel->getName());
+					break;
+				case PortEnumerationMode::portNames:
+					for (auto output_string : currChannel->getPortNames())
+					{
+						outputStrings.push_back(output_string);
+					}
+					break;
+				case PortEnumerationMode::expandedPortNames:
+					for (auto output_string : currChannel->getExpandedFinalValuePortNames())
+					{
+						outputStrings.push_back(output_string);
+					}
+					break;
 				}
 			}
 			else {
 				continue;
 			}
 		}
-	}
-	//for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
-	//	if (this->inputPortIsAnalog[i])
-	//	{
-	//		// It's analog:
-	//		if (include_analog_ports)
-	//		{
-	//			currString = std::string(this->inputPortNames_all[i]);
-	//			outputStrings.push_back(currString);
-	//		}
-	//		else {
-	//			continue;
-	//		}
-	//	}
-	//	else {
-	//		// It's digital:
-	//		if (include_digital_ports)
-	//		{
-	//			currString = std::string(this->inputPortNames_all[i]);
-	//			outputStrings.push_back(currString);
-	//		}
-	//		else {
-	//			continue;
-	//		}
-	//	}
-	//}
+	} // end for
 	return outputStrings;
 }
 
@@ -525,34 +517,34 @@ std::vector<std::string> BehavioralBoxLabjack::getInputPortNames(bool include_di
 //	return outputStrings;
 //}
 
-std::vector<double> BehavioralBoxLabjack::getLastReadValues(bool include_digital_ports, bool include_analog_ports)
-{
-	std::vector<double> outputValues = std::vector<double>();
-	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
-		if (this->inputPortIsAnalog[i])
-		{
-			// It's analog:
-			if (include_analog_ports)
-			{
-				outputValues.push_back(this->lastReadInputPortValues[i]);
-			}
-			else {
-				continue;
-			}
-		}
-		else {
-			// It's digital:
-			if (include_digital_ports)
-			{
-				outputValues.push_back(this->lastReadInputPortValues[i]);
-			}
-			else {
-				continue;
-			}
-		}
-	}
-	return outputValues;
-}
+//std::vector<double> BehavioralBoxLabjack::getLastReadValues(bool include_digital_ports, bool include_analog_ports)
+//{
+//	std::vector<double> outputValues = std::vector<double>();
+//	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
+//		if (this->inputPortIsAnalog[i])
+//		{
+//			// It's analog:
+//			if (include_analog_ports)
+//			{
+//				outputValues.push_back(this->lastReadInputPortValues[i]);
+//			}
+//			else {
+//				continue;
+//			}
+//		}
+//		else {
+//			// It's digital:
+//			if (include_digital_ports)
+//			{
+//				outputValues.push_back(this->lastReadInputPortValues[i]);
+//			}
+//			else {
+//				continue;
+//			}
+//		}
+//	}
+//	return outputValues;
+//}
 
 void BehavioralBoxLabjack::toggleOverrideMode_VisibleLED()
 {
@@ -842,7 +834,7 @@ void BehavioralBoxLabjack::SetupStream()
 	
 	//this->ljStreamInfo.build(this->getNumberInputChannels(true, true), CHANNEL_NAMES, 200);
 
-	auto currChannelNames = this->getInputPortNames(true, true);
+	auto currChannelNames = this->getInputPortNames(PortEnumerationMode::portNames, true, true);
 	
 	
 	//this->ljStreamInfo.build(this->getNumberInputChannels(true, true), CHANNEL_NAMES, 200);
@@ -1003,6 +995,11 @@ void BehavioralBoxLabjack::readSensorValues()
 		double* lastReadValues = nullptr;
 		lastReadValues = new double[this->ljStreamInfo.numChannels];
 
+		auto expandedPortNames = this->getInputPortNames(PortEnumerationMode::expandedPortNames, true, true);
+		double* lastReadExpandedPortValues = nullptr;
+		lastReadExpandedPortValues = new double[expandedPortNames.size()];
+		
+		
 		double currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(1);
 
 		unsigned int timerValue;
@@ -1170,6 +1167,9 @@ void BehavioralBoxLabjack::readSensorValues()
 		// release the dynamically allocated memory:
 		delete[] lastReadValues;
 		lastReadValues = nullptr;
+
+		delete[] lastReadExpandedPortValues;
+		lastReadExpandedPortValues = nullptr;
 
 		streamRead++;
 	}

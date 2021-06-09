@@ -44,6 +44,13 @@ public:
 	BehavioralBoxLabjack& operator=(const BehavioralBoxLabjack&) = delete; // non copyable
 	~BehavioralBoxLabjack();
 
+	enum class PortEnumerationMode { logicalChannelOnly, portNames, expandedPortNames };
+	/*
+	 * logicalChannelOnly: only the logical channel name, like {"DISPENSE_SIGNALS"}
+	 * portNames: only the real port names, like {"EIO_STATE"}
+	 * expandedPortNames: the expanded port names, like {"EIO0", "EIO1", "EIO2", "EIO3", ...}
+	 */
+
 	void diagnosticPrint();
 	void printIdentifierLine();
 	void diagnosticPrintLastValues();
@@ -81,11 +88,18 @@ public:
 	std::string getDeviceName() { return this->deviceName; }
 	bool isVisibleLEDLit();
 	std::string getFullFilePath() { return this->fileFullPath; }
-	int getNumberInputChannels(bool include_digital_ports = true, bool include_analog_ports = false);
+
+	
+	int getNumberInputChannels(PortEnumerationMode port_enumeration_mode, bool include_digital_ports = true, bool include_analog_ports = false);
+	//int getNumberInputChannels(bool include_digital_ports = true, bool include_analog_ports = false);
+
+	std::vector<std::string> getInputPortNames(PortEnumerationMode port_enumeration_mode, bool include_digital_ports = true, bool include_analog_ports = false);
+
+	
 	int getNumberOutputChannels() { return NUM_OUTPUT_CHANNELS; }
-	std::vector<std::string> getInputPortNames(bool include_digital_ports = true, bool include_analog_ports = false);
+	
 	//std::vector<std::string> getInputPortPurpose(bool include_digital_ports = true, bool include_analog_ports = false);
-	std::vector<double> getLastReadValues(bool include_digital_ports = true, bool include_analog_ports = false);
+	//std::vector<double> getLastReadValues(bool include_digital_ports = true, bool include_analog_ports = false);
 	std::string getOutputDirectory() { return this->outputDirectory; }
 
 	LabjackStreamInfo getStreamInfo() { return this->ljStreamInfo; }
