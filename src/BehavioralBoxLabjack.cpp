@@ -1180,10 +1180,12 @@ void BehavioralBoxLabjack::readSensorValues()
 
 				// Only persist the values if the state has changed.
 				// Note: should ignore the last two entries in the array, since they're the timer and they'll always update
-				if (this->monitor->refreshState(estimatedScanTime, lastReadValues)) {
+				//if (this->monitor->refreshState(estimatedScanTime, lastReadValues)) {
+				if (this->monitor->refreshState(estimatedScanTime, lastReadExpandedPortValues)) {
 					//TODO: should this be asynchronous? This would require passing in the capture time and read values
 					//printf("refresh state returned true!");
-					this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+					this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadExpandedPortValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
 				}
 
 			}
@@ -1230,71 +1232,41 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 	newCSVLine_digitalOnly.newRow() << estimated_scan_milliseconds_since_epoch;
 	newCSVLine_analogOnly.newRow() << estimated_scan_milliseconds_since_epoch;
 
-	unsigned short temp;
-	unsigned char* rawBytes;
-	
-	for (int i = 0; i < NUM_CHANNELS; i++) {
-		auto currPortType = this->inputPortTypes_all[i];
-		bool isOutput = this->inputPortIsLogged_all[i];
 
-		if (isOutput) {
-			switch (currPortType)
+
+
+	for (int i = 0; i < this->logicalInputChannels.size(); i++) {
+		if (!this->logicalInputChannels[i]->isLoggedToCSV())
+		{
+			continue; // skip this non-logged channel
+		}
+		auto currExpandedChannels = this->logicalInputChannels[i]->getExpandedFinalValuePortNames();
+		if (!this->logicalInputChannels[i]->getReturnsContinuousValue())
+		{
+			// if this is not a continuous (analog-like) channel:
+			for (int j = 0; j < currExpandedChannels.size(); ++j)
 			{
-			case LabjackPortType::Analog:
-				// If it's an analog port:
-				newCSVLine_analogOnly << lastReadValues[i];
-				break;
-			case LabjackPortType::Digital: 
 				// Otherwise, it's a digital port
-				newCSVLine_digitalOnly << lastReadValues[i];
-				break;
-			case LabjackPortType::DigitalState: 
-				// Otherwise, it's a digital port, need to read all bitwise values that we're interested in
-				//LJM_FLOAT32ToByteArray(lastReadValues[i],)
-
-				auto test_vector = LabjackHelpers::parseDigitalStateChannelValue(lastReadValues[i]);
-
-				temp = (unsigned short)lastReadValues[i];
-				rawBytes = (unsigned char*)&temp;
-
-				// Convert the unsigned char output to binary representation (https://stackoverflow.com/questions/8521638/exact-binary-representation-of-a-double)
-				//The C++ standard does not guarantee 8-bit bytes
-				unsigned char startMask = 1;
-				while (0 != static_cast<unsigned char>(startMask << 1)) {
-					startMask <<= 1;
+				newCSVLine_digitalOnly << lastReadValues[i+j];
+				if (enableConsoleLogging && this->logicalInputChannels[i]->isLoggedToConsole()) {
+					std::cout << lastReadValues[i + j] << ", ";
 				}
-				bool hasLeadBit = false;   //set this to true if you want to see leading zeros
-				size_t byteIndex;
-				/*for (byteIndex = 0;byteIndex < sizeof(double); ++byteIndex) {*/
-				//for (byteIndex = 0;byteIndex < sizeof(unsigned char); ++byteIndex) {
-				for (byteIndex = 0;byteIndex < sizeof(unsigned short); ++byteIndex) {
-					unsigned char bitMask = startMask;
-					while (0 != bitMask) {
-						if (0 != (bitMask & rawBytes[byteIndex])) {
-							//std::cout << "1";
-							newCSVLine_digitalOnly << 1;
-							hasLeadBit = true;
-						}
-						else if (hasLeadBit) {
-							newCSVLine_digitalOnly << 0;
-							//std::cout << "0";
-						}
-						bitMask >>= 1;
-					}
-				}
-				if (!hasLeadBit) {
-					//std::cout << "0";
-					newCSVLine_digitalOnly << 0;
-				}
-				//newCSVLine_digitalOnly << lastReadValues[i];
-				break;
-			}
-	
-			if (enableConsoleLogging) {
-				std::cout << lastReadValues[i] << ", ";
 			}
 		}
-	} //end for num channels
+		else
+		{
+			// If it's an analog (continuous) port:
+			for (int j = 0; j < currExpandedChannels.size(); ++j)
+			{
+				newCSVLine_analogOnly << lastReadValues[i + j];
+				if (enableConsoleLogging && this->logicalInputChannels[i]->isLoggedToConsole()) {
+					std::cout << lastReadValues[i + j] << ", ";
+				}
+			}
+		}
+	} // end for i
+
+
 	if (enableConsoleLogging) {
 		std::cout << std::endl;
 	}
