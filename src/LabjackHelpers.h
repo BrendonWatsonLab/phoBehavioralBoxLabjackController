@@ -52,6 +52,8 @@ public:
 
 	
 	//static const int* toLJM_ScanList(std::vector<std::string>);
+
+	static std::vector<bool> parseDigitalStateChannelValue(double doubleRepresentation);
 	
 	
 };

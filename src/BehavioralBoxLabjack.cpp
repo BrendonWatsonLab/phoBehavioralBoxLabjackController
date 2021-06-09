@@ -24,6 +24,7 @@
 #include "External/C_C++_LJM/LJM_StreamUtilities.h" // Include the Stream utilities now
 
 #include "FilesystemHelpers.h"
+#include "LabjackHelpers.h"
 //#include "LabjackStreamHelpers.h"
 //#include "LabjackStreamInfo.h"
 
@@ -1098,6 +1099,9 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 			case LabjackPortType::DigitalState: 
 				// Otherwise, it's a digital port, need to read all bitwise values that we're interested in
 				//LJM_FLOAT32ToByteArray(lastReadValues[i],)
+
+				auto test_vector = LabjackHelpers::parseDigitalStateChannelValue(lastReadValues[i]);
+
 				temp = (unsigned short)lastReadValues[i];
 				rawBytes = (unsigned char*)&temp;
 
