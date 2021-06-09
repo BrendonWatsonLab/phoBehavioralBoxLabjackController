@@ -5,7 +5,7 @@
 #include <fstream>
 
 #include "LoadedConfiguration.h"
-#include "External/INIReader.h"
+#include "External/INIReader/INIReader.h"
 
 
 

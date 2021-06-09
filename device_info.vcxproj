@@ -84,7 +84,7 @@
     <ClInclude Include="src\CsvUtil.h" />
     <ClInclude Include="src\DataServerEvent.h" />
     <ClInclude Include="src\External\CSVWriter.h" />
-    <ClInclude Include="src\External\INIReader.h" />
+    <ClInclude Include="src\External\INIReader\INIReader.h" />
     <ClInclude Include="src\External\px_sched.h" />
     <ClInclude Include="src\External\Scheduler\Scheduler.h" />
     <ClInclude Include="src\FilesystemHelpers.h" />

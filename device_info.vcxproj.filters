@@ -242,9 +242,6 @@
     <ClInclude Include="ConfigFiles\config-FinalBoxes-10-01-2019.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\External\INIReader.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="src\LoadedConfiguration.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
@@ -279,6 +276,9 @@
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\INIReader\INIReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
