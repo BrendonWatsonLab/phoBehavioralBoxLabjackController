@@ -1,6 +1,7 @@
 #pragma once
 #include <time.h>
 #include <chrono>
+#include <vector>
 
 #include "config.h"
 #include "InputState.h"
@@ -17,7 +18,7 @@ typedef std::chrono::system_clock Clock;
 class StateMonitor
 {
 public:
-	StateMonitor();
+	StateMonitor(std::vector<LabjackLogicalInputChannel*> input_channels);
 	~StateMonitor();
 
 	// returns true if any state has been changed
@@ -27,8 +28,11 @@ public:
 
 	//bool refreshState(std::chrono::time_point<Clock> readTime, LabjackStreamInfo* readStreamState);
 
+	size_t getNumberOfInputs() const { return this->inputs.size(); }
+
 private:
-	InputState* inputs[NUM_CHANNELS];
+	std::vector<InputState*> inputs;
+	//InputState* inputs[NUM_CHANNELS];
 
 };
 

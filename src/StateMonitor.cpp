@@ -2,42 +2,59 @@
 #include <string>
 
 
-StateMonitor::StateMonitor()
+//StateMonitor::StateMonitor()
+//{
+//	LabjackPortType curr_port_types[NUM_CHANNELS] = globalLabjackInputPortType;
+//	int active_input_state_index = 0;
+//	for(int i = 0; i < NUM_CHANNELS; i++)
+//	{
+//		LabjackPortType curr_port_type = curr_port_types[i];
+//		switch (curr_port_type)
+//		{
+//		case LabjackPortType::Analog:
+//			this->inputs[active_input_state_index] = new InputState("", curr_port_type);
+//			break;
+//		case LabjackPortType::Digital:
+//			this->inputs[active_input_state_index] = new InputState("", curr_port_type);
+//			break;
+//		case LabjackPortType::DigitalState:
+//			//for (int j = 0; j < 8; j++) {
+//			//	active_input_state_index = active_input_state_index + j;
+//				this->inputs[active_input_state_index] = new InputState("", curr_port_type);
+//			//}
+//			break;
+//		default: 
+//			break;
+//		}
+//		
+//		active_input_state_index++; // Update to the next location
+//		
+//	}
+//}
+
+StateMonitor::StateMonitor(std::vector<LabjackLogicalInputChannel*> input_channels)
 {
-	LabjackPortType curr_port_types[NUM_CHANNELS] = globalLabjackInputPortType;
-	int active_input_state_index = 0;
-	for(int i = 0; i < NUM_CHANNELS; i++)
+	size_t newNumberOfInputs = input_channels.size();
+	
+	this->inputs = std::vector<InputState*>(newNumberOfInputs); // pre-allocate the vector
+	for (int i = 0; i < newNumberOfInputs; i++)
 	{
-		LabjackPortType curr_port_type = curr_port_types[i];
-		switch (curr_port_type)
-		{
-		case LabjackPortType::Analog:
-			this->inputs[active_input_state_index] = new InputState("", curr_port_type);
-			break;
-		case LabjackPortType::Digital:
-			this->inputs[active_input_state_index] = new InputState("", curr_port_type);
-			break;
-		case LabjackPortType::DigitalState:
-			//for (int j = 0; j < 8; j++) {
-			//	active_input_state_index = active_input_state_index + j;
-				this->inputs[active_input_state_index] = new InputState("", curr_port_type);
-			//}
-			break;
-		default: 
-			break;
-		}
-		
-		active_input_state_index++; // Update to the next location
-		
+		const auto currInputChannel = input_channels[i];
+		//this->inputs[i] = new InputState(*currInputChannel);
+		this->inputs[i] = new InputState(*currInputChannel);
 	}
 }
 
+
+
 StateMonitor::~StateMonitor()
 {
-	for (int i = 0; i < NUM_CHANNELS; i++)
+	for (int i = 0; i < this->getNumberOfInputs(); i++)
 	{
 		delete this->inputs[i];
+		this->inputs[i] = nullptr;
 	}
+	this->inputs.clear();
 }
 
 bool StateMonitor::refreshState(std::chrono::time_point<Clock> readTime, double readValues[NUM_CHANNELS])

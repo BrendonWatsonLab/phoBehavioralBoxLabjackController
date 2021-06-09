@@ -44,13 +44,7 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 {
 	// Starts by building the new port objects
 	this->testBuildLogicalInputChannels();
-	
-	/*for (int i = 0; i < NUM_CHANNELS; i++)
-	{
-		this->logicalInputChannels = new LabjackLogicalInputChannel()
-	}*/
-
-	
+		
 	this->serialNumber = serialNumber;
 	char iden[256];
 	sprintf(iden, "%d", this->serialNumber);
@@ -182,7 +176,8 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	//TODO: force initializiation
 
 	// Setup input state 
-	this->monitor = new StateMonitor();
+	//this->monitor = new StateMonitor();
+	this->monitor = new StateMonitor(this->logicalInputChannels);
 
 	// Create the object's thread at the very end of its constructor
 	// wallTime-based event scheduling:
@@ -1059,12 +1054,12 @@ void BehavioralBoxLabjack::readSensorValues()
 						
 					} // end if isLoggedTo...
 
-					lastReadExpandedPortValues[expandedPortIndex + i] = curr_got_value[i];
+					lastReadExpandedPortValues[expandedPortIndex + i] = curr_got_expanded_values[i];
 				}
 				
 				// Once done with this port, move the chanI (raw index into double* aray for current scan) to prepare for the next row
 				withinScanValueIndex += currNumberOfDoublesToRead;
-				expandedPortIndex += curr_got_value.size();
+				expandedPortIndex += curr_got_expanded_values.size();
 			}
 
 			
