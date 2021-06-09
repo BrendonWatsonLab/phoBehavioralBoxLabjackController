@@ -4,6 +4,32 @@
 #include <sstream>      // std::stringstream
 
 
+bool LabjackLogicalInputChannel::isLoggedToCSV()
+{
+	switch (this->loggingMode)
+	{
+	case FinalDesiredValueLoggingMode::LoggedOnlyToCSV: 
+		return true;
+	case FinalDesiredValueLoggingMode::LoggedToAll: 
+		return true;
+	default: 
+		return false;
+	}
+}
+
+bool LabjackLogicalInputChannel::isLoggedToConsole()
+{
+	switch (this->loggingMode)
+	{
+	case FinalDesiredValueLoggingMode::LoggedOnlyToConsole:
+		return true;
+	case FinalDesiredValueLoggingMode::LoggedToAll:
+		return true;
+	default:
+		return false;
+	}
+}
+
 bool LabjackLogicalInputChannel::getReturnsContinuousValue()
 {
 	//TODO: Implement

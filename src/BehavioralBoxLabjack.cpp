@@ -709,6 +709,7 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 	this->logicalInputChannels.push_back(newInputChannel);
 
 	LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
+	timerInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
 	this->logicalInputChannels.push_back(timerInputChannel);
 
 	
