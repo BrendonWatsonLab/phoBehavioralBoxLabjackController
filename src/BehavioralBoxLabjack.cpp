@@ -28,6 +28,8 @@
 //#include "LabjackStreamHelpers.h"
 //#include "LabjackStreamInfo.h"
 
+#include "LabjackLogicalInputChannel.h"
+
 // Set to non-zero for external stream clock
 #define EXTERNAL_STREAM_CLOCK 0
 
@@ -40,6 +42,15 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, in
 // Constructor: Called when an instance of the object is about to be created
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, int serialNumber): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), csv_analog(CSVWriter(",")), lastCaptureComputerTime(Clock::now()), ljStreamInfo(LabjackStreamInfo())
 {
+	// Starts by building the new port objects
+	this->testBuildLogicalInputChannels();
+	
+	/*for (int i = 0; i < NUM_CHANNELS; i++)
+	{
+		this->logicalInputChannels = new LabjackLogicalInputChannel()
+	}*/
+
+	
 	this->serialNumber = serialNumber;
 	char iden[256];
 	sprintf(iden, "%d", this->serialNumber);
@@ -604,6 +615,31 @@ bool BehavioralBoxLabjack::saveConfigurationFile(std::string filePath)
 	{
 		return false;
 	}
+}
+
+//TODO: eventually to be replaced by dynamic loading from config file
+void BehavioralBoxLabjack::testBuildLogicalInputChannels()
+{
+	// "AIN0", "AIN1", "AIN2", "AIN3"
+	LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "Water1_BeamBreak" }, "AIN0");
+	this->logicalInputChannels.push_back(newInputChannel_A0);
+
+	LabjackLogicalInputChannel* newInputChannel_A1 = new LabjackLogicalInputChannel({ "AIN1" }, { "Water2_BeamBreak" }, "AIN1");
+	this->logicalInputChannels.push_back(newInputChannel_A1);
+
+	LabjackLogicalInputChannel* newInputChannel_A2 = new LabjackLogicalInputChannel({ "AIN2" }, { "Food1_BeamBreak" }, "AIN2");
+	this->logicalInputChannels.push_back(newInputChannel_A2);
+
+	LabjackLogicalInputChannel* newInputChannel_A3 = new LabjackLogicalInputChannel({ "AIN3" }, { "Food2_BeamBreak" }, "AIN3");
+	this->logicalInputChannels.push_back(newInputChannel_A3);
+	
+	LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "FIO_STATE" }, { "SIGNALS_Dispense" }, "SIGNALS_Dispense");
+	this->logicalInputChannels.push_back(newInputChannel);
+
+	LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
+	this->logicalInputChannels.push_back(timerInputChannel);
+
+	
 }
 
 // Reads the device name and updates its value

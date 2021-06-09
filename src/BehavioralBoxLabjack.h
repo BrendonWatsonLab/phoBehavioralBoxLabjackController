@@ -20,6 +20,8 @@
 #include "OutputState.h"
 #include "ConfigurationManager.h"
 
+class LabjackLogicalInputChannel;
+
 typedef std::chrono::system_clock Clock;
 
 //// Scheduler
@@ -135,6 +137,10 @@ private:
 	/*std::shared_ptr<LabjackStreamInfo> ljStreamInfo = std::make_shared<LabjackStreamInfo>();*/
 	/*std::shared_ptr<LabjackStreamInfo> ljStreamInfo;*/
 	LabjackStreamInfo ljStreamInfo;
+
+	std::vector<LabjackLogicalInputChannel*> logicalInputChannels = {};
+
+	void testBuildLogicalInputChannels();
 	
 
 	// Variables for holding the last read values
@@ -164,7 +170,6 @@ private:
 	char* inputPortPurpose_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortPurpose;
 	LabjackPortType inputPortTypes_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortType;
 	
-	int errorAddress;
 
 	// Vector of Output Port Objects
 	char* outputPortNames[NUM_OUTPUT_CHANNELS] = globalLabjackOutputPortNames;
