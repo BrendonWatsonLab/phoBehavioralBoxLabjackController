@@ -948,7 +948,7 @@ void BehavioralBoxLabjack::readSensorValues()
 		int currScanStartLinearOffset = 0; // the linear index offset from aData that starts the current scan row
 		int withinScanValueIndex = 0; // within a given scan, the valueIndex corresponding to the double that was read
 
-		int expandedPortIndex = 0;
+		int currWithinScanExpandedPortLinearOffset = 0;
 		
 
 		int numSkippedScans = 0;
@@ -983,7 +983,7 @@ void BehavioralBoxLabjack::readSensorValues()
 			currScanDidAnyDigitalPortChange = false;
 
 			withinScanValueIndex = 0;
-			expandedPortIndex = 0;
+			currWithinScanExpandedPortLinearOffset = 0;
 			for (int logicalChannelIndex = 0; logicalChannelIndex < this->logicalInputChannels.size(); logicalChannelIndex++) {
 				auto currChannel = this->logicalInputChannels[logicalChannelIndex];
 				auto currNumberOfDoublesToRead = currChannel->getNumberOfDoubleInputs();
@@ -1004,34 +1004,12 @@ void BehavioralBoxLabjack::readSensorValues()
 
 				// get the final values:
 				auto curr_got_expanded_values = currChannel->fn_generic_get_value(currNumberOfDoublesToRead, updated_pointer);
-
+				const size_t currChannelNumExpandedValues = curr_got_expanded_values.size();
 				
-				//switch (currNumberOfDoublesToRead)
-				//{
-				//case 1:
-				//	auto updated_value = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-				//	//double* updated_pointer = this->ljStreamInfo.aData + (scanStartOffsetI + chanI);
-				//	auto curr_got_value = currChannel->fn_generic_get_value(currNumberOfDoublesToRead, updated_pointer);
-				//	
-				//	break;
-				//case 2:
-				//	auto lower_bits = this->ljStreamInfo.aData[scanStartOffsetI + chanI];
-				//	auto upper_bits = this->ljStreamInfo.aData[scanStartOffsetI + chanI + 1];
-				//		// arg0: upper bits are later
-				//	auto updated_stream_timer = currChannel->fn_stream_timer(upper_bits, lower_bits);
-				//	
-				//	break;
-				//default:
-				//	// error
-				//	break;
-				//}
-
-				int numExpandedValues = curr_got_expanded_values.size();
-				
-				double* last_expanded_value_pointer = lastReadExpandedPortValues + (expandedPortIndex);
+				double* last_expanded_value_pointer = lastReadExpandedPortValues + (currWithinScanExpandedPortLinearOffset);
 				double* curr_expanded_value_pointer = curr_got_expanded_values.data();
-				auto didAnyChange = currChannel->fn_generic_get_didValueChange(numExpandedValues, last_expanded_value_pointer, curr_expanded_value_pointer);
-				for (int i = 0; i < numExpandedValues; i++)
+				auto didAnyChange = currChannel->fn_generic_get_didValueChange(currChannelNumExpandedValues, last_expanded_value_pointer, curr_expanded_value_pointer);
+				for (int i = 0; i < currChannelNumExpandedValues; i++)
 				{
 					// Loop through and update the individual expanded port values:
 					if (currChannel->isLoggedToCSV() || currChannel->isLoggedToConsole()) {
@@ -1054,12 +1032,12 @@ void BehavioralBoxLabjack::readSensorValues()
 						
 					} // end if isLoggedTo...
 
-					lastReadExpandedPortValues[expandedPortIndex + i] = curr_got_expanded_values[i];
+					lastReadExpandedPortValues[currWithinScanExpandedPortLinearOffset + i] = curr_got_expanded_values[i];
 				}
 				
 				// Once done with this port, move the chanI (raw index into double* aray for current scan) to prepare for the next row
 				withinScanValueIndex += currNumberOfDoublesToRead;
-				expandedPortIndex += curr_got_expanded_values.size();
+				currWithinScanExpandedPortLinearOffset += currChannelNumExpandedValues;
 			}
 
 			
