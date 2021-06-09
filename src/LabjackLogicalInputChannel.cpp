@@ -199,7 +199,34 @@ std::function<std::vector<bool>(int, double*, double*)> LabjackLogicalInputChann
 {
 	auto fcn = [](int numInputs, double* oldValuePointer, double* newValuePointer)
 	{
-		const double changeTolerance = 1.0;
+		const double changeTolerance = 0.1; // The incomming values should already have been converted using convertValue_AnalogAsDigitalInput(...), so they both should be either 0.0 or 1.0.
+		// This means that this tolerance isn't really necissary.
+
+		auto prevInputValue = oldValuePointer[0];
+		auto currInputValue = newValuePointer[0];
+
+		bool currDidChange = (fabs(currInputValue - prevInputValue) > changeTolerance);
+		return std::vector<bool>({ (currDidChange) });
+	};
+	return fcn;
+}
+
+std::function<std::vector<double>(int, double*)> LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsContinuousInput()
+{
+	auto fcn = [](int numInputs, double* valuePointer)
+	{
+		auto currInputValue = valuePointer[0];
+		// return a double
+		return std::vector<double>({ currInputValue });
+	};
+	return fcn;
+}
+
+std::function<std::vector<bool>(int, double*, double*)> LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput()
+{
+	auto fcn = [](int numInputs, double* oldValuePointer, double* newValuePointer)
+	{
+		const double changeTolerance = 0.1;
 
 		auto prevInputValue = oldValuePointer[0];
 		auto currInputValue = newValuePointer[0];

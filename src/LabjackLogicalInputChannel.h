@@ -69,6 +69,9 @@ public:
 	static std::function<std::vector<double>(int, double*)> getDefault_genericGetValueFcn_AnalogAsDigitalInput();
 	static std::function<std::vector<bool>(int, double*, double*)> getDefault_didChangeFcn_AnalogAsDigitalInput();
 
+	static std::function<std::vector<double>(int, double*)> getDefault_genericGetValueFcn_AnalogAsContinuousInput();
+	static std::function<std::vector<bool>(int, double*, double*)> getDefault_didChangeFcn_AnalogAsContinuousInput();
+
 	static std::function<std::vector<double>(int, double*)> getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
 	static std::function<std::vector<bool>(int, double*, double*)> getDefault_didChangeFcn_DigitalStateAsDigitalValues();
 
