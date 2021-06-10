@@ -171,10 +171,17 @@ unsigned int LabjackLogicalInputChannel::convertValue_StreamTimer(double upper_b
 
 std::vector<double> LabjackLogicalInputChannel::toFinalDoublesVector(std::bitset<8> value)
 {
-	std::vector<double> output = std::vector<double>(8);
+	std::vector<double> output = std::vector<double>(8, 0.0);
 	for (int i = 0; i < 8; i++)
 	{
-		output[i] = value.test(i);
+		if (value.test(i))
+		{
+			output[i] = 1.0;
+		}
+		else
+		{
+			output[i] = 0.0;
+		}
 	}
 	return output;
 }

@@ -637,10 +637,10 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 	newInputChannel_A3->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
 	this->logicalInputChannels.push_back(newInputChannel_A3);
 	
-	LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "FIO_STATE" }, { "SIGNALS_Dispense" }, "SIGNALS_Dispense");
-	newInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
-	newInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_DigitalStateAsDigitalValues();
-	this->logicalInputChannels.push_back(newInputChannel);
+	//LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "FIO_STATE" }, { "SIGNALS_Dispense" }, "SIGNALS_Dispense");
+	//newInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
+	//newInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_DigitalStateAsDigitalValues();
+	//this->logicalInputChannels.push_back(newInputChannel);
 	
 	////// BB-16 Testing:
 	//LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "EIO_STATE" }, { "SIGNALS_All" }, "SIGNALS_All");
@@ -653,22 +653,22 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 	//newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
 	//this->logicalInputChannels.push_back(newInputChannel_A0);
 
-	LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
-	timerInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
-	timerInputChannel->setNumberOfDoubleInputs(2); // Takes 2 double values to produce its output
-	timerInputChannel->fn_generic_get_value = [](int numInputs, double* valuePointer)
-	{
-		auto currInputValue_lowerBits = valuePointer[0];
-		auto currInputValue_upperBits = valuePointer[1];
+	//LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
+	//timerInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
+	//timerInputChannel->setNumberOfDoubleInputs(2); // Takes 2 double values to produce its output
+	//timerInputChannel->fn_generic_get_value = [](int numInputs, double* valuePointer)
+	//{
+	//	auto currInputValue_lowerBits = valuePointer[0];
+	//	auto currInputValue_upperBits = valuePointer[1];
 
-		// return a double
-		auto stream_timer_value = LabjackLogicalInputChannel::convertValue_StreamTimer(currInputValue_upperBits, currInputValue_lowerBits);
-		double currTimerOffsetSeconds = double(stream_timer_value); // Convert to seconds
-		
-		return std::vector<double>({ currTimerOffsetSeconds });
-	};
-	timerInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
-	this->logicalInputChannels.push_back(timerInputChannel);
+	//	// return a double
+	//	auto stream_timer_value = LabjackLogicalInputChannel::convertValue_StreamTimer(currInputValue_upperBits, currInputValue_lowerBits);
+	//	double currTimerOffsetSeconds = double(stream_timer_value); // Convert to seconds
+	//	
+	//	return std::vector<double>({ currTimerOffsetSeconds });
+	//};
+	//timerInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
+	//this->logicalInputChannels.push_back(timerInputChannel);
 
 }
 
@@ -959,9 +959,14 @@ void BehavioralBoxLabjack::readSensorValues()
 
 		
 		auto expandedPortNames = this->getInputPortNames(PortEnumerationMode::expandedPortNames, true, true);
+		
 		double* lastReadExpandedPortValues = nullptr;
 		lastReadExpandedPortValues = new double[expandedPortNames.size()];
 
+		std::vector<double> lastReadExpandedPortValuesVector (expandedPortNames.size(), 0.0);
+		//lastReadExpandedPortValuesVector.reserve(expandedPortNames.size());
+
+		
 		std::vector<std::vector<double>> currChannelExpandedPortValues = std::vector<std::vector<double>>(this->logicalInputChannels.size()); // a vector of vectors of doubles that retains the hierarchical structure of the expanded ports for each channel instead of flattening them
 		
 		double currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(1);
@@ -977,6 +982,9 @@ void BehavioralBoxLabjack::readSensorValues()
 
 			withinScanValueIndex = 0;
 			currWithinScanExpandedPortLinearOffset = 0;
+			//TODO: this could be improved in efficiency by reusing instead of push_back or insert each time
+			lastReadExpandedPortValuesVector.clear();
+			lastReadExpandedPortValuesVector.reserve(expandedPortNames.size());
 			for (int logicalChannelIndex = 0; logicalChannelIndex < this->logicalInputChannels.size(); logicalChannelIndex++) {
 				auto currChannel = this->logicalInputChannels[logicalChannelIndex];
 				auto currNumberOfDoublesToRead = currChannel->getNumberOfDoubleInputs();
@@ -1006,7 +1014,10 @@ void BehavioralBoxLabjack::readSensorValues()
 
 				//channelExpandedPortValues[logicalChannelIndex] = std::vector<double>(currChannelNumExpandedValues);
 				currChannelExpandedPortValues[logicalChannelIndex] = curr_got_expanded_values; //TODO: validate that this works
-				
+				//
+				// append curr_got_expanded_values to the end of lastReadExpandedPortValuesVector
+				lastReadExpandedPortValuesVector.insert(lastReadExpandedPortValuesVector.begin(), curr_got_expanded_values.begin(), curr_got_expanded_values.end());
+
 				for (int i = 0; i < currChannelNumExpandedValues; i++)
 				{
 					// Loop through and update the individual expanded port values:
@@ -1056,8 +1067,10 @@ void BehavioralBoxLabjack::readSensorValues()
 				if (this->monitor->refreshState(estimatedScanTime, currChannelExpandedPortValues)) {
 					//TODO: should this be asynchronous? This would require passing in the capture time and read values
 					//printf("refresh state returned true!");
+					
 					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
-					this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadExpandedPortValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadExpandedPortValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+					this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadExpandedPortValuesVector.data(), currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
 				}
 
 			}
@@ -1124,6 +1137,7 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 				// Otherwise, it's a digital port
 				if (this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
 				{
+					//newCSVLine_digitalOnly << int(round(lastReadValues[currLinearOffsetIndex]));
 					newCSVLine_digitalOnly << lastReadValues[currLinearOffsetIndex];
 				}
 			}
