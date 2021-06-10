@@ -43,7 +43,8 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, in
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, int serialNumber): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), csv_analog(CSVWriter(",")), lastCaptureComputerTime(Clock::now()), ljStreamInfo(LabjackStreamInfo())
 {
 	// Starts by building the new port objects
-	this->testBuildLogicalInputChannels();
+	//this->testBuildLogicalInputChannels();
+	this->LoadActiveLogicalInputChannelsConfig();
 		
 	this->serialNumber = serialNumber;
 	char iden[256];
@@ -609,6 +610,26 @@ bool BehavioralBoxLabjack::saveConfigurationFile(std::string filePath)
 	}
 }
 
+
+void BehavioralBoxLabjack::LoadActiveLogicalInputChannelsConfig()
+{
+	std::string desiredJsonSavePath = "C:/Common/config/phoBehavioralBoxLabjackController-LogicalChannelSetupConfig.json";
+	if (this->configMan->tryLoadChannelConfigFromFile("desiredJsonSavePath"))
+	{
+		auto updatedConfig = this->configMan->getLoadedChannelSetupConfig();
+		auto concreteSetup = updatedConfig.buildLogicalInputChannels();  // can be called to get the actual values
+		this->logicalInputChannels.clear();
+		this->logicalInputChannels = concreteSetup;
+
+		std::cout << "Sucessfully loading config from " << desiredJsonSavePath << "!" << std::endl;
+	}
+	else
+	{
+		std::cout << "Error loading config from " << desiredJsonSavePath << ". :[" << std::endl;
+	}
+}
+
+
 //TODO: eventually to be replaced by dynamic loading from config file
 void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 {
@@ -656,7 +677,6 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 	timerInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_TimerRegistersAsContinuousTimer();
 	timerInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_TimerRegistersAsContinuousTimer();
 	this->logicalInputChannels.push_back(timerInputChannel);
-
 }
 
 // Reads the device name and updates its value

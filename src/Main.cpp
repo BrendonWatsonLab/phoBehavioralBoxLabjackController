@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 	std::cout << "\t Pho Hale 2021" << std::endl << std::endl;
 	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 
-	configMan->testJsonConfig();
+	//configMan->testJsonConfig();
 	
 	// Get the hostname
 	//std::string foundHostName = configMan->getHostName();

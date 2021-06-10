@@ -115,6 +115,8 @@ public:
 	// Save out configuration File (INI)
 	bool saveConfigurationFile(std::string filePath);
 
+	
+
 private:
 	int serialNumber;
 	int uniqueIdentifier;
@@ -160,7 +162,7 @@ private:
 	
 
 	// Variables for holding the last read values
-
+	void LoadActiveLogicalInputChannelsConfig();
 	
 
 	// Vector of Output Port Objects

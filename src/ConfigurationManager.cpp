@@ -75,20 +75,25 @@ bool ConfigurationManager::saveConfig()
 	return this->configFile.saveToFile();
 }
 
-void ConfigurationManager::testJsonConfig()
+bool ConfigurationManager::tryLoadChannelConfigFromFile(std::string path)
 {
-	
+	return this->configFile.tryLoadChannelConfigFromFile(path);
+}
 
-	// Test Config:
-	std::cout << "ConfigurationManager::testJsonConfig() - Building test config objects..." << std::endl;
-	//"AIN0"
+bool ConfigurationManager::saveChannelConfigToFile(std::string path)
+{
+	return this->configFile.saveChannelConfigToFile(path);
+}
+
+LoadedLogicalChannelsSetupConfiguration ConfigurationManager::buildSampleChannelSetupConfig()
+{
 	auto ChannelNames = std::vector<std::string>({ "AIN0","AIN1","AIN2","AIN3","SIGNALS_Dispense","Stream_Offset_Timer" }); // FIO_STATE: Read the state of the 8 bits of FIO in a single binary-encoded value.
 	auto PortNames = std::vector<std::vector<std::string>>({ {"AIN0"},{"AIN1"},{"AIN2"},{"AIN3"},{"FIO_STATE"},{"SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" } }); // FIO_STATE: Read the state of the 8 bits of FIO in a single binary-encoded value.
 	auto PortPurpose = std::vector<std::vector<std::string>>({ {"Water1_BeamBreak"},{"Water2_BeamBreak"},{"Food1_BeamBreak"},{"Food2_BeamBreak"},{"SIGNALS_Dispense"},{"SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16"} });
-	auto ChannelValuesMode = std::vector<LoadedLogicalChannelConfiguration::ChannelValueMode>({LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_DigitalStateAsDigitalValues, LoadedLogicalChannelConfiguration::CVM_TimerRegistersAsContinuousTimer });
-	
+	auto ChannelValuesMode = std::vector<LoadedLogicalChannelConfiguration::ChannelValueMode>({ LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_DigitalStateAsDigitalValues, LoadedLogicalChannelConfiguration::CVM_TimerRegistersAsContinuousTimer });
+
 	auto newConfigSetup = LoadedLogicalChannelsSetupConfiguration();
-	
+
 	for (int i = 0; i < ChannelNames.size(); ++i)
 	{
 		auto currChannelConfig = LoadedLogicalChannelConfiguration();
@@ -98,10 +103,18 @@ void ConfigurationManager::testJsonConfig()
 		currChannelConfig.channelValuesMode = ChannelValuesMode[i];
 		newConfigSetup.logicalChannelConfigs.push_back(currChannelConfig);
 	}
+	return newConfigSetup;
+}
 
+void ConfigurationManager::testJsonConfig()
+{
+	
+
+	// Test Config:
+	std::cout << "ConfigurationManager::testJsonConfig() - Building test config objects..." << std::endl;
+	//"AIN0"
+	auto newConfigSetup = ConfigurationManager::buildSampleChannelSetupConfig();
 	std::cout << "\t done. Building Json.... ";
-
-
 	this->configFile.updateActiveChannelSetupConfig(newConfigSetup); // update the config file's internal config setup
 
 	std::string desiredJsonSavePath = "C:/Common/config/phoBehavioralBoxLabjackController-LogicalChannelSetupConfig.json";
@@ -118,13 +131,9 @@ void ConfigurationManager::testJsonConfig()
 		// save successful
 		std::cout << " Save success!" << std::endl;
 	}
-
 	
+	//newConfigSetup.buildLogicalInputChannels(); // can be called to get the actual values
 	
-
-	newConfigSetup.buildLogicalInputChannels(); // can be called to get the actual values
-	
-
 	// conversion: LoadedLogicalChannelsSetupConfiguration -> json
 	//ordered_json j;
 
