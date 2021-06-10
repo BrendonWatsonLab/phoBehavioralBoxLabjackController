@@ -86,6 +86,9 @@ public:
 	int getSerialNumber() { return this->serialNumber; }
 	std::string getDeviceName() { return this->deviceName; }
 	bool isVisibleLEDLit();
+
+
+	// CSV Output File Access:
 	std::string getFullFilePath() { return this->fileFullPath; }
 
 	
@@ -96,9 +99,6 @@ public:
 
 	
 	int getNumberOutputChannels() { return NUM_OUTPUT_CHANNELS; }
-	
-	//std::vector<std::string> getInputPortPurpose(bool include_digital_ports = true, bool include_analog_ports = false);
-	//std::vector<double> getLastReadValues(bool include_digital_ports = true, bool include_analog_ports = false);
 	std::string getOutputDirectory() { return this->outputDirectory; }
 
 	LabjackStreamInfo getStreamInfo() { return this->ljStreamInfo; }
