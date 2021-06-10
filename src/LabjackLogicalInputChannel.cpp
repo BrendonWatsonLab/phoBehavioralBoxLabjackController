@@ -142,6 +142,19 @@ std::vector<std::string> LabjackLogicalInputChannel::getExpandedFinalValuePortNa
 			return { currPortName }; // Just set the current port name as the string. 
 		}
 	}
+	else if (portNames.size() == 2)
+	{
+		//this->finalValueType
+		switch (this->finalValueType)
+		{
+		case InputFinalDesiredValueType::Discrete: break;
+		case InputFinalDesiredValueType::Continuous: break;
+		default: ;
+		}
+		auto currPortName_0 = portNames[0].c_str();
+		auto currPortName_1 = portNames[0].c_str();
+		
+	}
 	else
 	{
 		// portNames.size() is not 1
@@ -309,4 +322,13 @@ std::function<std::vector<double>(int, double*)> LabjackLogicalInputChannel::get
 std::function<std::vector<bool>(int, double*, double*)> LabjackLogicalInputChannel::getDefault_didChangeFcn_TimerRegistersAsContinuousTimer()
 {
 	return LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput(); // just use the default AnalogAsContinuous
+}
+
+std::function<std::vector<std::string>(LabjackLogicalInputChannel*)> LabjackLogicalInputChannel::getDefault_getExpandedPortNamesFcn_TimerRegistersAsContinuousTimer()
+{
+	auto fcn = [](LabjackLogicalInputChannel* inputChannel)
+	{
+		return std::vector<std::string>({ inputChannel->name });
+	};
+	return fcn;
 }

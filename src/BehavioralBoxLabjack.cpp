@@ -1166,7 +1166,7 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 	int currAcrossChannelsExpandedPortLinearOffset = 0;
 	for (int logicalChannelIndex = 0; logicalChannelIndex < this->logicalInputChannels.size(); logicalChannelIndex++) {
 		auto currChannel = this->logicalInputChannels[logicalChannelIndex];
-		auto currExpandedChannels = currChannel->getExpandedFinalValuePortNames(); // for a specific channel
+		auto currExpandedChannels = currChannel->getExpandedFinalValuePortNames(); // for a specific channel -- ERROR: for logicalChannelIndex == 5, the two timer ports are returned, but the expanded values should be the single double seconds output
 		const size_t currChannelNumExpandedValues = currExpandedChannels.size();
 
 		auto currChannelRecentReadFinalValues = newestReadValues.at(logicalChannelIndex);

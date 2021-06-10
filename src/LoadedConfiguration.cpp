@@ -41,6 +41,7 @@ std::vector<LabjackLogicalInputChannel*> LoadedLogicalChannelsSetupConfiguration
 		case LoadedLogicalChannelConfiguration::CVM_TimerRegistersAsContinuousTimer:
 			aNewInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
 			aNewInputChannel->setNumberOfDoubleInputs(2); // Takes 2 double values to produce its output
+			aNewInputChannel->fn_get_expanded_port_names = LabjackLogicalInputChannel::getDefault_getExpandedPortNamesFcn_TimerRegistersAsContinuousTimer();
 			aNewInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_TimerRegistersAsContinuousTimer();
 			aNewInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_TimerRegistersAsContinuousTimer();
 			break;
