@@ -155,12 +155,6 @@
     <ClInclude Include="src\config.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigFiles\config-DownstairsBox.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\OutputState.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
@@ -224,9 +218,6 @@
     <ClInclude Include="src\WindowsHelpers.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigFiles\config-FinalBoxes-10-01-2019.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\LoadedConfiguration.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
@@ -234,9 +225,6 @@
       <Filter>Singletons</Filter>
     </ClInclude>
     <ClInclude Include="ProgramVersion.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigFiles\config-AnalogRunningWheel-12-17-2019.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
     <ClInclude Include="src\FormattingHelper.h">
@@ -250,12 +238,6 @@
     </ClInclude>
     <ClInclude Include="src\LabjackStreamInfo.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigFiles\config-PhoHomeTesting-05-28-2021.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigFiles\config-PhoHomeTesting-06-02-2021.h">
-      <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
     <ClInclude Include="src\LabjackPortType.h">
       <Filter>Header Files\Helpers</Filter>
