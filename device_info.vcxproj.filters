@@ -78,12 +78,6 @@
     <ClCompile Include="src\ConfigurationFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\InputState.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="src\StateMonitor.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
     <ClCompile Include="src\OutputState.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
@@ -167,13 +161,7 @@
     <ClInclude Include="src\OutputState.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\InputState.h">
-      <Filter>Header Files\Model</Filter>
-    </ClInclude>
     <ClInclude Include="src\ConfigurationFile.h">
-      <Filter>Header Files\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="src\StateMonitor.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
     <ClInclude Include="src\LabjackControllerOuterWidget.h">

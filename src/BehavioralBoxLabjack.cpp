@@ -176,8 +176,6 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	//TODO: force initializiation
 
 	// Setup input state 
-	//this->monitor = new StateMonitor();
-	this->monitor = new StateMonitor(this->logicalInputChannels);
 
 	// Create the object's thread at the very end of its constructor
 	// wallTime-based event scheduling:
@@ -236,8 +234,7 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	// Close the connection to the labjack
 	this->err = LJM_Close(this->handle);
 	ErrorCheck(this->err, "LJM_Close");
-
-	delete this->monitor;
+	
 	//CloseOrDie(this->handle);
 }
 
@@ -1064,14 +1061,14 @@ void BehavioralBoxLabjack::readSensorValues()
 				// Note: should ignore the last two entries in the array, since they're the timer and they'll always update
 				//if (this->monitor->refreshState(estimatedScanTime, lastReadValues)) {
 				//if (this->monitor->refreshState(estimatedScanTime, lastReadExpandedPortValues)) {
-				if (this->monitor->refreshState(estimatedScanTime, currChannelExpandedPortValues)) {
+				//if (this->monitor->refreshState(estimatedScanTime, currChannelExpandedPortValues)) {
 					//TODO: should this be asynchronous? This would require passing in the capture time and read values
 					//printf("refresh state returned true!");
 					
 					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
 					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadExpandedPortValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
 					this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadExpandedPortValuesVector.data(), currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
-				}
+				//}
 
 			}
 			
