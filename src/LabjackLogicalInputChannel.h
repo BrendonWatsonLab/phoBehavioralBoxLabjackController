@@ -74,6 +74,8 @@ public:
 
 	static std::function<std::vector<double>(int, double*)> getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
 	static std::function<std::vector<bool>(int, double*, double*)> getDefault_didChangeFcn_DigitalStateAsDigitalValues();
+	static std::function<std::vector<double>(int, double*)> getDefault_genericGetValueFcn_TimerRegistersAsContinuousTimer();
+	static std::function<std::vector<bool>(int, double*, double*)> getDefault_didChangeFcn_TimerRegistersAsContinuousTimer();
 
 protected:
 	//std::function<bool> _fnDigitizeValue;

@@ -144,6 +144,9 @@
     <ClCompile Include="src\LabjackLogicalInputChannel.cpp">
       <Filter>Header Files\Configuration Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\LoadedConfiguration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\NumericItem.h">

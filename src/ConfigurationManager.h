@@ -25,6 +25,7 @@ public:
 
 	bool saveConfig();
 
+	void testJsonConfig();
 
 private:
 	std::string output_path_ = "";

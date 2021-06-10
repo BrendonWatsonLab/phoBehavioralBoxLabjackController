@@ -650,22 +650,12 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 	//newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
 	//this->logicalInputChannels.push_back(newInputChannel_A0);
 
-	//LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
-	//timerInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
-	//timerInputChannel->setNumberOfDoubleInputs(2); // Takes 2 double values to produce its output
-	//timerInputChannel->fn_generic_get_value = [](int numInputs, double* valuePointer)
-	//{
-	//	auto currInputValue_lowerBits = valuePointer[0];
-	//	auto currInputValue_upperBits = valuePointer[1];
-
-	//	// return a double
-	//	auto stream_timer_value = LabjackLogicalInputChannel::convertValue_StreamTimer(currInputValue_upperBits, currInputValue_lowerBits);
-	//	double currTimerOffsetSeconds = double(stream_timer_value); // Convert to seconds
-	//	
-	//	return std::vector<double>({ currTimerOffsetSeconds });
-	//};
-	//timerInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
-	//this->logicalInputChannels.push_back(timerInputChannel);
+	LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
+	timerInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
+	timerInputChannel->setNumberOfDoubleInputs(2); // Takes 2 double values to produce its output
+	timerInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_TimerRegistersAsContinuousTimer();
+	timerInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_TimerRegistersAsContinuousTimer();
+	this->logicalInputChannels.push_back(timerInputChannel);
 
 }
 

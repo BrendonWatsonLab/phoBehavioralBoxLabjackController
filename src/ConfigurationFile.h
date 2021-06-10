@@ -9,6 +9,7 @@
 
 
 
+
 class ConfigurationFile
 {
 public:
@@ -23,6 +24,7 @@ public:
 
 	enum class ConfigFileLoadStatus { LoadedFromFile, ExistsOnlyInMemory };
 
+	
 
 private:
 	LoadedConfiguration loadedConfig;
@@ -34,3 +36,13 @@ private:
 	//bool isLoadedFromFile = false;
 };
 
+
+//void to_json(json& j, const ConfigurationFile& p) {
+//	j = json{ {"name", p.name}, {"address", p.address}, {"age", p.age} };
+//}
+//
+//void from_json(const json& j, ConfigurationFile& p) {
+//	j.at("name").get_to(p.name);
+//	j.at("address").get_to(p.address);
+//	j.at("age").get_to(p.age);
+//}

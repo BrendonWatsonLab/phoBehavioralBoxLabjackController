@@ -283,3 +283,30 @@ std::function<std::vector<bool>(int, double*, double*)> LabjackLogicalInputChann
 	};
 	return fcn;
 }
+
+
+// TimerRegistersAsContinuousTimer:
+
+// returns a vector<double> with one value for each expanded port value
+std::function<std::vector<double>(int, double*)> LabjackLogicalInputChannel::getDefault_genericGetValueFcn_TimerRegistersAsContinuousTimer()
+{
+	auto fcn = [](int numInputs, double* valuePointer)
+	{
+		assert(numInputs == 2);
+
+		auto currInputValue_lowerBits = valuePointer[0];
+		auto currInputValue_upperBits = valuePointer[1];
+
+		// return a double
+		auto stream_timer_value = LabjackLogicalInputChannel::convertValue_StreamTimer(currInputValue_upperBits, currInputValue_lowerBits);
+		double currTimerOffsetSeconds = double(stream_timer_value); // Convert to seconds
+
+		return std::vector<double>({ currTimerOffsetSeconds });
+	};
+	return fcn;
+}
+
+std::function<std::vector<bool>(int, double*, double*)> LabjackLogicalInputChannel::getDefault_didChangeFcn_TimerRegistersAsContinuousTimer()
+{
+	return LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput(); // just use the default AnalogAsContinuous
+}

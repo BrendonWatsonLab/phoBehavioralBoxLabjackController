@@ -2,6 +2,12 @@
 #include <iostream>
 #include <cstdlib>
 #include "WindowsHelpers.h"
+#include <nlohmann/json.hpp>
+
+// for convenience
+//using json = nlohmann::json;
+using ordered_json = nlohmann::ordered_json;
+
 
 void ConfigurationManager::getEnvironmentVariables()
 {
@@ -66,4 +72,37 @@ std::string ConfigurationManager::getGeneratedActiveHistoricalSearchDirectory()
 bool ConfigurationManager::saveConfig()
 {
 	return this->configFile.saveToFile();
+}
+
+void ConfigurationManager::testJsonConfig()
+{
+	std::cout << "ConfigurationManager::testJsonConfig() - Building test config objects..." << std::endl;
+	//"AIN0"
+	auto ChannelNames = std::vector<std::string>({ "AIN0","AIN1","AIN2","AIN3","SIGNALS_Dispense","Stream_Offset_Timer" }); // FIO_STATE: Read the state of the 8 bits of FIO in a single binary-encoded value.
+	auto PortNames = std::vector<std::vector<std::string>>({ {"AIN0"},{"AIN1"},{"AIN2"},{"AIN3"},{"FIO_STATE"},{"SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" } }); // FIO_STATE: Read the state of the 8 bits of FIO in a single binary-encoded value.
+	auto PortPurpose = std::vector<std::vector<std::string>>({ {"Water1_BeamBreak"},{"Water2_BeamBreak"},{"Food1_BeamBreak"},{"Food2_BeamBreak"},{"SIGNALS_Dispense"},{"SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16"} });
+
+	auto newConfigSetup = LoadedLogicalChannelsSetupConfiguration();
+	
+	for (int i = 0; i < ChannelNames.size(); ++i)
+	{
+		auto currChannelConfig = LoadedLogicalChannelConfiguration();
+		currChannelConfig.name = ChannelNames[i];
+		currChannelConfig.portNames = PortNames[i];
+		currChannelConfig.portPurpose = PortPurpose[i];
+		newConfigSetup.logicalChannelConfigs.push_back(currChannelConfig);
+	}
+
+	std::cout << "\t done. Building Json.... ";
+	
+
+	// conversion: LoadedLogicalChannelsSetupConfiguration -> json
+	//ordered_json j;
+
+	json j = newConfigSetup;
+
+	std::cout << " done. \n" << j << std::endl << std::endl;
+
+	//#define globalLabjackInputPortPurpose { "Water1_BeamBreak","Water2_BeamBreak","Food1_BeamBreak","Food2_BeamBreak","SIGNALS_Dispense","SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16"}
+	return;
 }
