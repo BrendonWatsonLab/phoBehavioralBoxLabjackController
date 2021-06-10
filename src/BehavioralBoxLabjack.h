@@ -160,22 +160,7 @@ private:
 	
 
 	// Variables for holding the last read values
-	//StateMonitor* monitor;
-	//// All Values:
-	//char * inputPortNames_all[NUM_CHANNELS] = globalLabjackInputPortNames;
-	//char * inputPortPurpose_all[NUM_CHANNELS] = globalLabjackInputPortPurpose;
-	//LabjackPortType inputPortTypes_all[NUM_CHANNELS] = globalLabjackInputPortType;
-	//bool inputPortIsLogged_all[NUM_CHANNELS] = globalLabjackInputPortIsLogged;
-	//bool inputPortIsAnalog[NUM_CHANNELS] = globalLabjackInputPortIsAnalog;
-	//double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
 
-	//// Digital values:
-	//char* inputPortNames_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortNames;
-	//LabjackPortType inputPortTypes_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortType;
-	//bool inputPortIsLogged_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortIsLogged;
-
-	//// Analog Values:
-	//char* inputPortNames_analog[NUM_CHANNELS_ANALOG] = globalLabjackAnalogInputPortNames;
 	
 
 	// Vector of Output Port Objects
