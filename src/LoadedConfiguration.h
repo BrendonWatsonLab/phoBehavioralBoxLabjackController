@@ -36,7 +36,8 @@ struct LoadedConfiguration
 	std::string labjackInputChannelList = "{AIN0,AIN1,AIN2,AIN3,FIO_STATE,SYSTEM_TIMER_20HZ,STREAM_DATA_CAPTURE_16}";
 
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(LoadedConfiguration, config_version, daylightStartHour, daylightOffHour)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(LoadedConfiguration, config_version, daylightStartHour, daylightOffHour, continue_without_labjacks, experimentName, cohortName, animalName, outputFileRootDirectory,
+		enableOverrideDefaultHistoricalFileSearchDirectory, historicalFileSearchRootDirectory, launch_web_server, enableHistoricalDataLoading, shouldEnableSynchronize_Y_Axis, numDaysToDisplay)
 
 
 	bool persistToIniFile(std::string path);
