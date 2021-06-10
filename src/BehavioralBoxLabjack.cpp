@@ -871,7 +871,7 @@ void BehavioralBoxLabjack::SetupStream()
 	WriteNameOrDie(this->handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
 
 	// Build the stream object:
-	const double stream_scan_rate_Hz = 20.0;
+	const double stream_scan_rate_Hz = 240.0;
 	
 	auto currChannelNames = this->getInputPortNames(PortEnumerationMode::portNames, true, true);
 	this->ljStreamInfo.build(currChannelNames, stream_scan_rate_Hz);

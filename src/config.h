@@ -10,7 +10,7 @@ Specifies what ports to open
 // number of tasks that can run simultaneously
 #define MAX_NUM_THREAD_PER_LABJACK 1
 
-#define LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC 20
+#define LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC 50
 
 // The maximum number of simultaneous labjacks that can be connected to this computer
 #define max_number_labjacks 4
@@ -52,7 +52,7 @@ Specifies what ports to open
 //#include "../ConfigFiles/config-AnalogRunningWheel-12-17-2019.h"
 //// -- OR --
 //#include "../ConfigFiles/config-PhoHomeTesting-05-28-2021.h"
-// -- OR --
-#include "../ConfigFiles/config-PhoHomeTesting-06-02-2021.h"
-////// -- OR --
-//#include "../ConfigFiles/config-FinalBoxesStreamMode-06-09-2021.h"
+//// -- OR --
+//#include "../ConfigFiles/config-PhoHomeTesting-06-02-2021.h"
+//// -- OR --
+#include "../ConfigFiles/config-FinalBoxesStreamMode-06-09-2021.h"
