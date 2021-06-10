@@ -1,7 +1,7 @@
 #pragma once
 #include "BehavioralBoxLabjack.h"
 #include <vector>
-
+#include <bitset>
 
 class LabjackHelpers
 {
@@ -46,5 +46,16 @@ public:
 	// Converts a time_point<Clock> (a datetime) to an unsigned long long value representing the milliseconds since epoch.
 	static unsigned long long milliseconds_since_epoch_from_date(std::chrono::time_point<Clock> datetime);
 
+
+	// Stream helpers:
+	//LJM_ERROR_RETURN LJM_eStreamStart(int Handle, int ScansPerRead, int NumAddresses, const int* aScanList, double* ScanRate);
+	//LJM_ERROR_RETURN LJM_eStreamRead(int Handle, double* aData, int* DeviceScanBacklog, int* LJMScanBacklog);
+
+	
+	//static const int* toLJM_ScanList(std::vector<std::string>);
+
+	// Convert the double value returned for a digital state type Labjack channel (like MIO_STATE) into a bitset or vector<bool> representing the digital ON/OFF value for each port
+	static std::bitset<8> parseDigitalStateChannelValue(double doubleRepresentation);
+	static std::vector<bool> parseDigitalStateChannelValueToVector(double doubleRepresentation);
 };
 

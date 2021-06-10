@@ -6,6 +6,8 @@
 #include "FilesystemHelpers.h"
 //Manhong-001 get the experimentName in the ini file
 #include "ConfigurationManager.h"
+// For GUI file selection/save/load dialogs:
+#include "External/portable-file-dialogs.h"
 
 template<bool RECURSIVE>
 inline std::vector<fs::path> FilesystemHelpers::file_list(fs::path dir, std::regex ext_pattern)
@@ -176,7 +178,37 @@ bool FilesystemHelpers::createDirectory(std::string path)
 	else {
 		return fs::create_directories(path);
 	}
+
+	
 }
+
+bool FilesystemHelpers::fileExists(std::string path)
+{
+	if (path.empty()) {
+		return false;
+	}
+	return fs::exists(path);
+}
+
+FilesystemHelpers::FilesystemItemStatus FilesystemHelpers::filesystemItemStatus(std::string path)
+{
+	if (path.empty()) {
+		return FilesystemHelpers::FilesystemItemStatus::NonExistant;
+	}
+	if (!fs::exists(path)) {
+		return FilesystemHelpers::FilesystemItemStatus::NonExistant;
+	}
+	if (fs::is_directory(path))
+	{
+		return FilesystemHelpers::FilesystemItemStatus::Directory;
+	}
+	if (fs::is_regular_file(path))
+	{
+		return FilesystemHelpers::FilesystemItemStatus::File;
+	}
+	return FilesystemItemStatus::OtherExtant;
+}
+
 
 std::map<int, fs::path> FilesystemHelpers::findBehavioralBoxDataFolders(fs::path dir)
 {

@@ -1,7 +1,14 @@
 #include "ConfigurationManager.h"
 #include <iostream>
 #include <cstdlib>
+#include <fstream> // used to write out JSON data
 #include "WindowsHelpers.h"
+#include <nlohmann/json.hpp>
+
+// for convenience
+//using json = nlohmann::json;
+using ordered_json = nlohmann::ordered_json;
+
 
 void ConfigurationManager::getEnvironmentVariables()
 {
@@ -61,4 +68,78 @@ std::string ConfigurationManager::getGeneratedActiveHistoricalSearchDirectory()
 	else {
 		return this->configFile.getLoadedConfig().historicalFileSearchRootDirectory;
 	}
+}
+
+bool ConfigurationManager::saveConfig()
+{
+	return this->configFile.saveToFile();
+}
+
+bool ConfigurationManager::tryLoadChannelConfigFromFile(std::string path)
+{
+	return this->configFile.tryLoadChannelConfigFromFile(path);
+}
+
+bool ConfigurationManager::saveChannelConfigToFile(std::string path)
+{
+	return this->configFile.saveChannelConfigToFile(path);
+}
+
+LoadedLogicalChannelsSetupConfiguration ConfigurationManager::buildSampleChannelSetupConfig()
+{
+	auto ChannelNames = std::vector<std::string>({ "AIN0","AIN1","AIN2","AIN3","SIGNALS_Dispense","Stream_Offset_Timer" }); // FIO_STATE: Read the state of the 8 bits of FIO in a single binary-encoded value.
+	auto PortNames = std::vector<std::vector<std::string>>({ {"AIN0"},{"AIN1"},{"AIN2"},{"AIN3"},{"FIO_STATE"},{"SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" } }); // FIO_STATE: Read the state of the 8 bits of FIO in a single binary-encoded value.
+	auto PortPurpose = std::vector<std::vector<std::string>>({ {"Water1_BeamBreak"},{"Water2_BeamBreak"},{"Food1_BeamBreak"},{"Food2_BeamBreak"},{"SIGNALS_Dispense"},{"SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16"} });
+	auto ChannelValuesMode = std::vector<LoadedLogicalChannelConfiguration::ChannelValueMode>({ LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput, LoadedLogicalChannelConfiguration::CVM_DigitalStateAsDigitalValues, LoadedLogicalChannelConfiguration::CVM_TimerRegistersAsContinuousTimer });
+
+	auto newConfigSetup = LoadedLogicalChannelsSetupConfiguration();
+
+	for (int i = 0; i < ChannelNames.size(); ++i)
+	{
+		auto currChannelConfig = LoadedLogicalChannelConfiguration();
+		currChannelConfig.name = ChannelNames[i];
+		currChannelConfig.portNames = PortNames[i];
+		currChannelConfig.portPurpose = PortPurpose[i];
+		currChannelConfig.channelValuesMode = ChannelValuesMode[i];
+		newConfigSetup.logicalChannelConfigs.push_back(currChannelConfig);
+	}
+	return newConfigSetup;
+}
+
+void ConfigurationManager::testJsonConfig()
+{
+	
+
+	// Test Config:
+	std::cout << "ConfigurationManager::testJsonConfig() - Building test config objects..." << std::endl;
+	//"AIN0"
+	auto newConfigSetup = ConfigurationManager::buildSampleChannelSetupConfig();
+	std::cout << "\t done. Building Json.... ";
+	this->configFile.updateActiveChannelSetupConfig(newConfigSetup); // update the config file's internal config setup
+
+	std::string desiredJsonSavePath = "C:/Common/config/phoBehavioralBoxLabjackController-LogicalChannelSetupConfig.json";
+	std::cout << "Trying to save json out to " << desiredJsonSavePath << "...";
+	bool wasSaveSuccess = this->configFile.saveChannelConfigToFile(desiredJsonSavePath);
+	if (!wasSaveSuccess)
+	{
+		// save failed
+		std::cout << " !! Saving failed! Sorry!" << std::endl;
+		return;
+	}
+	else
+	{
+		// save successful
+		std::cout << " Save success!" << std::endl;
+	}
+	
+	//newConfigSetup.buildLogicalInputChannels(); // can be called to get the actual values
+	
+	// conversion: LoadedLogicalChannelsSetupConfiguration -> json
+	//ordered_json j;
+
+	json j = newConfigSetup;
+	std::cout << " done. \n" << j << std::endl << std::endl;
+	
+	//#define globalLabjackInputPortPurpose { "Water1_BeamBreak","Water2_BeamBreak","Food1_BeamBreak","Food2_BeamBreak","SIGNALS_Dispense","SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16"}
+	return;
 }

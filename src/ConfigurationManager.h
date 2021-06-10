@@ -23,9 +23,21 @@ public:
 	std::string getGeneratedActiveOutputDirectory();
 	std::string getGeneratedActiveHistoricalSearchDirectory();
 
+	bool saveConfig();
+
+
+	// JSON Channel Setup Config
+	LoadedLogicalChannelsSetupConfiguration getLoadedChannelSetupConfig() const { return this->configFile.getLoadedChannelSetupConfig(); }
+	bool tryLoadChannelConfigFromFile(std::string path);
+	bool saveChannelConfigToFile(std::string path);
+
+	
+	void testJsonConfig();
 
 private:
 	std::string output_path_ = "";
 	ConfigurationFile configFile;
+
+	static LoadedLogicalChannelsSetupConfiguration buildSampleChannelSetupConfig();
 };
 

@@ -4,3 +4,5 @@ They must be named:
 
 "phoBehavioralBoxLabjackController-Config.ini"
 "phoBehavioralBoxLabjackController-WT_config.xml"
+"phoBehavioralBoxLabjackController-LogicalChannelSetupConfig.json"
+

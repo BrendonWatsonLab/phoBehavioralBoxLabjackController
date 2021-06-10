@@ -140,7 +140,7 @@ struct EventStatistics {
 		{
 			VariableStatistics currStats = VariableStatistics(varEventVector);
 			this->variableStatsVectors.push_back(currStats);
-			this->globalMaxNumEventsPerDay = std::max(this->globalMaxNumEventsPerDay, currStats.maxNumEventsPerDay);
+			this->globalMaxNumEventsPerDay = (std::max)(this->globalMaxNumEventsPerDay, currStats.maxNumEventsPerDay);
 			//TODO: this is slow and inefficient
 			for (const auto& anAggregateStatsPair : currStats.eventsPerDay) {
 				std::vector<int> currDaySizesArray;

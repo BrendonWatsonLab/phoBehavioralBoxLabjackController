@@ -3,6 +3,7 @@
  * Desc: Provides some basic helper functions for stream applications
 **/
 
+#pragma once
 #ifndef LJM_STREAM_UTILITIES
 #define LJM_STREAM_UTILITIES
 

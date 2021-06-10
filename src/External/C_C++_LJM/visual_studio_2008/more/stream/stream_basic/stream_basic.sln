@@ -1,7 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{DA846B5C-BB3E-474A-90D1-B131339320E6}") = "stream_basic", "stream_basic.vcproj", "{DD42DB40-31D6-48D9-8726-D4E793044944}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stream_basic", "stream_basic.vcxproj", "{DD42DB40-31D6-48D9-8726-D4E793044944}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {153DEC5D-B9D3-433E-A94C-5036202600D8}
 	EndGlobalSection
 EndGlobal

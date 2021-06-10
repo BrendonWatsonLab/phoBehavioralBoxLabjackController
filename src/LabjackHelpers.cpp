@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <sstream>
 #include <string>
+#include <climits>
+#include <bitset>
 #include <iostream>
 #include <LabJackM.h>
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
@@ -328,6 +330,24 @@ std::chrono::time_point<Clock> LabjackHelpers::date_from_milliseconds_since_epoc
 unsigned long long LabjackHelpers::milliseconds_since_epoch_from_date(std::chrono::time_point<Clock> datetime)
 {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(datetime.time_since_epoch()).count();
+}
+
+std::bitset<8> LabjackHelpers::parseDigitalStateChannelValue(double doubleRepresentation)
+{
+	unsigned short temp = (unsigned short)doubleRepresentation;
+	return std::bitset<8>(temp);
+}
+
+std::vector<bool> LabjackHelpers::parseDigitalStateChannelValueToVector(double doubleRepresentation)
+{
+	auto bitsetValue = LabjackHelpers::parseDigitalStateChannelValue(doubleRepresentation);
+	size_t totalNumBits = 8;
+	std::vector<bool> output = std::vector<bool>(totalNumBits);
+	for (int i = 0; i < totalNumBits; i++)
+	{
+		output[i] = bitsetValue.test(i);
+	}
+	return output;
 }
 
 

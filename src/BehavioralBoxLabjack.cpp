@@ -21,15 +21,36 @@
 #include <string>
 
 #include "External/C_C++_LJM/LJM_Utilities.h"
-//#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
+#include "External/C_C++_LJM/LJM_StreamUtilities.h" // Include the Stream utilities now
 
 #include "FilesystemHelpers.h"
+#include "LabjackHelpers.h"
+//#include "LabjackStreamHelpers.h"
+//#include "LabjackStreamInfo.h"
+
+#include "LabjackLogicalInputChannel.h"
+#include "WindowsHelpers.h"
+
+// In all other files
+//#define PFD_SKIP_IMPLEMENTATION 1
+#include "External/portable-file-dialogs.h"
+
+// Set to non-zero for external stream clock
+#define EXTERNAL_STREAM_CLOCK 0
+
+// Set FIO0 to pulse out. See EnableFIO0PulseOut()
+#define FIO0_PULSE_OUT 0
+
 
 BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, int devType, int connType, int serialNumber) : BehavioralBoxLabjack(uniqueIdentifier, NumberToDeviceType(devType), NumberToConnectionType(connType), serialNumber) {}
 
 // Constructor: Called when an instance of the object is about to be created
-BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, int serialNumber): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), csv_analog(CSVWriter(",")), lastCaptureComputerTime(Clock::now())
+BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * devType, const char * connType, int serialNumber): deviceType(LJM_dtANY), connectionType(LJM_ctANY), csv(CSVWriter(",")), csv_analog(CSVWriter(",")), lastCaptureComputerTime(Clock::now()), ljStreamInfo(LabjackStreamInfo())
 {
+	// Starts by building the new port objects
+	//this->testBuildLogicalInputChannels();
+	this->LoadActiveLogicalInputChannelsConfig();
+		
 	this->serialNumber = serialNumber;
 	char iden[256];
 	sprintf(iden, "%d", this->serialNumber);
@@ -43,9 +64,6 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	char string[LJM_STRING_ALLOCATION_SIZE];
 
 	this->initializeLabjackConfigurationIfNeeded();
-
-	
-
 
 	// Get device info
 	this->err = LJM_GetHandleInfo(this->handle, &deviceType, &connectionType, &this->serialNumber, &ipAddress,
@@ -86,17 +104,49 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	std::cout << "\t New file paths: " << std::endl << "\t Digital Inputs: " << this->fileFullPath << std::endl << "\t Analog Inputs: " << this->fileFullPath_analog << std::endl;
 	
 	// Write the header to the digital .csv file:
+	//FIXME: Need to perform a smarter csv header line generation to deal with digital bit arrays and analog ports read as binary
+	/*
+	 * The same logic present in the new persistReadValues(...) replacement should work
+	 */
 	this->csv.newRow() << "computerTime";
-	for (int i = 0; i < NUM_CHANNELS_DIGITAL; i++) {
-		this->csv << this->inputPortNames_digital[i];
+	for (int i = 0; i < this->logicalInputChannels.size(); i++) {
+		//std::string currCSVHeaderRep = this->logicalInputChannels[i]->getCSVHeaderRepresentation();
+		//this->csv << currCSVHeaderRep;
+		//this->csv.add(currCSVHeaderRep);
+		if (!this->logicalInputChannels[i]->isLoggedToCSV())
+		{
+			continue; // skip this non-logged channel
+		}
+		if (!this->logicalInputChannels[i]->getReturnsContinuousValue())
+		{
+			// if this is not a continuous (analog-like) channel:
+			auto currExpandedChannels = this->logicalInputChannels[i]->getExpandedFinalValuePortNames();
+			for (auto curr_expanded_channel : currExpandedChannels)
+			{
+				this->csv << curr_expanded_channel; // Add the expanded channel to the CSV header
+			}
+		}
 	}
 	this->csv.writeToFile(this->fileFullPath, false);
 
 	// Write the header to the analog .csv file:
+	//FIXME: Do I need to implement functionality to the digital state ports for generality?
 	this->csv_analog.newRow() << "computerTime";
-	for (int i = 0; i < NUM_CHANNELS_ANALOG; i++) {
-		this->csv_analog << this->inputPortNames_analog[i];
-	}
+	for (int i = 0; i < this->logicalInputChannels.size(); i++) {
+		if (!this->logicalInputChannels[i]->isLoggedToCSV())
+		{
+			continue; // skip this non-logged channel
+		}
+		if (this->logicalInputChannels[i]->getReturnsContinuousValue())
+		{
+			// if this *is* a continuous (analog-like) channel:
+			auto currExpandedChannels = this->logicalInputChannels[i]->getExpandedFinalValuePortNames();
+			for (auto curr_expanded_channel : currExpandedChannels)
+			{
+				this->csv_analog << curr_expanded_channel; // Add the expanded channel to the CSV header
+			} // end for expanded channel
+		} // end if (continuous)
+	} // end for
 	this->csv_analog.writeToFile(this->fileFullPath_analog, false);
 
 	// Setup output ports states:
@@ -132,7 +182,6 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	//TODO: force initializiation
 
 	// Setup input state 
-	this->monitor = new StateMonitor();
 
 	// Create the object's thread at the very end of its constructor
 	// wallTime-based event scheduling:
@@ -149,11 +198,35 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	this->shouldStop = true;
 	//Read the values and save them one more time, so we know when the end of data collection occured.
 	this->readSensorValues();
+	// TODO: see if the stream version needs to do anything special here
+	// Probably need to do something with To stop stream, use LJM_eStreamStop.
+	printf("Stopping stream...\n");
+	this->ljStreamInfo.done = TRUE;
+	this->err = LJM_eStreamStop(this->handle);
+	ErrorCheck(this->err, "LJM_eStreamStop");
 
+	this->ljStreamInfo.cleanup();
+	
+	//printf("Stream stopped. %u milliseconds have elapsed since LJM_eStreamStart\n", t1 - t0);
+
+	// Tear down the ljStreamInfo struct, which had its arrays dynamically allocated:
+	//free(this->ljStreamInfo.aScanList);
+	//free(this->ljStreamInfo.aData);
+	
+	// Write out INI config if needed:
+	//this->configMan->saveConfig();
+	
 	// Cleanup output ports vector
 	for (int i = 0; i < NUM_OUTPUT_CHANNELS; i++) {
 		delete this->outputPorts[i];
 	}
+
+	// Cleanup Input ports vector
+	for (int i = 0; i < this->logicalInputChannels.size(); i++) {
+		delete this->logicalInputChannels[i];
+	}
+	this->logicalInputChannels.clear();
+	
 
 	// Destroy the object's thread at the very start of its destructor
 	delete this->scheduler;
@@ -167,8 +240,7 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	// Close the connection to the labjack
 	this->err = LJM_Close(this->handle);
 	ErrorCheck(this->err, "LJM_Close");
-
-	delete this->monitor;
+	
 	//CloseOrDie(this->handle);
 }
 
@@ -187,20 +259,20 @@ void BehavioralBoxLabjack::printIdentifierLine()
 	std::cout << ">> Labjack [" << this->serialNumber << "] :" << std::endl;
 }
 
-void BehavioralBoxLabjack::diagnosticPrintLastValues()
-{
-	this->printIdentifierLine();
-	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
-	std::cout << "\t " << milliseconds_since_epoch;
-	for (int i = 0; i < NUM_CHANNELS; i++) {
-		//if (inputPortValuesChanged[i] == true) {
-		//	// The input port changed from the previous value
-
-		//}
-		std::cout << "\t" << this->lastReadInputPortValues[i];
-	}
-	std::cout << std::endl;
-}
+//void BehavioralBoxLabjack::diagnosticPrintLastValues()
+//{
+//	this->printIdentifierLine();
+//	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
+//	std::cout << "\t " << milliseconds_since_epoch;
+//	for (int i = 0; i < NUM_CHANNELS; i++) {
+//		//if (inputPortValuesChanged[i] == true) {
+//		//	// The input port changed from the previous value
+//
+//		//}
+//		std::cout << "\t" << this->lastReadInputPortValues[i];
+//	}
+//	std::cout << std::endl;
+//}
 
 int BehavioralBoxLabjack::getError()
 {
@@ -212,7 +284,7 @@ time_t BehavioralBoxLabjack::getTime()
 	double labjackTime = 0.0;
 	this->err = LJM_eReadAddress(this->handle, 61500, 1, &labjackTime);
 	ErrorCheck(this->err, "getTime - LJM_eReadAddress");
-	return time_t(labjackTime);
+	return static_cast<time_t>(labjackTime);
 }
 
 void BehavioralBoxLabjack::setTime(time_t newTime)
@@ -315,122 +387,6 @@ void BehavioralBoxLabjack::writeOutputPinValues(bool shouldForceWrite)
 	} // end for
 }
 
-void BehavioralBoxLabjack::readSensorValues()
-{
-	this->lastCaptureComputerTime = Clock::now();
-
-	//Read the sensor values from the labjack DIO and AIO Inputs
-	{
-		// Lock the mutex to prevent concurrent labjack interaction
-		std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
-		this->err = LJM_eReadNames(this->handle, NUM_CHANNELS, (const char**)this->inputPortNames_all, this->lastReadInputPortValues, &this->errorAddress);
-		ErrorCheckWithAddress(this->err, this->errorAddress, "readSensorValues - LJM_eReadNames");
-	}
-
-	// Only persist the values if the state has changed.
-	if (this->monitor->refreshState(this->lastCaptureComputerTime, this->lastReadInputPortValues)) {
-		//TODO: should this be asynchronous? This would require passing in the capture time and read values
-		this->persistReadValues(true);
-	}
-}
-
-// Reads the most recently read values and persists them to the available output modalities (file, TCP, etc) if they've changed or it's needed.
-void BehavioralBoxLabjack::persistReadValues(bool enableConsoleLogging)
-{
-	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
-
-	// Determine if the change occured in the analog ports, digital ports, or both
-
-	//CSVWriter newCSVLine(",");
-	CSVWriter newCSVLine_digitalOnly(",");
-	CSVWriter newCSVLine_analogOnly(",");
-
-	bool did_anyAnalogPortChange = false;
-	bool did_anyDigitalPortChange = false;
-
-	if (enableConsoleLogging) {
-		this->printIdentifierLine();
-		std::cout << "\t " << milliseconds_since_epoch << ": ";
-	}
-	//newCSVLine.newRow() << milliseconds_since_epoch;
-	newCSVLine_digitalOnly.newRow() << milliseconds_since_epoch;
-	newCSVLine_analogOnly.newRow() << milliseconds_since_epoch;
-	for (int i = 0; i < NUM_CHANNELS; i++) {
-		inputPortValuesChanged[i] = (this->lastReadInputPortValues[i] != this->previousReadInputPortValues_all[i]);
-		if (inputPortValuesChanged[i] == true) {
-			// The input port changed from the previous value
-			if (this->inputPortIsAnalog[i])
-			{
-				// If it's an analog port:
-				did_anyAnalogPortChange = true;
-			}
-			else {
-				// Otherwise, it's a digital port
-				did_anyDigitalPortChange = true;
-			}
-			
-			//TODO: WARNING: This might be where the errors are being introduced for the water ports in general. We don't do this anymore.
-			// FIXME:
-			// Special handling for the water ports. If the port is a water port that has transitioned from off to on, set the appropriate "this->water*PortEndIlluminationTime" variable so the port is illuminated for a second after dispense.
-			if (this->lastReadInputPortValues[i] > 0.0) {
-				// If the port transitioned from off to on:
-				if (strcmp(this->inputPortPurpose_all[i], "Water1_BeamBreak") == 0) {
-					auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(this->lastCaptureComputerTime);
-					this->water1PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
-				}
-				else if (strcmp(this->inputPortPurpose_all[i], "Water2_BeamBreak") == 0) {
-					this->water2PortEndIlluminationTime = Clock::now() + std::chrono::seconds(1);
-				}
-			} // end if greater than zero
-
-#if LAUNCH_WEB_SERVER
-			// Emit the "valueChanged" signal for the web server
-			// Only send signals to the webserver for digital ports:
-			if (!this->inputPortIsAnalog[i])
-			{
-				this->valueChanged_.emit(this->serialNumber, i, this->lastReadInputPortValues[i]);
-			}
-#endif // LAUNCH_WEB_SERVER
-
-		} // end if input port values changed
-
-		//newCSVLine << this->lastReadInputPortValues[i];
-		if (this->inputPortIsAnalog[i])
-		{
-			// If it's an analog port:
-			newCSVLine_analogOnly << this->lastReadInputPortValues[i];
-		}
-		else {
-			// Otherwise, it's a digital port
-			newCSVLine_digitalOnly << this->lastReadInputPortValues[i];
-		}
-
-		if (enableConsoleLogging) {
-			std::cout << this->lastReadInputPortValues[i] << ", ";
-		}
-		// After capturing the change, replace the old value
-		this->previousReadInputPortValues_all[i] = this->lastReadInputPortValues[i];
-	} //end for num channels
-	if (enableConsoleLogging) {
-		std::cout << std::endl;
-	}
-	// Lock the mutex to prevent concurrent persisting
-	std::lock_guard<std::mutex> csvLock(this->logMutex);
-	{
-		//newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
-		if (did_anyAnalogPortChange)
-		{
-			// If an analog port changed, write out to the digital line
-			newCSVLine_analogOnly.writeToFile(this->fileFullPath_analog, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
-		}
-		if (did_anyDigitalPortChange)
-		{
-			// If a digital port changed, write out to the digital line
-			newCSVLine_digitalOnly.writeToFile(this->fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
-		}
-	}
-
-}
 
 
 // The main run loop
@@ -456,33 +412,41 @@ bool BehavioralBoxLabjack::isVisibleLEDLit()
 	}
 }
 
-int BehavioralBoxLabjack::getNumberInputChannels(bool include_digital_ports, bool include_analog_ports) {
-	if (include_digital_ports && include_analog_ports)
-	{
-		return NUM_CHANNELS;
-	}
-	if (include_digital_ports)
-	{
-		return NUM_CHANNELS_DIGITAL;
-	}
-	if (include_analog_ports)
-	{
-		return NUM_CHANNELS_ANALOG;
-	}
+int BehavioralBoxLabjack::getNumberInputChannels(PortEnumerationMode port_enumeration_mode, bool include_digital_ports, bool include_analog_ports)
+{
+	return this->getInputPortNames(port_enumeration_mode, include_digital_ports, include_analog_ports).size();
 }
 
-std::vector<std::string> BehavioralBoxLabjack::getInputPortNames(bool include_digital_ports, bool include_analog_ports)
+std::vector<std::string> BehavioralBoxLabjack::getInputPortNames(PortEnumerationMode port_enumeration_mode, bool include_digital_ports, bool include_analog_ports)
 {
+	// Returns flat output strings
 	std::vector<std::string> outputStrings = std::vector<std::string>();
-	std::string currString = "";
-	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
-		if (this->inputPortIsAnalog[i])
+	for (int i = 0; i < this->logicalInputChannels.size(); i++) {
+		auto currChannel = this->logicalInputChannels[i];
+
+		if (currChannel->getReturnsContinuousValue())
 		{
 			// It's analog:
 			if (include_analog_ports)
 			{
-				currString = std::string(this->inputPortNames_all[i]);
-				outputStrings.push_back(currString);
+				switch (port_enumeration_mode)
+				{
+				case PortEnumerationMode::logicalChannelOnly: 
+					outputStrings.push_back(currChannel->getName());
+					break;
+				case PortEnumerationMode::portNames:
+					for (auto output_string : currChannel->getPortNames())
+					{
+						outputStrings.push_back(output_string);
+					}
+					break;
+				case PortEnumerationMode::expandedPortNames:
+					for (auto output_string : currChannel->getExpandedFinalValuePortNames())
+					{
+						outputStrings.push_back(output_string);
+					}
+					break;
+				}
 			}
 			else {
 				continue;
@@ -492,77 +456,93 @@ std::vector<std::string> BehavioralBoxLabjack::getInputPortNames(bool include_di
 			// It's digital:
 			if (include_digital_ports)
 			{
-				currString = std::string(this->inputPortNames_all[i]);
-				outputStrings.push_back(currString);
+				switch (port_enumeration_mode)
+				{
+				case PortEnumerationMode::logicalChannelOnly:
+					outputStrings.push_back(currChannel->getName());
+					break;
+				case PortEnumerationMode::portNames:
+					for (auto output_string : currChannel->getPortNames())
+					{
+						outputStrings.push_back(output_string);
+					}
+					break;
+				case PortEnumerationMode::expandedPortNames:
+					for (auto output_string : currChannel->getExpandedFinalValuePortNames())
+					{
+						outputStrings.push_back(output_string);
+					}
+					break;
+				}
 			}
 			else {
 				continue;
 			}
 		}
-	}
+	} // end for
 	return outputStrings;
 }
 
-std::vector<std::string> BehavioralBoxLabjack::getInputPortPurpose(bool include_digital_ports, bool include_analog_ports)
-{
-	std::vector<std::string> outputStrings = std::vector<std::string>();
-	std::string currString = "";
-	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
-		if (this->inputPortIsAnalog[i])
-		{
-			// It's analog:
-			if (include_analog_ports)
-			{
-				currString = std::string(this->inputPortPurpose_all[i]);
-				outputStrings.push_back(currString);
-			}
-			else {
-				continue;
-			}
-		}
-		else {
-			// It's digital:
-			if (include_digital_ports)
-			{
-				currString = std::string(this->inputPortPurpose_all[i]);
-				outputStrings.push_back(currString);
-			}
-			else {
-				continue;
-			}
-		}
-	}
-	return outputStrings;
-}
+//std::vector<std::string> BehavioralBoxLabjack::getInputPortPurpose(bool include_digital_ports, bool include_analog_ports)
+//{
+//	std::vector<std::string> outputStrings = std::vector<std::string>();
+//	std::string currString = "";
+//	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
+//		if (this->inputPortIsAnalog[i])
+//		{
+//			// It's analog:
+//			if (include_analog_ports)
+//			{
+//				currString = std::string(this->inputPortPurpose_all[i]);
+//				outputStrings.push_back(currString);
+//			}
+//			else {
+//				continue;
+//			}
+//		}
+//		else {
+//			// It's digital:
+//			if (include_digital_ports)
+//			{
+//				currString = std::string(this->inputPortPurpose_all[i]);
+//				outputStrings.push_back(currString);
+//			}
+//			else {
+//				continue;
+//			}
+//		}
+//	}
+//	return outputStrings;
+//}
 
-std::vector<double> BehavioralBoxLabjack::getLastReadValues(bool include_digital_ports, bool include_analog_ports)
-{
-	std::vector<double> outputValues = std::vector<double>();
-	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
-		if (this->inputPortIsAnalog[i])
-		{
-			// It's analog:
-			if (include_analog_ports)
-			{
-				outputValues.push_back(this->lastReadInputPortValues[i]);
-			}
-			else {
-				continue;
-			}
-		}
-		else {
-			// It's digital:
-			if (include_digital_ports)
-			{
-				outputValues.push_back(this->lastReadInputPortValues[i]);
-			}
-			else {
-				continue;
-			}
-		}
-	}
-	return outputValues;
-}
+//std::vector<double> BehavioralBoxLabjack::getLastReadValues(bool include_digital_ports, bool include_analog_ports)
+//{
+//	std::vector<double> outputValues = std::vector<double>();
+//	for (int i = 0; i < this->getNumberInputChannels(true, true); i++) {
+//		if (this->inputPortIsAnalog[i])
+//		{
+//			// It's analog:
+//			if (include_analog_ports)
+//			{
+//				outputValues.push_back(this->lastReadInputPortValues[i]);
+//			}
+//			else {
+//				continue;
+//			}
+//		}
+//		else {
+//			// It's digital:
+//			if (include_digital_ports)
+//			{
+//				outputValues.push_back(this->lastReadInputPortValues[i]);
+//			}
+//			else {
+//				continue;
+//			}
+//		}
+//	}
+//	return outputValues;
+//}
 
 void BehavioralBoxLabjack::toggleOverrideMode_VisibleLED()
 {
@@ -618,6 +598,120 @@ void BehavioralBoxLabjack::toggleOverrideMode_AttractModeLEDs()
 		this->isOverrideActive_AttractModeLEDs = true;
 		std::cout << "\t Override<" << "Port Attract LEDs" << ">" << "Mode 1: LEDs Forced OFF" << std::endl;
 	}
+}
+
+bool BehavioralBoxLabjack::saveConfigurationFile(std::string filePath)
+{
+	// Saves the configuration INI out to file
+	try
+	{
+		//TODO: Set path
+
+		return this->configMan->saveConfig();
+	}
+	catch (...)
+	{
+		return false;
+	}
+}
+
+//TODO: Ideally this would be managed in Main.cpp or somewhere more global, and not at the individual labjack level
+void BehavioralBoxLabjack::LoadActiveLogicalInputChannelsConfig()
+{
+	std::string desiredJsonSavePath = "C:/Common/config/phoBehavioralBoxLabjackController-LogicalChannelSetupConfig.json";
+
+	if (!FilesystemHelpers::fileExists(desiredJsonSavePath))
+	{
+		// File doesn't exist, need a different load path
+		if (pfd::settings::available()) {
+			auto selectionDialog = pfd::open_file("Select a .json channel config file", ".",
+				{ "Json Files", "*.json",
+				  "All Files", "*" },
+				pfd::opt::multiselect);
+			// Do something with selection
+			for (auto const& filename : selectionDialog.result()) {
+				std::cout << "Selected file: " << filename << "\n";
+				// This should be the new load path:
+				desiredJsonSavePath = filename;
+			} // end for selection results
+		} // end if available
+		
+		//WindowsHelpers::
+	}
+	else
+	{
+		// The file was found
+		//auto m = pfd::message::message("File found!", "Loading JSON...");
+		auto m = pfd::notify::notify("File found!", "Loading JSON...", pfd::icon::info);
+		
+		
+	}
+
+	
+	bool wasLoadSuccess = this->configMan->tryLoadChannelConfigFromFile(desiredJsonSavePath);
+	if (wasLoadSuccess)
+	{
+		auto updatedConfig = this->configMan->getLoadedChannelSetupConfig();
+		auto concreteSetup = updatedConfig.buildLogicalInputChannels();  // can be called to get the actual values
+		this->logicalInputChannels.clear();
+		this->logicalInputChannels = concreteSetup;
+
+		std::cout << "Sucessfully loading config from " << desiredJsonSavePath << "!" << std::endl;
+	}
+	else
+	{
+		std::cout << "Error loading config from " << desiredJsonSavePath << ". :[" << std::endl;
+	}
+}
+
+
+//TODO: eventually to be replaced by dynamic loading from config file
+void BehavioralBoxLabjack::testBuildLogicalInputChannels()
+{
+	////Pho Home Testing:
+	// "AIN0", "AIN1", "AIN2", "AIN3"
+	LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "Water1_BeamBreak" }, "AIN0");
+	newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	this->logicalInputChannels.push_back(newInputChannel_A0);
+
+	LabjackLogicalInputChannel* newInputChannel_A1 = new LabjackLogicalInputChannel({ "AIN1" }, { "Water2_BeamBreak" }, "AIN1");
+	newInputChannel_A1->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A1->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	this->logicalInputChannels.push_back(newInputChannel_A1);
+	
+	LabjackLogicalInputChannel* newInputChannel_A2 = new LabjackLogicalInputChannel({ "AIN2" }, { "Food1_BeamBreak" }, "AIN2");
+	newInputChannel_A2->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A2->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	this->logicalInputChannels.push_back(newInputChannel_A2);
+
+	LabjackLogicalInputChannel* newInputChannel_A3 = new LabjackLogicalInputChannel({ "AIN3" }, { "Food2_BeamBreak" }, "AIN3");
+	newInputChannel_A3->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A3->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	this->logicalInputChannels.push_back(newInputChannel_A3);
+	
+	//LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "FIO_STATE" }, { "SIGNALS_Dispense" }, "SIGNALS_Dispense");
+	//newInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
+	//newInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_DigitalStateAsDigitalValues();
+	//this->logicalInputChannels.push_back(newInputChannel);
+	
+	////// BB-16 Testing:
+	//LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "EIO_STATE" }, { "SIGNALS_All" }, "SIGNALS_All");
+	//newInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
+	//newInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_DigitalStateAsDigitalValues();
+	//this->logicalInputChannels.push_back(newInputChannel);
+	//
+	//LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "RunningWheel" }, "AIN0");
+	//newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsContinuousInput();
+	//newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
+	//this->logicalInputChannels.push_back(newInputChannel_A0);
+
+	LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
+	timerInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
+	timerInputChannel->setNumberOfDoubleInputs(2); // Takes 2 double values to produce its output
+	timerInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_TimerRegistersAsContinuousTimer();
+	timerInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_TimerRegistersAsContinuousTimer();
+	this->logicalInputChannels.push_back(timerInputChannel);
 }
 
 // Reads the device name and updates its value
@@ -716,11 +810,85 @@ void BehavioralBoxLabjack::initializeLabjackConfigurationIfNeeded()
 		std::cout << "done." << std::endl;
 	}
 
+	// Labjack Stream Mode Setup:
+	this->SetupStream();
+
+}
+
+
+
+
+
+void BehavioralBoxLabjack::SetupStream()
+{
+	const int STREAM_TRIGGER_INDEX = 0;
+	const int STREAM_CLOCK_SOURCE = 0;
+	const int STREAM_RESOLUTION_INDEX = 0;
+	const double STREAM_SETTLING_US = 0;
+	const double AIN_ALL_RANGE = 0;
+	const int AIN_ALL_NEGATIVE_CH = LJM_GND;
+
+	printf("Setting up Labjack Stream Registers:\n");
+
+	// Tears down existing streams if they're already running:
+	DisableStreamIfEnabled(this->handle);
+	
+
+	if (STREAM_TRIGGER_INDEX == 0) {
+		printf("    Ensuring triggered stream is disabled:");
+	}
+	printf("    Setting STREAM_TRIGGER_INDEX to %d\n", STREAM_TRIGGER_INDEX);
+	WriteNameOrDie(this->handle, "STREAM_TRIGGER_INDEX", STREAM_TRIGGER_INDEX);
+
+	if (!EXTERNAL_STREAM_CLOCK) {
+		printf("    Enabling internally-clocked stream:");
+		printf("    Setting STREAM_CLOCK_SOURCE to %d\n", STREAM_CLOCK_SOURCE);
+		WriteNameOrDie(this->handle, "STREAM_CLOCK_SOURCE", STREAM_CLOCK_SOURCE);
+	}
+
+	// Configure the analog inputs' negative channel, range, settling time and
+	// resolution.
+	// Note: when streaming, negative channels and ranges can be configured for
+	// individual analog inputs, but the stream has only one settling time and
+	// resolution.
+	printf("    Setting STREAM_RESOLUTION_INDEX to %d\n",	STREAM_RESOLUTION_INDEX);
+	WriteNameOrDie(this->handle, "STREAM_RESOLUTION_INDEX", STREAM_RESOLUTION_INDEX);
+
+	printf("    Setting STREAM_SETTLING_US to %f\n", STREAM_SETTLING_US);
+	WriteNameOrDie(this->handle, "STREAM_SETTLING_US", STREAM_SETTLING_US);
+
+	printf("    Setting AIN_ALL_RANGE to %f\n", AIN_ALL_RANGE);
+	WriteNameOrDie(this->handle, "AIN_ALL_RANGE", AIN_ALL_RANGE);
+
+	printf("    Setting AIN_ALL_NEGATIVE_CH to ");
+	if (AIN_ALL_NEGATIVE_CH == LJM_GND) {
+		printf("LJM_GND");
+	}
+	else {
+		printf("%d", AIN_ALL_NEGATIVE_CH);
+	}
+	printf("\n\n");
+	WriteNameOrDie(this->handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
+
+	// Build the stream object:
+	const double stream_scan_rate_Hz = 240.0;
+	
+	auto currChannelNames = this->getInputPortNames(PortEnumerationMode::portNames, true, true);
+	this->ljStreamInfo.build(currChannelNames, stream_scan_rate_Hz);
+
+	this->err = LJM_NamesToAddresses(this->ljStreamInfo.numChannels, const_cast<const char**>(this->ljStreamInfo.channelNames), this->ljStreamInfo.aScanList, NULL);
+	ErrorCheck(this->err, "Getting positive channel addresses");
+	
+	// Variables for LJM_eStreamStart
+	this->err = LJM_eStreamStart(this->handle, this->ljStreamInfo.scansPerRead, this->ljStreamInfo.numChannels, this->ljStreamInfo.aScanList, &(this->ljStreamInfo.scanRate));
+	ErrorCheck(this->err, "LJM_eStreamStart");
+
+	std::cout << "Scan Stream started!" << std::endl;
 }
 
 bool BehavioralBoxLabjack::isArtificialDaylightHours()
 {
-	time_t currTime = time(NULL);
+	time_t currTime = time(nullptr);
 	struct tm *currLocalTime = localtime(&currTime);
 
 	int hour = currLocalTime->tm_hour;
@@ -772,4 +940,278 @@ void BehavioralBoxLabjack::updateVisibleLightRelayIfNeeded()
 	this->writeOutputPinValues(true);
 	//bool isDay = isArtificialDaylightHours();
 	//this->setVisibleLightRelayState(isDay);
+}
+
+
+
+
+void BehavioralBoxLabjack::readSensorValues()
+{
+	this->lastCaptureComputerTime = Clock::now();
+	static int streamRead = 0;
+	
+	// Check if stream is done so that we don't output the printf below
+	if (this->ljStreamInfo.done) {
+		return;
+	}
+
+	{ // make sure I"m not introducing a bug with my concurrency/mutex by having the variables be defined outside the block		
+		// Lock the mutex to prevent concurrent labjack interaction
+		std::lock_guard<std::mutex> labjackLock(this->labjackMutex);
+		
+		int deviceScanBacklog = 0;
+		int LJMScanBacklog = 0;
+		
+		auto systemTimeStart = Clock::now();
+		this->err = LJM_eStreamRead(this->handle, this->ljStreamInfo.aData, &deviceScanBacklog, &LJMScanBacklog);
+		// LJM_eStreamRead may return LJME_STREAM_NOT_RUNNING if another thread has stopped stream,
+		if (this->err != LJME_NOERROR && this->err != LJME_STREAM_NOT_RUNNING) {
+			PrintErrorIfError(this->err, "LJM_eStreamRead");
+			// Tries to stop the stream:
+			this->ljStreamInfo.done = 1;
+			this->shouldStop = true;
+			return;
+		}
+		
+
+		/* this->ljStreamInfo.aData comes back with [this->ljStreamInfo.numChannels] x [this->ljStreamInfo.scansPerRead]:
+		 *	Each row is a "Scan", which corresponds to a unique timestamp when each of the channels were read.
+		 *	The LJM_eStreamRead returns this->ljStreamInfo.scansPerRead Scans (rows) per call. 
+		 */
+		
+		// Main:
+		int scanIndex = 0;
+		int currScanStartLinearOffset = 0; // the linear index offset from aData that starts the current scan row
+		int withinScanValueIndex = 0; // within a given scan, the valueIndex corresponding to the double that was read
+
+		int currWithinScanExpandedPortLinearOffset = 0;
+		
+
+		int numSkippedScans = 0;
+		//int maxScansPerChannel = limitScans ? MAX_NUM : numScans;
+		bool currDidChange = false;
+
+		// Goal is to find lines (scanI) where a value change occurs most efficiently
+		bool currScanDidAnyChange = false;
+		bool currScanDidAnyAnalogPortChange = false;
+		bool currScanDidAnyDigitalPortChange = false;
+
+
+		// The raw double values read in the previous scan:
+		double* lastReadValues = nullptr;
+		lastReadValues = new double[this->ljStreamInfo.numChannels];
+
+		
+		auto expandedPortNames = this->getInputPortNames(PortEnumerationMode::expandedPortNames, true, true);
+		
+		double* lastReadExpandedPortValues = nullptr;
+		lastReadExpandedPortValues = new double[expandedPortNames.size()];
+
+		std::vector<double> lastReadExpandedPortValuesVector (expandedPortNames.size(), 0.0);
+		//lastReadExpandedPortValuesVector.reserve(expandedPortNames.size());
+
+		
+		std::vector<std::vector<double>> currChannelExpandedPortValues = std::vector<std::vector<double>>(this->logicalInputChannels.size()); // a vector of vectors of doubles that retains the hierarchical structure of the expanded ports for each channel instead of flattening them
+		
+		double currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(1);
+		
+		// Otherwise it's good
+		//printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d....\n", streamRead, deviceScanBacklog, LJMScanBacklog);
+
+		currScanStartLinearOffset = 0;
+		for (scanIndex = 0; scanIndex < this->ljStreamInfo.scansPerRead; scanIndex++) {
+			currScanDidAnyChange = false;
+			currScanDidAnyAnalogPortChange = false;
+			currScanDidAnyDigitalPortChange = false;
+
+			withinScanValueIndex = 0;
+			currWithinScanExpandedPortLinearOffset = 0;
+			//TODO: this could be improved in efficiency by reusing instead of push_back or insert each time
+			lastReadExpandedPortValuesVector.clear();
+			lastReadExpandedPortValuesVector.reserve(expandedPortNames.size());
+			for (int logicalChannelIndex = 0; logicalChannelIndex < this->logicalInputChannels.size(); logicalChannelIndex++) {
+				auto currChannel = this->logicalInputChannels[logicalChannelIndex];
+				auto currNumberOfDoublesToRead = currChannel->getNumberOfDoubleInputs();
+
+				if (this->ljStreamInfo.aData[currScanStartLinearOffset + withinScanValueIndex] == LJM_DUMMY_VALUE) {
+					++numSkippedScans;
+					//FIXME: I think we need to handle this case if the scan is skipped, we shouldn't go on and use its values
+					continue;
+				}
+
+				double* updated_pointer = this->ljStreamInfo.aData + (currScanStartLinearOffset + withinScanValueIndex);
+				// Update the last read raw values:
+				for (int i = 0; i < currNumberOfDoublesToRead; i++)
+				{
+					// Loop through and update the individual expanded port values:
+					lastReadValues[withinScanValueIndex + i] = updated_pointer[i];
+				}
+
+				// get the final values:
+				auto curr_got_expanded_values = currChannel->fn_generic_get_value(currNumberOfDoublesToRead, updated_pointer);
+				const size_t currChannelNumExpandedValues = curr_got_expanded_values.size();
+				
+				double* last_expanded_value_pointer = lastReadExpandedPortValues + (currWithinScanExpandedPortLinearOffset);
+				double* curr_expanded_value_pointer = curr_got_expanded_values.data();
+				auto didAnyChange = currChannel->fn_generic_get_didValueChange(currChannelNumExpandedValues, last_expanded_value_pointer, curr_expanded_value_pointer);
+
+
+				//channelExpandedPortValues[logicalChannelIndex] = std::vector<double>(currChannelNumExpandedValues);
+				currChannelExpandedPortValues[logicalChannelIndex] = curr_got_expanded_values; //TODO: validate that this works
+				//
+				// append curr_got_expanded_values to the end of lastReadExpandedPortValuesVector
+				lastReadExpandedPortValuesVector.insert(lastReadExpandedPortValuesVector.begin(), curr_got_expanded_values.begin(), curr_got_expanded_values.end());
+
+				for (int i = 0; i < currChannelNumExpandedValues; i++)
+				{
+					// Loop through and update the individual expanded port values:
+					if (currChannel->isLoggedToCSV() || currChannel->isLoggedToConsole()) {
+						currDidChange = didAnyChange[i];
+						if (currDidChange)
+						{
+							if (currChannel->getReturnsContinuousValue())
+							{
+								currScanDidAnyAnalogPortChange = currScanDidAnyAnalogPortChange || true;
+							}
+							else
+							{
+								currScanDidAnyDigitalPortChange = currScanDidAnyDigitalPortChange || true;
+
+							}
+							currScanDidAnyChange = currScanDidAnyChange || true;
+
+						}
+						
+					} // end if isLoggedTo...
+
+					lastReadExpandedPortValues[currWithinScanExpandedPortLinearOffset + i] = curr_got_expanded_values[i];
+				}
+
+				//channelExpandedPortValues[logicalChannelIndex].push_back(curr_got_expanded_values);
+				
+				// Once done with this port, move the chanI (raw index into double* aray for current scan) to prepare for the next row
+				withinScanValueIndex += currNumberOfDoublesToRead;
+				currWithinScanExpandedPortLinearOffset += currChannelNumExpandedValues;
+			}
+
+			
+			 // Gets the timer value for this scanI (scan index), guessing this is MS
+			if (currScanDidAnyChange)
+			{
+				currScanTimeOffsetSinceFirstScan = this->ljStreamInfo.getTimeSinceFirstScan(scanIndex);
+				// This value is in seconds, but we want whole values:
+				long long int roundedMsValue = static_cast<long long int>(currScanTimeOffsetSinceFirstScan * 1000.0);
+				auto estimatedScanTime = systemTimeStart + std::chrono::milliseconds(roundedMsValue);
+				unsigned long long estimated_scan_milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(estimatedScanTime.time_since_epoch()).count();
+
+				// Only persist the values if the state has changed.
+				// Note: should ignore the last two entries in the array, since they're the timer and they'll always update
+				//if (this->monitor->refreshState(estimatedScanTime, lastReadValues)) {
+				//if (this->monitor->refreshState(estimatedScanTime, lastReadExpandedPortValues)) {
+				//if (this->monitor->refreshState(estimatedScanTime, currChannelExpandedPortValues)) {
+					//TODO: should this be asynchronous? This would require passing in the capture time and read values
+					//printf("refresh state returned true!");
+					
+					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadExpandedPortValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadExpandedPortValuesVector.data(), currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+				this->performPersistValues(estimated_scan_milliseconds_since_epoch, currChannelExpandedPortValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+				//
+				//}
+
+			}
+			
+			//scanI++; // update scanI
+			currScanStartLinearOffset += this->ljStreamInfo.numChannels; // update scanStartOffsetI
+		} // end for scanI
+
+		// release the dynamically allocated memory:
+		delete[] lastReadValues;
+		lastReadValues = nullptr;
+
+		delete[] lastReadExpandedPortValues;
+		lastReadExpandedPortValues = nullptr;
+
+		streamRead++;
+	}
+
+}
+
+
+
+// Reads the most recently read values and persists them to the available output modalities (file, TCP, etc) if they've changed or it's needed.
+/*
+ * this->lastCaptureComputerTime, inputPortValuesChanged, lastReadInputPortValues, previousReadInputPortValues_all, logMutex
+ * inputPortIsAnalog, inputPortPurpose_all, water1PortEndIlluminationTime
+ */
+//
+
+// New value that aims to be independent of the last values cached, thus allowing Stream mode persistance
+//void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_scan_milliseconds_since_epoch, double* lastReadValues, bool did_anyAnalogPortChange, bool did_anyDigitalPortChange, bool enableConsoleLogging)
+void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_scan_milliseconds_since_epoch, std::vector<std::vector<double>> newestReadValues, bool did_anyAnalogPortChange, bool did_anyDigitalPortChange, bool enableConsoleLogging)
+{
+	// Determine if the change occured in the analog ports, digital ports, or both
+	CSVWriter newCSVLine_digitalOnly(",");
+	CSVWriter newCSVLine_analogOnly(",");
+
+	if (enableConsoleLogging) {
+		this->printIdentifierLine();
+		std::cout << "\t " << estimated_scan_milliseconds_since_epoch << ": ";
+	}
+	//newCSVLine.newRow() << milliseconds_since_epoch;
+	newCSVLine_digitalOnly.newRow() << estimated_scan_milliseconds_since_epoch;
+	newCSVLine_analogOnly.newRow() << estimated_scan_milliseconds_since_epoch;
+
+
+	int currAcrossChannelsExpandedPortLinearOffset = 0;
+	for (int logicalChannelIndex = 0; logicalChannelIndex < this->logicalInputChannels.size(); logicalChannelIndex++) {
+		auto currChannel = this->logicalInputChannels[logicalChannelIndex];
+		auto currExpandedChannels = currChannel->getExpandedFinalValuePortNames(); // for a specific channel -- ERROR: for logicalChannelIndex == 5, the two timer ports are returned, but the expanded values should be the single double seconds output
+		const size_t currChannelNumExpandedValues = currExpandedChannels.size();
+
+		auto currChannelRecentReadFinalValues = newestReadValues.at(logicalChannelIndex);
+		assert(currChannelRecentReadFinalValues.size() == currChannelNumExpandedValues);
+
+
+		for (auto curr_expanded_channel_value : currChannelRecentReadFinalValues)
+		{
+			if (this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
+			{
+				if (this->logicalInputChannels[logicalChannelIndex]->getReturnsContinuousValue())
+				{
+					// If it's an analog (continuous) port:
+					newCSVLine_analogOnly << curr_expanded_channel_value;
+				}
+				else
+				{
+					// Otherwise, it's a digital port
+					newCSVLine_digitalOnly << curr_expanded_channel_value;
+				}
+			}
+			if (enableConsoleLogging && this->logicalInputChannels[logicalChannelIndex]->isLoggedToConsole()) {
+				std::cout << curr_expanded_channel_value << ", ";
+			}
+		} // end for this channels read values
+		
+	} // end for logicalChannelIndex
+
+	if (enableConsoleLogging) {
+		std::cout << std::endl;
+	}
+	// Lock the mutex to prevent concurrent persisting
+	std::lock_guard<std::mutex> csvLock(this->logMutex);
+	{
+		if (did_anyAnalogPortChange)
+		{
+			// If an analog port changed, write out to the digital line
+			newCSVLine_analogOnly.writeToFile(this->fileFullPath_analog, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		}
+		if (did_anyDigitalPortChange)
+		{
+			// If a digital port changed, write out to the digital line
+			newCSVLine_digitalOnly.writeToFile(this->fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+		}
+	}
+
+	
 }

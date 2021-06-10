@@ -1,0 +1,73 @@
+{
+    "config_version": 2,
+    "logicalChannelConfigs": [
+        {
+            "channelValuesMode": 1,
+            "config_version": 2,
+            "name": "AIN0",
+            "portNames": [
+                "AIN0"
+            ],
+            "portPurpose": [
+                "Water1_BeamBreak"
+            ]
+        },
+        {
+            "channelValuesMode": 1,
+            "config_version": 2,
+            "name": "AIN1",
+            "portNames": [
+                "AIN1"
+            ],
+            "portPurpose": [
+                "Water2_BeamBreak"
+            ]
+        },
+        {
+            "channelValuesMode": 1,
+            "config_version": 2,
+            "name": "AIN2",
+            "portNames": [
+                "AIN2"
+            ],
+            "portPurpose": [
+                "Food1_BeamBreak"
+            ]
+        },
+        {
+            "channelValuesMode": 1,
+            "config_version": 2,
+            "name": "AIN3",
+            "portNames": [
+                "AIN3"
+            ],
+            "portPurpose": [
+                "Food2_BeamBreak"
+            ]
+        },
+        {
+            "channelValuesMode": 2,
+            "config_version": 2,
+            "name": "SIGNALS_Dispense",
+            "portNames": [
+                "FIO_STATE"
+            ],
+            "portPurpose": [
+                "SIGNALS_Dispense"
+            ]
+        },
+        {
+            "channelValuesMode": 4,
+            "config_version": 2,
+            "name": "Stream_Offset_Timer",
+            "portNames": [
+                "SYSTEM_TIMER_20HZ",
+                "STREAM_DATA_CAPTURE_16"
+            ],
+            "portPurpose": [
+                "SYSTEM_TIMER_20HZ",
+                "STREAM_DATA_CAPTURE_16"
+            ]
+        }
+    ]
+}

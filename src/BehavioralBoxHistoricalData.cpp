@@ -173,7 +173,7 @@ void BehavioralBoxHistoricalData::getHistoricalDataEvents()
 					// If it's not the first file/line found
 					std::cout << "dataFile[" << currDataFileName << "] has " << std::to_string(numVariables) << " variables while previous files only had " << std::to_string(maxNumVariables) << ". Need to adjust all with fewer variables to max." << std::endl;
 				}
-				maxNumVariables = std::max(maxNumVariables, numVariables);
+				maxNumVariables = (std::max)(maxNumVariables, numVariables);
 			}
 
 			this->milliseconds_since_epoch.push_back(aLineObject.milliseconds_since_epoch);

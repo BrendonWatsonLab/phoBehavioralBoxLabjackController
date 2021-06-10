@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
-    <Filter Include="WtWebServer">
-      <UniqueIdentifier>{1aa7379a-99a7-4489-9e3e-7ab9c5e9ac69}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="WtWebServer\Model">
-      <UniqueIdentifier>{4b1dcc99-7b8f-44a8-845d-25e4fd6035a7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Configuration Files">
       <UniqueIdentifier>{c0a0558d-1ca4-4ce1-9019-c9ea37cf53a8}</UniqueIdentifier>
     </Filter>
@@ -27,21 +21,6 @@
     </Filter>
     <Filter Include="Source Files\Model">
       <UniqueIdentifier>{23d95ed8-c489-475b-92b2-8af44bab6311}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="WtWebServer\Obsolite">
-      <UniqueIdentifier>{197677d6-67bf-473c-9e18-7126cf24e7b7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="WtWebServer\WebComponents">
-      <UniqueIdentifier>{a36f7a91-bbff-4825-b295-5033c51c60f3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="WtWebServer\WebComponents\OuterWidget">
-      <UniqueIdentifier>{b4a2b5af-fa94-4bcc-8326-ca26959f0ed6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="WtWebServer\Events">
-      <UniqueIdentifier>{66c65849-c586-45ec-922e-b9d2929672cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="WtWebServer\WebComponents\Charts">
-      <UniqueIdentifier>{504fad54-f3e9-4297-a59f-33b881c198d7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Singletons">
       <UniqueIdentifier>{6b725436-265e-4eda-b620-006b5d13b945}</UniqueIdentifier>
@@ -58,64 +37,55 @@
     <Filter Include="Required DLLs\Release">
       <UniqueIdentifier>{3b1f1fd9-17d5-4573-88b3-0f8ba0556918}</UniqueIdentifier>
     </Filter>
-    <Filter Include="WtWebServer\WebComponents\RootWidget">
+    <Filter Include="WebserverOnly">
+      <UniqueIdentifier>{ac8e57ef-e999-47e9-9113-b77b5931214c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebserverOnly\WtWebServer">
+      <UniqueIdentifier>{1aa7379a-99a7-4489-9e3e-7ab9c5e9ac69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebserverOnly\WtWebServer\Model">
+      <UniqueIdentifier>{4b1dcc99-7b8f-44a8-845d-25e4fd6035a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebserverOnly\WtWebServer\WebComponents">
+      <UniqueIdentifier>{a36f7a91-bbff-4825-b295-5033c51c60f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebserverOnly\WtWebServer\WebComponents\OuterWidget">
+      <UniqueIdentifier>{b4a2b5af-fa94-4bcc-8326-ca26959f0ed6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebserverOnly\WtWebServer\WebComponents\Charts">
+      <UniqueIdentifier>{504fad54-f3e9-4297-a59f-33b881c198d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebserverOnly\WtWebServer\WebComponents\RootWidget">
       <UniqueIdentifier>{8237a116-7803-44b7-96da-3ae5770ae937}</UniqueIdentifier>
     </Filter>
-    <Filter Include="WtWebServer\WebComponents\BehavioralBoxDataWidget">
+    <Filter Include="WebserverOnly\WtWebServer\WebComponents\BehavioralBoxDataWidget">
       <UniqueIdentifier>{eac6791e-96c7-4099-bbb1-33f4219d96aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebserverOnly\WtWebServer\Events">
+      <UniqueIdentifier>{66c65849-c586-45ec-922e-b9d2929672cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helpers">
+      <UniqueIdentifier>{4a78fb1f-e794-4529-94d5-6a8a36543483}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\BehavioralBoxLabjack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LabjackHelpers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ConfigurationFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\InputState.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="src\StateMonitor.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
     <ClCompile Include="src\OutputState.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
-    <ClCompile Include="src\PanelList.cpp">
-      <Filter>WtWebServer\Obsolite</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChartConfig.cpp">
-      <Filter>WtWebServer\Obsolite</Filter>
-    </ClCompile>
     <ClCompile Include="src\LabjackControllerOuterWidget.cpp">
-      <Filter>WtWebServer\WebComponents\OuterWidget</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents\OuterWidget</Filter>
     </ClCompile>
     <ClCompile Include="src\LabjackControllerWebApplication.cpp">
-      <Filter>WtWebServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LabjackDataFile.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>WebserverOnly\WtWebServer</Filter>
     </ClCompile>
     <ClCompile Include="src\TimeSeriesChart.cpp">
-      <Filter>WtWebServer\WebComponents\Charts</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents\Charts</Filter>
     </ClCompile>
     <ClCompile Include="src\LabjackLiveStateWidget.cpp">
-      <Filter>WtWebServer\WebComponents</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents</Filter>
     </ClCompile>
     <ClCompile Include="src\WebAppHelpWidget.cpp">
-      <Filter>WtWebServer\WebComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FilesystemHelpers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DataServerEvent.cpp">
-      <Filter>WtWebServer\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="src\HistoricalDataLoadingEvent.cpp">
-      <Filter>WtWebServer\Events</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents</Filter>
     </ClCompile>
     <ClCompile Include="src\BehavioralBoxHistoricalData.cpp">
       <Filter>Source Files\Model</Filter>
@@ -126,79 +96,91 @@
     <ClCompile Include="src\Main.cpp">
       <Filter>Singletons</Filter>
     </ClCompile>
-    <ClCompile Include="src\BoxControllerWebDataServer.cpp">
-      <Filter>Singletons</Filter>
-    </ClCompile>
     <ClCompile Include="src\CsvUtil.cpp">
-      <Filter>WtWebServer\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WindowsHelpers.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>WebserverOnly\WtWebServer\Model</Filter>
     </ClCompile>
     <ClCompile Include="src\ConfigurationManager.cpp">
       <Filter>Singletons</Filter>
     </ClCompile>
     <ClCompile Include="src\RootWidget.cpp">
-      <Filter>WtWebServer\WebComponents\RootWidget</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents\RootWidget</Filter>
     </ClCompile>
     <ClCompile Include="src\BehavioralBoxDataWidget.cpp">
-      <Filter>WtWebServer\WebComponents\BehavioralBoxDataWidget</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents\BehavioralBoxDataWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BoxControllerWebDataServer.cpp">
+      <Filter>WebserverOnly</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BehavioralBoxLabjack.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ConfigurationFile.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FilesystemHelpers.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="src\FormattingHelper.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\External\INIReader\ini.c">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\External\INIReader\INIReader.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackDataFile.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackHelpers.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoadedConfiguration.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WindowsHelpers.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackLogicalChannelBase.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackLogicalInputChannel.cpp">
+      <Filter>Source Files\Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\NumericItem.h">
-      <Filter>WtWebServer\Model</Filter>
+      <Filter>WebserverOnly\WtWebServer\Model</Filter>
     </ClInclude>
     <ClInclude Include="src\config.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigFiles\config-DownstairsBox.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigFiles\config-UpstairsBox-8-20-2019.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
     <ClInclude Include="src\OutputState.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\InputState.h">
-      <Filter>Header Files\Model</Filter>
-    </ClInclude>
     <ClInclude Include="src\ConfigurationFile.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\StateMonitor.h">
-      <Filter>Header Files\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PanelList.h">
-      <Filter>WtWebServer\Obsolite</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChartConfig.h">
-      <Filter>WtWebServer\Obsolite</Filter>
-    </ClInclude>
     <ClInclude Include="src\LabjackControllerOuterWidget.h">
-      <Filter>WtWebServer\WebComponents\OuterWidget</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents\OuterWidget</Filter>
     </ClInclude>
     <ClInclude Include="src\LabjackControllerWebApplication.h">
-      <Filter>WtWebServer</Filter>
+      <Filter>WebserverOnly\WtWebServer</Filter>
     </ClInclude>
     <ClInclude Include="src\TimeSeriesChart.h">
-      <Filter>WtWebServer\WebComponents\Charts</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents\Charts</Filter>
     </ClInclude>
     <ClInclude Include="src\WebAppHelpWidget.h">
-      <Filter>WtWebServer\WebComponents</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents</Filter>
     </ClInclude>
     <ClInclude Include="src\LabjackLiveStateWidget.h">
-      <Filter>WtWebServer\WebComponents</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents</Filter>
     </ClInclude>
     <ClInclude Include="src\DataServerEvent.h">
-      <Filter>WtWebServer\Events</Filter>
+      <Filter>WebserverOnly\WtWebServer\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\HistoricalDataLoadingEvent.h">
-      <Filter>WtWebServer\Events</Filter>
+      <Filter>WebserverOnly\WtWebServer\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\BehavioralBoxHistoricalData.h">
       <Filter>Header Files\Model</Filter>
@@ -206,11 +188,8 @@
     <ClInclude Include="src\BehavioralBoxControllersManager.h">
       <Filter>Singletons</Filter>
     </ClInclude>
-    <ClInclude Include="src\BoxControllerWebDataServer.h">
-      <Filter>Singletons</Filter>
-    </ClInclude>
     <ClInclude Include="src\BoxPortInformation.h">
-      <Filter>WtWebServer\Model</Filter>
+      <Filter>WebserverOnly\WtWebServer\Model</Filter>
     </ClInclude>
     <ClInclude Include="src\External\CSVWriter.h">
       <Filter>Header Files\Helpers</Filter>
@@ -234,18 +213,9 @@
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="src\CsvUtil.h">
-      <Filter>WtWebServer\Model</Filter>
+      <Filter>WebserverOnly\WtWebServer\Model</Filter>
     </ClInclude>
     <ClInclude Include="src\WindowsHelpers.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigFiles\config-FinalBoxes-10-01-2019.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\External\INIReader.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="src\LoadedConfiguration.h">
@@ -257,20 +227,50 @@
     <ClInclude Include="ProgramVersion.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigFiles\config-AnalogRunningWheel-12-17-2019.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\FormattingHelper.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="src\RootWidget.h">
-      <Filter>WtWebServer\WebComponents\RootWidget</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents\RootWidget</Filter>
     </ClInclude>
     <ClInclude Include="src\BehavioralBoxDataWidget.h">
-      <Filter>WtWebServer\WebComponents\BehavioralBoxDataWidget</Filter>
+      <Filter>WebserverOnly\WtWebServer\WebComponents\BehavioralBoxDataWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BoxControllerWebDataServer.h">
+      <Filter>WebserverOnly</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigFiles\config-FinalBoxesStreamMode-06-09-2021.h">
+      <Filter>Header Files\Configuration Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\asenum.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\portable-file-dialogs.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackLogicalChannelBase.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackLogicalInputChannel.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DigitalStatePortMask.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackPortType.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\INIReader\ini.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\INIReader\INIReader.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files\Configuration Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackStreamInfo.h">
+      <Filter>Header Files\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -332,12 +332,9 @@
     <ResourceCompile Include="phoBehavioralBoxLabjackController.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="VersionResource.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\phoBehavioralBoxController Icon.ico">
+    <Image Include="resources\Design\Exports\phoBehavioralBox_MAIN_STREAM.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -4,8 +4,8 @@
  
 ; -------------------------------
 ; Start
-  !define PRODUCT_VERSION "1.0.0.7"
-  !define VERSION "1.0.0.7"
+  !define PRODUCT_VERSION "1.0.1.3"
+  !define VERSION "1.0.1.3"
 
   !define MUI_PRODUCT "phoBehavioralBoxLabjackController"
   !define MUI_FILE "phoBehavioralBoxLabjackController"
@@ -15,7 +15,7 @@
   VIProductVersion "${PRODUCT_VERSION}"
   VIFileVersion "${VERSION}"
   VIAddVersionKey "FileVersion" "${VERSION}"
-  VIAddVersionKey "LegalCopyright" "(C) Pho Hale, Brendon Watson Lab, 2020"
+  VIAddVersionKey "LegalCopyright" "(C) Pho Hale, Brendon Watson Lab, 2021"
   VIAddVersionKey "FileDescription" "Controller for the Brendon Watson lab's behavioral box hardware."
 
 
@@ -26,7 +26,9 @@
   !define PHO_COMMON_DIR_CONFIG "C:\Common\config"
   ;!define PHO_BUILD_PATH "../x64/Release"
   ; !define PHO_BUILD_PATH "C:\Common\repo\phoBehavioralBoxLabjackController\x64\Release"
-  !define PHO_BUILD_PATH "C:\Users\Pho\repos\phoBehavioralBoxLabjackController\x64\Release"
+  ; !define PHO_BUILD_PATH "C:\Users\Pho\repos\phoBehavioralBoxLabjackController\x64\Release"
+  !define PHO_BUILD_PATH "C:\Users\Pho\repos\phoBehavioralBoxLabjackController\builds\x64\Release"
+;   !define PHO_BUILD_PATH "C:\Users\watsonlab\Desktop\phoTempRepo\phoBehavioralBoxLabjackController\builds\x64\Release"
 
   CRCCheck On
 
@@ -41,7 +43,7 @@
 ;---------------------------------
 ;General
  
-  OutFile "Install phoBehavioralBoxLabjackController.exe"
+  OutFile "Install phoBehavioralBoxLabjackController v${PRODUCT_VERSION}.exe"
   ShowInstDetails "nevershow"
   ShowUninstDetails "nevershow"
   ;SetCompressor "bzip2"
@@ -104,6 +106,9 @@
   ; CopyMainConfigScript:
   ; File "${PHO_COMMON_DIR_CONFIG}\phoBehavioralBoxLabjackController-Config.ini"
   ; SkipMainConfigCopy:
+
+  SetOutPath "${PHO_COMMON_DIR_CONFIG}"
+  File "..\ConfigFiles\Sample Config Files\phoBehavioralBoxLabjackController-LogicalChannelSetupConfig.json"
 
   SetOutPath "$INSTDIR"
  

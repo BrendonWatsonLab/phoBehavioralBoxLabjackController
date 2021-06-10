@@ -22,13 +22,15 @@
 #include <thread>
 
 //#include "../../C_C++_LJM_2019-05-20/LJM_Utilities.h"
+
+
 #include "BehavioralBoxControllersManager.h"
 #include "BehavioralBoxLabjack.h"
 #include "LabjackHelpers.h"
 #include "ConfigurationManager.h"
 
 // Webserver functionality:
-#if LAUNCH_WEB_SERVER
+#if INCLUDE_WEB_SERVER_FILES
 #include "LabjackControllerWebApplication.h"
 
 #include <Wt/WServer.h>
@@ -62,6 +64,8 @@ int main(int argc, char** argv)
 	std::cout << "\t Pho Hale 2021" << std::endl << std::endl;
 	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 
+	//configMan->testJsonConfig();
+	
 	// Get the hostname
 	//std::string foundHostName = configMan->getHostName();
 	//std::cout << "Found host name: " << foundHostName << std::endl;
@@ -72,11 +76,21 @@ int main(int argc, char** argv)
 
 	//TODO: this doesn't currently matter because the webserver reloads everything in TimeSeriesChart::buildHistoricDataModel() by calling the static BehavioralBoxControllersManager::loadAllHistoricalData() function.
 	// Eventually we weant to implement it in a singleton-like fashion.
-	const bool shouldStartWebServer = configMan->getLoadedConfig().launch_web_server;
-	if (shouldStartWebServer) {
-		// Run the webserver:
-		startWebserver(argc, argv, &controller);
-	}
+
+	#if LAUNCH_WEB_SERVER
+		const bool shouldStartWebServer = configMan->getLoadedConfig().launch_web_server;
+
+		if (shouldStartWebServer) {
+			// Run the webserver:
+			startWebserver(argc, argv, &controller);
+		}
+
+	
+	#else
+
+	
+	#endif
+	
 
 	std::cout <<std::endl << "Scanning for attached Labjacks..." <<std::endl;
 	if (!controller->waitForFoundLabjacks()) {
@@ -85,9 +99,11 @@ int main(int argc, char** argv)
 		return shutdownApplication(LJME_NO_DEVICES_FOUND);
 	}
 
+#if LAUNCH_WEB_SERVER
 	if (shouldStartWebServer) {
-		WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
+		Wt::WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
 	}
+#endif
 
 	// TODO - READ ME: main run loop
 		// The LJM_StartInterval, LJM_WaitForNextInterval, and LJM_CleanInterval functions are used to efficiently execute the loop every so many milliseconds
@@ -144,7 +160,7 @@ int main(int argc, char** argv)
 
 bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr)
 {
-
+#if INCLUDE_WEB_SERVER_FILES
 	std::cout << "Starting the web server." << std::endl;
 
 	// WEB SERVER THREAD BLOCK:
@@ -169,6 +185,7 @@ bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxCo
 		return true;
 	}));
 
+#endif
 	return true;
 }
 
@@ -178,6 +195,7 @@ int shutdownApplication(int shutdownCode)
 	std::cout << "Shutting down the application..." << std::endl;
 	//controller->shutdown();
 	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
+#if INCLUDE_WEB_SERVER_FILES
 	const bool shouldStartWebServer = configMan->getLoadedConfig().launch_web_server;
 	if (shouldStartWebServer) {
 		std::cout << "Waiting on web server thread to quit..." << std::endl;
@@ -185,6 +203,7 @@ int shutdownApplication(int shutdownCode)
 		// We can not let this object be destroyed until the thread finishes executing.
 		web_server_thread.join();
 	}
+#endif
 	printf("Done.");
 	// At this point the thread has finished.
 	// Destructor can now complete.

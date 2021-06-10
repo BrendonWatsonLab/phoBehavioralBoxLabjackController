@@ -5,11 +5,12 @@ Specifies what ports to open
 */
 
 #include "..\ProgramVersion.h"
+#include "LabjackPortType.h"
 
 // number of tasks that can run simultaneously
 #define MAX_NUM_THREAD_PER_LABJACK 1
 
-#define LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC 20
+#define LABJACK_UPDATE_LOOP_FREQUENCY_MILLISEC 50
 
 // The maximum number of simultaneous labjacks that can be connected to this computer
 #define max_number_labjacks 4
@@ -26,7 +27,8 @@ Specifies what ports to open
 ////// GUI Config:
 #define PRINT_OUTPUT_VALUES_TO_CONSOLE false
 
-#define LAUNCH_WEB_SERVER true
+#define INCLUDE_WEB_SERVER_FILES false
+#define LAUNCH_WEB_SERVER false
 #define ENABLE_WEB_SERVER_LIVE_WIDGET false
 
 #define ENABLE_LIVE_LABJACK_CONNECTIONS false
@@ -34,6 +36,10 @@ Specifies what ports to open
 ////// DEBUGGING ONLY:
 //CONTINUE_WITHOUT_LABJACKS: if false, it waits on at least one labjack hardware to be detected before moving forward.
 //#define CONTINUE_WITHOUT_LABJACKS true
+
+
+
+
 
 ////// Labjack Port Configurations:
 // Only one of these should be un-commented at a time.
@@ -43,4 +49,10 @@ Specifies what ports to open
 //// -- OR --
 //#include "../ConfigFiles/config-FinalBoxes-10-01-2019.h"
 //// -- OR --
-#include "../ConfigFiles/config-AnalogRunningWheel-12-17-2019.h"
+//#include "../ConfigFiles/config-AnalogRunningWheel-12-17-2019.h"
+//// -- OR --
+//#include "../ConfigFiles/config-PhoHomeTesting-05-28-2021.h"
+//// -- OR --
+//#include "../ConfigFiles/config-PhoHomeTesting-06-02-2021.h"
+//// -- OR --
+#include "../ConfigFiles/config-FinalBoxesStreamMode-06-09-2021.h"

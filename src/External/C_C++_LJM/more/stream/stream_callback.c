@@ -59,8 +59,10 @@ void StreamWithCallback(StreamInfo * si);
  * Combines SYSTEM_TIMER_20HZ and STREAM_DATA_CAPTURE_16 to create the original
  * 32-bit value of SYSTEM_TIMER_20HZ.
 **/
-void HardcodedPrintScans(StreamInfo * si, int deviceScanBacklog,
-	int LJMScanBacklog);
+void HardcodedPrintScans(StreamInfo * si, int deviceScanBacklog, int LJMScanBacklog);
+
+
+
 
 int main()
 {
@@ -175,8 +177,7 @@ void StreamWithCallback(StreamInfo * si)
 	}
 
 	t0 = GetCurrentTimeMS();
-	err = LJM_eStreamStart(si->handle, si->scansPerRead, si->numChannels, si->aScanList,
-		&(si->scanRate));
+	err = LJM_eStreamStart(si->handle, si->scansPerRead, si->numChannels, si->aScanList, &(si->scanRate));
 	ErrorCheck(err, "LJM_eStreamStart");
 
 	err = LJM_SetStreamCallback(si->handle, si->callback, si);
@@ -227,8 +228,7 @@ void MyStreamReadCallback(void * arg)
 	}
 }
 
-void HardcodedPrintScans(StreamInfo * si, int deviceScanBacklog,
-	int LJMScanBacklog)
+void HardcodedPrintScans(StreamInfo * si, int deviceScanBacklog, int LJMScanBacklog)
 {
 	int dataI, scanI;
 	unsigned int timerValue;
