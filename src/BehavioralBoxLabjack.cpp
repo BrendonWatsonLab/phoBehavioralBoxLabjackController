@@ -256,20 +256,20 @@ void BehavioralBoxLabjack::printIdentifierLine()
 	std::cout << ">> Labjack [" << this->serialNumber << "] :" << std::endl;
 }
 
-void BehavioralBoxLabjack::diagnosticPrintLastValues()
-{
-	this->printIdentifierLine();
-	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
-	std::cout << "\t " << milliseconds_since_epoch;
-	for (int i = 0; i < NUM_CHANNELS; i++) {
-		//if (inputPortValuesChanged[i] == true) {
-		//	// The input port changed from the previous value
-
-		//}
-		std::cout << "\t" << this->lastReadInputPortValues[i];
-	}
-	std::cout << std::endl;
-}
+//void BehavioralBoxLabjack::diagnosticPrintLastValues()
+//{
+//	this->printIdentifierLine();
+//	unsigned long long milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastCaptureComputerTime.time_since_epoch()).count();
+//	std::cout << "\t " << milliseconds_since_epoch;
+//	for (int i = 0; i < NUM_CHANNELS; i++) {
+//		//if (inputPortValuesChanged[i] == true) {
+//		//	// The input port changed from the previous value
+//
+//		//}
+//		std::cout << "\t" << this->lastReadInputPortValues[i];
+//	}
+//	std::cout << std::endl;
+//}
 
 int BehavioralBoxLabjack::getError()
 {
@@ -625,7 +625,8 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 	LabjackLogicalInputChannel* newInputChannel_A1 = new LabjackLogicalInputChannel({ "AIN1" }, { "Water2_BeamBreak" }, "AIN1");
 	newInputChannel_A1->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
 	newInputChannel_A1->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
-
+	this->logicalInputChannels.push_back(newInputChannel_A1);
+	
 	LabjackLogicalInputChannel* newInputChannel_A2 = new LabjackLogicalInputChannel({ "AIN2" }, { "Food1_BeamBreak" }, "AIN2");
 	newInputChannel_A2->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
 	newInputChannel_A2->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
@@ -1113,7 +1114,7 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 			if (this->logicalInputChannels[logicalChannelIndex]->getReturnsContinuousValue())
 			{
 				// If it's an analog (continuous) port:
-				if (!this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
+				if (this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
 				{
 					newCSVLine_analogOnly << lastReadValues[currLinearOffsetIndex];
 				}
@@ -1121,7 +1122,7 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 			else
 			{
 				// Otherwise, it's a digital port
-				if (!this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
+				if (this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
 				{
 					newCSVLine_digitalOnly << lastReadValues[currLinearOffsetIndex];
 				}

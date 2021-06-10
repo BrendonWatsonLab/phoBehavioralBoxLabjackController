@@ -52,7 +52,7 @@ Specifies what ports to open
 //#include "../ConfigFiles/config-AnalogRunningWheel-12-17-2019.h"
 //// -- OR --
 //#include "../ConfigFiles/config-PhoHomeTesting-05-28-2021.h"
-//// -- OR --
-//#include "../ConfigFiles/config-PhoHomeTesting-06-02-2021.h"
-//// -- OR --
-#include "../ConfigFiles/config-FinalBoxesStreamMode-06-09-2021.h"
+// -- OR --
+#include "../ConfigFiles/config-PhoHomeTesting-06-02-2021.h"
+////// -- OR --
+//#include "../ConfigFiles/config-FinalBoxesStreamMode-06-09-2021.h"

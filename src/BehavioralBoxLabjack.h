@@ -53,7 +53,7 @@ public:
 
 	void diagnosticPrint();
 	void printIdentifierLine();
-	void diagnosticPrintLastValues();
+	//void diagnosticPrintLastValues();
 	int getError();
 
 	// Time
@@ -162,13 +162,13 @@ private:
 
 	// Variables for holding the last read values
 	StateMonitor* monitor;
-	// All Values:
-	char * inputPortNames_all[NUM_CHANNELS] = globalLabjackInputPortNames;
-	char * inputPortPurpose_all[NUM_CHANNELS] = globalLabjackInputPortPurpose;
-	LabjackPortType inputPortTypes_all[NUM_CHANNELS] = globalLabjackInputPortType;
-	bool inputPortIsLogged_all[NUM_CHANNELS] = globalLabjackInputPortIsLogged;
-	bool inputPortIsAnalog[NUM_CHANNELS] = globalLabjackInputPortIsAnalog;
-	double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
+	//// All Values:
+	//char * inputPortNames_all[NUM_CHANNELS] = globalLabjackInputPortNames;
+	//char * inputPortPurpose_all[NUM_CHANNELS] = globalLabjackInputPortPurpose;
+	//LabjackPortType inputPortTypes_all[NUM_CHANNELS] = globalLabjackInputPortType;
+	//bool inputPortIsLogged_all[NUM_CHANNELS] = globalLabjackInputPortIsLogged;
+	//bool inputPortIsAnalog[NUM_CHANNELS] = globalLabjackInputPortIsAnalog;
+	//double lastReadInputPortValues[NUM_CHANNELS] = {0.0};
 
 	//// Digital values:
 	//char* inputPortNames_digital[NUM_CHANNELS_DIGITAL] = globalLabjackDigitalInputPortNames;
