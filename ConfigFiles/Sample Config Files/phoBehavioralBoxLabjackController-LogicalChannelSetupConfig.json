@@ -22,19 +22,6 @@
             "portPurpose": [
                 "RunningWheel"
             ]
-        },
-        {
-            "channelValuesMode": 4,
-            "config_version": 2,
-            "name": "Stream_Offset_Timer",
-            "portNames": [
-                "SYSTEM_TIMER_20HZ",
-                "STREAM_DATA_CAPTURE_16"
-            ],
-            "portPurpose": [
-                "SYSTEM_TIMER_20HZ",
-                "STREAM_DATA_CAPTURE_16"
-            ]
         }
     ]
 }

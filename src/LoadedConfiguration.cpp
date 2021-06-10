@@ -5,10 +5,10 @@
 //
 // LoadedConfiguration
 //
-bool LoadedConfiguration::persistToIniFile(std::string path)
-{
-	return false;
-}
+//bool LoadedConfiguration::persistToIniFile(std::string path)
+//{
+//	return false;
+//}
 
 
 

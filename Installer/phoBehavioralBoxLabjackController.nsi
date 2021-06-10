@@ -107,6 +107,9 @@
   ; File "${PHO_COMMON_DIR_CONFIG}\phoBehavioralBoxLabjackController-Config.ini"
   ; SkipMainConfigCopy:
 
+  SetOutPath "${PHO_COMMON_DIR_CONFIG}"
+  File "..\ConfigFiles\Sample Config Files\phoBehavioralBoxLabjackController-LogicalChannelSetupConfig.json"
+
   SetOutPath "$INSTDIR"
  
   File "${PHO_BUILD_PATH}\${MUI_FILE}.exe"

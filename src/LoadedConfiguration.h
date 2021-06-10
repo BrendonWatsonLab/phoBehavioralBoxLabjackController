@@ -32,15 +32,10 @@ struct LoadedConfiguration
 	bool shouldEnableSynchronize_Y_Axis = false;
 	int numDaysToDisplay = 60;
 
-	//LABJACK:
-	std::string labjackInputChannelList = "{AIN0,AIN1,AIN2,AIN3,FIO_STATE,SYSTEM_TIMER_20HZ,STREAM_DATA_CAPTURE_16}";
-
-
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(LoadedConfiguration, config_version, daylightStartHour, daylightOffHour, continue_without_labjacks, experimentName, cohortName, animalName, outputFileRootDirectory,
 		enableOverrideDefaultHistoricalFileSearchDirectory, historicalFileSearchRootDirectory, launch_web_server, enableHistoricalDataLoading, shouldEnableSynchronize_Y_Axis, numDaysToDisplay)
 
-
-	bool persistToIniFile(std::string path);
+	//bool persistToIniFile(std::string path);
 	
 };
 
@@ -51,8 +46,7 @@ struct LoadedLogicalChannelConfiguration
 {
 	//enum class ChannelValueMode { CVM_Custom, AnalogAsDigitalInput, DigitalStateAsDigitalValues, AnalogAsContinuousInput, TimerRegistersAsContinuousTimer };
 	enum ChannelValueMode { CVM_Custom, CVM_AnalogAsDigitalInput, CVM_DigitalStateAsDigitalValues, CVM_AnalogAsContinuousInput, CVM_TimerRegistersAsContinuousTimer };
-
-	int config_version = 2;
+	
 	std::string name;
 	std::vector<std::string> portNames;
 
@@ -78,7 +72,7 @@ struct LoadedLogicalChannelConfiguration
 	//})
 
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(LoadedLogicalChannelConfiguration, config_version, name, portNames, portPurpose, channelValuesMode)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(LoadedLogicalChannelConfiguration, name, portNames, portPurpose, channelValuesMode)
 };
 
 
@@ -86,10 +80,9 @@ struct LoadedLogicalChannelConfiguration
 // The object that holds the vector of LoadedLogicalChannelConfiguration
 struct LoadedLogicalChannelsSetupConfiguration
 {
-	int config_version = 2;
 	std::vector<LoadedLogicalChannelConfiguration> logicalChannelConfigs;
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(LoadedLogicalChannelsSetupConfiguration, config_version, logicalChannelConfigs)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(LoadedLogicalChannelsSetupConfiguration, logicalChannelConfigs)
 
 	std::vector<LabjackLogicalInputChannel*> buildLogicalInputChannels();
 	
