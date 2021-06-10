@@ -29,6 +29,11 @@
 //#include "LabjackStreamInfo.h"
 
 #include "LabjackLogicalInputChannel.h"
+#include "WindowsHelpers.h"
+
+// In all other files
+//#define PFD_SKIP_IMPLEMENTATION 1
+#include "External/portable-file-dialogs.h"
 
 // Set to non-zero for external stream clock
 #define EXTERNAL_STREAM_CLOCK 0
@@ -610,10 +615,36 @@ bool BehavioralBoxLabjack::saveConfigurationFile(std::string filePath)
 	}
 }
 
-
+//TODO: Ideally this would be managed in Main.cpp or somewhere more global, and not at the individual labjack level
 void BehavioralBoxLabjack::LoadActiveLogicalInputChannelsConfig()
 {
 	std::string desiredJsonSavePath = "C:/Common/config/phoBehavioralBoxLabjackController-LogicalChannelSetupConfig.json";
+
+	if (!FilesystemHelpers::fileExists(desiredJsonSavePath))
+	{
+		// File doesn't exist, need a different load path
+		if (pfd::settings::available()) {
+			auto selectionDialog = pfd::open_file("Select a .json channel config file", ".",
+				{ "Json Files", "*.json",
+				  "All Files", "*" },
+				pfd::opt::multiselect);
+			// Do something with selection
+			for (auto const& filename : selectionDialog.result()) {
+				std::cout << "Selected file: " << filename << "\n";
+				// This should be the new load path:
+				desiredJsonSavePath = filename;
+			} // end for selection results
+		} // end if available
+		
+		//WindowsHelpers::
+	}
+	else
+	{
+		// The file was found
+		auto m = pfd::message::message("File found!", "Loading JSON...");
+	}
+
+	
 	bool wasLoadSuccess = this->configMan->tryLoadChannelConfigFromFile(desiredJsonSavePath);
 	if (wasLoadSuccess)
 	{

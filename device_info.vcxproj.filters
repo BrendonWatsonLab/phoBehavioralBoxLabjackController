@@ -287,6 +287,9 @@
     <ClInclude Include="src\External\asenum.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="src\External\portable-file-dialogs.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml">
