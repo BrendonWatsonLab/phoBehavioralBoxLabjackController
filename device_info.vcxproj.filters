@@ -46,9 +46,6 @@
     <Filter Include="WebserverOnly\WtWebServer\Model">
       <UniqueIdentifier>{4b1dcc99-7b8f-44a8-845d-25e4fd6035a7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="WebserverOnly\WtWebServer\Obsolite">
-      <UniqueIdentifier>{197677d6-67bf-473c-9e18-7126cf24e7b7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="WebserverOnly\WtWebServer\WebComponents">
       <UniqueIdentifier>{a36f7a91-bbff-4825-b295-5033c51c60f3}</UniqueIdentifier>
     </Filter>
@@ -67,17 +64,11 @@
     <Filter Include="WebserverOnly\WtWebServer\Events">
       <UniqueIdentifier>{66c65849-c586-45ec-922e-b9d2929672cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Helpers">
+      <UniqueIdentifier>{4a78fb1f-e794-4529-94d5-6a8a36543483}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\BehavioralBoxLabjack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LabjackHelpers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ConfigurationFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\OutputState.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
@@ -87,9 +78,6 @@
     <ClCompile Include="src\LabjackControllerWebApplication.cpp">
       <Filter>WebserverOnly\WtWebServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\LabjackDataFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\TimeSeriesChart.cpp">
       <Filter>WebserverOnly\WtWebServer\WebComponents\Charts</Filter>
     </ClCompile>
@@ -98,9 +86,6 @@
     </ClCompile>
     <ClCompile Include="src\WebAppHelpWidget.cpp">
       <Filter>WebserverOnly\WtWebServer\WebComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FilesystemHelpers.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\BehavioralBoxHistoricalData.cpp">
       <Filter>Source Files\Model</Filter>
@@ -114,9 +99,6 @@
     <ClCompile Include="src\CsvUtil.cpp">
       <Filter>WebserverOnly\WtWebServer\Model</Filter>
     </ClCompile>
-    <ClCompile Include="src\WindowsHelpers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ConfigurationManager.cpp">
       <Filter>Singletons</Filter>
     </ClCompile>
@@ -126,26 +108,44 @@
     <ClCompile Include="src\BehavioralBoxDataWidget.cpp">
       <Filter>WebserverOnly\WtWebServer\WebComponents\BehavioralBoxDataWidget</Filter>
     </ClCompile>
-    <ClCompile Include="src\FormattingHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\BoxControllerWebDataServer.cpp">
       <Filter>WebserverOnly</Filter>
     </ClCompile>
+    <ClCompile Include="src\BehavioralBoxLabjack.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ConfigurationFile.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FilesystemHelpers.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FormattingHelper.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
     <ClCompile Include="src\External\INIReader\ini.c">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="src\External\INIReader\INIReader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="src\LabjackLogicalChannelBase.cpp">
-      <Filter>Header Files\Configuration Files</Filter>
+    <ClCompile Include="src\LabjackDataFile.cpp">
+      <Filter>Source Files\Model</Filter>
     </ClCompile>
-    <ClCompile Include="src\LabjackLogicalInputChannel.cpp">
-      <Filter>Header Files\Configuration Files</Filter>
+    <ClCompile Include="src\LabjackHelpers.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="src\LoadedConfiguration.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WindowsHelpers.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackLogicalChannelBase.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LabjackLogicalInputChannel.cpp">
+      <Filter>Source Files\Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -236,32 +236,8 @@
     <ClInclude Include="src\BehavioralBoxDataWidget.h">
       <Filter>WebserverOnly\WtWebServer\WebComponents\BehavioralBoxDataWidget</Filter>
     </ClInclude>
-    <ClInclude Include="src\LabjackStreamInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LabjackPortType.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\BoxControllerWebDataServer.h">
       <Filter>WebserverOnly</Filter>
-    </ClInclude>
-    <ClInclude Include="src\External\INIReader\ini.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\External\INIReader\INIReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LabjackLogicalInputChannel.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LabjackLogicalChannelBase.h">
-      <Filter>Header Files\Configuration Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DigitalStatePortMask.h">
-      <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
     <ClInclude Include="ConfigFiles\config-FinalBoxesStreamMode-06-09-2021.h">
       <Filter>Header Files\Configuration Files</Filter>
@@ -271,6 +247,30 @@
     </ClInclude>
     <ClInclude Include="src\External\portable-file-dialogs.h">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackLogicalChannelBase.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackLogicalInputChannel.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DigitalStatePortMask.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackPortType.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\INIReader\ini.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\External\INIReader\INIReader.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files\Configuration Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LabjackStreamInfo.h">
+      <Filter>Header Files\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

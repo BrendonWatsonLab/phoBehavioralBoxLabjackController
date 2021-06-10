@@ -56,11 +56,7 @@ bool ConfigurationFile::reloadFromFile()
 	//TimeSeriesChart:
 	this->loadedConfig.shouldEnableSynchronize_Y_Axis = this->iniReader.GetBoolean("TimeSeriesChart", "shouldEnableSynchronize_Y_Axis", true);
 	this->loadedConfig.numDaysToDisplay = this->iniReader.GetInteger("TimeSeriesChart", "numDaysToDisplay", 60);
-
-	// LABJACK:
-	this->loadedConfig.labjackInputChannelList = this->iniReader.GetString("Labjack", "labjackInputChannelList", "{AIN0,AIN1,AIN2,AIN3,FIO_STATE,SYSTEM_TIMER_20HZ,STREAM_DATA_CAPTURE_16}");
 	
-
 	switch (this->loadStatus)
 	{
 	case ConfigFileLoadStatus::LoadedFromFile: break;
