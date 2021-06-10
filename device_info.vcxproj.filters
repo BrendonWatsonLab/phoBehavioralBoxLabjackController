@@ -281,6 +281,9 @@
     <ClInclude Include="ConfigFiles\config-FinalBoxesStreamMode-06-09-2021.h">
       <Filter>Header Files\Configuration Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\External\asenum.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="resources\charts.xml">

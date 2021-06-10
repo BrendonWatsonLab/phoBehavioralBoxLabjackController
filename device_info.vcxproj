@@ -137,6 +137,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="src\DigitalStatePortMask.h" />
+    <ClInclude Include="src\External\asenum.h" />
     <ClInclude Include="src\External\CSVWriter.h" />
     <ClInclude Include="src\External\INIReader\ini.h" />
     <ClInclude Include="src\External\INIReader\INIReader.h" />
