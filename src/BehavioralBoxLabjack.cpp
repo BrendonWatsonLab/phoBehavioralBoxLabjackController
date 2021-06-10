@@ -615,47 +615,42 @@ bool BehavioralBoxLabjack::saveConfigurationFile(std::string filePath)
 //TODO: eventually to be replaced by dynamic loading from config file
 void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 {
-	//// "AIN0", "AIN1", "AIN2", "AIN3"
-	//LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "Water1_BeamBreak" }, "AIN0");
-	//newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
-	//newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
-	//this->logicalInputChannels.push_back(newInputChannel_A0);
+	////Pho Home Testing:
+	// "AIN0", "AIN1", "AIN2", "AIN3"
+	LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "Water1_BeamBreak" }, "AIN0");
+	newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	this->logicalInputChannels.push_back(newInputChannel_A0);
 
-	//LabjackLogicalInputChannel* newInputChannel_A1 = new LabjackLogicalInputChannel({ "AIN1" }, { "Water2_BeamBreak" }, "AIN1");
-	//newInputChannel_A1->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
-	//newInputChannel_A1->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	LabjackLogicalInputChannel* newInputChannel_A1 = new LabjackLogicalInputChannel({ "AIN1" }, { "Water2_BeamBreak" }, "AIN1");
+	newInputChannel_A1->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A1->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
 
-	//LabjackLogicalInputChannel* newInputChannel_A2 = new LabjackLogicalInputChannel({ "AIN2" }, { "Food1_BeamBreak" }, "AIN2");
-	//newInputChannel_A2->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
-	//newInputChannel_A2->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
-	//this->logicalInputChannels.push_back(newInputChannel_A2);
+	LabjackLogicalInputChannel* newInputChannel_A2 = new LabjackLogicalInputChannel({ "AIN2" }, { "Food1_BeamBreak" }, "AIN2");
+	newInputChannel_A2->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A2->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	this->logicalInputChannels.push_back(newInputChannel_A2);
 
-	//LabjackLogicalInputChannel* newInputChannel_A3 = new LabjackLogicalInputChannel({ "AIN3" }, { "Food2_BeamBreak" }, "AIN3");
-	//newInputChannel_A3->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
-	//newInputChannel_A3->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
-	//this->logicalInputChannels.push_back(newInputChannel_A3);
-	//
-	//LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "FIO_STATE" }, { "SIGNALS_Dispense" }, "SIGNALS_Dispense");
-	//newInputChannel->fn_generic_get_value = [](int numInputs, double* valuePointer)
-	//{
-	//	auto currInputValue = valuePointer[0];
-	//	auto currBitsetValues = LabjackLogicalInputChannel::convertValue_DigitalStateAsDigitalValues(currInputValue);
-	//	// return a double vector
-	//	return LabjackLogicalInputChannel::toFinalDoublesVector(currBitsetValues);
-	//};
-	//this->logicalInputChannels.push_back(newInputChannel);
+	LabjackLogicalInputChannel* newInputChannel_A3 = new LabjackLogicalInputChannel({ "AIN3" }, { "Food2_BeamBreak" }, "AIN3");
+	newInputChannel_A3->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
+	newInputChannel_A3->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
+	this->logicalInputChannels.push_back(newInputChannel_A3);
 	
-
-	LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "EIO_STATE" }, { "SIGNALS_All" }, "SIGNALS_All");
+	LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "FIO_STATE" }, { "SIGNALS_Dispense" }, "SIGNALS_Dispense");
 	newInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
 	newInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_DigitalStateAsDigitalValues();
 	this->logicalInputChannels.push_back(newInputChannel);
-
-
-	LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "RunningWheel" }, "AIN0");
-	newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsContinuousInput();
-	newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
-	this->logicalInputChannels.push_back(newInputChannel_A0);
+	
+	////// BB-16 Testing:
+	//LabjackLogicalInputChannel* newInputChannel = new LabjackLogicalInputChannel({ "EIO_STATE" }, { "SIGNALS_All" }, "SIGNALS_All");
+	//newInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
+	//newInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_DigitalStateAsDigitalValues();
+	//this->logicalInputChannels.push_back(newInputChannel);
+	//
+	//LabjackLogicalInputChannel* newInputChannel_A0 = new LabjackLogicalInputChannel({ "AIN0" }, { "RunningWheel" }, "AIN0");
+	//newInputChannel_A0->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsContinuousInput();
+	//newInputChannel_A0->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
+	//this->logicalInputChannels.push_back(newInputChannel_A0);
 
 	LabjackLogicalInputChannel* timerInputChannel = new LabjackLogicalInputChannel({ "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, { "SYSTEM_TIMER_20HZ", "STREAM_DATA_CAPTURE_16" }, "Stream_Offset_Timer");
 	timerInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
@@ -671,6 +666,7 @@ void BehavioralBoxLabjack::testBuildLogicalInputChannels()
 		
 		return std::vector<double>({ currTimerOffsetSeconds });
 	};
+	timerInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
 	this->logicalInputChannels.push_back(timerInputChannel);
 
 }
@@ -1139,47 +1135,12 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 
 	} // end for i
 
-
-
-	//for (int i = 0; i < this->logicalInputChannels.size(); i++) {
-	//	if (!this->logicalInputChannels[i]->isLoggedToCSV())
-	//	{
-	//		continue; // skip this non-logged channel
-	//	}
-	//	auto currExpandedChannels = this->logicalInputChannels[i]->getExpandedFinalValuePortNames();
-	//	if (!this->logicalInputChannels[i]->getReturnsContinuousValue())
-	//	{
-	//		// if this is not a continuous (analog-like) channel:
-	//		for (int j = 0; j < currExpandedChannels.size(); ++j)
-	//		{
-	//			// Otherwise, it's a digital port
-	//			newCSVLine_digitalOnly << lastReadValues[i+j];
-	//			if (enableConsoleLogging && this->logicalInputChannels[i]->isLoggedToConsole()) {
-	//				std::cout << lastReadValues[i + j] << ", ";
-	//			}
-	//		}
-	//	}
-	//	else
-	//	{
-	//		// If it's an analog (continuous) port:
-	//		for (int j = 0; j < currExpandedChannels.size(); ++j)
-	//		{
-	//			newCSVLine_analogOnly << lastReadValues[i + j];
-	//			if (enableConsoleLogging && this->logicalInputChannels[i]->isLoggedToConsole()) {
-	//				std::cout << lastReadValues[i + j] << ", ";
-	//			}
-	//		}
-	//	}
-	//} // end for i
-
-
 	if (enableConsoleLogging) {
 		std::cout << std::endl;
 	}
 	// Lock the mutex to prevent concurrent persisting
 	std::lock_guard<std::mutex> csvLock(this->logMutex);
 	{
-		//newCSVLine.writeToFile(fileFullPath, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
 		if (did_anyAnalogPortChange)
 		{
 			// If an analog port changed, write out to the digital line
