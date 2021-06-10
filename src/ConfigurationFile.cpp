@@ -112,3 +112,50 @@ bool ConfigurationFile::saveToFile(std::string overrideFilepath)
 	return false;
 }
 
+void ConfigurationFile::updateActiveChannelSetupConfig(LoadedLogicalChannelsSetupConfiguration updatedConfig)
+{
+	// Saves the loadedChannelSetupConfig to file
+	this->loadedChannelSetupConfig = updatedConfig;
+}
+
+// Saves this->loadedChannelSetupConfig to the JSON file specified by the provided path
+bool ConfigurationFile::saveChannelConfigToFile(std::string path)
+{
+	auto currChannelSetupConfig = this->loadedChannelSetupConfig;
+	// Convert to JSON
+	// conversion: LoadedLogicalChannelsSetupConfiguration -> json
+	//ordered_json j;
+	json j = currChannelSetupConfig;
+	// Save out to JSON file:
+	std::ofstream o(path);
+	o << std::setw(4) << j << std::endl;
+	o.close(); // close the file
+	return true;
+}
+
+bool ConfigurationFile::tryLoadChannelConfigFromFile(std::string path)
+{
+	// Open input stream to file:
+	std::ifstream inputStream(path);
+	json j;
+	try
+	{
+		j = json::parse(inputStream);
+	}
+	catch (json::parse_error& ex)
+	{
+		std::cerr << "parse error at byte " << ex.byte << std::endl;
+		return false;
+	}
+
+	std::cout << "Successfully read json data from " << path << "! Attempting to parse as a LoadedLogicalChannelsSetupConfiguration object..." << std::endl;
+	// conversion: json -> person
+	auto loadedSetupConfig = j.get<LoadedLogicalChannelsSetupConfiguration>();
+	// After getting the loaded object, set this member variable:
+	this->loadedChannelSetupConfig = loadedSetupConfig;
+
+	std::cout << "Successfully loaded " << path << " as JSON and updated this->loadedChannelSetupConfig!" << std::endl;
+	inputStream.close();
+	return true;
+}
+

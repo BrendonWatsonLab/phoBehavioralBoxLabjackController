@@ -13,21 +13,29 @@
 class ConfigurationFile
 {
 public:
+	enum class ConfigFileLoadStatus { LoadedFromFile, ExistsOnlyInMemory };
+
+	
 	ConfigurationFile();
 	ConfigurationFile(std::string filePath);
 
 	bool reloadFromFile();
 	bool saveToFile();
 	bool saveToFile(std::string overrideFilepath);
+	
+	LoadedConfiguration getLoadedConfig() const { return this->loadedConfig; }
 
-	LoadedConfiguration getLoadedConfig() { return this->loadedConfig; }
 
-	enum class ConfigFileLoadStatus { LoadedFromFile, ExistsOnlyInMemory };
-
+	LoadedLogicalChannelsSetupConfiguration getLoadedChannelSetupConfig() const { return this->loadedChannelSetupConfig; }
+	void updateActiveChannelSetupConfig(LoadedLogicalChannelsSetupConfiguration updatedConfig);
+	bool saveChannelConfigToFile(std::string path);
+	bool tryLoadChannelConfigFromFile(std::string path);
 	
 
 private:
 	LoadedConfiguration loadedConfig;
+	LoadedLogicalChannelsSetupConfiguration loadedChannelSetupConfig;
+	
 	std::string filePath;
 	INIReader iniReader;
 

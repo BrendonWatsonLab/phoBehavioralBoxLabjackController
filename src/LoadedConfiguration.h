@@ -44,7 +44,7 @@ struct LoadedConfiguration
 };
 
 
-
+//
 // The serializable seting for a single logical input channel
 struct LoadedLogicalChannelConfiguration
 {
@@ -70,6 +70,8 @@ struct LoadedLogicalChannelConfiguration
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(LoadedLogicalChannelConfiguration, config_version, name, portNames, portPurpose, channelValuesMode)
 };
 
+
+//
 // The object that holds the vector of LoadedLogicalChannelConfiguration
 struct LoadedLogicalChannelsSetupConfiguration
 {
