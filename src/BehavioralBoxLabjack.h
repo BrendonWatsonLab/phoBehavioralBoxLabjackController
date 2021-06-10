@@ -194,7 +194,10 @@ private:
 	//void setVisibleLightRelayState(bool isOn);
 
 
-	void performPersistValues(unsigned long long estimated_scan_milliseconds_since_epoch, double* lastReadValues, bool did_anyAnalogPortChange,	bool did_anyDigitalPortChange, bool enableConsoleLogging);
+	//void performPersistValues(unsigned long long estimated_scan_milliseconds_since_epoch, double* lastReadValues, bool did_anyAnalogPortChange,	bool did_anyDigitalPortChange, bool enableConsoleLogging);
+
+	void performPersistValues(unsigned long long estimated_scan_milliseconds_since_epoch, std::vector<std::vector<double>> newestReadValues, bool did_anyAnalogPortChange, bool did_anyDigitalPortChange, bool enableConsoleLogging);
+
 
 
 	// Stream Functionality:

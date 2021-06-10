@@ -1114,7 +1114,9 @@ void BehavioralBoxLabjack::readSensorValues()
 					
 					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
 					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadExpandedPortValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
-					this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadExpandedPortValuesVector.data(), currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+					//this->performPersistValues(estimated_scan_milliseconds_since_epoch, lastReadExpandedPortValuesVector.data(), currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+				this->performPersistValues(estimated_scan_milliseconds_since_epoch, currChannelExpandedPortValues, currScanDidAnyAnalogPortChange, currScanDidAnyDigitalPortChange, true);
+				//
 				//}
 
 			}
@@ -1145,7 +1147,8 @@ void BehavioralBoxLabjack::readSensorValues()
 //
 
 // New value that aims to be independent of the last values cached, thus allowing Stream mode persistance
-void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_scan_milliseconds_since_epoch, double* lastReadValues, bool did_anyAnalogPortChange, bool did_anyDigitalPortChange, bool enableConsoleLogging)
+//void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_scan_milliseconds_since_epoch, double* lastReadValues, bool did_anyAnalogPortChange, bool did_anyDigitalPortChange, bool enableConsoleLogging)
+void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_scan_milliseconds_since_epoch, std::vector<std::vector<double>> newestReadValues, bool did_anyAnalogPortChange, bool did_anyDigitalPortChange, bool enableConsoleLogging)
 {
 	// Determine if the change occured in the analog ports, digital ports, or both
 	CSVWriter newCSVLine_digitalOnly(",");
@@ -1162,37 +1165,35 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 
 	int currAcrossChannelsExpandedPortLinearOffset = 0;
 	for (int logicalChannelIndex = 0; logicalChannelIndex < this->logicalInputChannels.size(); logicalChannelIndex++) {
-		auto currExpandedChannels = this->logicalInputChannels[logicalChannelIndex]->getExpandedFinalValuePortNames();
+		auto currChannel = this->logicalInputChannels[logicalChannelIndex];
+		auto currExpandedChannels = currChannel->getExpandedFinalValuePortNames(); // for a specific channel
 		const size_t currChannelNumExpandedValues = currExpandedChannels.size();
-		
-		for (int j = 0; j < currChannelNumExpandedValues; j++)
+
+		auto currChannelRecentReadFinalValues = newestReadValues.at(logicalChannelIndex);
+		assert(currChannelRecentReadFinalValues.size() == currChannelNumExpandedValues);
+
+
+		for (auto curr_expanded_channel_value : currChannelRecentReadFinalValues)
 		{
-			int currLinearOffsetIndex = currAcrossChannelsExpandedPortLinearOffset + j;
-			if (this->logicalInputChannels[logicalChannelIndex]->getReturnsContinuousValue())
+			if (this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
 			{
-				// If it's an analog (continuous) port:
-				if (this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
+				if (this->logicalInputChannels[logicalChannelIndex]->getReturnsContinuousValue())
 				{
-					newCSVLine_analogOnly << lastReadValues[currLinearOffsetIndex];
+					// If it's an analog (continuous) port:
+					newCSVLine_analogOnly << curr_expanded_channel_value;
 				}
-			}
-			else
-			{
-				// Otherwise, it's a digital port
-				if (this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
+				else
 				{
-					//newCSVLine_digitalOnly << int(round(lastReadValues[currLinearOffsetIndex]));
-					newCSVLine_digitalOnly << lastReadValues[currLinearOffsetIndex];
+					// Otherwise, it's a digital port
+					newCSVLine_digitalOnly << curr_expanded_channel_value;
 				}
 			}
 			if (enableConsoleLogging && this->logicalInputChannels[logicalChannelIndex]->isLoggedToConsole()) {
-				std::cout << lastReadValues[currLinearOffsetIndex] << ", ";
+				std::cout << curr_expanded_channel_value << ", ";
 			}
-
-			currAcrossChannelsExpandedPortLinearOffset += currChannelNumExpandedValues;
-		} // end for currExpandedChannels
-
-	} // end for i
+		} // end for this channels read values
+		
+	} // end for logicalChannelIndex
 
 	if (enableConsoleLogging) {
 		std::cout << std::endl;
