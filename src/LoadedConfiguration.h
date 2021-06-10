@@ -48,24 +48,35 @@ struct LoadedConfiguration
 // The serializable seting for a single logical input channel
 struct LoadedLogicalChannelConfiguration
 {
+	//enum class ChannelValueMode { CVM_Custom, AnalogAsDigitalInput, DigitalStateAsDigitalValues, AnalogAsContinuousInput, TimerRegistersAsContinuousTimer };
+	enum ChannelValueMode { CVM_Custom, CVM_AnalogAsDigitalInput, CVM_DigitalStateAsDigitalValues, CVM_AnalogAsContinuousInput, CVM_TimerRegistersAsContinuousTimer };
+
 	int config_version = 2;
 	std::string name;
 	std::vector<std::string> portNames;
 
 	// Optional Properties:
 	std::vector<std::string> portPurpose;
+	ChannelValueMode channelValuesMode{ CVM_AnalogAsDigitalInput };
+	
+	// map ChannelValueMode values to JSON as strings
+	//NLOHMANN_JSON_SERIALIZE_ENUM(ChannelValueMode, {
+	//	{ChannelValueMode::Custom, nullptr},
+	//	{ChannelValueMode::AnalogAsDigitalInput, "AnalogAsDigitalInput"},
+	//	{ChannelValueMode::DigitalStateAsDigitalValues, "DigitalStateAsDigitalValues"},
+	//	{ChannelValueMode::AnalogAsContinuousInput, "AnalogAsContinuousInput"},
+	//	{ChannelValueMode::TimerRegistersAsContinuousTimer, "TimerRegistersAsContinuousTimer"},
+	//})
 
-	enum class ChannelValueMode { Custom, AnalogAsDigitalInput, DigitalStateAsDigitalValues, AnalogAsContinuousInput, TimerRegistersAsContinuousTimer };
-
-	// map TaskState values to JSON as strings
 	NLOHMANN_JSON_SERIALIZE_ENUM(ChannelValueMode, {
-		{ChannelValueMode::Custom, nullptr},
-		{ChannelValueMode::AnalogAsDigitalInput, "AnalogAsDigitalInput"},
-		{ChannelValueMode::DigitalStateAsDigitalValues, "DigitalStateAsDigitalValues"},
-		{ChannelValueMode::AnalogAsContinuousInput, "AnalogAsContinuousInput"},
+		{CVM_Custom, "CUSTOM"},
+		{CVM_AnalogAsDigitalInput, "AnalogAsDigitalInput"},
+		{CVM_DigitalStateAsDigitalValues, "DigitalStateAsDigitalValues"},
+		{CVM_AnalogAsContinuousInput, "AnalogAsContinuousInput"},
+		{CVM_TimerRegistersAsContinuousTimer, "TimerRegistersAsContinuousTimer"},
 	})
 
-	ChannelValueMode channelValuesMode;
+	
 
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(LoadedLogicalChannelConfiguration, config_version, name, portNames, portPurpose, channelValuesMode)
 };

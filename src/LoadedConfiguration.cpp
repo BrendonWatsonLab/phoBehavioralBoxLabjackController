@@ -26,25 +26,25 @@ std::vector<LabjackLogicalInputChannel*> LoadedLogicalChannelsSetupConfiguration
 
 		switch (active_config.channelValuesMode)
 		{
-		case LoadedLogicalChannelConfiguration::ChannelValueMode::AnalogAsDigitalInput: 
+		case LoadedLogicalChannelConfiguration::CVM_AnalogAsDigitalInput: 
 			aNewInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsDigitalInput();
 			aNewInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsDigitalInput();
 			break;
-		case LoadedLogicalChannelConfiguration::ChannelValueMode::DigitalStateAsDigitalValues: 
+		case LoadedLogicalChannelConfiguration::CVM_DigitalStateAsDigitalValues: 
 			aNewInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
 			aNewInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_DigitalStateAsDigitalValues();
 			break;
-		case LoadedLogicalChannelConfiguration::ChannelValueMode::AnalogAsContinuousInput: 
+		case LoadedLogicalChannelConfiguration::CVM_AnalogAsContinuousInput: 
 			aNewInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsContinuousInput();
 			aNewInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
 			break;
-		case LoadedLogicalChannelConfiguration::ChannelValueMode::TimerRegistersAsContinuousTimer:
+		case LoadedLogicalChannelConfiguration::CVM_TimerRegistersAsContinuousTimer:
 			aNewInputChannel->loggingMode = LabjackLogicalInputChannel::FinalDesiredValueLoggingMode::NotLogged;
 			aNewInputChannel->setNumberOfDoubleInputs(2); // Takes 2 double values to produce its output
 			aNewInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_TimerRegistersAsContinuousTimer();
 			aNewInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_TimerRegistersAsContinuousTimer();
 			break;
-		case LoadedLogicalChannelConfiguration::ChannelValueMode::Custom: 
+		case LoadedLogicalChannelConfiguration::CVM_Custom: 
 			//TODO: This needs to be handled/implemented
 
 			break;
