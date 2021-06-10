@@ -614,7 +614,8 @@ bool BehavioralBoxLabjack::saveConfigurationFile(std::string filePath)
 void BehavioralBoxLabjack::LoadActiveLogicalInputChannelsConfig()
 {
 	std::string desiredJsonSavePath = "C:/Common/config/phoBehavioralBoxLabjackController-LogicalChannelSetupConfig.json";
-	if (this->configMan->tryLoadChannelConfigFromFile("desiredJsonSavePath"))
+	bool wasLoadSuccess = this->configMan->tryLoadChannelConfigFromFile(desiredJsonSavePath);
+	if (wasLoadSuccess)
 	{
 		auto updatedConfig = this->configMan->getLoadedChannelSetupConfig();
 		auto concreteSetup = updatedConfig.buildLogicalInputChannels();  // can be called to get the actual values

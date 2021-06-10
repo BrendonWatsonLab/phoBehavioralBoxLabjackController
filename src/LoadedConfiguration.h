@@ -68,15 +68,14 @@ struct LoadedLogicalChannelConfiguration
 	//	{ChannelValueMode::TimerRegistersAsContinuousTimer, "TimerRegistersAsContinuousTimer"},
 	//})
 
-	NLOHMANN_JSON_SERIALIZE_ENUM(ChannelValueMode, {
-		{CVM_Custom, "CUSTOM"},
-		{CVM_AnalogAsDigitalInput, "AnalogAsDigitalInput"},
-		{CVM_DigitalStateAsDigitalValues, "DigitalStateAsDigitalValues"},
-		{CVM_AnalogAsContinuousInput, "AnalogAsContinuousInput"},
-		{CVM_TimerRegistersAsContinuousTimer, "TimerRegistersAsContinuousTimer"},
-	})
+	//NLOHMANN_JSON_SERIALIZE_ENUM(ChannelValueMode, {
+	//	{CVM_Custom, "CUSTOM"},
+	//	{CVM_AnalogAsDigitalInput, "AnalogAsDigitalInput"},
+	//	{CVM_DigitalStateAsDigitalValues, "DigitalStateAsDigitalValues"},
+	//	{CVM_AnalogAsContinuousInput, "AnalogAsContinuousInput"},
+	//	{CVM_TimerRegistersAsContinuousTimer, "TimerRegistersAsContinuousTimer"},
+	//})
 
-	
 
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(LoadedLogicalChannelConfiguration, config_version, name, portNames, portPurpose, channelValuesMode)
 };
