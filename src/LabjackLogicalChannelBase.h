@@ -36,7 +36,7 @@ public:
 
 	
 	virtual bool getReturnsContinuousValue() { return false; };
-	std::vector<std::string> getPortNames() { return this->portNames; };
+	std::vector<std::string> getPortNames() const { return this->portNames; };
 	//std::vector<std::string> getPortPurposes();
 
 

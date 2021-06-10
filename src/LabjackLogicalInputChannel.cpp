@@ -105,6 +105,7 @@ std::vector<std::string> LabjackLogicalInputChannel::getExpandedFinalValuePortNa
 	}
 	// Otherwise do the default:
 
+	// get the names of the labjack register/port to try and build known outputs
 	auto portNames = this->getPortNames();
 	if (portNames.size() == 1)
 	{
