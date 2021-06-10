@@ -641,7 +641,10 @@ void BehavioralBoxLabjack::LoadActiveLogicalInputChannelsConfig()
 	else
 	{
 		// The file was found
-		auto m = pfd::message::message("File found!", "Loading JSON...");
+		//auto m = pfd::message::message("File found!", "Loading JSON...");
+		auto m = pfd::notify::notify("File found!", "Loading JSON...", pfd::icon::info);
+		
+		
 	}
 
 	
@@ -868,8 +871,10 @@ void BehavioralBoxLabjack::SetupStream()
 	WriteNameOrDie(this->handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
 
 	// Build the stream object:
+	const double stream_scan_rate_Hz = 20.0;
+	
 	auto currChannelNames = this->getInputPortNames(PortEnumerationMode::portNames, true, true);
-	this->ljStreamInfo.build(currChannelNames, 200);
+	this->ljStreamInfo.build(currChannelNames, stream_scan_rate_Hz);
 
 	this->err = LJM_NamesToAddresses(this->ljStreamInfo.numChannels, const_cast<const char**>(this->ljStreamInfo.channelNames), this->ljStreamInfo.aScanList, NULL);
 	ErrorCheck(this->err, "Getting positive channel addresses");
