@@ -34,7 +34,9 @@ std::vector<LabjackLogicalInputChannel*> LoadedLogicalChannelsSetupConfiguration
 			aNewInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_DigitalStateAsDigitalValues();
 			aNewInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_DigitalStateAsDigitalValues();
 			break;
-		case LoadedLogicalChannelConfiguration::CVM_AnalogAsContinuousInput: 
+		case LoadedLogicalChannelConfiguration::CVM_AnalogAsContinuousInput:
+			aNewInputChannel->finalValueType = LabjackLogicalInputChannel::InputFinalDesiredValueType::Continuous;
+
 			aNewInputChannel->fn_generic_get_value = LabjackLogicalInputChannel::getDefault_genericGetValueFcn_AnalogAsContinuousInput();
 			aNewInputChannel->fn_generic_get_didValueChange = LabjackLogicalInputChannel::getDefault_didChangeFcn_AnalogAsContinuousInput();
 			break;

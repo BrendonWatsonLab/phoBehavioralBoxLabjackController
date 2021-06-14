@@ -1177,6 +1177,7 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 		{
 			if (this->logicalInputChannels[logicalChannelIndex]->isLoggedToCSV())
 			{
+				
 				if (this->logicalInputChannels[logicalChannelIndex]->getReturnsContinuousValue())
 				{
 					// If it's an analog (continuous) port:
