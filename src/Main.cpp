@@ -148,6 +148,105 @@ int main(int argc, char** argv)
 			}
 			std::cout << "\t done." << std::endl;
 		}
+
+
+
+
+
+
+
+
+
+
+
+
+		else if (character == 'F') {
+			// Show the data files:
+			std::cout << "Showing current output directory..." << std::endl;
+			// Iterate through all found Labjacks
+			auto loaded_config = configMan->getLoadedConfig();
+			std::string fullOutputDirectoryPathString = configMan->getGeneratedActiveOutputDirectory();
+			std::cout << "\t Showing output file directory at " << fullOutputDirectoryPathString << std::endl;
+			LabjackHelpers::showInExplorer(fullOutputDirectoryPathString);
+			std::cout << "\t done." << std::endl;
+		}
+		else if (character == 'P') {
+			// Prints the current data
+			std::cout << "Printing current data..." << std::endl;
+			// Iterate through all found Labjacks
+			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+				//controller->getActiveLabjacks()[i]->diagnosticPrintLastValues();
+			}
+			std::cout << "\t done." << std::endl;
+		}
+		else if (character == 'R') {
+			std::cout << "Refreshing Labjacks..." << std::endl;
+			controller->scanForNewLabjacks();
+			//if (shouldStartWebServer) {
+				// Refresh the webserver
+				//WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
+			//}
+			std::cout << "\t done." << std::endl;
+		}
+		else if (character == 'L') {
+			std::cout << "Toggling visible LED Light mode on all labjacks..." << std::endl;
+			// Iterate through all found Labjacks
+			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+				controller->getActiveLabjacks()[i]->toggleOverrideMode_VisibleLED();
+			}
+			std::cout << "\t done." << std::endl;
+		}
+		else if (character == 'A') {
+			std::cout << "Toggling attract mode on all Labjacks..." << std::endl;
+			// Iterate through all found Labjacks
+			for (int i = 0; i < controller->getActiveLabjacks().size(); i++) {
+				controller->getActiveLabjacks()[i]->toggleOverrideMode_AttractModeLEDs();
+			}
+			std::cout << "\t done." << std::endl;
+		}
+		else if (character == 'U') {
+			std::cout << "Utility mode:" << std::endl;
+			//TODO: utility mode.
+			// Export data as CSV
+			std::vector<std::string> exportPaths = controller->exportHistoricalDataAsCSV("C:/Common/data/", "export-HistoricalData");
+			if (exportPaths.empty()) {
+				std::cout << "Tried to export CSV files but had no historical data." << std::endl;
+			}
+			else {
+				int numExportPaths = exportPaths.size();
+				std::cout << "Export " << numExportPaths << " historical data .CSV files:" << std::endl;
+				for (size_t i = 0; i < numExportPaths; i++)
+				{
+					std::cout << "\t" << exportPaths[i] << std::endl;
+				}
+			}
+			std::cout << "\t done." << std::endl;
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		else {
 			printCommandsMenu();
 		}
@@ -217,10 +316,10 @@ void printCommandsMenu() {
 	std::cout << "\t Press [p] at any time to print the most recently read values for all labjacks." << std::endl;
 	std::cout << "\t Press [f] at any time to show the current output file directory." << std::endl;
 	std::cout << "\t Press [s] at any time to show the current log files for all labjacks." << std::endl;
-	/*std::cout << "\t Press [r] at any time to refresh and scan for more labjacks." << std::endl;
+	std::cout << "\t Press [r] at any time to refresh and scan for more labjacks." << std::endl;
 	std::cout << "\t Press [l] at any time to toggle visible LED Light mode for all labjacks." << std::endl;
 	std::cout << "\t Press [a] at any time to toggle Attract mode for all labjacks." <<std::endl;
-	std::cout << "\t Press [u] at any time to display utility options." <<std::endl;*/
+	std::cout << "\t Press [u] at any time to display utility options." <<std::endl;
 	std::cout << "\t Press [q] at any time to quit." <<std::endl;
 	std::cout << "\t Press any other key at any time to show this list of commands." <<std::endl;
 }

@@ -51,6 +51,8 @@ BehavioralBoxLabjack::BehavioralBoxLabjack(int uniqueIdentifier, const char * de
 	//this->testBuildLogicalInputChannels();
 	this->LoadActiveLogicalInputChannelsConfig();
 		
+
+	lastReadExpandedPortValues = new double[8]; //DAVID CONTROL YOURSALF
 	this->serialNumber = serialNumber;
 	char iden[256];
 	sprintf(iden, "%d", this->serialNumber);
@@ -198,6 +200,7 @@ BehavioralBoxLabjack::~BehavioralBoxLabjack()
 	this->shouldStop = true;
 	//Read the values and save them one more time, so we know when the end of data collection occured.
 	this->readSensorValues();
+	delete[] lastReadExpandedPortValues;
 	// TODO: see if the stream version needs to do anything special here
 	// Probably need to do something with To stop stream, use LJM_eStreamStop.
 	printf("Stopping stream...\n");
@@ -871,7 +874,7 @@ void BehavioralBoxLabjack::SetupStream()
 	WriteNameOrDie(this->handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
 
 	// Build the stream object:
-	const double stream_scan_rate_Hz = 240.0;
+	const double stream_scan_rate_Hz = 100.0;
 	
 	auto currChannelNames = this->getInputPortNames(PortEnumerationMode::portNames, true, true);
 	this->ljStreamInfo.build(currChannelNames, stream_scan_rate_Hz);
@@ -1004,8 +1007,8 @@ void BehavioralBoxLabjack::readSensorValues()
 		
 		auto expandedPortNames = this->getInputPortNames(PortEnumerationMode::expandedPortNames, true, true);
 		
-		double* lastReadExpandedPortValues = nullptr;
-		lastReadExpandedPortValues = new double[expandedPortNames.size()];
+		//double* lastReadExpandedPortValues = nullptr; // David's edit. This fixes continuous analog outputs
+		//lastReadExpandedPortValues = new double[expandedPortNames.size()];
 
 		std::vector<double> lastReadExpandedPortValuesVector (expandedPortNames.size(), 0.0);
 		//lastReadExpandedPortValuesVector.reserve(expandedPortNames.size());
@@ -1053,8 +1056,10 @@ void BehavioralBoxLabjack::readSensorValues()
 				
 				double* last_expanded_value_pointer = lastReadExpandedPortValues + (currWithinScanExpandedPortLinearOffset);
 				double* curr_expanded_value_pointer = curr_got_expanded_values.data();
-				auto didAnyChange = currChannel->fn_generic_get_didValueChange(currChannelNumExpandedValues, last_expanded_value_pointer, curr_expanded_value_pointer);
-
+				//std::cout << scanIndex << ' ';
+				//std::cout << "lastReadExpandedPortValues: " << *lastReadExpandedPortValues << " currWithinScanExpandedPortLinearOffset " << currWithinScanExpandedPortLinearOffset << std::endl;
+				std::vector<bool> didExpandedPortChange = currChannel->fn_generic_get_didValueChange(currChannelNumExpandedValues, last_expanded_value_pointer, curr_expanded_value_pointer);
+				
 
 				//channelExpandedPortValues[logicalChannelIndex] = std::vector<double>(currChannelNumExpandedValues);
 				currChannelExpandedPortValues[logicalChannelIndex] = curr_got_expanded_values; //TODO: validate that this works
@@ -1066,7 +1071,7 @@ void BehavioralBoxLabjack::readSensorValues()
 				{
 					// Loop through and update the individual expanded port values:
 					if (currChannel->isLoggedToCSV() || currChannel->isLoggedToConsole()) {
-						currDidChange = didAnyChange[i];
+						currDidChange = didExpandedPortChange[i];
 						if (currDidChange)
 						{
 							if (currChannel->getReturnsContinuousValue())
@@ -1129,8 +1134,8 @@ void BehavioralBoxLabjack::readSensorValues()
 		delete[] lastReadValues;
 		lastReadValues = nullptr;
 
-		delete[] lastReadExpandedPortValues;
-		lastReadExpandedPortValues = nullptr;
+		//delete[] lastReadExpandedPortValues;
+		//lastReadExpandedPortValues = nullptr;
 
 		streamRead++;
 	}

@@ -43,6 +43,8 @@ public:
 	BehavioralBoxLabjack& operator=(const BehavioralBoxLabjack&) = delete; // non copyable
 	~BehavioralBoxLabjack();
 
+	double* lastReadExpandedPortValues = nullptr;// David trying to make a global ass pointer with the worst coding background ever seen to mankind
+
 	enum class PortEnumerationMode { logicalChannelOnly, portNames, expandedPortNames };
 	/*
 	 * logicalChannelOnly: only the logical channel name, like {"DISPENSE_SIGNALS"}
