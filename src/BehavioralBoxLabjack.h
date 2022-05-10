@@ -129,6 +129,8 @@ private:
 	int err;
 	int handle;
 	bool shouldStop = false;
+	//bool DavidsAnalogWriterBlock = true; // this is to control the write speed of the analog data. It makes performPersistValues function only write half the speed of the sampling frequency
+	int analogWriterCounter = 0;
 
 	// Override Values: 
 	bool isOverrideActive_VisibleLED = false;

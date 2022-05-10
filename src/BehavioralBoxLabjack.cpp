@@ -1210,7 +1210,13 @@ void BehavioralBoxLabjack::performPersistValues(unsigned long long estimated_sca
 		if (did_anyAnalogPortChange)
 		{
 			// If an analog port changed, write out to the digital line
-			newCSVLine_analogOnly.writeToFile(this->fileFullPath_analog, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+			// DavidsAnalogWriterBlock = !DavidsAnalogWriterBlock;
+			if (analogWriterCounter == 2) {
+				std::cout << "Written to file ";
+				newCSVLine_analogOnly.writeToFile(this->fileFullPath_analog, true); //TODO: relies on CSV object's internal buffering and writes out to the file each time.
+				analogWriterCounter = 0;
+			}
+			++analogWriterCounter;
 		}
 		if (did_anyDigitalPortChange)
 		{
