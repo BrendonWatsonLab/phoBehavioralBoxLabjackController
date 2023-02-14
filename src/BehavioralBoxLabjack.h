@@ -105,10 +105,6 @@ public:
 
 	LabjackStreamInfo getStreamInfo() { return this->ljStreamInfo; }
 
-#if LAUNCH_WEB_SERVER
-	Wt::Signal<int, int, double>& valueChanged() { return this->valueChanged_; }
-#endif // LAUNCH_WEB_SERVER
-
 	// Override Functions
 	void toggleOverrideMode_VisibleLED();
 	void toggleOverrideMode_AttractModeLEDs();
@@ -213,12 +209,6 @@ private:
 	 * Combines SYSTEM_TIMER_20HZ and STREAM_DATA_CAPTURE_16 to create the original
 	 * 32-bit value of SYSTEM_TIMER_20HZ.
 	**/
-
-#if LAUNCH_WEB_SERVER
-	// Signals
-	// <int: serialNumber, int: portIndex, double: newValue>
-	Wt::Signal<int, int, double> valueChanged_;
-#endif // LAUNCH_WEB_SERVER
 
 };
 
