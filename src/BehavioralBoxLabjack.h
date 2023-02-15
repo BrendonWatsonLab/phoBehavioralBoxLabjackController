@@ -13,8 +13,8 @@
 #include <mutex>
 #include <regex>
 #if LAUNCH_WEB_SERVER
-#include <Wt/WSignal.h> // Signals support for the web server
-#endif // LAUNCH_WEB_SERVER
+//#include <Wt/WSignal.h> // Signals support for the web server
+//#endif // LAUNCH_WEB_SERVER
 #include "External/CSVWriter.h"
 #include "OutputState.h"
 #include "ConfigurationManager.h"
