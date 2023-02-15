@@ -30,13 +30,13 @@
 #include "ConfigurationManager.h"
 
 // Webserver functionality:
-#if INCLUDE_WEB_SERVER_FILES
-#include "LabjackControllerWebApplication.h"
+//#if INCLUDE_WEB_SERVER_FILES
+//#include "LabjackControllerWebApplication.h"
 
-#include <Wt/WServer.h>
+//#include <Wt/WServer.h>
 // 1 Make the member a real variable not a pointer.
-std::thread web_server_thread;
-#endif // LAUNCH_WEB_SERVER
+//std::thread web_server_thread;
+//#endif // LAUNCH_WEB_SERVER
 
 //BehavioralBoxControllersManager controller;
 std::shared_ptr<BehavioralBoxControllersManager> controller = std::make_shared<BehavioralBoxControllersManager>();
@@ -46,7 +46,7 @@ std::shared_ptr<BehavioralBoxControllersManager> controller = std::make_shared<B
 // FUNCTION PROTOTYPES:
 //bool waitForFoundLabjacks();
 
-bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr);
+//bool startWebserver(int argc, char** argv, const std::shared_ptr<BehavioralBoxControllersManager>* managerPtr);
 
 int shutdownApplication(int shutdownCode);
 
@@ -77,21 +77,7 @@ int main(int argc, char** argv)
 	//TODO: this doesn't currently matter because the webserver reloads everything in TimeSeriesChart::buildHistoricDataModel() by calling the static BehavioralBoxControllersManager::loadAllHistoricalData() function.
 	// Eventually we weant to implement it in a singleton-like fashion.
 
-	#if LAUNCH_WEB_SERVER
-		const bool shouldStartWebServer = configMan->getLoadedConfig().launch_web_server;
-
-		if (shouldStartWebServer) {
-			// Run the webserver:
-			startWebserver(argc, argv, &controller);
-		}
-
 	
-	#else
-
-	
-	#endif
-	
-
 	std::cout <<std::endl << "Scanning for attached Labjacks..." <<std::endl;
 	if (!controller->waitForFoundLabjacks()) {
 		// User wants to quit.
@@ -99,11 +85,7 @@ int main(int argc, char** argv)
 		return shutdownApplication(LJME_NO_DEVICES_FOUND);
 	}
 
-#if LAUNCH_WEB_SERVER
-	if (shouldStartWebServer) {
-		Wt::WServer::instance()->postAll(&LabjackControllerWebApplication::staticUpdateActiveLabjacks);
-	}
-#endif
+
 
 	// TODO - READ ME: main run loop
 		// The LJM_StartInterval, LJM_WaitForNextInterval, and LJM_CleanInterval functions are used to efficiently execute the loop every so many milliseconds
