@@ -41,12 +41,12 @@ public:
 	bool waitForFoundLabjacks();
 	//int shutdownApplication(int shutdownCode);
 
+
 	// Getters:
 	bool isReady();
-	// Gets the computer's hostname
-	std::string getHostName() { return this->hostName_; }
+
 	// Gets the 2-digit integer identifier for the current computer (and box, if there is a 1-to-1 mapping). Like the "02" in "WATSON-BB-02"
-	int getNumericComputerIdentifier() { return this->numeric_computer_identifer_; }
+	//int getNumericComputerIdentifier() { return this->numeric_computer_identifer_; }
 	
 private:
 
@@ -68,6 +68,7 @@ private:
 	std::string csvExportPath = "C:/Common/data/export-HistoricalData.csv";
 
 	void run();
+	std::shared_ptr<ConfigurationManager> configMan = std::make_shared<ConfigurationManager>();
 
 	// behavioralBoxEventDataFilesMap_: indexed by the BBID (1-indexed)
 	std::map<int, std::vector<LabjackDataFile>> behavioralBoxEventDataFilesMap_;

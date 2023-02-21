@@ -14,7 +14,7 @@ inline std::vector<fs::path> FilesystemHelpers::file_list(fs::path dir, std::reg
 {
 	std::vector<fs::path> result;
 
-	using iterator = std::conditional< RECURSIVE,
+	using iterator = typename std::conditional< RECURSIVE,
 		fs::recursive_directory_iterator, fs::directory_iterator >::type;
 
 	const iterator end;
@@ -31,7 +31,7 @@ template<bool RECURSIVE>
 inline std::vector<fs::path> FilesystemHelpers::dir_list(fs::path dir, std::regex folder_name_pattern)
 {
 	std::vector<fs::path> result;
-	using iterator = std::conditional< RECURSIVE,
+	using iterator = typename std::conditional< RECURSIVE,
 		fs::recursive_directory_iterator, fs::directory_iterator >::type;
 
 	const iterator end;
@@ -66,7 +66,7 @@ std::map<int, std::vector<LabjackDataFile>> FilesystemHelpers::findDataFiles(std
 
 	int activeLabjackSerialNumber = 0;
 	std::map<int, std::vector<LabjackDataFile>> labjackDataFilesMap;
-												
+
 	fs::path dir = searchDirectory;
 	std::vector<fs::path> foundFiles = scan_csv_files(dir);
 	// Vector of string to save tokens 
@@ -146,7 +146,7 @@ std::map<int, std::vector<LabjackDataFile>> FilesystemHelpers::findDataFiles(std
 
 		// Update the map with the new or updated vector
 		labjackDataFilesMap[activeLabjackSerialNumber] = currLabjackAssociatedFilesVector; // TODO: This might inefficiently do a copy every time, I'm unsure.
-		
+
 	}
 	return labjackDataFilesMap;
 }
@@ -179,7 +179,7 @@ bool FilesystemHelpers::createDirectory(std::string path)
 		return fs::create_directories(path);
 	}
 
-	
+
 }
 
 bool FilesystemHelpers::fileExists(std::string path)
@@ -215,7 +215,7 @@ std::map<int, fs::path> FilesystemHelpers::findBehavioralBoxDataFolders(fs::path
 	std::map<int, fs::path> full_path_result_map;
 
 	std::vector<fs::path> box_folders = dir_list<false>(dir, folder_bb_folder_regex);
-	for each (fs::path a_box_folder in box_folders)
+	for (fs::path a_box_folder : box_folders)
 	{
 		const std::string curr_box_folder_name = a_box_folder.filename().string();
 		std::smatch stringMatch;    // same as std::match_results<string::const_iterator> sm;
@@ -244,7 +244,7 @@ std::map<int, fs::path> FilesystemHelpers::findActiveExperimentAnimalFolders(fs:
 	std::map<int, fs::path> full_path_result_map;
 
 	std::vector<fs::path> box_folders = dir_list<false>(dir, folder_bb_folder_regex);
-	for each (fs::path a_box_folder in box_folders)
+	for (fs::path a_box_folder : box_folders)
 	{
 		const std::string curr_box_folder_name = a_box_folder.filename().string();
 		std::smatch stringMatch;    // same as std::match_results<string::const_iterator> sm;
@@ -271,7 +271,7 @@ std::map<int, fs::path> FilesystemHelpers::findActiveExperimentAnimalFolders(fs:
 				// More than one animal folder found, try to find the one that matches the BB number!
 				// TODO: in the future I should check if multiple found animal folders match the BB number (corresponding to the same animal in multiple experiments/cohorts).
 				bool found_matching_animal_folder = false;
-				for each (fs::path an_animal_folder in found_animal_folders)
+				for (fs::path an_animal_folder : found_animal_folders)
 				{
 					//Manhong-004 use BB\d\d + the experimentName in ini file to filter found paths.
 					if (an_animal_folder.parent_path().string().find(matchExperimentStr) == std::string::npos) continue;
@@ -303,7 +303,7 @@ std::map<int, fs::path> FilesystemHelpers::findActiveExperimentAnimalFolders(fs:
 					// found the single animal folder we're looking for: TODO: support multiple experiment/cohort in future.
 					continue;
 				}
-				
+
 			}
 
 		}
@@ -312,4 +312,3 @@ std::map<int, fs::path> FilesystemHelpers::findActiveExperimentAnimalFolders(fs:
 	//return full_path_results;
 	return full_path_result_map;
 }
-

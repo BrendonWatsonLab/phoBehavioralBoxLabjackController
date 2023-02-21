@@ -12,7 +12,7 @@
 #include <vector>
 #include <mutex>
 #include <regex>
-#if LAUNCH_WEB_SERVER
+//#if LAUNCH_WEB_SERVER
 //#include <Wt/WSignal.h> // Signals support for the web server
 //#endif // LAUNCH_WEB_SERVER
 #include "External/CSVWriter.h"
@@ -166,7 +166,7 @@ private:
 	
 
 	// Vector of Output Port Objects
-	char* outputPortNames[NUM_OUTPUT_CHANNELS] = globalLabjackOutputPortNames;
+	const char* outputPortNames[NUM_OUTPUT_CHANNELS] = globalLabjackOutputPortNames;
 	std::vector<OutputState*> outputPorts = {};
 
 	std::string readDeviceName();

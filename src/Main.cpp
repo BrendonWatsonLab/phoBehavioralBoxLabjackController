@@ -9,6 +9,7 @@
 //#else
 //#include <arpa/inet.h>  // For inet_ntoa()
 //#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -186,6 +187,7 @@ int main(int argc, char** argv)
 			}
 			std::cout << "\t done." << std::endl;
 		}
+		/*
 		else if (character == 'U') {
 			std::cout << "Utility mode:" << std::endl;
 			//TODO: utility mode.
@@ -203,7 +205,7 @@ int main(int argc, char** argv)
 				}
 			}
 			std::cout << "\t done." << std::endl;
-		}
+		}*/
 
 
 
